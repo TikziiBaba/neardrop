@@ -1,0 +1,269 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Sparkles, Menu, X, ArrowRight, ShieldCheck, HardDrive, LogOut, User, Settings, Layers } from "lucide-react";
+import { useAuth } from "@/lib/auth/context";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { Button } from "@/components/ui/button";
+
+export const Navbar: React.FC = () => {
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+
+  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/forgot-password");
+  const isPublicSharePage = pathname.startsWith("/s/");
+
+  if (isAuthPage || isPublicSharePage) return null;
+
+  return (
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-colors">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Brand Logo */}
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform duration-200">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
+              NearDrop
+              <span className="rounded-md bg-sky-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-sky-400 border border-sky-500/20">
+                v1.0
+              </span>
+            </span>
+          </div>
+        </Link>
+
+        {/* Desktop Navigation Links */}
+        <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-zinc-400">
+          {!user ? (
+            <>
+              <Link href="/#product" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+                Product
+              </Link>
+              <Link href="/#how-it-works" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+                How It Works
+              </Link>
+              <Link href="/#security" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+                Security
+              </Link>
+              <Link href="/#faq" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+                FAQ
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/dashboard"
+                className={`px-3.5 py-2 rounded-lg transition-colors ${
+                  pathname === "/dashboard" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/files"
+                className={`px-3.5 py-2 rounded-lg transition-colors ${
+                  pathname === "/files" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                }`}
+              >
+                Files
+              </Link>
+              <Link
+                href="/shared"
+                className={`px-3.5 py-2 rounded-lg transition-colors ${
+                  pathname === "/shared" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                }`}
+              >
+                Shared
+              </Link>
+              <Link
+                href="/transfers"
+                className={`px-3.5 py-2 rounded-lg transition-colors ${
+                  pathname === "/transfers" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                }`}
+              >
+                Transfers
+              </Link>
+              <Link
+                href="/storage"
+                className={`px-3.5 py-2 rounded-lg transition-colors ${
+                  pathname === "/storage" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                }`}
+              >
+                Storage
+              </Link>
+            </>
+          )}
+        </nav>
+
+        {/* Right CTA / Auth controls */}
+        <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
+
+          {!user ? (
+            <div className="flex items-center gap-2">
+              <Link href="/login">
+                <Button variant="ghost" size="sm">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="primary" size="sm" className="gap-1.5">
+                  <span>Get Started</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="relative">
+              <button
+                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                className="flex items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/80 p-1 pr-3 hover:border-zinc-700 transition-all"
+              >
+                <img
+                  src={user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
+                  alt={user.displayName}
+                  className="h-7 w-7 rounded-full object-cover ring-1 ring-sky-500/40"
+                />
+                <span className="text-xs font-semibold text-zinc-200">{user.displayName}</span>
+              </button>
+
+              {/* User Dropdown */}
+              {userDropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-56 rounded-2xl border border-zinc-800 bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in zoom-in-95 duration-150"
+                  onMouseLeave={() => setUserDropdownOpen(false)}
+                >
+                  <div className="px-3 py-2 border-b border-zinc-800/80 mb-1">
+                    <p className="text-xs font-semibold text-white truncate">{user.displayName}</p>
+                    <p className="text-[11px] text-zinc-400 truncate">{user.email}</p>
+                  </div>
+
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/60 transition-colors"
+                  >
+                    <Layers className="h-3.5 w-3.5 text-sky-400" />
+                    <span>Dashboard</span>
+                  </Link>
+
+                  <Link
+                    href="/settings"
+                    onClick={() => setUserDropdownOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/60 transition-colors"
+                  >
+                    <Settings className="h-3.5 w-3.5 text-zinc-400" />
+                    <span>Settings</span>
+                  </Link>
+
+                  <button
+                    onClick={async () => {
+                      setUserDropdownOpen(false);
+                      await logout();
+                    }}
+                    className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-500/10 transition-colors mt-1"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span>Log out</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Mobile Hamburger Button */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-b border-zinc-800 bg-zinc-950/95 px-4 py-4 space-y-3 backdrop-blur-xl">
+          {!user ? (
+            <div className="flex flex-col gap-2 text-sm font-medium text-zinc-300">
+              <Link href="/#product" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Product
+              </Link>
+              <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                How It Works
+              </Link>
+              <Link href="/#security" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Security
+              </Link>
+              <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                FAQ
+              </Link>
+              <div className="pt-2 flex flex-col gap-2">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full">
+                    Log in
+                  </Button>
+                </Link>
+                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="primary" className="w-full">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 text-sm font-medium text-zinc-300">
+              <div className="flex items-center gap-3 p-2 rounded-xl bg-zinc-900/80 mb-1 border border-zinc-800">
+                <img
+                  src={user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
+                  alt={user.displayName}
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+                <div className="truncate">
+                  <p className="font-semibold text-xs text-white">{user.displayName}</p>
+                  <p className="text-[10px] text-zinc-400 truncate">{user.email}</p>
+                </div>
+              </div>
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Dashboard
+              </Link>
+              <Link href="/files" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Files
+              </Link>
+              <Link href="/shared" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Shared Links
+              </Link>
+              <Link href="/transfers" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Transfers
+              </Link>
+              <Link href="/storage" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Storage
+              </Link>
+              <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Settings
+              </Link>
+              <button
+                onClick={async () => {
+                  setMobileMenuOpen(false);
+                  await logout();
+                }}
+                className="flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Log out</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </header>
+  );
+};

@@ -22,8 +22,7 @@ export const App: React.FC = () => {
 
   const { fetchIdentity, fetchDevices, fetchInterfaces } = useDeviceStore();
   const { updateProgress, setIncomingRequest } = useTransferStore();
-  const { activeLanguage, fetchSettings } = useSettingsStore();
-  const t = translations[activeLanguage];
+  const t = (translations as any)[activeLanguage] || translations.en;
 
   useEffect(() => {
     // Initial data hydration
