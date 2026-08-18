@@ -11,9 +11,12 @@
     "start": "npm --prefix apps/web run start",
     "dev": "npm --prefix apps/web run dev",
     "dev:desktop": "npm --prefix apps/desktop run tauri dev",
-    "build:desktop": "npm --prefix apps/desktop run build",
-    "dev:web": "npm --prefix apps/web run dev",
-    "build:web": "npm --prefix apps/web run build"
+    "build:desktop": "npm --prefix apps/desktop run build"
+  },
+  "dependencies": {
+    "next": "^14.2.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "keywords": [
     "airdrop",
