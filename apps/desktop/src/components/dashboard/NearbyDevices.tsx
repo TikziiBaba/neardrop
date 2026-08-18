@@ -103,10 +103,9 @@ export const NearbyDevices: React.FC = () => {
                         {device.device_name}
                       </span>
                       {device.is_trusted && (
-                        <ShieldCheck
-                          className="w-4 h-4 text-emerald-500"
-                          title="Trusted Device"
-                        />
+                        <span title="Trusted Device">
+                          <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                        </span>
                       )}
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">

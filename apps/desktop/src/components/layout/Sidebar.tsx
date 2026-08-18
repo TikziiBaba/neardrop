@@ -18,7 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
   const activeTransferCount = Object.values(activeTransfers).filter(
     (t) => t.status === 'transferring' || t.status === 'waiting_for_acceptance'
-  ).len;
+  ).length;
 
   const navItems = [
     { id: 'home', label: t.nav.home, icon: Send },
