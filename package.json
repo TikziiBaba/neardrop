@@ -1,0 +1,29 @@
+{
+  "name": "neardrop-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NearDrop — AirDrop-like local and cloud file sharing platform",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm --prefix apps/desktop run dev",
+    "dev:desktop": "npm --prefix apps/desktop run tauri dev",
+    "build:desktop": "npm --prefix apps/desktop run build",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build"
+  },
+  "keywords": [
+    "airdrop",
+    "file-sharing",
+    "lan",
+    "p2p",
+    "tauri",
+    "rust",
+    "react",
+    "supabase",
+    "cloudflare-r2"
+  ],
+  "author": "NearDrop Team",
+  "license": "MIT"
+}
