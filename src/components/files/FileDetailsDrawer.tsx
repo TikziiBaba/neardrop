@@ -3,6 +3,8 @@
 import React from "react";
 import { CloudFile } from "@/types";
 import { formatBytes, formatDate, getFileCategory } from "@/lib/utils";
+import { useStorage } from "@/lib/storage/store";
+import { toast } from "sonner";
 import {
   X,
   Download,
@@ -38,6 +40,8 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
   onShare,
   onDelete,
 }) => {
+  const { downloadFile } = useStorage();
+
   if (!open || !file) return null;
 
   const category = getFileCategory(file.mimeType, file.filename);
@@ -59,21 +63,13 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
     }
   };
 
-  const handleDownload = () => {
-    const blob = new Blob(
-      [
-        `NearDrop File Download\nFile: ${file.filename}\nChecksum: ${file.checksum || "N/A"}\nDate: ${new Date().toISOString()}`,
-      ],
-      { type: file.mimeType }
-    );
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = file.filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownload = async () => {
+    try {
+      await downloadFile(file.id);
+      toast.success("Download started!");
+    } catch (err: any) {
+      toast.error(err.message || "Download failed");
+    }
   };
 
   return (

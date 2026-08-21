@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import React from "react";
 import Link from "next/link";
@@ -62,17 +63,15 @@ export const Sidebar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  isActive
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${isActive
                     ? "bg-zinc-800 text-white shadow-sm font-semibold"
                     : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/80"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`h-4 w-4 transition-colors ${
-                      isActive ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
-                    }`}
+                    className={`h-4 w-4 transition-colors ${isActive ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
+                      }`}
                   />
                   <span>{item.label}</span>
                 </div>
@@ -91,16 +90,14 @@ export const Sidebar: React.FC = () => {
 
           <Link
             href="/settings"
-            className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              pathname === "/settings"
+            className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${pathname === "/settings"
                 ? "bg-zinc-800 text-white shadow-sm font-semibold"
                 : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/80"
-            }`}
+              }`}
           >
             <Settings
-              className={`h-4 w-4 transition-colors ${
-                pathname === "/settings" ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
-              }`}
+              className={`h-4 w-4 transition-colors ${pathname === "/settings" ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
+                }`}
             />
             <span>Settings</span>
           </Link>

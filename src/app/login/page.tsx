@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2, Shield } from "lucide-react";
+import { Sparkles, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
@@ -11,7 +11,7 @@ import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, loginAsDemoUser } = useAuth();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,12 +41,6 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDemoLogin = () => {
-    loginAsDemoUser();
-    toast.success("Logged in as Demo User!");
-    router.push("/dashboard");
   };
 
   return (
@@ -127,25 +121,6 @@ export default function LoginPage() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-zinc-800" />
-            <span className="absolute bg-zinc-900 px-3 text-[11px] text-zinc-500 font-medium uppercase tracking-wider">
-              or
-            </span>
-          </div>
-
-          {/* Demo Login Button */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleDemoLogin}
-            className="w-full gap-2"
-          >
-            <Shield className="h-4 w-4 text-emerald-400" />
-            <span>Instant Demo Sign-in</span>
-          </Button>
         </div>
 
         {/* Footer Link */}

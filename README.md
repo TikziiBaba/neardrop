@@ -58,15 +58,15 @@ It features two distinct transfer modes:
 
 ```text
 NearDrop/
-├── apps/
-│   ├── desktop/                      # Tauri + React Desktop Application
-│   │   ├── src-tauri/                # Rust Core (Discovery, Networking, Security, Storage)
-│   │   └── src/                      # React Frontend (Tailwind, Lucide, Framer Motion, Zustand)
-│   └── web/                          # Public Web Portal for Cloud Share Downloads
+├── src/                              # Next.js Fullstack Web Application
+│   ├── app/                          # App Router (Pages, Layouts, API Routes)
+│   ├── components/                   # UI & Feature Components (Tailwind, Lucide, Framer Motion)
+│   ├── lib/                          # Utilities, Supabase Auth & R2 Clients
+│   └── types/                        # TypeScript Interfaces
 ├── supabase/
 │   ├── migrations/                   # PostgreSQL Schema & Row Level Security (RLS)
 │   └── functions/                    # Edge Functions (cloud-upload, cloud-download, cloud-share)
-├── package.json                      # Workspace Root
+├── package.json                      # Next.js Project Config & Dependencies
 └── README.md
 ```
 
@@ -76,30 +76,20 @@ NearDrop/
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v18+)
-- [Rust & Cargo](https://rustup.rs/) (v1.75+)
 
 ### 1. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Run Desktop App (Dev Mode)
+### 2. Run Web App (Dev Mode)
 ```bash
-# Run React frontend in dev server
 npm run dev
-
-# Run Tauri desktop app with hot-reloading
-npm run dev:desktop
 ```
 
-### 3. Build Production Desktop App
+### 3. Build Production Web App
 ```bash
-npm run build:desktop
-```
-
-### 4. Run Web Share App
-```bash
-npm run dev:web
+npm run build
 ```
 
 ---
