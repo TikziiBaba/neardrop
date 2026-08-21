@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createClient } from "@supabase/supabase-js";
+import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 import crypto from "crypto";
 
 function serverSHA256(text: string): string {
@@ -13,19 +12,11 @@ function generateSecureToken(length = 12): string {
   return Array.from(bytes, (byte) => chars[byte % chars.length]).join("");
 }
 
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-  return createClient(url, serviceKey);
-}
-
 // GET: List share links for authenticated user
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -33,7 +24,7 @@ export async function GET(req: NextRequest) {
     const { data: shares, error } = await serviceClient
       .from("share_links")
       .select("*, cloud_files(filename, size, mime_type)")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -66,10 +57,8 @@ export async function GET(req: NextRequest) {
 // POST: Create a new share link
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -96,7 +85,7 @@ export async function POST(req: NextRequest) {
     const { data: share, error } = await serviceClient
       .from("share_links")
       .insert({
-        user_id: session.user.id,
+        user_id: user.id,
         cloud_file_id: cloudFileId,
         token,
         password_hash: passwordHash,
@@ -129,10 +118,8 @@ export async function POST(req: NextRequest) {
 // PATCH: Toggle active state or update expiry
 export async function PATCH(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -160,7 +147,7 @@ export async function PATCH(req: NextRequest) {
       .from("share_links")
       .update(updates)
       .eq("id", shareId)
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     if (error) throw error;
 
@@ -173,10 +160,8 @@ export async function PATCH(req: NextRequest) {
 // DELETE: Delete a share link
 export async function DELETE(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -190,7 +175,7 @@ export async function DELETE(req: NextRequest) {
       .from("share_links")
       .delete()
       .eq("id", shareId)
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     if (error) throw error;
 

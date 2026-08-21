@@ -1,9 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { CloudFile, ShareLink, TransferItem, StorageStats, UserSettings } from "@/types";
 import { getFileCategory } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
+import { createClient } from "@/lib/supabase/client";
 
 interface StorageContextType {
   files: CloudFile[];
@@ -57,11 +58,30 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const supabase = useMemo(() => createClient(), []);
+
+  // Helper to obtain fresh Bearer token
+  const getAuthHeaders = useCallback(async (): Promise<Record<string, string>> => {
+    if (!supabase) return {};
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        return { Authorization: `Bearer ${session.access_token}` };
+      }
+    } catch (e) {
+      console.error("Auth session fetch error:", e);
+    }
+    return {};
+  }, [supabase]);
+
   // Fetch files from Supabase via API
   const fetchFiles = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await fetch("/api/files");
+      const authHeaders = await getAuthHeaders();
+      const res = await fetch("/api/files", {
+        headers: authHeaders,
+      });
       if (res.ok) {
         const data = await res.json();
         setFiles(data.files || []);
@@ -69,13 +89,16 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (e) {
       console.error("Failed to fetch files:", e);
     }
-  }, [user]);
+  }, [user, getAuthHeaders]);
 
   // Fetch shares from Supabase via API
   const fetchShares = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await fetch("/api/shares");
+      const authHeaders = await getAuthHeaders();
+      const res = await fetch("/api/shares", {
+        headers: authHeaders,
+      });
       if (res.ok) {
         const data = await res.json();
         setShares(data.shares || []);
@@ -83,7 +106,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } catch (e) {
       console.error("Failed to fetch shares:", e);
     }
-  }, [user]);
+  }, [user, getAuthHeaders]);
 
   // Refresh all data
   const refreshFiles = useCallback(async () => {
@@ -119,10 +142,12 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadData();
   }, [user, refreshFiles]);
 
-  // Upload handler with real R2 presigned URL upload
+  // Upload handler with R2 presigned URL and auto fallback to direct upload
   const uploadFiles = useCallback(async (fileList: File[] | FileList) => {
     const rawFiles = Array.from(fileList);
     if (!rawFiles.length || !user) return;
+
+    const authHeaders = await getAuthHeaders();
 
     for (const file of rawFiles) {
       const transferId = `tr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
@@ -142,68 +167,96 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setTransfers((prev) => [newTransfer, ...prev]);
 
       try {
-        // Step 1: Get presigned upload URL from our API
-        const apiRes = await fetch("/api/upload", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            filename: file.name,
-            size: file.size,
-            mimeType: file.type || "application/octet-stream",
-          }),
-        });
+        let uploadSucceeded = false;
 
-        if (!apiRes.ok) {
-          const errData = await apiRes.json();
-          throw new Error(errData.error || "Failed to get upload URL");
+        // Step 1: Try Presigned R2 URL first
+        try {
+          const apiRes = await fetch("/api/upload", {
+            method: "POST",
+            headers: {
+              ...authHeaders,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              filename: file.name,
+              size: file.size,
+              mimeType: file.type || "application/octet-stream",
+            }),
+          });
+
+          if (apiRes.ok) {
+            const { uploadUrl } = await apiRes.json();
+
+            // Try direct XHR PUT to presigned R2 URL
+            await new Promise<void>((resolve, reject) => {
+              const xhr = new XMLHttpRequest();
+
+              xhr.upload.addEventListener("progress", (e) => {
+                if (e.lengthComputable) {
+                  const progress = Math.round((e.loaded / e.total) * 100);
+                  const elapsedSec = (Date.now() - newTransfer.startedAt) / 1000;
+                  const speed = elapsedSec > 0 ? Math.round(e.loaded / elapsedSec) : 0;
+
+                  setTransfers((prev) =>
+                    prev.map((t) =>
+                      t.id === transferId
+                        ? { ...t, progress, transferredBytes: e.loaded, speed }
+                        : t
+                    )
+                  );
+                }
+              });
+
+              xhr.addEventListener("load", () => {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                  uploadSucceeded = true;
+                  resolve();
+                } else {
+                  reject(new Error(`Presigned upload status ${xhr.status}`));
+                }
+              });
+
+              xhr.addEventListener("error", () => reject(new Error("Network / CORS error on presigned upload")));
+              xhr.addEventListener("abort", () => reject(new Error("Upload aborted")));
+
+              xhr.open("PUT", uploadUrl);
+              xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+              xhr.send(file);
+            });
+          }
+        } catch (presignedErr) {
+          console.warn("Direct R2 presigned upload failed, attempting direct proxy upload fallback...", presignedErr);
         }
 
-        const { uploadUrl, fileId, r2ObjectKey } = await apiRes.json();
+        // Step 2: If direct R2 PUT failed (e.g. CORS not configured yet), fallback to server proxy
+        if (!uploadSucceeded) {
+          const formData = new FormData();
+          formData.append("file", file);
 
-        // Step 2: Upload directly to R2 via presigned URL with progress tracking
-        await new Promise<void>((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-
-          xhr.upload.addEventListener("progress", (e) => {
-            if (e.lengthComputable) {
-              const progress = Math.round((e.loaded / e.total) * 100);
-              const elapsedSec = (Date.now() - newTransfer.startedAt) / 1000;
-              const speed = elapsedSec > 0 ? Math.round(e.loaded / elapsedSec) : 0;
-
-              setTransfers((prev) =>
-                prev.map((t) =>
-                  t.id === transferId
-                    ? { ...t, progress, transferredBytes: e.loaded, speed }
-                    : t
-                )
-              );
-            }
+          const fallbackRes = await fetch("/api/upload", {
+            method: "POST",
+            headers: authHeaders,
+            body: formData,
           });
 
-          xhr.addEventListener("load", () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              setTransfers((prev) =>
-                prev.map((t) =>
-                  t.id === transferId
-                    ? { ...t, progress: 100, transferredBytes: file.size, status: "completed", completedAt: Date.now() }
-                    : t
-                )
-              );
-              resolve();
-            } else {
-              reject(new Error(`Upload failed with status ${xhr.status}`));
-            }
-          });
+          if (!fallbackRes.ok) {
+            const errData = await fallbackRes.json();
+            throw new Error(errData.error || "Upload failed");
+          }
 
-          xhr.addEventListener("error", () => reject(new Error("Upload network error")));
-          xhr.addEventListener("abort", () => reject(new Error("Upload aborted")));
+          uploadSucceeded = true;
+        }
 
-          xhr.open("PUT", uploadUrl);
-          xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
-          xhr.send(file);
-        });
+        // Mark transfer completed
+        setTransfers((prev) =>
+          prev.map((t) =>
+            t.id === transferId
+              ? { ...t, progress: 100, transferredBytes: file.size, status: "completed", completedAt: Date.now() }
+              : t
+          )
+        );
 
-        // Step 3: Refresh file list from DB
+        // Refresh file list from DB
         await fetchFiles();
 
       } catch (err: any) {
@@ -215,9 +268,10 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
               : t
           )
         );
+        throw err; // Propagate to DropZone for user alert
       }
     }
-  }, [user, fetchFiles]);
+  }, [user, fetchFiles, getAuthHeaders]);
 
   const createShareLink = async (params: {
     cloudFileId: string;
@@ -225,9 +279,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     maxDownloads?: number;
     password?: string;
   }): Promise<ShareLink> => {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/shares", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(params),
     });
 
@@ -243,9 +301,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const deleteFile = async (fileId: string) => {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/files", {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ fileId }),
     });
 
@@ -260,9 +322,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const renameFile = async (fileId: string, newName: string) => {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/files", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ fileId, filename: newName }),
     });
 
@@ -278,9 +344,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const share = shares.find((s) => s.id === shareId);
     if (!share) return;
 
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/shares", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ shareId, isActive: !share.isActive }),
     });
 
@@ -295,9 +365,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const deleteShareLink = async (shareId: string) => {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/shares", {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ shareId }),
     });
 
@@ -311,9 +385,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const updateShareExpiry = async (shareId: string, expiresInHours: number) => {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/shares", {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ shareId, expiresInHours }),
     });
 
@@ -369,9 +447,13 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const downloadFile = async (fileId: string) => {
+    const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/files/download", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({ fileId }),
     });
 

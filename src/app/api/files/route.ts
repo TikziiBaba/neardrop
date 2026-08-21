@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { deleteR2Object, isR2Configured } from "@/lib/r2/s3-client";
-import { createClient } from "@supabase/supabase-js";
-
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-  return createClient(url, serviceKey);
-}
+import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 
 // GET: List files for the authenticated user
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -23,20 +14,19 @@ export async function GET(req: NextRequest) {
     const { data: files, error } = await serviceClient
       .from("cloud_files")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .eq("is_deleted", false)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
 
-    // Also fetch share counts
+    // Fetch share counts
     const { data: shares } = await serviceClient
       .from("share_links")
       .select("cloud_file_id, id, is_active")
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     const shareCountMap: Record<string, number> = {};
-    const downloadCountMap: Record<string, number> = {};
     if (shares) {
       shares.forEach((s: any) => {
         if (s.is_active) {
@@ -69,10 +59,8 @@ export async function GET(req: NextRequest) {
 // DELETE: Delete a file (DB + R2)
 export async function DELETE(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -88,7 +76,7 @@ export async function DELETE(req: NextRequest) {
       .from("cloud_files")
       .select("*")
       .eq("id", fileId)
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (fetchErr || !file) {
@@ -100,7 +88,7 @@ export async function DELETE(req: NextRequest) {
       .from("share_links")
       .delete()
       .eq("cloud_file_id", fileId)
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     // Delete from R2
     if (isR2Configured() && file.r2_object_key) {
@@ -116,7 +104,7 @@ export async function DELETE(req: NextRequest) {
       .from("cloud_files")
       .delete()
       .eq("id", fileId)
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     if (delErr) throw delErr;
 
@@ -129,10 +117,8 @@ export async function DELETE(req: NextRequest) {
 // PATCH: Rename a file
 export async function PATCH(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -146,7 +132,7 @@ export async function PATCH(req: NextRequest) {
       .from("cloud_files")
       .update({ filename })
       .eq("id", fileId)
-      .eq("user_id", session.user.id);
+      .eq("user_id", user.id);
 
     if (error) throw error;
 

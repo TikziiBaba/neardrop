@@ -41,8 +41,12 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       toast.info(`Preparing upload for ${e.dataTransfer.files.length} file(s)...`);
       onUploadStarted?.();
-      await uploadFiles(e.dataTransfer.files);
-      toast.success("Files successfully uploaded to cloud storage!");
+      try {
+        await uploadFiles(e.dataTransfer.files);
+        toast.success("Files successfully uploaded to cloud storage!");
+      } catch (err: any) {
+        toast.error(err.message || "Upload failed. Please check your storage settings.");
+      }
     }
   };
 
@@ -50,10 +54,14 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
     if (e.target.files && e.target.files.length > 0) {
       toast.info(`Preparing upload for ${e.target.files.length} file(s)...`);
       onUploadStarted?.();
-      await uploadFiles(e.target.files);
-      toast.success("Files successfully uploaded to cloud storage!");
-      // Reset input
-      e.target.value = "";
+      try {
+        await uploadFiles(e.target.files);
+        toast.success("Files successfully uploaded to cloud storage!");
+      } catch (err: any) {
+        toast.error(err.message || "Upload failed. Please check your storage settings.");
+      } finally {
+        e.target.value = "";
+      }
     }
   };
 

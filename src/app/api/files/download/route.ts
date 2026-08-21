@@ -1,21 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPresignedDownloadUrl, isR2Configured } from "@/lib/r2/s3-client";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createClient } from "@supabase/supabase-js";
-
-function getServiceClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-  return createClient(url, serviceKey);
-}
+import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 
 // POST: Generate presigned download URL for authenticated file owner
 export async function POST(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const { data: { session } } = await supabase.auth.getSession();
-
-    if (!session?.user) {
+    const user = await getAuthUser(req);
+    if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -29,7 +20,7 @@ export async function POST(req: NextRequest) {
       .from("cloud_files")
       .select("*")
       .eq("id", fileId)
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .single();
 
     if (fetchErr || !file) {
