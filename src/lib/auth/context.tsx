@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const supabase = useMemo(() => (isSupabaseConfigured() ? createClient() : null), []);
+  const supabase = useMemo(() => createClient(), []);
 
   // Helper: fetch profile from Supabase and build UserProfile
   const fetchProfile = useCallback(async (userId: string, email: string): Promise<UserProfile | null> => {
