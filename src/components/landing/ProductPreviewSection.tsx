@@ -16,8 +16,10 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const ProductPreviewSection: React.FC = () => {
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<"dashboard" | "files" | "share" | "transfers">("dashboard");
 
   return (
@@ -25,13 +27,13 @@ export const ProductPreviewSection: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
           <h2 className="text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            Product Preview
+            {t.productPreview.sectionLabel}
           </h2>
           <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            Designed for Simplicity & Focus
+            {t.productPreview.title}
           </p>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            Take a look inside the NearDrop workspace. Clean layouts, instant feedback, and zero clutter.
+            {t.productPreview.subtitle}
           </p>
         </div>
 
@@ -39,10 +41,10 @@ export const ProductPreviewSection: React.FC = () => {
         <div className="flex justify-center mb-8">
           <div className="inline-flex rounded-2xl border border-zinc-800 bg-zinc-900/80 p-1 backdrop-blur-md">
             {[
-              { id: "dashboard", label: "Dashboard" },
-              { id: "files", label: "File Manager" },
-              { id: "share", label: "Share Creator" },
-              { id: "transfers", label: "Live Transfers" },
+              { id: "dashboard", label: t.productPreview.tabDashboard },
+              { id: "files", label: t.productPreview.tabFiles },
+              { id: "share", label: t.productPreview.tabShare },
+              { id: "transfers", label: t.productPreview.tabTransfers },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -80,27 +82,27 @@ export const ProductPreviewSection: React.FC = () => {
               <div className="space-y-6 animate-in fade-in duration-200">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-1">
-                    <span className="text-[11px] text-zinc-400">Total Files</span>
+                    <span className="text-[11px] text-zinc-400">{t.productPreview.totalFiles}</span>
                     <p className="text-2xl font-bold text-white">124</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-1">
-                    <span className="text-[11px] text-zinc-400">Storage Used</span>
+                    <span className="text-[11px] text-zinc-400">{t.productPreview.storageUsed}</span>
                     <p className="text-2xl font-bold text-sky-400">2.4 GB</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-1">
-                    <span className="text-[11px] text-zinc-400">Active Shares</span>
+                    <span className="text-[11px] text-zinc-400">{t.productPreview.activeShares}</span>
                     <p className="text-2xl font-bold text-emerald-400">18</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-1">
-                    <span className="text-[11px] text-zinc-400">Total Downloads</span>
+                    <span className="text-[11px] text-zinc-400">{t.productPreview.totalDownloads}</span>
                     <p className="text-2xl font-bold text-indigo-400">426</p>
                   </div>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-semibold text-zinc-200">Recent File Activity</span>
-                    <span className="text-[11px] text-sky-400">3 new files today</span>
+                    <span className="font-semibold text-zinc-200">{t.productPreview.recentActivity}</span>
+                    <span className="text-[11px] text-sky-400">{t.productPreview.newFilesToday}</span>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-xs">
@@ -125,14 +127,14 @@ export const ProductPreviewSection: React.FC = () => {
             {activeTab === "files" && (
               <div className="space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-sm font-semibold text-white">My Cloud Files</h4>
-                  <Badge variant="sky">5 files</Badge>
+                  <h4 className="text-sm font-semibold text-white">{t.productPreview.myCloudFiles}</h4>
+                  <Badge variant="sky">{t.productPreview.filesCount}</Badge>
                 </div>
                 <div className="space-y-2">
                   {[
-                    { name: "design-assets-2026.zip", size: "1.82 GB", date: "Today", shares: "1 active" },
-                    { name: "product-demo-4k.mp4", size: "420 MB", date: "Yesterday", shares: "No shares" },
-                    { name: "client-brand-guidelines.pdf", size: "14.8 MB", date: "Aug 15", shares: "1 active" },
+                    { name: "design-assets-2026.zip", size: "1.82 GB", date: t.productPreview.today, shares: `1 ${t.productPreview.activeLabel}` },
+                    { name: "product-demo-4k.mp4", size: "420 MB", date: t.productPreview.yesterday, shares: t.productPreview.noShares },
+                    { name: "client-brand-guidelines.pdf", size: "14.8 MB", date: "Aug 15", shares: `1 ${t.productPreview.activeLabel}` },
                   ].map((f, i) => (
                     <div
                       key={i}
@@ -157,15 +159,15 @@ export const ProductPreviewSection: React.FC = () => {
               <div className="max-w-md mx-auto p-6 rounded-3xl bg-zinc-950 border border-zinc-800 space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center gap-2 text-xs font-semibold text-white">
                   <Share2 className="h-4 w-4 text-sky-400" />
-                  <span>Share: client-project-v2.zip</span>
+                  <span>{t.productPreview.shareLabel} client-project-v2.zip</span>
                 </div>
                 <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-sky-400 flex items-center justify-between">
                   <span>https://neardrop.dev/s/7fH9k2Lm90</span>
-                  <Badge variant="sky">Copied</Badge>
+                  <Badge variant="sky">{t.productPreview.copied}</Badge>
                 </div>
                 <div className="flex items-center gap-2 text-xs text-zinc-400">
-                  <Badge variant="secondary">Expires in 24h</Badge>
-                  <Badge variant="warning">Password Protected</Badge>
+                  <Badge variant="secondary">{t.productPreview.expiresIn24h}</Badge>
+                  <Badge variant="warning">{t.productPreview.passwordProtected}</Badge>
                 </div>
               </div>
             )}
@@ -180,7 +182,7 @@ export const ProductPreviewSection: React.FC = () => {
                   <Progress value={74} max={100} />
                   <div className="flex items-center justify-between text-[11px] text-zinc-400">
                     <span>2.4 GB / 3.3 GB</span>
-                    <span>74% • 18 seconds remaining</span>
+                    <span>74% • 18 {t.productPreview.remaining}</span>
                   </div>
                 </div>
               </div>

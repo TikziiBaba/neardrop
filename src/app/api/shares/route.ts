@@ -50,7 +50,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ shares: mapped });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch shares" }, { status: 500 });
+    console.error("Fetch shares error:", error);
+    return NextResponse.json({ error: "Failed to fetch shares" }, { status: 500 });
   }
 }
 
@@ -111,7 +112,8 @@ export async function POST(req: NextRequest) {
       createdAt: share.created_at,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to create share link" }, { status: 500 });
+    console.error("Create share error:", error);
+    return NextResponse.json({ error: "Failed to create share link" }, { status: 500 });
   }
 }
 
@@ -153,7 +155,8 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to update share" }, { status: 500 });
+    console.error("Update share error:", error);
+    return NextResponse.json({ error: "Failed to update share" }, { status: 500 });
   }
 }
 
@@ -181,6 +184,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to delete share" }, { status: 500 });
+    console.error("Delete share error:", error);
+    return NextResponse.json({ error: "Failed to delete share" }, { status: 500 });
   }
 }

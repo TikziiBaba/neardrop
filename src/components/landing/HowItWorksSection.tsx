@@ -1,31 +1,33 @@
+"use client";
+
 import React from "react";
 import { UploadCloud, Link as LinkIcon, Share2, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const HowItWorksSection: React.FC = () => {
+  const { t } = useLanguage();
+
   const steps = [
     {
-      num: "01",
-      title: "Upload Your Files",
-      description:
-        "Drag and drop any file or entire folder. High-speed streaming uploads directly to Cloudflare R2 without memory bloat.",
+      num: t.howItWorks.step1Num,
+      title: t.howItWorks.step1Title,
+      description: t.howItWorks.step1Desc,
       icon: UploadCloud,
-      badge: "Chunked Stream",
+      badge: t.howItWorks.step1Badge,
     },
     {
-      num: "02",
-      title: "Configure Security & Link",
-      description:
-        "Set automatic link expiration (1h to 30d), set download limits, and optionally add SHA-256 password protection.",
+      num: t.howItWorks.step2Num,
+      title: t.howItWorks.step2Title,
+      description: t.howItWorks.step2Desc,
       icon: LinkIcon,
-      badge: "Zero-Knowledge Hash",
+      badge: t.howItWorks.step2Badge,
     },
     {
-      num: "03",
-      title: "Share Instantly",
-      description:
-        "Copy your unguessable secure link or generate a mobile QR code. Recipients download directly through temporary presigned URLs.",
+      num: t.howItWorks.step3Num,
+      title: t.howItWorks.step3Title,
+      description: t.howItWorks.step3Desc,
       icon: Share2,
-      badge: "Fast Direct Download",
+      badge: t.howItWorks.step3Badge,
     },
   ];
 
@@ -34,13 +36,13 @@ export const HowItWorksSection: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <h2 className="text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            Streamlined Workflow
+            {t.howItWorks.sectionLabel}
           </h2>
           <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            How NearDrop Works
+            {t.howItWorks.title}
           </p>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            No convoluted dashboards or bloated folder hierarchies. Just seamless, three-step file sharing.
+            {t.howItWorks.subtitle}
           </p>
         </div>
 

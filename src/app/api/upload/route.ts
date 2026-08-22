@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPresignedUploadUrl, getR2Client, isR2Configured } from "@/lib/r2/s3-client";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
+import { sanitizeFilename, isDangerousExtension, isFileSizeValid, MAX_UPLOAD_SIZE } from "@/lib/utils/sanitize";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(req: NextRequest) {
@@ -21,10 +22,40 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
       }
 
-      const fileId = crypto.randomUUID();
-      const filename = file.name;
+      const filename = sanitizeFilename(file.name);
       const size = file.size;
       const mimeType = file.type || "application/octet-stream";
+
+      // Security: Block dangerous file extensions
+      if (isDangerousExtension(filename)) {
+        return NextResponse.json({ error: "This file type is not allowed for security reasons." }, { status: 400 });
+      }
+
+      // Security: Validate file size
+      if (!isFileSizeValid(size)) {
+        return NextResponse.json(
+          { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
+          { status: 400 }
+        );
+      }
+
+      // Security: Check user quota
+      const serviceClient = getServiceClient();
+      const { data: profile } = await serviceClient
+        .from("profiles")
+        .select("quota_bytes, used_bytes")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        const quotaBytes = profile.quota_bytes || 10737418240; // 10 GB default
+        const usedBytes = profile.used_bytes || 0;
+        if (usedBytes + size > quotaBytes) {
+          return NextResponse.json({ error: "Storage quota exceeded. Please delete some files or upgrade your plan." }, { status: 413 });
+        }
+      }
+
+      const fileId = crypto.randomUUID();
       const r2ObjectKey = `users/${user.id}/${fileId}/${filename}`;
 
       if (!isR2Configured()) {
@@ -46,7 +77,6 @@ export async function POST(req: NextRequest) {
       );
 
       // Insert record into Supabase
-      const serviceClient = getServiceClient();
       const { error: dbError } = await serviceClient
         .from("cloud_files")
         .insert({
@@ -61,7 +91,7 @@ export async function POST(req: NextRequest) {
 
       if (dbError) {
         console.error("DB insert error:", dbError);
-        throw new Error(dbError.message);
+        return NextResponse.json({ error: "Failed to save file record." }, { status: 500 });
       }
 
       return NextResponse.json({
@@ -73,10 +103,41 @@ export async function POST(req: NextRequest) {
 
     // 2. Presigned Upload URL generation (JSON request)
     const body = await req.json();
-    const { filename, size, mimeType } = body;
+    const { filename: rawFilename, size, mimeType } = body;
 
-    if (!filename || !size) {
+    if (!rawFilename || !size) {
       return NextResponse.json({ error: "Filename and size are required" }, { status: 400 });
+    }
+
+    const filename = sanitizeFilename(rawFilename);
+
+    // Security: Block dangerous file extensions
+    if (isDangerousExtension(filename)) {
+      return NextResponse.json({ error: "This file type is not allowed for security reasons." }, { status: 400 });
+    }
+
+    // Security: Validate file size
+    if (!isFileSizeValid(size)) {
+      return NextResponse.json(
+        { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
+        { status: 400 }
+      );
+    }
+
+    // Security: Check user quota
+    const serviceClient = getServiceClient();
+    const { data: profile } = await serviceClient
+      .from("profiles")
+      .select("quota_bytes, used_bytes")
+      .eq("id", user.id)
+      .single();
+
+    if (profile) {
+      const quotaBytes = profile.quota_bytes || 10737418240;
+      const usedBytes = profile.used_bytes || 0;
+      if (usedBytes + size > quotaBytes) {
+        return NextResponse.json({ error: "Storage quota exceeded. Please delete some files or upgrade your plan." }, { status: 413 });
+      }
     }
 
     const fileId = crypto.randomUUID();
@@ -93,7 +154,6 @@ export async function POST(req: NextRequest) {
     );
 
     // Insert file record into Supabase
-    const serviceClient = getServiceClient();
     const { error: dbError } = await serviceClient
       .from("cloud_files")
       .insert({
@@ -108,7 +168,7 @@ export async function POST(req: NextRequest) {
 
     if (dbError) {
       console.error("DB insert error:", dbError);
-      throw new Error(dbError.message);
+      return NextResponse.json({ error: "Failed to save file record." }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -117,6 +177,7 @@ export async function POST(req: NextRequest) {
       fileId,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Upload request failed" }, { status: 500 });
+    console.error("Upload error:", error);
+    return NextResponse.json({ error: "Upload request failed" }, { status: 500 });
   }
 }

@@ -1,37 +1,42 @@
+"use client";
+
 import React from "react";
 import { Shield, KeyRound, Database, FileLock, RefreshCw, EyeOff } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const SecuritySection: React.FC = () => {
+  const { t } = useLanguage();
+
   const securityPillars = [
     {
       icon: KeyRound,
-      title: "Row Level Security (RLS)",
-      desc: "PostgreSQL enforces granular tenant isolation at the database layer. No user can view, query, or delete another user's file records.",
+      title: t.security.rlsTitle,
+      desc: t.security.rlsDesc,
     },
     {
       icon: FileLock,
-      title: "Temporary Signed URLs",
-      desc: "Private R2 buckets are completely isolated from public internet. File downloads are granted through signed URLs that expire within minutes.",
+      title: t.security.signedUrlTitle,
+      desc: t.security.signedUrlDesc,
     },
     {
       icon: EyeOff,
-      title: "High-Entropy Token URLs",
-      desc: "Share links use 12-character cryptographically random tokens, making brute-force enumeration practically impossible.",
+      title: t.security.highEntropyTitle,
+      desc: t.security.highEntropyDesc,
     },
     {
       icon: Database,
-      title: "Zero-Knowledge Password Hashing",
-      desc: "Protected shares verify access using client-generated SHA-256 digests. Raw passwords are never transmitted or stored in the database.",
+      title: t.security.zeroKnowledgeTitle,
+      desc: t.security.zeroKnowledgeDesc,
     },
     {
       icon: RefreshCw,
-      title: "Automated Lifespan Cleanup",
-      desc: "Scheduled backend cleanup routines invalidate expired tokens and purge stale storage objects automatically.",
+      title: t.security.lifespanTitle,
+      desc: t.security.lifespanDesc,
     },
     {
       icon: Shield,
-      title: "Strict Egress Restrictions",
-      desc: "Direct browser-to-R2 streaming eliminates intermediary server buffering and reduces risk of memory-based data exfiltration.",
+      title: t.security.egressTitle,
+      desc: t.security.egressDesc,
     },
   ];
 
@@ -41,13 +46,13 @@ export const SecuritySection: React.FC = () => {
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
             <Shield className="h-3.5 w-3.5" />
-            <span>Infrastructure & Data Safety</span>
+            <span>{t.security.badge}</span>
           </div>
           <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            Built on Defense in Depth
+            {t.security.title}
           </p>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            NearDrop keeps security straightforward, auditable, and reliable from browser to cloud storage.
+            {t.security.subtitle}
           </p>
         </div>
 
@@ -73,25 +78,25 @@ export const SecuritySection: React.FC = () => {
         {/* Technical Architecture Flow */}
         <div className="mt-12 rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 backdrop-blur-xl">
           <h3 className="text-xs font-bold uppercase tracking-wider text-sky-400 mb-4">
-            Architecture at a Glance
+            {t.security.archTitle}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
             <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2">
-              <span className="text-sky-400 font-bold">1. Browser Client</span>
+              <span className="text-sky-400 font-bold">{t.security.arch1Title}</span>
               <p className="text-zinc-400 text-[11px] font-sans">
-                Authenticates via Supabase Auth. Requests presigned upload or download authorization.
+                {t.security.arch1Desc}
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2">
-              <span className="text-blue-400 font-bold">2. Supabase + RLS</span>
+              <span className="text-blue-400 font-bold">{t.security.arch2Title}</span>
               <p className="text-zinc-400 text-[11px] font-sans">
-                Validates user identity, verifies quota limits, generates token, and manages metadata.
+                {t.security.arch2Desc}
               </p>
             </div>
             <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2">
-              <span className="text-indigo-400 font-bold">3. Cloudflare R2</span>
+              <span className="text-indigo-400 font-bold">{t.security.arch3Title}</span>
               <p className="text-zinc-400 text-[11px] font-sans">
-                Receives encrypted payload directly via signed S3 URLs. Direct streaming for recipient download.
+                {t.security.arch3Desc}
               </p>
             </div>
           </div>

@@ -6,9 +6,11 @@ import { ArrowRight, Sparkles, Shield, Zap, Lock, HardDrive, CheckCircle2 } from
 import { Button } from "@/components/ui/button";
 import { DropZone } from "@/components/upload/DropZone";
 import { useRouter } from "next/navigation";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const HeroSection: React.FC = () => {
   const router = useRouter();
+  const { t } = useLanguage();
 
   return (
     <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
@@ -23,33 +25,33 @@ export const HeroSection: React.FC = () => {
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3.5 py-1 text-xs font-medium text-sky-400 backdrop-blur-md">
               <Sparkles className="h-3.5 w-3.5 animate-pulse" />
-              <span>NearDrop 1.0 — Share files. Simply.</span>
+              <span>{t.hero.badge}</span>
             </div>
 
             {/* Main Headline */}
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
-              Share files. <br />
+              {t.hero.titleLine1} <br />
               <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
-                Simply & Securely.
+                {t.hero.titleLine2}
               </span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Upload your files. Generate an unguessable expiring link with optional password protection. Direct Cloudflare R2 streaming without the clutter.
+              {t.hero.subtitle}
             </p>
 
             {/* CTAs */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2">
               <Link href="/dashboard">
                 <Button variant="primary" size="lg" className="gap-2 shadow-xl shadow-sky-500/20">
-                  <span>Start Sharing Now</span>
+                  <span>{t.hero.ctaPrimary}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/#how-it-works">
                 <Button variant="outline" size="lg">
-                  See How It Works
+                  {t.hero.ctaSecondary}
                 </Button>
               </Link>
             </div>
@@ -58,15 +60,15 @@ export const HeroSection: React.FC = () => {
             <div className="pt-6 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-medium text-zinc-400">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-sky-400" />
-                <span>No file size bottlenecks</span>
+                <span>{t.hero.check1}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                <span>Zero public bucket exposure</span>
+                <span>{t.hero.check2}</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-blue-400" />
-                <span>Expiring & password links</span>
+                <span>{t.hero.check3}</span>
               </div>
             </div>
           </div>
@@ -80,7 +82,7 @@ export const HeroSection: React.FC = () => {
                   <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
                   <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
                 </div>
-                <span className="text-[11px] font-mono text-zinc-500">instant-drop.neardrop.dev</span>
+                <span className="text-[11px] font-mono text-zinc-500">{t.hero.dropzoneMockUrl}</span>
               </div>
 
               <DropZone onUploadStarted={() => router.push("/dashboard")} />

@@ -52,7 +52,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ files: mappedFiles });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch files" }, { status: 500 });
+    console.error("Fetch files error:", error);
+    return NextResponse.json({ error: "Failed to fetch files" }, { status: 500 });
   }
 }
 
@@ -110,7 +111,8 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to delete file" }, { status: 500 });
+    console.error("Delete file error:", error);
+    return NextResponse.json({ error: "Failed to delete file" }, { status: 500 });
   }
 }
 
@@ -138,6 +140,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to rename file" }, { status: 500 });
+    console.error("Rename file error:", error);
+    return NextResponse.json({ error: "Failed to rename file" }, { status: 500 });
   }
 }

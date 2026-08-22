@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Zap,
@@ -9,54 +11,51 @@ import {
   QrCode,
   Gauge,
 } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const FeaturesSection: React.FC = () => {
+  const { t } = useLanguage();
+
   const features = [
     {
       icon: Zap,
-      title: "Blazing Fast Uploads",
-      description:
-        "Direct-to-storage presigned upload URLs bypass intermediary web servers for maximum throughput and zero bandwidth throttling.",
+      title: t.features.blazingFastTitle,
+      description: t.features.blazingFastDesc,
       color: "text-amber-400",
       bg: "bg-amber-500/10",
     },
     {
       icon: ShieldCheck,
-      title: "Cryptographic Share Tokens",
-      description:
-        "Random 12-character high-entropy tokens prevent guessing or crawling. Each download is protected by temporary signed URLs.",
+      title: t.features.cryptoTokenTitle,
+      description: t.features.cryptoTokenDesc,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     },
     {
       icon: Clock,
-      title: "Automatic Link Expiration",
-      description:
-        "Set links to vanish after 1 hour, 24 hours, or custom duration. Scheduled cleanup guarantees files do not linger forever.",
+      title: t.features.autoExpiryTitle,
+      description: t.features.autoExpiryDesc,
       color: "text-sky-400",
       bg: "bg-sky-500/10",
     },
     {
       icon: Lock,
-      title: "SHA-256 Password Lock",
-      description:
-        "Protect sensitive transfers with optional passwords. Stored using client-verified SHA-256 hashes—never plaintext.",
+      title: t.features.sha256Title,
+      description: t.features.sha256Desc,
       color: "text-violet-400",
       bg: "bg-violet-500/10",
     },
     {
       icon: HardDrive,
-      title: "Cloudflare R2 Storage",
-      description:
-        "Built on distributed S3-compatible cloud storage with global edge replication, zero egress fees, and 99.999999999% durability.",
+      title: t.features.r2StorageTitle,
+      description: t.features.r2StorageDesc,
       color: "text-blue-400",
       bg: "bg-blue-500/10",
     },
     {
       icon: FolderKanban,
-      title: "Complete File Management",
-      description:
-        "Inspect checksum hashes, rename files, view real-time download counters, revoke active links in 1-click, and track transfer history.",
+      title: t.features.fileManagementTitle,
+      description: t.features.fileManagementDesc,
       color: "text-pink-400",
       bg: "bg-pink-500/10",
     },
@@ -67,13 +66,13 @@ export const FeaturesSection: React.FC = () => {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
           <h2 className="text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            Engineered for Speed & Privacy
+            {t.features.sectionLabel}
           </h2>
           <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            Everything You Need to Share
+            {t.features.title}
           </p>
           <p className="text-sm text-zinc-400 leading-relaxed">
-            Engineered with strict security standards, lightweight architecture, and frictionless user experience.
+            {t.features.subtitle}
           </p>
         </div>
 

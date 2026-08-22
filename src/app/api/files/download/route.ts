@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
       size: file.size,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Download request failed" }, { status: 500 });
+    console.error("File download error:", error);
+    return NextResponse.json({ error: "Download request failed" }, { status: 500 });
   }
 }

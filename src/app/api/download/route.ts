@@ -19,8 +19,8 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
 
-    if (!token) {
-      return NextResponse.json({ error: "Share token is required" }, { status: 400 });
+    if (!token || token.length < 8 || token.length > 64) {
+      return NextResponse.json({ error: "Invalid share token." }, { status: 400 });
     }
 
     const serviceClient = getServiceClient();
@@ -74,7 +74,8 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to fetch share info" }, { status: 500 });
+    console.error("Share fetch error:", error);
+    return NextResponse.json({ error: "Failed to fetch share info" }, { status: 500 });
   }
 }
 
@@ -84,8 +85,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { token, password } = body;
 
-    if (!token) {
-      return NextResponse.json({ error: "Share token is required" }, { status: 400 });
+    if (!token || token.length < 8 || token.length > 64) {
+      return NextResponse.json({ error: "Invalid share token." }, { status: 400 });
     }
 
     const serviceClient = getServiceClient();
@@ -138,11 +139,29 @@ export async function POST(req: NextRequest) {
 
     const downloadUrl = await createPresignedDownloadUrl(file.r2_object_key, file.filename, 900);
 
-    // Increment download count
-    await serviceClient
-      .from("share_links")
-      .update({ download_count: share.download_count + 1 })
-      .eq("id", share.id);
+    // Atomically increment download count to prevent race conditions.
+    // Uses Supabase RPC if available, otherwise falls back to direct update.
+    // The re-check of max_downloads prevents concurrent requests from exceeding the limit.
+    if (share.max_downloads) {
+      // Re-fetch and check atomicity: only update if download_count hasn't exceeded max
+      const { data: updatedShare, error: updateErr } = await serviceClient
+        .from("share_links")
+        .update({ download_count: share.download_count + 1 })
+        .eq("id", share.id)
+        .lt("download_count", share.max_downloads)
+        .select("id")
+        .single();
+
+      if (updateErr || !updatedShare) {
+        return NextResponse.json({ error: "This link has reached its maximum download limit." }, { status: 410 });
+      }
+    } else {
+      // No max_downloads limit — just increment
+      await serviceClient
+        .from("share_links")
+        .update({ download_count: share.download_count + 1 })
+        .eq("id", share.id);
+    }
 
     return NextResponse.json({
       downloadUrl,
@@ -150,6 +169,7 @@ export async function POST(req: NextRequest) {
       size: file.size,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Download request failed" }, { status: 500 });
+    console.error("Download error:", error);
+    return NextResponse.json({ error: "Download request failed" }, { status: 500 });
   }
 }

@@ -10,6 +10,7 @@ import { RenameModal } from "@/components/files/RenameModal";
 import { DeleteConfirmModal } from "@/components/files/DeleteConfirmModal";
 import { useAuth } from "@/lib/auth/context";
 import { useStorage } from "@/lib/storage/store";
+import { useLanguage } from "@/lib/i18n/context";
 import { CloudFile, ShareLink } from "@/types";
 import { formatBytes, formatRelativeTime, formatExpiresIn, getFileCategory } from "@/lib/utils";
 import {
@@ -39,6 +40,7 @@ import { Badge } from "@/components/ui/badge";
 export default function DashboardPage() {
   const { user } = useAuth();
   const { files, shares, stats } = useStorage();
+  const { t } = useLanguage();
 
   // Modals state
   const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null);
@@ -75,17 +77,17 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                <span>Welcome back, {user?.displayName || "NearDrop User"}</span>
+                <span>{t.dashboard.welcomeBack} {user?.displayName || "NearDrop User"}</span>
                 <span className="inline-block animate-wave">👋</span>
               </h1>
               <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-                Upload files, manage your secure cloud shares, and track downloads in real time.
+                {t.dashboard.subtitle}
               </p>
             </div>
             <Link href="/files">
               <Button variant="outline" size="sm" className="gap-1.5 self-start sm:self-auto">
                 <FolderOpen className="h-4 w-4 text-sky-400" />
-                <span>View All Files ({files.length})</span>
+                <span>{t.dashboard.viewAllFiles} ({files.length})</span>
               </Button>
             </Link>
           </div>
@@ -94,7 +96,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
               <div className="flex items-center justify-between text-xs text-zinc-400">
-                <span>Files Stored</span>
+                <span>{t.dashboard.filesStored}</span>
                 <FileText className="h-4 w-4 text-zinc-500" />
               </div>
               <p className="text-2xl font-bold text-white tracking-tight">{stats.filesCount}</p>
@@ -102,7 +104,7 @@ export default function DashboardPage() {
 
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
               <div className="flex items-center justify-between text-xs text-zinc-400">
-                <span>Cloud Storage</span>
+                <span>{t.dashboard.cloudStorage}</span>
                 <HardDrive className="h-4 w-4 text-sky-400" />
               </div>
               <p className="text-2xl font-bold text-sky-400 tracking-tight">
@@ -112,7 +114,7 @@ export default function DashboardPage() {
 
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
               <div className="flex items-center justify-between text-xs text-zinc-400">
-                <span>Active Shares</span>
+                <span>{t.dashboard.activeShares}</span>
                 <Share2 className="h-4 w-4 text-emerald-400" />
               </div>
               <p className="text-2xl font-bold text-emerald-400 tracking-tight">
@@ -122,7 +124,7 @@ export default function DashboardPage() {
 
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-1">
               <div className="flex items-center justify-between text-xs text-zinc-400">
-                <span>Total Downloads</span>
+                <span>{t.dashboard.totalDownloads}</span>
                 <Download className="h-4 w-4 text-indigo-400" />
               </div>
               <p className="text-2xl font-bold text-indigo-400 tracking-tight">
@@ -137,9 +139,9 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between px-1">
             <h2 className="text-sm font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-sky-400" />
-              <span>Instant Cloud Upload</span>
+              <span>{t.dashboard.instantCloudUpload}</span>
             </h2>
-            <span className="text-[11px] text-zinc-500">Encrypted R2 Storage</span>
+            <span className="text-[11px] text-zinc-500">{t.dashboard.encryptedR2Storage}</span>
           </div>
           <DropZone />
         </div>
@@ -149,12 +151,12 @@ export default function DashboardPage() {
           {/* Recent Files (2 cols) */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-sm font-bold text-white">Recent Files</h3>
+              <h3 className="text-sm font-bold text-white">{t.dashboard.recentFiles}</h3>
               <Link
                 href="/files"
                 className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1 transition-colors"
               >
-                <span>Browse all</span>
+                <span>{t.dashboard.browseAll}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -162,9 +164,9 @@ export default function DashboardPage() {
             {recentFiles.length === 0 ? (
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 text-center space-y-2">
                 <FolderOpen className="h-8 w-8 text-zinc-600 mx-auto" />
-                <h4 className="text-sm font-semibold text-zinc-300">No files uploaded yet</h4>
+                <h4 className="text-sm font-semibold text-zinc-300">{t.dashboard.noFilesTitle}</h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  Drag and drop files above to start sharing with unguessable links.
+                  {t.dashboard.noFilesDesc}
                 </p>
               </div>
             ) : (
@@ -203,7 +205,7 @@ export default function DashboardPage() {
                         className="text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1.5 text-xs h-8"
                       >
                         <Share2 className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">Share</span>
+                        <span className="hidden sm:inline">{t.dashboard.share}</span>
                       </Button>
 
                       <Button
@@ -233,12 +235,12 @@ export default function DashboardPage() {
           {/* Active Shares Column (1 col) */}
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-sm font-bold text-white">Active Shares</h3>
+              <h3 className="text-sm font-bold text-white">{t.dashboard.activeSharesTitle}</h3>
               <Link
                 href="/shared"
                 className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1 transition-colors"
               >
-                <span>Manage</span>
+                <span>{t.dashboard.manage}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -246,9 +248,9 @@ export default function DashboardPage() {
             {recentShares.length === 0 ? (
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-center space-y-2">
                 <Share2 className="h-6 w-6 text-zinc-600 mx-auto" />
-                <p className="text-xs text-zinc-400 font-medium">No active share links</p>
+                <p className="text-xs text-zinc-400 font-medium">{t.dashboard.noActiveShares}</p>
                 <p className="text-[11px] text-zinc-500">
-                  Select any file from your dashboard to create a share link.
+                  {t.dashboard.noActiveSharesDesc}
                 </p>
               </div>
             ) : (
@@ -263,7 +265,7 @@ export default function DashboardPage() {
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <p className="text-xs font-semibold text-white truncate">
-                            {file?.filename || "Shared File"}
+                            {file?.filename || t.dashboard.sharedFile}
                           </p>
                           <p className="font-mono text-[10px] text-sky-400 mt-0.5">/s/{share.token}</p>
                         </div>
@@ -280,7 +282,7 @@ export default function DashboardPage() {
                         {share.passwordProtected && (
                           <span className="flex items-center gap-1 text-amber-400">
                             <Lock className="h-3 w-3" />
-                            Locked
+                            {t.dashboard.locked}
                           </span>
                         )}
                       </div>

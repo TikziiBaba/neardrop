@@ -7,11 +7,13 @@ import { Sparkles, User, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2 } fro
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
+import { useLanguage } from "@/lib/i18n/context";
 import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { register } = useAuth();
+  const { t } = useLanguage();
 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,17 +27,17 @@ export default function RegisterPage() {
     setError(null);
 
     if (!displayName || !email || !password || !confirmPassword) {
-      setError("Please complete all fields.");
+      setError(t.register.fillAllFields);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError(t.register.passwordsMismatch);
       return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError(t.register.passwordTooShort);
       return;
     }
 
@@ -43,13 +45,13 @@ export default function RegisterPage() {
     try {
       const res = await register(email, password, displayName);
       if (!res.success) {
-        setError(res.error || "Failed to create account.");
+        setError(res.error || t.register.registrationFailed);
       } else {
-        toast.success("Account created successfully! Welcome to NearDrop.");
+        toast.success(t.register.accountCreated);
         router.push("/dashboard");
       }
     } catch (err: any) {
-      setError(err.message || "Registration failed.");
+      setError(err.message || t.register.registrationFailed);
     } finally {
       setIsLoading(false);
     }
@@ -69,9 +71,9 @@ export default function RegisterPage() {
             </div>
             <span className="text-lg font-bold text-white tracking-tight">NearDrop</span>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Create your account</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">{t.register.createAccount}</h1>
           <p className="text-xs text-zinc-400">
-            Start sharing files securely with 10 GB free cloud storage.
+            {t.register.subtitle}
           </p>
         </div>
 
@@ -86,12 +88,12 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Display Name</label>
+              <label className="text-xs font-semibold text-zinc-300">{t.register.displayNameLabel}</label>
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <Input
                   type="text"
-                  placeholder="Bekir"
+                  placeholder={t.register.displayNamePlaceholder}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   className="pl-10"
@@ -101,12 +103,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Email Address</label>
+              <label className="text-xs font-semibold text-zinc-300">{t.register.emailLabel}</label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <Input
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder={t.register.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
@@ -116,12 +118,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Password</label>
+              <label className="text-xs font-semibold text-zinc-300">{t.register.passwordLabel}</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <Input
                   type="password"
-                  placeholder="Minimum 6 characters"
+                  placeholder={t.register.passwordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10"
@@ -131,12 +133,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Confirm Password</label>
+              <label className="text-xs font-semibold text-zinc-300">{t.register.confirmPasswordLabel}</label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                 <Input
                   type="password"
-                  placeholder="Repeat your password"
+                  placeholder={t.register.confirmPasswordPlaceholder}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="pl-10"
@@ -151,7 +153,7 @@ export default function RegisterPage() {
               disabled={isLoading}
               className="w-full gap-2 py-2.5 shadow-lg shadow-sky-500/25 mt-2"
             >
-              <span>{isLoading ? "Creating account..." : "Create Account"}</span>
+              <span>{isLoading ? t.register.creatingAccount : t.register.createButton}</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </form>
@@ -159,9 +161,9 @@ export default function RegisterPage() {
 
         {/* Footer */}
         <p className="text-center text-xs text-zinc-400">
-          Already have an account?{" "}
+          {t.register.alreadyHaveAccount}{" "}
           <Link href="/login" className="font-semibold text-sky-400 hover:text-sky-300 transition-colors">
-            Log in
+            {t.register.loginLink}
           </Link>
         </p>
       </div>

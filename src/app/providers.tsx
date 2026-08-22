@@ -3,28 +3,31 @@
 import React from "react";
 import { AuthProvider } from "@/lib/auth/context";
 import { StorageProvider } from "@/lib/storage/store";
+import { LanguageProvider } from "@/lib/i18n/context";
 import { Toaster } from "sonner";
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <AuthProvider>
-      <StorageProvider>
-        {children}
-        <Toaster
-          position="bottom-right"
-          theme="dark"
-          toastOptions={{
-            style: {
-              background: "rgba(24, 24, 27, 0.95)",
-              border: "1px solid rgba(39, 39, 42, 0.8)",
-              color: "#fafafa",
-              backdropFilter: "blur(12px)",
-              borderRadius: "1rem",
-              fontSize: "0.8125rem",
-            },
-          }}
-        />
-      </StorageProvider>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <StorageProvider>
+          {children}
+          <Toaster
+            position="bottom-right"
+            theme="dark"
+            toastOptions={{
+              style: {
+                background: "rgba(24, 24, 27, 0.95)",
+                border: "1px solid rgba(39, 39, 42, 0.8)",
+                color: "#fafafa",
+                backdropFilter: "blur(12px)",
+                borderRadius: "1rem",
+                fontSize: "0.8125rem",
+              },
+            }}
+          />
+        </StorageProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 };

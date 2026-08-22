@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useStorage } from "@/lib/storage/store";
+import { useLanguage } from "@/lib/i18n/context";
 import { CloudFile, ShareLink } from "@/types";
 import { formatBytes, formatExpiresIn, getFileCategory } from "@/lib/utils";
 import {
@@ -23,6 +24,7 @@ import {
   HardDrive,
   Hash,
   ArrowRight,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +37,7 @@ export default function PublicSharePage() {
   const params = useParams();
   const token = params?.token as string;
   const { getShareByToken, unlockShareDownload } = useStorage();
+  const { locale, setLocale, t } = useLanguage();
 
   const [share, setShare] = useState<ShareLink | null>(null);
   const [file, setFile] = useState<CloudFile | null>(null);
@@ -100,9 +103,9 @@ export default function PublicSharePage() {
       a.click();
       document.body.removeChild(a);
 
-      toast.success("Download started!");
+      toast.success(t.publicShare.downloadInitiated);
     } catch (err: any) {
-      setError(err.message || "Download failed. Please verify password.");
+      setError(err.message || "Failed to unlock download.");
     } finally {
       setIsUnlocking(false);
     }
@@ -112,18 +115,22 @@ export default function PublicSharePage() {
     const cat = getFileCategory(file.mimeType, file.filename);
     switch (cat) {
       case "archive":
-        return <FileArchive className="h-10 w-10 text-amber-400" />;
+        return <FileArchive className="h-7 w-7 text-amber-400" />;
       case "image":
-        return <FileImage className="h-10 w-10 text-emerald-400" />;
+        return <FileImage className="h-7 w-7 text-emerald-400" />;
       case "video":
-        return <FileVideo className="h-10 w-10 text-purple-400" />;
+        return <FileVideo className="h-7 w-7 text-purple-400" />;
       case "audio":
-        return <FileAudio className="h-10 w-10 text-pink-400" />;
+        return <FileAudio className="h-7 w-7 text-pink-400" />;
       case "code":
-        return <FileCode className="h-10 w-10 text-cyan-400" />;
+        return <FileCode className="h-7 w-7 text-cyan-400" />;
       default:
-        return <FileText className="h-10 w-10 text-sky-400" />;
+        return <FileText className="h-7 w-7 text-sky-400" />;
     }
+  };
+
+  const toggleLanguage = () => {
+    setLocale(locale === "tr" ? "en" : "tr");
   };
 
   return (
@@ -140,7 +147,17 @@ export default function PublicSharePage() {
           </div>
           <span className="text-base font-bold text-white tracking-tight">NearDrop</span>
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleLanguage}
+            aria-label={t.langToggle.label}
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-2.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors text-xs font-semibold"
+          >
+            <Globe className="h-4 w-4" />
+            <span>{locale === "tr" ? "EN" : "TR"}</span>
+          </button>
+          <ThemeToggle />
+        </div>
       </header>
 
       {/* Main Share Card Content */}
@@ -158,14 +175,14 @@ export default function PublicSharePage() {
               <AlertCircle className="h-7 w-7" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-lg font-bold text-white">Link Unavailable</h2>
+              <h2 className="text-lg font-bold text-white">{t.publicShare.linkUnavailable}</h2>
               <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto">
                 {error}
               </p>
             </div>
             <Link href="/">
               <Button variant="outline" size="sm" className="gap-2">
-                <span>Go to NearDrop Home</span>
+                <span>{t.publicShare.goToHome}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </Link>
@@ -177,13 +194,13 @@ export default function PublicSharePage() {
             <div className="text-center space-y-1">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 text-[11px] font-semibold text-sky-400 border border-sky-500/20 mb-2">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                <span>Secure Cloud Share</span>
+                <span>{t.publicShare.secureCloudShare}</span>
               </div>
               <h2 className="text-lg font-bold text-white tracking-tight">
-                File Shared with You
+                {t.publicShare.fileSharedWithYou}
               </h2>
               <p className="text-xs text-zinc-400">
-                Encrypted transfer powered by Cloudflare R2 and temporary signed URLs.
+                {t.publicShare.encryptedSubtitle}
               </p>
             </div>
 
@@ -213,7 +230,7 @@ export default function PublicSharePage() {
               {share.passwordProtected && (
                 <span className="flex items-center gap-1.5 text-amber-400 font-medium">
                   <Lock className="h-3.5 w-3.5" />
-                  <span>Password Protected</span>
+                  <span>{t.publicShare.passwordProtected}</span>
                 </span>
               )}
             </div>
@@ -223,11 +240,11 @@ export default function PublicSharePage() {
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                   <Lock className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Enter Password to Unlock</span>
+                  <span>{t.publicShare.enterPasswordLabel}</span>
                 </label>
                 <Input
                   type="password"
-                  placeholder="Enter password..."
+                  placeholder={t.publicShare.enterPasswordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="text-xs"
@@ -248,9 +265,9 @@ export default function PublicSharePage() {
               <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center animate-in zoom-in-95 duration-150">
                 <CheckCircle2 className="h-6 w-6 text-emerald-400 mx-auto" />
                 <div>
-                  <h4 className="text-xs font-semibold text-emerald-300">Download Initiated</h4>
+                  <h4 className="text-xs font-semibold text-emerald-300">{t.publicShare.downloadInitiated}</h4>
                   <p className="text-[11px] text-zinc-400 mt-0.5">
-                    If your browser did not start the download automatically:
+                    {t.publicShare.browserDidNotStart}
                   </p>
                 </div>
                 <a
@@ -259,7 +276,7 @@ export default function PublicSharePage() {
                   className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors"
                 >
                   <DownloadCloud className="h-4 w-4" />
-                  <span>Click here to re-download</span>
+                  <span>{t.publicShare.clickToRedownload}</span>
                 </a>
               </div>
             ) : (
@@ -272,7 +289,7 @@ export default function PublicSharePage() {
                 className="w-full gap-2 shadow-xl shadow-sky-500/25 py-3"
               >
                 <DownloadCloud className="h-5 w-5" />
-                <span>{isUnlocking ? "Verifying & decrypting..." : "Download File"}</span>
+                <span>{isUnlocking ? t.publicShare.verifying : t.publicShare.downloadFile}</span>
               </Button>
             )}
 
@@ -286,7 +303,7 @@ export default function PublicSharePage() {
 
       {/* Footer */}
       <footer className="relative z-10 py-6 text-center text-xs text-zinc-600">
-        <p>NearDrop • Secure End-to-End File Exchange</p>
+        <p>{t.publicShare.footerTagline}</p>
       </footer>
     </div>
   );

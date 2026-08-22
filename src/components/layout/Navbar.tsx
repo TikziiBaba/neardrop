@@ -4,14 +4,16 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Menu, X, ArrowRight, ShieldCheck, HardDrive, LogOut, User, Settings, Layers } from "lucide-react";
+import { Sparkles, Menu, X, ArrowRight, ShieldCheck, HardDrive, LogOut, User, Settings, Layers, Globe } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
+import { useLanguage } from "@/lib/i18n/context";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { Button } from "@/components/ui/button";
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { locale, setLocale, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
@@ -19,6 +21,10 @@ export const Navbar: React.FC = () => {
   const isPublicSharePage = pathname.startsWith("/s/");
 
   if (isAuthPage || isPublicSharePage) return null;
+
+  const toggleLanguage = () => {
+    setLocale(locale === "tr" ? "en" : "tr");
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-colors">
@@ -43,16 +49,16 @@ export const Navbar: React.FC = () => {
           {!user ? (
             <>
               <Link href="/#product" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                Product
+                {t.navbar.product}
               </Link>
               <Link href="/#how-it-works" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                How It Works
+                {t.navbar.howItWorks}
               </Link>
               <Link href="/#security" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                Security
+                {t.navbar.security}
               </Link>
               <Link href="/#faq" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                FAQ
+                {t.navbar.faq}
               </Link>
             </>
           ) : (
@@ -63,7 +69,7 @@ export const Navbar: React.FC = () => {
                   pathname === "/dashboard" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Dashboard
+                {t.navbar.dashboard}
               </Link>
               <Link
                 href="/files"
@@ -71,7 +77,7 @@ export const Navbar: React.FC = () => {
                   pathname === "/files" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Files
+                {t.navbar.files}
               </Link>
               <Link
                 href="/shared"
@@ -79,7 +85,7 @@ export const Navbar: React.FC = () => {
                   pathname === "/shared" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Shared
+                {t.navbar.shared}
               </Link>
               <Link
                 href="/transfers"
@@ -87,7 +93,7 @@ export const Navbar: React.FC = () => {
                   pathname === "/transfers" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Transfers
+                {t.navbar.transfers}
               </Link>
               <Link
                 href="/storage"
@@ -95,7 +101,7 @@ export const Navbar: React.FC = () => {
                   pathname === "/storage" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Storage
+                {t.navbar.storage}
               </Link>
             </>
           )}
@@ -103,18 +109,28 @@ export const Navbar: React.FC = () => {
 
         {/* Right CTA / Auth controls */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            aria-label={t.langToggle.label}
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-2.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors text-xs font-semibold"
+          >
+            <Globe className="h-4 w-4" />
+            <span>{locale === "tr" ? "EN" : "TR"}</span>
+          </button>
+
           <ThemeToggle />
 
           {!user ? (
             <div className="flex items-center gap-2">
               <Link href="/login">
                 <Button variant="ghost" size="sm">
-                  Log in
+                  {t.navbar.login}
                 </Button>
               </Link>
               <Link href="/register">
                 <Button variant="primary" size="sm" className="gap-1.5">
-                  <span>Get Started</span>
+                  <span>{t.navbar.getStarted}</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </Link>
@@ -150,7 +166,7 @@ export const Navbar: React.FC = () => {
                     className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/60 transition-colors"
                   >
                     <Layers className="h-3.5 w-3.5 text-sky-400" />
-                    <span>Dashboard</span>
+                    <span>{t.navbar.dashboard}</span>
                   </Link>
 
                   <Link
@@ -159,7 +175,7 @@ export const Navbar: React.FC = () => {
                     className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-zinc-300 hover:text-white hover:bg-zinc-800/60 transition-colors"
                   >
                     <Settings className="h-3.5 w-3.5 text-zinc-400" />
-                    <span>Settings</span>
+                    <span>{t.navbar.settings}</span>
                   </Link>
 
                   <button
@@ -170,7 +186,7 @@ export const Navbar: React.FC = () => {
                     className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-rose-400 hover:bg-rose-500/10 transition-colors mt-1"
                   >
                     <LogOut className="h-3.5 w-3.5" />
-                    <span>Log out</span>
+                    <span>{t.navbar.logout}</span>
                   </button>
                 </div>
               )}
@@ -180,6 +196,15 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Hamburger Button */}
         <div className="flex items-center gap-2 md:hidden">
+          {/* Mobile Language Toggle */}
+          <button
+            onClick={toggleLanguage}
+            aria-label={t.langToggle.label}
+            className="inline-flex h-9 items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/60 px-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors text-xs font-semibold"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            <span>{locale === "tr" ? "EN" : "TR"}</span>
+          </button>
           <ThemeToggle />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -196,26 +221,26 @@ export const Navbar: React.FC = () => {
           {!user ? (
             <div className="flex flex-col gap-2 text-sm font-medium text-zinc-300">
               <Link href="/#product" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Product
+                {t.navbar.product}
               </Link>
               <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                How It Works
+                {t.navbar.howItWorks}
               </Link>
               <Link href="/#security" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Security
+                {t.navbar.security}
               </Link>
               <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                FAQ
+                {t.navbar.faq}
               </Link>
               <div className="pt-2 flex flex-col gap-2">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">
-                    Log in
+                    {t.navbar.login}
                   </Button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="primary" className="w-full">
-                    Get Started
+                    {t.navbar.getStarted}
                   </Button>
                 </Link>
               </div>
@@ -234,22 +259,22 @@ export const Navbar: React.FC = () => {
                 </div>
               </div>
               <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Dashboard
+                {t.navbar.dashboard}
               </Link>
               <Link href="/files" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Files
+                {t.navbar.files}
               </Link>
               <Link href="/shared" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Shared Links
+                {t.navbar.sharedLinks}
               </Link>
               <Link href="/transfers" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Transfers
+                {t.navbar.transfers}
               </Link>
               <Link href="/storage" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Storage
+                {t.navbar.storage}
               </Link>
               <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Settings
+                {t.navbar.settings}
               </Link>
               <button
                 onClick={async () => {
@@ -259,7 +284,7 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-2 px-3 py-2 text-left text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
               >
                 <LogOut className="h-4 w-4" />
-                <span>Log out</span>
+                <span>{t.navbar.logout}</span>
               </button>
             </div>
           )}

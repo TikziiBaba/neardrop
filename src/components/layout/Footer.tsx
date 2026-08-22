@@ -1,8 +1,13 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { Sparkles, Shield, Lock, HardDrive, Heart } from "lucide-react";
+import { useLanguage } from "@/lib/i18n/context";
 
 export const Footer: React.FC = () => {
+  const { t } = useLanguage();
+
   return (
     <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 py-12 text-zinc-400">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -16,38 +21,38 @@ export const Footer: React.FC = () => {
               <span className="text-lg font-bold tracking-tight text-white">NearDrop</span>
             </Link>
             <p className="text-xs text-zinc-400 max-w-sm leading-relaxed">
-              Fast, private, and secure file sharing without the clutter. Powered by Cloudflare R2 storage architecture and PostgreSQL row-level security.
+              {t.footer.description}
             </p>
             <div className="flex items-center gap-2 pt-1">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-medium text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>All systems operational</span>
+                <span>{t.footer.systemsOperational}</span>
               </div>
             </div>
           </div>
 
           {/* Product links */}
           <div>
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">Product</h4>
+            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">{t.footer.productTitle}</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/#features" className="hover:text-zinc-200 transition-colors">
-                  Instant Drop
+                  {t.footer.instantDrop}
                 </Link>
               </li>
               <li>
                 <Link href="/#how-it-works" className="hover:text-zinc-200 transition-colors">
-                  How it works
+                  {t.footer.howItWorks}
                 </Link>
               </li>
               <li>
                 <Link href="/dashboard" className="hover:text-zinc-200 transition-colors">
-                  Cloud Dashboard
+                  {t.footer.cloudDashboard}
                 </Link>
               </li>
               <li>
                 <Link href="/storage" className="hover:text-zinc-200 transition-colors">
-                  Storage Quotas
+                  {t.footer.storageQuotas}
                 </Link>
               </li>
             </ul>
@@ -55,26 +60,26 @@ export const Footer: React.FC = () => {
 
           {/* Security & Tech */}
           <div>
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">Security</h4>
+            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">{t.footer.securityTitle}</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link href="/#security" className="hover:text-zinc-200 transition-colors">
-                  End-to-End Signed URLs
+                  {t.footer.signedUrls}
                 </Link>
               </li>
               <li>
                 <Link href="/#security" className="hover:text-zinc-200 transition-colors">
-                  Row Level Security (RLS)
+                  {t.footer.rls}
                 </Link>
               </li>
               <li>
                 <Link href="/#security" className="hover:text-zinc-200 transition-colors">
-                  Expiring Links
+                  {t.footer.expiringLinks}
                 </Link>
               </li>
               <li>
                 <Link href="/#security" className="hover:text-zinc-200 transition-colors">
-                  Password Encryption
+                  {t.footer.passwordEncryption}
                 </Link>
               </li>
             </ul>
@@ -82,26 +87,26 @@ export const Footer: React.FC = () => {
 
           {/* Legal / Company */}
           <div>
-            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">Privacy & Trust</h4>
+            <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">{t.footer.privacyTitle}</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <span className="hover:text-zinc-200 transition-colors cursor-pointer">
-                  Privacy Policy
+                  {t.footer.privacyPolicy}
                 </span>
               </li>
               <li>
                 <span className="hover:text-zinc-200 transition-colors cursor-pointer">
-                  Terms of Service
+                  {t.footer.termsOfService}
                 </span>
               </li>
               <li>
                 <span className="hover:text-zinc-200 transition-colors cursor-pointer">
-                  Zero Data Selling
+                  {t.footer.zeroDataSelling}
                 </span>
               </li>
               <li>
                 <span className="hover:text-zinc-200 transition-colors cursor-pointer">
-                  Security Disclosures
+                  {t.footer.securityDisclosures}
                 </span>
               </li>
             </ul>
@@ -110,10 +115,10 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-500">
-          <p>© {new Date().getFullYear()} NearDrop Platform. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {t.footer.copyright}</p>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              Built for seamless file exchange
+              {t.footer.builtFor}
             </span>
           </div>
         </div>
