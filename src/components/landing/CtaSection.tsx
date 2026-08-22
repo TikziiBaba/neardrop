@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/lib/i18n/context";
+import { motion } from "framer-motion";
 
 export const CtaSection: React.FC = () => {
   const { t } = useLanguage();
@@ -14,7 +15,13 @@ export const CtaSection: React.FC = () => {
       {/* Background glow */}
       <div className="pointer-events-none absolute inset-0 hero-glow" />
 
-      <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6"
+      >
         <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3.5 py-1 text-xs font-medium text-sky-400">
           <Sparkles className="h-3.5 w-3.5" />
           <span>{t.cta.badge}</span>
@@ -30,13 +37,13 @@ export const CtaSection: React.FC = () => {
 
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-4">
           <Link href="/register">
-            <Button variant="primary" size="lg" className="gap-2 shadow-xl shadow-sky-500/25">
+            <Button variant="primary" size="lg" className="gap-2 shadow-xl shadow-sky-500/25 hover:scale-[1.02] transition-transform">
               <span>{t.cta.ctaPrimary}</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/dashboard">
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" className="hover:bg-zinc-800/80">
               {t.cta.ctaSecondary}
             </Button>
           </Link>
@@ -46,7 +53,7 @@ export const CtaSection: React.FC = () => {
           <ShieldCheck className="h-4 w-4 text-emerald-400" />
           <span>{t.cta.trust}</span>
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 };

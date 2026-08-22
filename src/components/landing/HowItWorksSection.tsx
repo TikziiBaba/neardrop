@@ -3,6 +3,7 @@
 import React from "react";
 import { UploadCloud, Link as LinkIcon, Share2, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
+import { motion } from "framer-motion";
 
 export const HowItWorksSection: React.FC = () => {
   const { t } = useLanguage();
@@ -32,9 +33,15 @@ export const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/40">
+    <section id="how-it-works" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/40 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center max-w-2xl mx-auto space-y-4 mb-16"
+        >
           <h2 className="text-xs font-semibold text-sky-400 uppercase tracking-widest">
             {t.howItWorks.sectionLabel}
           </h2>
@@ -44,15 +51,20 @@ export const HowItWorksSection: React.FC = () => {
           <p className="text-sm text-zinc-400 leading-relaxed">
             {t.howItWorks.subtitle}
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
-              <div
+              <motion.div
                 key={step.num}
-                className="relative rounded-3xl border border-zinc-800 bg-zinc-900/60 p-8 space-y-6 hover:border-zinc-700 transition-all hover:translate-y-[-2px] duration-200"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
+                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                className="relative rounded-3xl border border-zinc-800 bg-zinc-900/60 p-8 space-y-6 hover:border-zinc-700 hover:shadow-xl hover:shadow-sky-500/5 transition-colors duration-200"
               >
                 {/* Header: Number and Badge */}
                 <div className="flex items-center justify-between">
@@ -74,7 +86,7 @@ export const HowItWorksSection: React.FC = () => {
                   <h3 className="text-lg font-bold text-white tracking-tight">{step.title}</h3>
                   <p className="text-xs text-zinc-400 leading-relaxed">{step.description}</p>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

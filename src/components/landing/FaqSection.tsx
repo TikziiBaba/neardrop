@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, HelpCircle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const FaqSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -18,43 +19,89 @@ export const FaqSection: React.FC = () => {
   ];
 
   return (
-    <section id="faq" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950">
+    <section id="faq" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center space-y-4 mb-16">
-          <h2 className="text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            {t.faq.sectionLabel}
-          </h2>
-          <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center space-y-4 mb-16"
+        >
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-400 uppercase tracking-widest">
+            <HelpCircle className="h-3.5 w-3.5" />
+            <span>{t.faq.sectionLabel}</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
             {t.faq.title}
-          </p>
-        </div>
+          </h2>
+        </motion.div>
 
-        <div className="space-y-3">
+        <div className="space-y-3.5">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
-              <div
+              <motion.div
                 key={index}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900/50 overflow-hidden transition-colors hover:border-zinc-700"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-40px" }}
+                transition={{ delay: index * 0.05, duration: 0.4 }}
+                className={`rounded-2xl border transition-colors duration-200 overflow-hidden ${
+                  isOpen
+                    ? "border-sky-500/40 bg-zinc-900/80 shadow-lg shadow-sky-500/5 ring-1 ring-sky-500/20"
+                    : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/60"
+                }`}
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-white"
+                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-white transition-colors"
                 >
-                  <span>{faq.q}</span>
-                  <ChevronDown
-                    className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${
-                      isOpen ? "rotate-180 text-sky-400" : ""
+                  <span className="pr-4">{faq.q}</span>
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                    className={`flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-lg border transition-colors ${
+                      isOpen
+                        ? "border-sky-500/30 bg-sky-500/10 text-sky-400"
+                        : "border-zinc-800 bg-zinc-950 text-zinc-400"
                     }`}
-                  />
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </motion.div>
                 </button>
-                {isOpen && (
-                  <div className="px-5 pb-5 text-xs text-zinc-400 leading-relaxed border-t border-zinc-800/50 pt-3 animate-in fade-in duration-150">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
+
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      key="content"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{
+                        height: "auto",
+                        opacity: 1,
+                        transition: {
+                          height: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
+                          opacity: { duration: 0.25, delay: 0.05 },
+                        },
+                      }}
+                      exit={{
+                        height: 0,
+                        opacity: 0,
+                        transition: {
+                          height: { duration: 0.25, ease: [0.04, 0.62, 0.23, 0.98] },
+                          opacity: { duration: 0.15 },
+                        },
+                      }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-5 pb-5 text-xs sm:text-sm text-zinc-400 leading-relaxed border-t border-zinc-800/60 pt-3.5">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>
