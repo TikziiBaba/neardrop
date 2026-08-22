@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NearDrop — Share files. Simply.",
     description: "Fast, private, and secure file sharing without the clutter.",
-    url: "https://neardrop.dev",
+    url: "https://neardrop.bekirr.dev",
     siteName: "NearDrop",
     type: "website",
   },

@@ -31,7 +31,7 @@ export default function SettingsPage() {
 
   // Profile form state
   const [displayName, setDisplayName] = useState(user?.displayName || "Bekir");
-  const [email, setEmail] = useState(user?.email || "bekir@neardrop.dev");
+  const [email, setEmail] = useState(user?.email || "bekir@neardrop.bekirr.dev");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || "");
 
   // Preferences

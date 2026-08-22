@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard/", "/files/", "/shared/", "/transfers/", "/storage/", "/settings/", "/api/"],
       },
     ],
-    sitemap: "https://neardrop.dev/sitemap.xml",
+    sitemap: "https://neardrop.bekirr.dev/sitemap.xml",
   };
 }

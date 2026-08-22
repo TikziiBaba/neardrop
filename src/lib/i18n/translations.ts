@@ -32,7 +32,7 @@ export const translations = {
       check1: "Dosya boyutu kısıtlaması yok",
       check2: "Sıfır açık depolama riski",
       check3: "Süreli & şifreli linkler",
-      dropzoneMockUrl: "aninda-paylasim.neardrop.dev",
+      dropzoneMockUrl: "aninda-paylasim.neardrop.bekirr.dev",
     },
 
     // ===== HOW IT WORKS =====
@@ -335,7 +335,7 @@ export const translations = {
       check1: "No file size bottlenecks",
       check2: "Zero public bucket exposure",
       check3: "Expiring & password links",
-      dropzoneMockUrl: "instant-drop.neardrop.dev",
+      dropzoneMockUrl: "instant-drop.neardrop.bekirr.dev",
     },
 
     // ===== HOW IT WORKS =====

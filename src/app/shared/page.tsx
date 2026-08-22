@@ -35,7 +35,7 @@ export default function SharedPage() {
     if (typeof window !== "undefined") {
       return `${window.location.origin}/s/${token}`;
     }
-    return `https://neardrop.dev/s/${token}`;
+    return `https://neardrop.bekirr.dev/s/${token}`;
   };
 
   const handleCopy = (token: string) => {

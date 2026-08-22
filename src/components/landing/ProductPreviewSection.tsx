@@ -101,7 +101,7 @@ export const ProductPreviewSection: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400"
             >
-              <span>https://neardrop.dev/{activeTab}</span>
+              <span>https://neardrop.bekirr.dev/{activeTab}</span>
             </motion.div>
             <div className="w-12" />
           </div>
@@ -221,7 +221,7 @@ export const ProductPreviewSection: React.FC = () => {
                     <span>{t.productPreview.shareLabel} client-project-v2.zip</span>
                   </div>
                   <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-sky-400 flex items-center justify-between">
-                    <span>https://neardrop.dev/s/7fH9k2Lm90</span>
+                    <span>https://neardrop.bekirr.dev/s/7fH9k2Lm90</span>
                     <Badge variant="sky" className="animate-pulse">{t.productPreview.copied}</Badge>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-zinc-400">
