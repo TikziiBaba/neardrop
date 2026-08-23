@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -61,7 +63,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative">
+      {/* Top right quick controls */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-2 z-10">
+        <LanguageToggle />
+        <ThemeToggle />
+      </div>
+
       {/* Glow background */}
       <div className="pointer-events-none absolute inset-0 hero-glow" />
 

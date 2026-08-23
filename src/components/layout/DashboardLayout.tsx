@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useAuth } from "@/lib/auth/context";
 import {
   LayoutDashboard,
@@ -74,6 +75,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               <span>Admin</span>
             </Link>
 
+            <LanguageToggle />
             <ThemeToggle />
 
             {user && (

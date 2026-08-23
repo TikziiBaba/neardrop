@@ -4,10 +4,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Menu, X, ArrowRight, ShieldCheck, HardDrive, LogOut, User, Settings, Layers, Globe } from "lucide-react";
+import { Sparkles, Menu, X, ArrowRight, LogOut, Settings, Layers } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { Button } from "@/components/ui/button";
 
 export const Navbar: React.FC = () => {
@@ -120,16 +121,7 @@ export const Navbar: React.FC = () => {
 
         {/* Right CTA / Auth controls */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Language Toggle */}
-          <button
-            onClick={toggleLanguage}
-            aria-label={t.langToggle.label}
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-2.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors text-xs font-semibold"
-          >
-            <Globe className="h-4 w-4" />
-            <span>{locale === "tr" ? "EN" : "TR"}</span>
-          </button>
-
+          <LanguageToggle />
           <ThemeToggle />
 
           {!user ? (
@@ -207,15 +199,7 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Hamburger Button */}
         <div className="flex items-center gap-2 md:hidden">
-          {/* Mobile Language Toggle */}
-          <button
-            onClick={toggleLanguage}
-            aria-label={t.langToggle.label}
-            className="inline-flex h-9 items-center gap-1 rounded-xl border border-zinc-800 bg-zinc-900/60 px-2 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors text-xs font-semibold"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span>{locale === "tr" ? "EN" : "TR"}</span>
-          </button>
+          <LanguageToggle />
           <ThemeToggle />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

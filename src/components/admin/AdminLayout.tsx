@@ -5,6 +5,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useAuth } from "@/lib/auth/context";
 import {
   LayoutDashboard,
@@ -155,6 +156,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
               <ArrowLeft className="h-3 w-3" />
               <span>App</span>
             </Link>
+            <LanguageToggle />
             <ThemeToggle />
             {user && (
               <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 p-1 pr-3">
