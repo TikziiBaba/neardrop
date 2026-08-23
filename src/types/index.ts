@@ -1,3 +1,17 @@
+export interface UserDevice {
+  id: string;
+  userId: string;
+  deviceId: string;
+  deviceName: string;
+  deviceType: 'desktop' | 'laptop' | 'mobile' | 'tablet';
+  platform: 'windows' | 'macos' | 'linux' | 'android' | 'ios' | 'web';
+  browser?: string;
+  ipAddress?: string;
+  userAgent?: string;
+  lastSeen: string;
+  createdAt: string;
+}
+
 export interface UserProfile {
   id: string;
   email: string;
@@ -5,6 +19,10 @@ export interface UserProfile {
   avatarUrl?: string;
   quotaBytes: number;
   usedBytes: number;
+  role?: 'admin' | 'user';
+  status?: 'active' | 'suspended' | 'banned';
+  lastIpAddress?: string;
+  lastDevice?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,6 +40,8 @@ export interface CloudFile {
   expiresAt?: string | null;
   downloadsCount?: number;
   activeSharesCount?: number;
+  userEmail?: string;
+  userDisplayName?: string;
 }
 
 export interface ShareLink {
@@ -37,6 +57,7 @@ export interface ShareLink {
   isActive: boolean;
   createdAt: string;
   cloudFile?: CloudFile;
+  userEmail?: string;
 }
 
 export interface TransferItem {
@@ -79,3 +100,74 @@ export interface UserSettings {
   emailOnExpire: boolean;
   twoFactorEnabled?: boolean;
 }
+
+export interface AdminStats {
+  totalUsers: number;
+  activeUsers: number;
+  totalFiles: number;
+  totalStorageBytes: number;
+  totalQuotaBytes: number;
+  totalShares: number;
+  activeShares: number;
+  totalDownloads: number;
+  totalBandwidthBytes: number;
+  r2Status: 'healthy' | 'degraded' | 'error';
+  supabaseStatus: 'healthy' | 'degraded' | 'error';
+  dailyActivity: {
+    date: string;
+    uploads: number;
+    downloads: number;
+    bytes: number;
+  }[];
+  storageDistribution: {
+    category: string;
+    count: number;
+    bytes: number;
+    percentage: number;
+    color: string;
+  }[];
+}
+
+export interface AdminUser extends UserProfile {
+  filesCount: number;
+  sharesCount: number;
+  lastLogin?: string;
+}
+
+export interface AdminAuditLog {
+  id: string;
+  timestamp: string;
+  userId?: string;
+  userEmail?: string;
+  action: string;
+  resourceType: 'user' | 'file' | 'share' | 'system' | 'auth';
+  resourceId?: string;
+  details: string;
+  ipAddress?: string;
+  status: 'success' | 'warning' | 'danger';
+}
+
+export interface SystemHealth {
+  r2: {
+    status: 'connected' | 'error';
+    latencyMs: number;
+    bucketName: string;
+    objectCount: number;
+    totalSizeBytes: number;
+  };
+  supabase: {
+    status: 'connected' | 'error';
+    latencyMs: number;
+    profilesCount: number;
+    filesCount: number;
+    transfersCount: number;
+    sharesCount: number;
+  };
+  server: {
+    uptimeSeconds: number;
+    nodeVersion: string;
+    environment: string;
+    memoryUsageMb: number;
+  };
+}
+

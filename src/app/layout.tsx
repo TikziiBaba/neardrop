@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/layout/Navbar";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "NearDrop — Share files. Simply.",
@@ -33,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className="dark scroll-smooth" suppressHydrationWarning>
-      <body className={`${inter.className} min-h-screen bg-background text-foreground antialiased`}>
+      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Navbar />

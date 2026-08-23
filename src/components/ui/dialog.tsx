@@ -84,3 +84,66 @@ export function Dialog({
     </AnimatePresence>
   );
 }
+
+export function DialogContent({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={cn("space-y-4", className)}>{children}</div>;
+}
+
+export function DialogHeader({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <div className={cn("space-y-1.5 text-left", className)}>{children}</div>;
+}
+
+export function DialogTitle({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <h3 className={cn("text-base font-semibold leading-none tracking-tight text-white", className)}>
+      {children}
+    </h3>
+  );
+}
+
+export function DialogDescription({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <p className={cn("text-xs text-zinc-400", className)}>{children}</p>;
+}
+
+export function DialogFooter({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-3 border-t border-zinc-800/80",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}

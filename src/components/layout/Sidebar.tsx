@@ -15,6 +15,7 @@ import {
   LogOut,
   UploadCloud,
   ChevronRight,
+  ShieldCheck,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { useStorage } from "@/lib/storage/store";
@@ -87,6 +88,27 @@ export const Sidebar: React.FC = () => {
           <div className="pt-3 pb-1">
             <div className="h-[1px] bg-zinc-800/80" />
           </div>
+
+          <Link
+            href="/admin"
+            className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+              pathname.startsWith("/admin")
+                ? "bg-purple-950/40 text-purple-300 border border-purple-500/30 font-semibold shadow-sm"
+                : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <ShieldCheck
+                className={`h-4 w-4 transition-colors ${
+                  pathname.startsWith("/admin") ? "text-purple-400" : "text-zinc-400 group-hover:text-purple-400"
+                }`}
+              />
+              <span>Admin Panel</span>
+            </div>
+            <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-purple-400">
+              Admin
+            </span>
+          </Link>
 
           <Link
             href="/settings"

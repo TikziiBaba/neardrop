@@ -6,10 +6,13 @@ import { StorageProvider } from "@/lib/storage/store";
 import { LanguageProvider } from "@/lib/i18n/context";
 import { Toaster } from "sonner";
 
+import { DeviceTracker } from "@/components/auth/DeviceTracker";
+
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <LanguageProvider>
       <AuthProvider>
+        <DeviceTracker />
         <StorageProvider>
           {children}
           <Toaster
