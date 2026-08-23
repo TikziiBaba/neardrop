@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Helper: fetch profile from Supabase and build UserProfile
   const fetchProfile = useCallback(
-    async (userId: string, email: string): Promise<UserProfile | null> => {
+    async (userId: string, email: string, userMetadata?: any): Promise<UserProfile | null> => {
       if (!supabase) return null;
       const { data: profile } = await supabase
         .from("profiles")
@@ -64,6 +64,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq("id", userId)
         .single();
 
+      const meta = userMetadata || {};
+      const displayName = profile?.display_name || meta.full_name || meta.user_name || meta.name || email.split("@")[0] || "User";
+      const avatarUrl = profile?.avatar_url || meta.avatar_url || meta.picture || "";
       const quotaBytes = profile?.quota_bytes || 10737418240; // 10 GB default
       const role = determineRole(email, profile?.role);
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
@@ -72,8 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return {
           id: profile.id,
           email: profile.email || email,
-          displayName: profile.display_name || email.split("@")[0] || "User",
-          avatarUrl: profile.avatar_url,
+          displayName: profile.display_name || displayName,
+          avatarUrl: profile.avatar_url || avatarUrl,
           quotaBytes,
           usedBytes: profile.used_bytes || 0,
           role,
@@ -86,10 +89,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
 
+      // Auto-insert if profile row doesn't exist yet
+      try {
+        await supabase.from("profiles").insert({
+          id: userId,
+          email,
+          display_name: displayName,
+          avatar_url: avatarUrl,
+          quota_bytes: quotaBytes,
+          used_bytes: 0,
+          role: role || "member",
+          subscription_tier: subscriptionTier || "free",
+          subscription_status: "active",
+        });
+      } catch (e) {
+        console.warn("Could not auto-insert profile row:", e);
+      }
+
       return {
         id: userId,
         email,
-        displayName: email.split("@")[0] || "User",
+        displayName,
+        avatarUrl,
         quotaBytes,
         usedBytes: 0,
         role,
@@ -115,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: { session },
         } = await supabase.auth.getSession();
         if (session?.user) {
-          const profile = await fetchProfile(session.user.id, session.user.email || "");
+          const profile = await fetchProfile(session.user.id, session.user.email || "", session.user.user_metadata);
           setUser(profile);
         }
       } catch (err) {
@@ -131,12 +152,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        const profile = await fetchProfile(session.user.id, session.user.email || "");
+        const profile = await fetchProfile(session.user.id, session.user.email || "", session.user.user_metadata);
         setUser(profile);
       } else if (event === "SIGNED_OUT") {
         setUser(null);
       } else if (event === "TOKEN_REFRESHED" && session?.user) {
-        const profile = await fetchProfile(session.user.id, session.user.email || "");
+        const profile = await fetchProfile(session.user.id, session.user.email || "", session.user.user_metadata);
         setUser(profile);
       }
     });
