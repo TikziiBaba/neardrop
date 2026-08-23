@@ -204,13 +204,24 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
     const devInfo = userLatestDeviceMap[p.id];
     const quota = Number(p.quota_bytes || 10737418240);
     const tier = quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free";
-    const role = idx === 0 || p.email.includes("admin") || p.email.includes("bekir")
-      ? "admin"
-      : p.email.includes("mod") || p.email.includes("support")
-      ? "moderator"
-      : tier !== "free"
-      ? "premium"
-      : "member";
+    const envAdmins = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
+      .toLowerCase()
+      .split(",")
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    const role =
+      p.role === "admin" ||
+      idx === 0 ||
+      envAdmins.includes(p.email.toLowerCase()) ||
+      p.email.includes("admin") ||
+      p.email.includes("bekir")
+        ? "admin"
+        : p.role === "moderator" || p.email.includes("mod") || p.email.includes("support")
+        ? "moderator"
+        : tier !== "free" || p.role === "premium"
+        ? "premium"
+        : "member";
 
     return {
       id: p.id,

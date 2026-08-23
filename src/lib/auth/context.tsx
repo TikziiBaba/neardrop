@@ -28,7 +28,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return dbRole as UserRole;
     }
     const lower = email.toLowerCase();
-    if (lower.includes("admin") || lower.includes("bekir")) {
+    const envAdmins = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
+      .toLowerCase()
+      .split(",")
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    if (envAdmins.includes(lower) || lower.includes("admin") || lower.includes("bekir")) {
       return "admin";
     }
     if (lower.includes("mod") || lower.includes("support") || lower.includes("yetkili")) {
