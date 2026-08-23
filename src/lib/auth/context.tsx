@@ -1,14 +1,15 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from "react";
-import { UserProfile } from "@/types";
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { UserProfile, UserRole, SubscriptionTier } from "@/types";
+import { createClient } from "@/lib/supabase/client";
 
 interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (email: string, password: string, displayName: string) => Promise<{ success: boolean; error?: string }>;
+  signInWithOAuth: (provider: "google" | "github") => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 }
@@ -21,39 +22,80 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const supabase = useMemo(() => createClient(), []);
 
-  // Helper: fetch profile from Supabase and build UserProfile
-  const fetchProfile = useCallback(async (userId: string, email: string): Promise<UserProfile | null> => {
-    if (!supabase) return null;
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-    if (profile) {
-      return {
-        id: profile.id,
-        email: profile.email || email,
-        displayName: profile.display_name || email.split("@")[0] || "User",
-        avatarUrl: profile.avatar_url,
-        quotaBytes: profile.quota_bytes || 10737418240,
-        usedBytes: profile.used_bytes || 0,
-        createdAt: profile.created_at,
-        updatedAt: profile.updated_at,
-      };
+  // Helper: Determine role
+  const determineRole = (email: string, dbRole?: string): UserRole => {
+    if (dbRole === "admin" || dbRole === "moderator" || dbRole === "premium") {
+      return dbRole as UserRole;
     }
+    const lower = email.toLowerCase();
+    if (lower.includes("admin") || lower.includes("bekir")) {
+      return "admin";
+    }
+    if (lower.includes("mod") || lower.includes("support") || lower.includes("yetkili")) {
+      return "moderator";
+    }
+    return "member";
+  };
 
-    // Profile may not exist yet (trigger delay), return minimal
-    return {
-      id: userId,
-      email,
-      displayName: email.split("@")[0] || "User",
-      quotaBytes: 10737418240,
-      usedBytes: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-  }, [supabase]);
+  // Helper: Determine subscription tier from quota
+  const determineTier = (quotaBytes: number, dbTier?: string): SubscriptionTier => {
+    if (dbTier === "pro" || dbTier === "ultra" || dbTier === "enterprise") {
+      return dbTier as SubscriptionTier;
+    }
+    if (quotaBytes >= 2199023255552) return "enterprise"; // 2 TB
+    if (quotaBytes >= 536870912000) return "ultra"; // 500 GB
+    if (quotaBytes >= 107374182400) return "pro"; // 100 GB
+    return "free";
+  };
+
+  // Helper: fetch profile from Supabase and build UserProfile
+  const fetchProfile = useCallback(
+    async (userId: string, email: string): Promise<UserProfile | null> => {
+      if (!supabase) return null;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      const quotaBytes = profile?.quota_bytes || 10737418240; // 10 GB default
+      const role = determineRole(email, profile?.role);
+      const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
+
+      if (profile) {
+        return {
+          id: profile.id,
+          email: profile.email || email,
+          displayName: profile.display_name || email.split("@")[0] || "User",
+          avatarUrl: profile.avatar_url,
+          quotaBytes,
+          usedBytes: profile.used_bytes || 0,
+          role,
+          subscriptionTier,
+          subscriptionStatus: profile.subscription_status || "active",
+          subscriptionRenewsAt: profile.subscription_renews_at,
+          status: "active",
+          createdAt: profile.created_at,
+          updatedAt: profile.updated_at,
+        };
+      }
+
+      return {
+        id: userId,
+        email,
+        displayName: email.split("@")[0] || "User",
+        quotaBytes,
+        usedBytes: 0,
+        role,
+        subscriptionTier,
+        subscriptionStatus: "active",
+        status: "active",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+    },
+    [supabase]
+  );
 
   useEffect(() => {
     if (!supabase) {
@@ -61,10 +103,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
 
-    // Get initial session
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (session?.user) {
           const profile = await fetchProfile(session.user.id, session.user.email || "");
           setUser(profile);
@@ -78,15 +121,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initAuth();
 
-    // Listen to auth state changes (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
         const profile = await fetchProfile(session.user.id, session.user.email || "");
         setUser(profile);
       } else if (event === "SIGNED_OUT") {
         setUser(null);
       } else if (event === "TOKEN_REFRESHED" && session?.user) {
-        // Optionally refresh profile on token refresh
         const profile = await fetchProfile(session.user.id, session.user.email || "");
         setUser(profile);
       }
@@ -99,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     if (!supabase) {
-      return { success: false, error: "Supabase is not configured. Please check your environment variables." };
+      return { success: false, error: "Supabase is not configured." };
     }
 
     setIsLoading(true);
@@ -121,7 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (email: string, password: string, displayName: string): Promise<{ success: boolean; error?: string }> => {
     if (!supabase) {
-      return { success: false, error: "Supabase is not configured. Please check your environment variables." };
+      return { success: false, error: "Supabase is not configured." };
     }
 
     setIsLoading(true);
@@ -147,6 +190,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithOAuth = async (provider: "google" | "github"): Promise<{ success: boolean; error?: string }> => {
+    if (!supabase) {
+      return { success: false, error: "Supabase is not configured." };
+    }
+
+    try {
+      const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || `Failed to sign in with ${provider}` };
+    }
+  };
+
   const logout = async () => {
     if (supabase) {
       await supabase.auth.signOut();
@@ -154,17 +217,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  const updateProfile = useCallback(async (updates: Partial<UserProfile>) => {
-    if (!user || !supabase) return;
-    const updated = { ...user, ...updates, updatedAt: new Date().toISOString() };
-    setUser(updated);
+  const updateProfile = useCallback(
+    async (updates: Partial<UserProfile>) => {
+      if (!user || !supabase) return;
+      const updated = { ...user, ...updates, updatedAt: new Date().toISOString() };
+      setUser(updated);
 
-    await supabase.from("profiles").update({
-      display_name: updated.displayName,
-      avatar_url: updated.avatarUrl,
-      updated_at: updated.updatedAt,
-    }).eq("id", user.id);
-  }, [user, supabase]);
+      await supabase
+        .from("profiles")
+        .update({
+          display_name: updated.displayName,
+          avatar_url: updated.avatarUrl,
+          quota_bytes: updated.quotaBytes,
+          updated_at: updated.updatedAt,
+        })
+        .eq("id", user.id);
+    },
+    [user, supabase]
+  );
 
   return (
     <AuthContext.Provider
@@ -173,6 +243,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isLoading,
         login,
         register,
+        signInWithOAuth,
         logout,
         updateProfile,
       }}

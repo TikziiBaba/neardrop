@@ -57,8 +57,11 @@ export const Navbar: React.FC = () => {
               <Link href="/#security" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
                 {t.navbar.security}
               </Link>
-              <Link href="/#faq" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                {t.navbar.faq}
+              <Link href="/pricing" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+                Pricing
+              </Link>
+              <Link href="/support" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+                Support
               </Link>
             </>
           ) : (
@@ -96,12 +99,20 @@ export const Navbar: React.FC = () => {
                 {t.navbar.transfers}
               </Link>
               <Link
-                href="/storage"
+                href="/pricing"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname === "/storage" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  pathname === "/pricing" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                {t.navbar.storage}
+                Pricing
+              </Link>
+              <Link
+                href="/support"
+                className={`px-3.5 py-2 rounded-lg transition-colors ${
+                  pathname.startsWith("/support") ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                }`}
+              >
+                Support
               </Link>
             </>
           )}
@@ -267,11 +278,11 @@ export const Navbar: React.FC = () => {
               <Link href="/shared" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
                 {t.navbar.sharedLinks}
               </Link>
-              <Link href="/transfers" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                {t.navbar.transfers}
+              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Pricing
               </Link>
-              <Link href="/storage" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                {t.navbar.storage}
+              <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                Support
               </Link>
               <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
                 {t.navbar.settings}

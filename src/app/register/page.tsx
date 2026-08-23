@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Sparkles, User, Mail, Lock, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Sparkles, User, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register } = useAuth();
+  const { register, signInWithOAuth } = useAuth();
   const { t } = useLanguage();
 
   const [displayName, setDisplayName] = useState("");
@@ -20,6 +20,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,6 +58,20 @@ export default function RegisterPage() {
     }
   };
 
+  const handleSocialLogin = async (provider: "google" | "github") => {
+    setIsSocialLoading(provider);
+    try {
+      const res = await signInWithOAuth(provider);
+      if (!res.success) {
+        toast.error(res.error || `Failed to sign up with ${provider}`);
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Social registration error");
+    } finally {
+      setIsSocialLoading(null);
+    }
+  };
+
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8">
       {/* Glow background */}
@@ -72,9 +87,7 @@ export default function RegisterPage() {
             <span className="text-lg font-bold text-white tracking-tight">NearDrop</span>
           </Link>
           <h1 className="text-2xl font-bold tracking-tight text-white">{t.register.createAccount}</h1>
-          <p className="text-xs text-zinc-400">
-            {t.register.subtitle}
-          </p>
+          <p className="text-xs text-zinc-400">{t.register.subtitle}</p>
         </div>
 
         {/* Register Box */}
@@ -86,7 +99,57 @@ export default function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          {/* Social Logins */}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => handleSocialLogin("google")}
+              disabled={Boolean(isSocialLoading)}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800/60 hover:text-white transition-all shadow-sm group"
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24">
+                <path
+                  fill="#EA4335"
+                  d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.4l3.7 2.9C6.5 7.4 9 5 12 5z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.6 14.7c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.2C.7 9.6 0 12.2 0 15s.7 5.4 1.9 7.8l3.7-2.9z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.2 7.5 23 12 23z"
+                />
+              </svg>
+              <span>{isSocialLoading === "google" ? "Connecting..." : "Google"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSocialLogin("github")}
+              disabled={Boolean(isSocialLoading)}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800/60 hover:text-white transition-all shadow-sm group"
+            >
+              <svg className="h-4 w-4 fill-current text-white" viewBox="0 0 24 24">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              <span>{isSocialLoading === "github" ? "Connecting..." : "GitHub"}</span>
+            </button>
+          </div>
+
+          {/* Divider */}
+          <div className="relative flex items-center justify-center">
+            <div className="w-full border-t border-zinc-800" />
+            <span className="absolute bg-zinc-900 px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+              or register with email
+            </span>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-300">{t.register.displayNameLabel}</label>
               <div className="relative">
@@ -96,7 +159,7 @@ export default function RegisterPage() {
                   placeholder={t.register.displayNamePlaceholder}
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-xl"
                   required
                 />
               </div>
@@ -111,7 +174,7 @@ export default function RegisterPage() {
                   placeholder={t.register.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-xl"
                   required
                 />
               </div>
@@ -126,7 +189,7 @@ export default function RegisterPage() {
                   placeholder={t.register.passwordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-xl"
                   required
                 />
               </div>
@@ -141,7 +204,7 @@ export default function RegisterPage() {
                   placeholder={t.register.confirmPasswordPlaceholder}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 rounded-xl"
                   required
                 />
               </div>
@@ -151,7 +214,7 @@ export default function RegisterPage() {
               type="submit"
               variant="primary"
               disabled={isLoading}
-              className="w-full gap-2 py-2.5 shadow-lg shadow-sky-500/25 mt-2"
+              className="w-full gap-2 py-2.5 shadow-lg shadow-sky-500/25 mt-2 rounded-xl"
             >
               <span>{isLoading ? t.register.creatingAccount : t.register.createButton}</span>
               <ArrowRight className="h-4 w-4" />

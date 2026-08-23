@@ -32,6 +32,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const navItems = [
     { label: "Overview", href: "/admin", icon: LayoutDashboard },
     { label: "User Accounts", href: "/admin/users", icon: Users },
+    { label: "Support Tickets", href: "/admin/tickets", icon: ShieldCheck },
     { label: "All Files", href: "/admin/files", icon: FolderOpen },
     { label: "Active Shares", href: "/admin/shares", icon: Share2 },
     { label: "System Health", href: "/admin/system", icon: Activity },

@@ -1,3 +1,7 @@
+export type UserRole = 'admin' | 'moderator' | 'premium' | 'member';
+export type SubscriptionTier = 'free' | 'pro' | 'ultra' | 'enterprise';
+export type SubscriptionStatus = 'active' | 'cancelled' | 'past_due' | 'trial';
+
 export interface UserDevice {
   id: string;
   userId: string;
@@ -19,7 +23,10 @@ export interface UserProfile {
   avatarUrl?: string;
   quotaBytes: number;
   usedBytes: number;
-  role?: 'admin' | 'user';
+  role: UserRole;
+  subscriptionTier: SubscriptionTier;
+  subscriptionStatus?: SubscriptionStatus;
+  subscriptionRenewsAt?: string;
   status?: 'active' | 'suspended' | 'banned';
   lastIpAddress?: string;
   lastDevice?: string;
@@ -101,6 +108,57 @@ export interface UserSettings {
   twoFactorEnabled?: boolean;
 }
 
+export interface PricingPlan {
+  id: SubscriptionTier;
+  name: string;
+  tagline: string;
+  quotaBytes: number;
+  quotaLabel: string;
+  priceMonthly: number;
+  priceYearly: number;
+  popular?: boolean;
+  badge?: string;
+  features: string[];
+}
+
+export type TicketDepartment = 'technical' | 'billing' | 'storage' | 'general';
+export type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TicketStatus = 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
+
+export interface Ticket {
+  id: string;
+  userId: string;
+  userEmail: string;
+  userName: string;
+  userRole?: UserRole;
+  title: string;
+  department: TicketDepartment;
+  priority: TicketPriority;
+  status: TicketStatus;
+  createdAt: string;
+  updatedAt: string;
+  lastReplyAt?: string;
+  messagesCount?: number;
+  assignedTo?: string;
+}
+
+export interface TicketMessage {
+  id: string;
+  ticketId: string;
+  senderId: string;
+  senderEmail: string;
+  senderName: string;
+  senderRole: UserRole;
+  message: string;
+  isStaff: boolean;
+  attachments?: {
+    filename: string;
+    url: string;
+    size?: number;
+  }[];
+  createdAt: string;
+}
+
 export interface AdminStats {
   totalUsers: number;
   activeUsers: number;
@@ -140,7 +198,7 @@ export interface AdminAuditLog {
   userId?: string;
   userEmail?: string;
   action: string;
-  resourceType: 'user' | 'file' | 'share' | 'system' | 'auth';
+  resourceType: 'user' | 'file' | 'share' | 'system' | 'auth' | 'ticket' | 'billing';
   resourceId?: string;
   details: string;
   ipAddress?: string;
@@ -170,4 +228,3 @@ export interface SystemHealth {
     memoryUsageMb: number;
   };
 }
-

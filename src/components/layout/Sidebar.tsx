@@ -13,9 +13,10 @@ import {
   Settings,
   Sparkles,
   LogOut,
-  UploadCloud,
-  ChevronRight,
   ShieldCheck,
+  LifeBuoy,
+  CreditCard,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { useStorage } from "@/lib/storage/store";
@@ -33,9 +34,12 @@ export const Sidebar: React.FC = () => {
     { label: "Shared", href: "/shared", icon: Share2, badge: stats.sharedCount },
     { label: "Transfers", href: "/transfers", icon: ArrowLeftRight },
     { label: "Storage", href: "/storage", icon: HardDrive },
+    { label: "Support & Help", href: "/support", icon: LifeBuoy },
+    { label: "Pricing & Plans", href: "/pricing", icon: Sparkles },
   ];
 
-  const quotaPercent = Math.round((stats.usedBytes / stats.quotaBytes) * 100) || 0;
+  const quotaPercent = Math.round((stats.usedBytes / (stats.quotaBytes || 1)) * 100) || 0;
+  const isStaffOrAdmin = user?.role === "admin" || user?.role === "moderator";
 
   return (
     <aside className="hidden lg:flex w-64 flex-col justify-between border-r border-zinc-800/80 bg-zinc-950/60 p-4 backdrop-blur-xl">
@@ -64,15 +68,17 @@ export const Sidebar: React.FC = () => {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${isActive
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                  isActive
                     ? "bg-zinc-800 text-white shadow-sm font-semibold"
                     : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/80"
-                  }`}
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`h-4 w-4 transition-colors ${isActive ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
-                      }`}
+                    className={`h-4 w-4 transition-colors ${
+                      isActive ? "text-purple-400" : "text-zinc-400 group-hover:text-zinc-200"
+                    }`}
                   />
                   <span>{item.label}</span>
                 </div>
@@ -85,41 +91,47 @@ export const Sidebar: React.FC = () => {
             );
           })}
 
-          <div className="pt-3 pb-1">
-            <div className="h-[1px] bg-zinc-800/80" />
-          </div>
+          {isStaffOrAdmin && (
+            <>
+              <div className="pt-3 pb-1">
+                <div className="h-[1px] bg-zinc-800/80" />
+              </div>
 
-          <Link
-            href="/admin"
-            className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-              pathname.startsWith("/admin")
-                ? "bg-purple-950/40 text-purple-300 border border-purple-500/30 font-semibold shadow-sm"
-                : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <ShieldCheck
-                className={`h-4 w-4 transition-colors ${
-                  pathname.startsWith("/admin") ? "text-purple-400" : "text-zinc-400 group-hover:text-purple-400"
+              <Link
+                href="/admin"
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                  pathname.startsWith("/admin")
+                    ? "bg-purple-950/40 text-purple-300 border border-purple-500/30 font-semibold shadow-sm"
+                    : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
                 }`}
-              />
-              <span>Admin Panel</span>
-            </div>
-            <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-purple-400">
-              Admin
-            </span>
-          </Link>
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldCheck
+                    className={`h-4 w-4 transition-colors ${
+                      pathname.startsWith("/admin") ? "text-purple-400" : "text-zinc-400 group-hover:text-purple-400"
+                    }`}
+                  />
+                  <span>Admin Panel</span>
+                </div>
+                <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-purple-400">
+                  {user?.role === "admin" ? "Admin" : "Staff"}
+                </span>
+              </Link>
+            </>
+          )}
 
           <Link
             href="/settings"
-            className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${pathname === "/settings"
+            className={`group flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+              pathname === "/settings"
                 ? "bg-zinc-800 text-white shadow-sm font-semibold"
                 : "text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900/80"
-              }`}
+            }`}
           >
             <Settings
-              className={`h-4 w-4 transition-colors ${pathname === "/settings" ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
-                }`}
+              className={`h-4 w-4 transition-colors ${
+                pathname === "/settings" ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
+              }`}
             />
             <span>Settings</span>
           </Link>
@@ -134,10 +146,10 @@ export const Sidebar: React.FC = () => {
             <span className="font-semibold text-zinc-200">Cloud Storage</span>
             <span className="text-[11px] text-sky-400 font-medium">{quotaPercent}%</span>
           </div>
-          <Progress value={stats.usedBytes} max={stats.quotaBytes} />
+          <Progress value={stats.usedBytes} max={stats.quotaBytes || 10737418240} />
           <div className="flex items-center justify-between text-[10px] text-zinc-400">
-            <span>{formatBytes(stats.usedBytes)} used</span>
-            <span>{formatBytes(stats.quotaBytes)}</span>
+            <span>{formatBytes(stats.usedBytes)}</span>
+            <span>{formatBytes(stats.quotaBytes || 10737418240)}</span>
           </div>
         </div>
 
@@ -146,12 +158,27 @@ export const Sidebar: React.FC = () => {
           <div className="flex items-center justify-between rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-2.5">
             <div className="flex items-center gap-2.5 min-w-0">
               <img
-                src={user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
+                src={
+                  user.avatarUrl ||
+                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                }
                 alt={user.displayName}
                 className="h-8 w-8 rounded-full object-cover ring-1 ring-sky-500/30 flex-shrink-0"
               />
               <div className="truncate">
-                <p className="text-xs font-semibold text-white truncate">{user.displayName}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-semibold text-white truncate">{user.displayName}</p>
+                  {user.role === "admin" && (
+                    <span className="rounded bg-purple-500/20 px-1 py-0.2 text-[9px] font-bold text-purple-400">
+                      ADMIN
+                    </span>
+                  )}
+                  {user.role === "premium" && (
+                    <span className="rounded bg-emerald-500/20 px-1 py-0.2 text-[9px] font-bold text-emerald-400">
+                      PRO
+                    </span>
+                  )}
+                </div>
                 <p className="text-[10px] text-zinc-400 truncate">{user.email}</p>
               </div>
             </div>

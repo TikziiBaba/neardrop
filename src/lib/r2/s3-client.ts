@@ -61,6 +61,24 @@ export async function createPresignedDownloadUrl(
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
 }
 
+export async function uploadR2Buffer(
+  r2ObjectKey: string,
+  buffer: Buffer,
+  contentType: string
+) {
+  const s3 = getR2Client();
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+
+  const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: r2ObjectKey,
+    Body: buffer,
+    ContentType: contentType || "image/png",
+  });
+
+  return await s3.send(command);
+}
+
 export async function deleteR2Object(r2ObjectKey: string) {
   const s3 = getR2Client();
   const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";

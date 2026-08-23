@@ -202,14 +202,26 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
 
   return profiles.map((p, idx) => {
     const devInfo = userLatestDeviceMap[p.id];
+    const quota = Number(p.quota_bytes || 10737418240);
+    const tier = quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free";
+    const role = idx === 0 || p.email.includes("admin") || p.email.includes("bekir")
+      ? "admin"
+      : p.email.includes("mod") || p.email.includes("support")
+      ? "moderator"
+      : tier !== "free"
+      ? "premium"
+      : "member";
+
     return {
       id: p.id,
       email: p.email,
       displayName: p.display_name || p.email.split("@")[0] || "User",
       avatarUrl: p.avatar_url,
-      quotaBytes: Number(p.quota_bytes || 10737418240),
+      quotaBytes: quota,
       usedBytes: userRealUsageMap[p.id] || Number(p.used_bytes || 0),
-      role: idx === 0 ? "admin" : (p.email.includes("admin") || p.email.includes("bekir") ? "admin" : "user"),
+      role,
+      subscriptionTier: tier,
+      subscriptionStatus: "active",
       status: "active",
       lastIpAddress: devInfo?.ipAddress || "127.0.0.1",
       lastDevice: devInfo?.deviceName || "Desktop Web",
@@ -430,15 +442,26 @@ export async function fetchUserFullDetail(userId: string) {
   const devices = dRes.data || [];
 
   const actualUsedBytes = files.reduce((acc, f) => acc + f.size, 0);
+  const quota = Number(profile.quota_bytes || 10737418240);
+  const tier = quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free";
+  const role = profile.email.includes("admin") || profile.email.includes("bekir")
+    ? "admin"
+    : profile.email.includes("mod") || profile.email.includes("support")
+    ? "moderator"
+    : tier !== "free"
+    ? "premium"
+    : "member";
 
   const user: AdminUser = {
     id: profile.id,
     email: profile.email,
     displayName: profile.display_name || profile.email.split("@")[0],
     avatarUrl: profile.avatar_url,
-    quotaBytes: Number(profile.quota_bytes || 10737418240),
+    quotaBytes: quota,
     usedBytes: actualUsedBytes || Number(profile.used_bytes || 0),
-    role: profile.email.includes("admin") || profile.email.includes("bekir") ? "admin" : "user",
+    role,
+    subscriptionTier: tier,
+    subscriptionStatus: "active",
     status: "active",
     createdAt: profile.created_at,
     updatedAt: profile.updated_at,
