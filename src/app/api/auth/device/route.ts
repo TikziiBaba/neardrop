@@ -43,34 +43,59 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (existingDevice) {
-      // Update existing device with new IP, browser, and last_seen
-      await supabase
-        .from("devices")
-        .update({
+      try {
+        await supabase
+          .from("devices")
+          .update({
+            device_name: deviceName || "Unknown Device",
+            device_type: deviceType || "desktop",
+            platform: platform || "windows",
+            ip_address: clientIp,
+            browser: detectedBrowser,
+            user_agent: rawUserAgent,
+            last_seen: now,
+            updated_at: now,
+          })
+          .eq("id", existingDevice.id);
+      } catch {
+        // Fallback for older schema without ip_address/browser columns
+        await supabase
+          .from("devices")
+          .update({
+            device_name: deviceName || "Unknown Device",
+            device_type: deviceType || "desktop",
+            platform: platform || "windows",
+            last_seen: now,
+            updated_at: now,
+          })
+          .eq("id", existingDevice.id);
+      }
+    } else {
+      try {
+        await supabase.from("devices").insert({
+          user_id: userId,
+          device_id: deviceId,
           device_name: deviceName || "Unknown Device",
           device_type: deviceType || "desktop",
           platform: platform || "windows",
           ip_address: clientIp,
           browser: detectedBrowser,
           user_agent: rawUserAgent,
+          public_key: `pk_${deviceId.substring(0, 16)}`,
           last_seen: now,
-          updated_at: now,
-        })
-        .eq("id", existingDevice.id);
-    } else {
-      // Insert new device
-      await supabase.from("devices").insert({
-        user_id: userId,
-        device_id: deviceId,
-        device_name: deviceName || "Unknown Device",
-        device_type: deviceType || "desktop",
-        platform: platform || "windows",
-        ip_address: clientIp,
-        browser: detectedBrowser,
-        user_agent: rawUserAgent,
-        public_key: `pk_${deviceId.substring(0, 16)}`,
-        last_seen: now,
-      });
+        });
+      } catch {
+        // Fallback for older schema
+        await supabase.from("devices").insert({
+          user_id: userId,
+          device_id: deviceId,
+          device_name: deviceName || "Unknown Device",
+          device_type: deviceType || "desktop",
+          platform: platform || "windows",
+          public_key: `pk_${deviceId.substring(0, 16)}`,
+          last_seen: now,
+        });
+      }
     }
 
     // 2. Sync to profiles table for fast admin user directory rendering

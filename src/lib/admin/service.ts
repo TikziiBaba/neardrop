@@ -281,14 +281,37 @@ export async function updateAdminUser(
   if (updates.displayName !== undefined) updatePayload.display_name = updates.displayName;
   if (updates.notes !== undefined) updatePayload.notes = updates.notes;
 
-  const { data, error } = await supabase
+  // Attempt update with all fields
+  let { data, error } = await supabase
     .from("profiles")
     .update(updatePayload)
     .eq("id", userId)
     .select()
     .single();
 
-  if (error) throw error;
+  // If column error occurs (e.g. schema cache or migration not yet executed for notes/status), retry with base fields
+  if (error && error.message && error.message.includes("column")) {
+    console.warn("Retrying profile update without extended columns due to schema cache:", error.message);
+    const basePayload: Record<string, any> = {
+      updated_at: new Date().toISOString(),
+    };
+    if (updates.role !== undefined) basePayload.role = updates.role;
+    if (updates.subscriptionTier !== undefined) basePayload.subscription_tier = updates.subscriptionTier;
+    if (updates.quotaBytes !== undefined) basePayload.quota_bytes = Number(updates.quotaBytes);
+    if (updates.displayName !== undefined) basePayload.display_name = updates.displayName;
+
+    const retryRes = await supabase
+      .from("profiles")
+      .update(basePayload)
+      .eq("id", userId)
+      .select()
+      .single();
+
+    if (retryRes.error) throw retryRes.error;
+    data = retryRes.data;
+  } else if (error) {
+    throw error;
+  }
 
   logAdminAction({
     action: "UPDATE_USER",
