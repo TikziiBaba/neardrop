@@ -2,8 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sparkles, Shield, Lock, HardDrive, Heart } from "lucide-react";
+import { Shield, Lock, HardDrive, Heart } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
+import { Logo } from "@/components/ui/Logo";
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
@@ -14,12 +15,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
           {/* Brand Info */}
           <div className="md:col-span-2 space-y-4">
-            <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 text-white shadow-md shadow-sky-500/20">
-                <Sparkles className="h-4 w-4" />
-              </div>
-              <span className="text-lg font-bold tracking-tight text-white">NearDrop</span>
-            </Link>
+            <Logo size="md" badge="" />
             <p className="text-xs text-zinc-400 max-w-sm leading-relaxed">
               {t.footer.description}
             </p>
@@ -90,24 +86,24 @@ export const Footer: React.FC = () => {
             <h4 className="text-xs font-semibold text-white uppercase tracking-wider mb-3">{t.footer.privacyTitle}</h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <span className="hover:text-zinc-200 transition-colors cursor-pointer">
+                <Link href="/privacy" className="hover:text-zinc-200 transition-colors">
                   {t.footer.privacyPolicy}
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="hover:text-zinc-200 transition-colors cursor-pointer">
+                <Link href="/terms" className="hover:text-zinc-200 transition-colors">
                   {t.footer.termsOfService}
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="hover:text-zinc-200 transition-colors cursor-pointer">
+                <Link href="/privacy#zero-data" className="hover:text-zinc-200 transition-colors">
                   {t.footer.zeroDataSelling}
-                </span>
+                </Link>
               </li>
               <li>
-                <span className="hover:text-zinc-200 transition-colors cursor-pointer">
+                <Link href="/privacy#security" className="hover:text-zinc-200 transition-colors">
                   {t.footer.securityDisclosures}
-                </span>
+                </Link>
               </li>
             </ul>
           </div>

@@ -22,20 +22,26 @@ import { useAuth } from "@/lib/auth/context";
 import { useStorage } from "@/lib/storage/store";
 import { formatBytes } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { Logo } from "@/components/ui/Logo";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { stats } = useStorage();
 
-  const navItems = [
+  const navItems: Array<{
+    label: string;
+    href: string;
+    icon: React.ComponentType<{ className?: string }>;
+    badge?: number;
+  }> = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "Files", href: "/files", icon: FolderOpen, badge: stats.filesCount },
-    { label: "Shared", href: "/shared", icon: Share2, badge: stats.sharedCount },
-    { label: "Transfers", href: "/transfers", icon: ArrowLeftRight },
-    { label: "Storage", href: "/storage", icon: HardDrive },
-    { label: "Support & Help", href: "/support", icon: LifeBuoy },
-    { label: "Pricing & Plans", href: "/pricing", icon: Sparkles },
+    { label: "Direct Transfers", href: "/transfers", icon: ArrowLeftRight },
+    { label: "Shared Links", href: "/shared", icon: Share2, badge: stats.sharedCount },
+    { label: "Pricing & Plans", href: "/pricing", icon: CreditCard },
+    { label: "Support", href: "/support", icon: LifeBuoy },
+    { label: "Settings", href: "/settings", icon: Settings },
   ];
 
   const quotaPercent = Math.round((stats.usedBytes / (stats.quotaBytes || 1)) * 100) || 0;
@@ -46,17 +52,9 @@ export const Sidebar: React.FC = () => {
       {/* Brand & Nav */}
       <div className="space-y-6">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2.5 px-2 py-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 text-white shadow-md shadow-sky-500/20">
-            <Sparkles className="h-4 w-4" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
-              NearDrop
-            </span>
-            <span className="text-[10px] text-zinc-400 font-medium">Cloud File Sharing</span>
-          </div>
-        </Link>
+        <div className="px-2 py-1">
+          <Logo size="md" badge="" />
+        </div>
 
         {/* Navigation links */}
         <nav className="space-y-1">
