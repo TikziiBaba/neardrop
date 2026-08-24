@@ -22,6 +22,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -187,14 +188,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             <ThemeToggle />
             {user && (
               <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 p-1 pr-3">
-                <img
-                  src={
-                    user.avatarUrl ||
-                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                  }
-                  alt={user.displayName}
-                  className="h-6 w-6 rounded-full object-cover ring-1 ring-purple-500/40"
-                />
+                <UserAvatar user={user} size="sm" className="ring-1 ring-purple-500/40" />
                 <span className="text-xs font-semibold text-zinc-200">{user.displayName}</span>
               </div>
             )}

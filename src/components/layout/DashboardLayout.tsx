@@ -18,6 +18,7 @@ import {
   Sparkles,
   Loader2,
 } from "lucide-react";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
@@ -103,11 +104,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
             {user && (
               <Link href="/settings" className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 p-1 pr-2.5 hover:border-zinc-700 transition-colors">
-                <img
-                  src={user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
-                  alt={user.displayName}
-                  className="h-6 w-6 rounded-full object-cover ring-1 ring-sky-500/40"
-                />
+                <UserAvatar user={user} size="sm" className="ring-1 ring-sky-500/40" />
                 <span className="hidden sm:inline text-xs font-medium text-zinc-200">{user.displayName}</span>
               </Link>
             )}

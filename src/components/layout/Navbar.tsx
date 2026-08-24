@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/Logo";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -133,11 +134,7 @@ export const Navbar: React.FC = () => {
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                 className="flex items-center gap-2.5 rounded-full border border-zinc-800 bg-zinc-900/80 p-1 pr-3 hover:border-zinc-700 transition-all"
               >
-                <img
-                  src={user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
-                  alt={user.displayName}
-                  className="h-7 w-7 rounded-full object-cover ring-1 ring-sky-500/40"
-                />
+                <UserAvatar user={user} size="sm" className="ring-1 ring-sky-500/40" />
                 <span className="text-xs font-semibold text-zinc-200">{user.displayName}</span>
               </button>
 
@@ -232,11 +229,7 @@ export const Navbar: React.FC = () => {
           ) : (
             <div className="flex flex-col gap-2 text-sm font-medium text-zinc-300">
               <div className="flex items-center gap-3 p-2 rounded-xl bg-zinc-900/80 mb-1 border border-zinc-800">
-                <img
-                  src={user.avatarUrl || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"}
-                  alt={user.displayName}
-                  className="h-8 w-8 rounded-full object-cover"
-                />
+                <UserAvatar user={user} size="sm" />
                 <div className="truncate">
                   <p className="font-semibold text-xs text-white">{user.displayName}</p>
                   <p className="text-[10px] text-zinc-400 truncate">{user.email}</p>

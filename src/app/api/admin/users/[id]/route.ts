@@ -32,22 +32,23 @@ export async function PATCH(
   try {
     const userId = params.id;
     const body = await req.json();
-    const { quotaBytes, displayName, role, status } = body;
+    const { quotaBytes, displayName, role, status, subscriptionTier, notes } = body;
 
     if (!userId) {
       return NextResponse.json({ success: false, error: "Missing user ID" }, { status: 400 });
     }
 
-    if (quotaBytes !== undefined) {
-      await updateUserStorageQuota(userId, Number(quotaBytes));
-    }
+    const { updateAdminUser } = await import("@/lib/admin/service");
+    const updated = await updateAdminUser(userId, {
+      role,
+      subscriptionTier,
+      quotaBytes,
+      status,
+      displayName,
+      notes,
+    });
 
-    if (displayName) {
-      const supabase = getServiceClient();
-      await supabase.from("profiles").update({ display_name: displayName }).eq("id", userId);
-    }
-
-    return NextResponse.json({ success: true, message: "User updated successfully" });
+    return NextResponse.json({ success: true, message: "User updated successfully", user: updated });
   } catch (error: any) {
     console.error("Admin user detail PATCH error:", error);
     return NextResponse.json(

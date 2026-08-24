@@ -5,7 +5,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { AdminUser, CloudFile, ShareLink } from "@/types";
+import { UserAvatar } from "@/components/ui/UserAvatar";
+import { AdminUser, CloudFile, ShareLink, UserRole, SubscriptionTier } from "@/types";
 import { formatBytes, formatRelativeTime, formatExpiresIn, getFileCategory } from "@/lib/utils";
 import {
   Users,
@@ -37,6 +38,11 @@ import {
   Globe,
   Wifi,
   Radio,
+  Zap,
+  UserCheck,
+  Ban,
+  Activity,
+  Edit3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +60,15 @@ export default function UserDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"files" | "shares" | "devices">("files");
 
+  // Account Control State
+  const [editRole, setEditRole] = useState<UserRole>("member");
+  const [editTier, setEditTier] = useState<SubscriptionTier>("free");
+  const [editStatus, setEditStatus] = useState<"active" | "suspended" | "banned">("active");
+  const [editDisplayName, setEditDisplayName] = useState<string>("");
+  const [editQuotaGb, setEditQuotaGb] = useState<number>(10);
+  const [editNotes, setEditNotes] = useState<string>("");
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+
   // File action modals
   const [selectedFileForDelete, setSelectedFileForDelete] = useState<CloudFile | null>(null);
   const [downloadLinkModal, setDownloadLinkModal] = useState<{ url: string; filename: string } | null>(null);
@@ -61,24 +76,24 @@ export default function UserDetailPage() {
   const [copiedIp, setCopiedIp] = useState<string | null>(null);
   const [isDeletingFile, setIsDeletingFile] = useState(false);
 
-  // Quota editor
-  const [newQuotaGb, setNewQuotaGb] = useState<number>(10);
-  const [isSavingQuota, setIsSavingQuota] = useState(false);
-
   const fetchUserData = useCallback(async () => {
     if (!userId) return;
     try {
       setLoading(true);
       const res = await fetch(`/api/admin/users/${userId}`);
       const data = await res.json();
-      if (data.success) {
+      if (data.success && data.user) {
         setUser(data.user);
         setFiles(data.files || []);
         setShares(data.shares || []);
         setDevices(data.devices || []);
-        if (data.user?.quotaBytes) {
-          setNewQuotaGb(Math.round(data.user.quotaBytes / (1024 * 1024 * 1024)) || 10);
-        }
+
+        setEditRole(data.user.role || "member");
+        setEditTier(data.user.subscriptionTier || "free");
+        setEditStatus((data.user.status as any) || "active");
+        setEditDisplayName(data.user.displayName || "");
+        setEditQuotaGb(Math.round(data.user.quotaBytes / (1024 * 1024 * 1024)) || 10);
+        setEditNotes(data.user.notes || "");
       } else {
         toast.error(data.error || "Failed to load user profile");
       }
@@ -94,38 +109,46 @@ export default function UserDetailPage() {
     fetchUserData();
   }, [fetchUserData]);
 
-  const renderFileIcon = (file: CloudFile) => {
-    const cat = getFileCategory(file.mimeType, file.filename);
-    switch (cat) {
-      case "archive":
-        return <FileArchive className="h-4 w-4 text-amber-400" />;
-      case "image":
-        return <FileImage className="h-4 w-4 text-emerald-400" />;
-      case "video":
-        return <FileVideo className="h-4 w-4 text-purple-400" />;
-      case "audio":
-        return <FileAudio className="h-4 w-4 text-pink-400" />;
-      case "code":
-        return <FileCode className="h-4 w-4 text-cyan-400" />;
-      default:
-        return <FileText className="h-4 w-4 text-sky-400" />;
+  const handleSaveAccountChanges = async () => {
+    if (!user) return;
+    setIsSavingAccount(true);
+    try {
+      const quotaBytes = editQuotaGb * 1024 * 1024 * 1024;
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayName: editDisplayName,
+          role: editRole,
+          subscriptionTier: editTier,
+          quotaBytes,
+          status: editStatus,
+          notes: editNotes,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success("User account and permissions updated successfully!");
+        setUser({
+          ...user,
+          displayName: editDisplayName,
+          role: editRole,
+          subscriptionTier: editTier,
+          quotaBytes,
+          status: editStatus,
+          notes: editNotes,
+        });
+      } else {
+        toast.error(data.error || "Failed to update account");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update account");
+    } finally {
+      setIsSavingAccount(false);
     }
   };
 
-  const renderDeviceIcon = (platform: string, deviceType: string) => {
-    if (deviceType === "mobile" || platform === "ios" || platform === "android") {
-      return <Smartphone className="h-5 w-5 text-emerald-400" />;
-    }
-    if (deviceType === "tablet") {
-      return <Tablet className="h-5 w-5 text-sky-400" />;
-    }
-    if (platform === "macos") {
-      return <Laptop className="h-5 w-5 text-purple-400" />;
-    }
-    return <Monitor className="h-5 w-5 text-purple-400" />;
-  };
-
-  const handleGenerateDownload = async (file: CloudFile) => {
+  const handleGetDownloadLink = async (file: CloudFile) => {
     try {
       const res = await fetch("/api/admin/files", {
         method: "POST",
@@ -192,39 +215,15 @@ export default function UserDetailPage() {
     }
   };
 
-  const handleSaveQuota = async () => {
-    if (!user) return;
-    setIsSavingQuota(true);
+  const handleDisconnectDevice = async (deviceRecordId: string) => {
     try {
-      const quotaBytes = newQuotaGb * 1024 * 1024 * 1024;
-      const res = await fetch(`/api/admin/users/${userId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ quotaBytes }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`Quota updated to ${newQuotaGb} GB`);
-        setUser({ ...user, quotaBytes });
-      } else {
-        toast.error(data.error || "Failed to update quota");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update quota");
-    } finally {
-      setIsSavingQuota(false);
-    }
-  };
-
-  const handleDisconnectDevice = async (deviceId: string) => {
-    try {
-      const res = await fetch(`/api/auth/device?id=${deviceId}`, {
+      const res = await fetch(`/api/auth/device?id=${deviceRecordId}`, {
         method: "DELETE",
       });
       const data = await res.json();
       if (data.success) {
-        toast.success("Device disconnected successfully");
-        setDevices((prev) => prev.filter((d) => d.id !== deviceId));
+        toast.success("Device disconnected");
+        setDevices((prev) => prev.filter((d) => d.id !== deviceRecordId));
       } else {
         toast.error(data.error || "Failed to disconnect device");
       }
@@ -240,12 +239,39 @@ export default function UserDetailPage() {
     setTimeout(() => setCopiedIp(null), 2000);
   };
 
-  if (loading) {
+  const renderFileIcon = (file: CloudFile) => {
+    const cat = getFileCategory(file.mimeType, file.filename);
+    switch (cat) {
+      case "archive":
+        return <FileArchive className="h-4 w-4 text-amber-400" />;
+      case "image":
+        return <FileImage className="h-4 w-4 text-emerald-400" />;
+      case "video":
+        return <FileVideo className="h-4 w-4 text-purple-400" />;
+      case "audio":
+        return <FileAudio className="h-4 w-4 text-pink-400" />;
+      case "code":
+        return <FileCode className="h-4 w-4 text-cyan-400" />;
+      default:
+        return <FileText className="h-4 w-4 text-sky-400" />;
+    }
+  };
+
+  const renderDeviceIcon = (platform: string, deviceType: string) => {
+    if (deviceType === "mobile" || platform === "ios" || platform === "android") {
+      return <Smartphone className="h-5 w-5 text-emerald-400" />;
+    }
+    if (deviceType === "tablet") {
+      return <Tablet className="h-5 w-5 text-sky-400" />;
+    }
+    return <Laptop className="h-5 w-5 text-purple-400" />;
+  };
+
+  if (loading && !user) {
     return (
       <AdminLayout>
-        <div className="py-24 text-center space-y-3">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400" />
-          <p className="text-sm font-semibold text-zinc-300">Loading user profile, devices & files...</p>
+        <div className="flex h-[60vh] items-center justify-center">
+          <RefreshCw className="h-8 w-8 animate-spin text-purple-500" />
         </div>
       </AdminLayout>
     );
@@ -254,14 +280,11 @@ export default function UserDetailPage() {
   if (!user) {
     return (
       <AdminLayout>
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-12 text-center space-y-4">
-          <AlertTriangle className="h-10 w-10 text-amber-400 mx-auto" />
-          <h2 className="text-lg font-bold text-white">User Not Found</h2>
-          <p className="text-xs text-zinc-400">The requested user profile does not exist in the database.</p>
+        <div className="p-8 text-center space-y-4">
+          <p className="text-zinc-400">User account not found.</p>
           <Link href="/admin/users">
-            <Button variant="outline" size="sm" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to User List</span>
+            <Button variant="outline" size="sm">
+              Return to Users
             </Button>
           </Link>
         </div>
@@ -281,7 +304,7 @@ export default function UserDetailPage() {
             className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors shadow-sm"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Back to Users</span>
+            <span>Back to Directory</span>
           </Link>
 
           <Button
@@ -290,479 +313,579 @@ export default function UserDetailPage() {
             onClick={fetchUserData}
             className="gap-2 text-xs rounded-xl"
           >
-            <RefreshCw className="h-3.5 w-3.5" />
-            <span>Sync Profile</span>
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            <span>Sync Live Data</span>
           </Button>
         </div>
 
         {/* User Hero Identity Card */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-            {/* Identity */}
-            <div className="flex items-center gap-4 min-w-0">
-              <img
-                src={
-                  user.avatarUrl ||
-                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                }
-                alt={user.displayName}
-                className="h-16 w-16 sm:h-20 sm:w-20 rounded-full object-cover ring-2 ring-purple-500/40 flex-shrink-0"
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+            {/* Identity with Smart Avatar */}
+            <div className="flex items-center gap-5 min-w-0">
+              <UserAvatar
+                user={user}
+                size="2xl"
+                showStatusDot={true}
+                className="ring-4 ring-purple-500/30 shadow-2xl"
               />
-              <div className="space-y-1 min-w-0">
+              <div className="space-y-1.5 min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight truncate">
                     {user.displayName}
                   </h1>
+
+                  {/* Role Badge */}
                   {user.role === "admin" ? (
-                    <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2 py-0.5 text-[11px] font-semibold text-purple-400 border border-purple-500/20">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2.5 py-0.5 text-xs font-bold text-purple-400 border border-purple-500/20">
                       <ShieldCheck className="h-3.5 w-3.5" />
                       Administrator
                     </span>
+                  ) : user.role === "moderator" ? (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-sky-500/10 px-2.5 py-0.5 text-xs font-bold text-sky-400 border border-sky-500/20">
+                      Moderator / Support
+                    </span>
+                  ) : user.role === "premium" ? (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-400 border border-emerald-500/20">
+                      <Zap className="h-3.5 w-3.5" />
+                      Premium Member
+                    </span>
                   ) : (
-                    <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[11px] font-medium text-zinc-400">
-                      Standard User
+                    <span className="rounded-md bg-zinc-800 px-2.5 py-0.5 text-xs font-medium text-zinc-400 border border-zinc-700">
+                      Standard Member
                     </span>
                   )}
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
-                    Active Account
+
+                  {/* Status Badge */}
+                  <span
+                    className={`rounded-md px-2.5 py-0.5 text-xs font-semibold border ${
+                      user.status === "banned"
+                        ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                        : user.status === "suspended"
+                        ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                        : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                    }`}
+                  >
+                    {user.status?.toUpperCase() || "ACTIVE"}
                   </span>
                 </div>
+
                 <p className="text-xs text-zinc-400 font-mono truncate">{user.email}</p>
-                <p className="text-[11px] text-zinc-500">
-                  User ID: <span className="font-mono text-zinc-400">{user.id}</span> • Joined {formatRelativeTime(user.createdAt)}
-                </p>
+
+                {/* IP & Telemetry Line */}
+                <div className="flex items-center gap-3 pt-1 text-xs text-zinc-400 flex-wrap">
+                  <div className="flex items-center gap-1.5 bg-zinc-950/80 px-2.5 py-1 rounded-xl border border-zinc-800 font-mono text-purple-300">
+                    <Wifi className="h-3.5 w-3.5 text-purple-400" />
+                    <span>{user.lastIpAddress || "127.0.0.1"}</span>
+                    <button
+                      onClick={() => handleCopyIp(user.lastIpAddress || "127.0.0.1")}
+                      title="Copy IP Address"
+                      className="text-zinc-500 hover:text-white ml-1"
+                    >
+                      {copiedIp === (user.lastIpAddress || "127.0.0.1") ? (
+                        <Check className="h-3 w-3 text-emerald-400" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </button>
+                  </div>
+
+                  <span className="text-[11px] text-zinc-500">
+                    Client: <strong className="text-zinc-300">{user.lastDevice || "Desktop Web"}</strong> ({user.lastBrowser || "Chrome"})
+                  </span>
+                  <span className="text-[11px] text-zinc-500">• Joined {formatRelativeTime(user.createdAt)}</span>
+                </div>
               </div>
             </div>
 
             {/* Quick Metrics */}
-            <div className="grid grid-cols-3 gap-3 border-t sm:border-t-0 sm:border-l border-zinc-800 pt-4 sm:pt-0 sm:pl-6 text-center sm:text-left">
+            <div className="grid grid-cols-3 gap-3 border-t lg:border-t-0 lg:border-l border-zinc-800 pt-4 lg:pt-0 lg:pl-6 text-center lg:text-left w-full lg:w-auto">
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 font-semibold uppercase">Files</span>
-                <p className="text-lg font-bold text-white">{files.length}</p>
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase">Cloud Files</span>
+                <p className="text-lg font-bold text-white flex items-center justify-center lg:justify-start gap-1.5">
+                  <FolderOpen className="h-4 w-4 text-sky-400" />
+                  <span>{files.length}</span>
+                </p>
               </div>
               <div className="space-y-0.5">
-                <span className="text-[10px] text-zinc-500 font-semibold uppercase">Shares</span>
-                <p className="text-lg font-bold text-emerald-400">{shares.length}</p>
+                <span className="text-[10px] text-zinc-500 font-semibold uppercase">Active Shares</span>
+                <p className="text-lg font-bold text-white flex items-center justify-center lg:justify-start gap-1.5">
+                  <Share2 className="h-4 w-4 text-emerald-400" />
+                  <span>{shares.length}</span>
+                </p>
               </div>
               <div className="space-y-0.5">
                 <span className="text-[10px] text-zinc-500 font-semibold uppercase">Devices</span>
-                <p className="text-lg font-bold text-sky-400">{devices.length || 1}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Storage Quota Progress & Quick Adjuster */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/50 p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <HardDrive className="h-4 w-4 text-purple-400" />
-                <span className="text-xs font-bold text-white">Storage Utilization</span>
-                <span className="text-[11px] text-zinc-400 font-mono">
-                  ({formatBytes(user.usedBytes)} of {formatBytes(user.quotaBytes)})
-                </span>
-              </div>
-              <span className="text-xs font-bold text-purple-400">{usagePercent}% Used</span>
-            </div>
-
-            <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
-              <div
-                style={{ width: `${usagePercent}%` }}
-                className={`h-full rounded-full transition-all ${
-                  usagePercent > 85 ? "bg-rose-500" : "bg-gradient-to-r from-sky-400 to-purple-500"
-                }`}
-              />
-            </div>
-
-            {/* In-place Quick Quota Adjuster */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-800/80">
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] text-zinc-400 font-medium mr-1">Assign Quota:</span>
-                {[10, 25, 50, 100, 250, 500].map((gb) => (
-                  <button
-                    key={gb}
-                    type="button"
-                    onClick={() => setNewQuotaGb(gb)}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                      newQuotaGb === gb
-                        ? "bg-purple-600 text-white shadow-sm"
-                        : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
-                    }`}
-                  >
-                    {gb} GB
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  min={1}
-                  max={5000}
-                  value={newQuotaGb}
-                  onChange={(e) => setNewQuotaGb(Number(e.target.value))}
-                  className="h-8 w-24 text-xs bg-zinc-900 text-white rounded-xl"
-                />
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleSaveQuota}
-                  disabled={isSavingQuota}
-                  className="h-8 text-xs bg-purple-600 hover:bg-purple-500 gap-1 rounded-xl"
-                >
-                  <Save className="h-3 w-3" />
-                  <span>{isSavingQuota ? "Updating..." : "Save Quota"}</span>
-                </Button>
+                <p className="text-lg font-bold text-white flex items-center justify-center lg:justify-start gap-1.5">
+                  <Laptop className="h-4 w-4 text-purple-400" />
+                  <span>{devices.length}</span>
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* User Content Tabs */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-zinc-800 pb-2 overflow-x-auto">
-            {[
-              { id: "files", label: `User's Files (${files.length})`, icon: FolderOpen },
-              { id: "shares", label: `Active Share Links (${shares.length})`, icon: Share2 },
-              { id: "devices", label: `Connected Devices & IP (${devices.length || 1})`, icon: Laptop },
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
-                    isActive
-                      ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
-                      : "text-zinc-400 hover:text-white hover:bg-zinc-900"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
+        {/* Live Account Controls & Permissions Card */}
+        <div className="rounded-3xl border border-purple-500/30 bg-zinc-900/80 p-6 sm:p-8 space-y-6 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                <Edit3 className="h-4 w-4" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-white">Account Permissions & Controls</h2>
+                <p className="text-xs text-zinc-400">Modify user role, subscription tier, storage quota, and account status.</p>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSaveAccountChanges}
+              disabled={isSavingAccount}
+              className="gap-2 text-xs bg-purple-600 hover:bg-purple-500 shadow-lg shadow-purple-600/25 rounded-xl font-bold"
+            >
+              <Save className="h-3.5 w-3.5" />
+              <span>{isSavingAccount ? "Saving Changes..." : "Save All Changes"}</span>
+            </Button>
           </div>
 
-          {/* TAB 1: User's Files */}
-          {activeTab === "files" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between px-1">
-                <p className="text-xs text-zinc-400">
-                  All objects stored in Cloudflare R2 by this account. You can generate admin download links or permanently purge objects.
+          {/* Form Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 text-xs">
+            {/* 1. Role Selector */}
+            <div className="space-y-2 p-4 rounded-2xl bg-zinc-950/70 border border-zinc-800">
+              <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-purple-400" />
+                <span>User Role</span>
+              </label>
+              <select
+                value={editRole}
+                onChange={(e) => setEditRole(e.target.value as UserRole)}
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500"
+              >
+                <option value="member">Standard Member (Basic Access)</option>
+                <option value="premium">Premium Member (High Quota)</option>
+                <option value="moderator">Support / Moderator (Ticket Plane)</option>
+                <option value="admin">Administrator (Full Control Plane)</option>
+              </select>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Admins have full root access to system settings, user records, and R2 files.
+              </p>
+            </div>
+
+            {/* 2. Subscription Plan */}
+            <div className="space-y-2 p-4 rounded-2xl bg-zinc-950/70 border border-zinc-800">
+              <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Zap className="h-4 w-4 text-emerald-400" />
+                <span>Subscription Plan</span>
+              </label>
+              <select
+                value={editTier}
+                onChange={(e) => {
+                  const newT = e.target.value as SubscriptionTier;
+                  setEditTier(newT);
+                  if (newT === "enterprise") setEditQuotaGb(2048);
+                  else if (newT === "ultra") setEditQuotaGb(500);
+                  else if (newT === "pro") setEditQuotaGb(100);
+                  else if (newT === "free") setEditQuotaGb(10);
+                }}
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500"
+              >
+                <option value="free">Free Starter (10 GB)</option>
+                <option value="pro">Pro Plan (100 GB)</option>
+                <option value="ultra">Ultra Plan (500 GB)</option>
+                <option value="enterprise">Enterprise (2 TB)</option>
+              </select>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Selecting a plan auto-sets the standard cloud quota size.
+              </p>
+            </div>
+
+            {/* 3. Account Status */}
+            <div className="space-y-2 p-4 rounded-2xl bg-zinc-950/70 border border-zinc-800">
+              <label className="text-xs font-bold text-white flex items-center gap-1.5">
+                <UserCheck className="h-4 w-4 text-sky-400" />
+                <span>Account Status</span>
+              </label>
+              <select
+                value={editStatus}
+                onChange={(e) => setEditStatus(e.target.value as any)}
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500"
+              >
+                <option value="active">Active (Normal Access)</option>
+                <option value="suspended">Suspended (Read-only / Frozen)</option>
+                <option value="banned">Banned (Blocked from Login)</option>
+              </select>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Banned accounts cannot authenticate or access stored links.
+              </p>
+            </div>
+          </div>
+
+          {/* Storage Quota Controls */}
+          <div className="p-5 rounded-2xl bg-zinc-950/70 border border-zinc-800 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 className="text-xs font-bold text-white flex items-center gap-2">
+                  <HardDrive className="h-4 w-4 text-purple-400" />
+                  <span>Custom Storage Quota Limit</span>
+                </h3>
+                <p className="text-[11px] text-zinc-400">
+                  Current usage: <strong className="text-zinc-200">{formatBytes(user.usedBytes)}</strong> of <strong className="text-purple-300">{formatBytes(user.quotaBytes)}</strong> ({usagePercent}%)
                 </p>
               </div>
 
-              {files.length === 0 ? (
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-12 text-center space-y-2">
-                  <FolderOpen className="h-8 w-8 text-zinc-600 mx-auto" />
-                  <p className="text-sm font-semibold text-zinc-300">No Files Uploaded</p>
-                  <p className="text-xs text-zinc-500">This user has not stored any files in Cloudflare R2 yet.</p>
-                </div>
-              ) : (
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
-                        <tr>
-                          <th className="py-3.5 px-4 sm:px-6">Filename</th>
-                          <th className="py-3.5 px-4">Size</th>
-                          <th className="py-3.5 px-4">MIME Type</th>
-                          <th className="py-3.5 px-4">Uploaded</th>
-                          <th className="py-3.5 px-4">Downloads</th>
-                          <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-800/60">
-                        {files.map((file) => (
-                          <tr key={file.id} className="hover:bg-zinc-800/40 transition-colors group">
-                            <td className="py-4 px-4 sm:px-6">
-                              <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
-                                  {renderFileIcon(file)}
-                                </div>
-                                <div className="min-w-0 max-w-[240px]">
-                                  <p className="font-semibold text-white truncate group-hover:text-purple-300 transition-colors">
-                                    {file.filename}
-                                  </p>
-                                  <p className="font-mono text-[10px] text-zinc-500 truncate">
-                                    {file.r2ObjectKey}
-                                  </p>
-                                </div>
-                              </div>
-                            </td>
-
-                            <td className="py-4 px-4 font-semibold text-zinc-200 whitespace-nowrap">
-                              {formatBytes(file.size)}
-                            </td>
-
-                            <td className="py-4 px-4">
-                              <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
-                                {file.mimeType}
-                              </span>
-                            </td>
-
-                            <td className="py-4 px-4 text-[11px] text-zinc-400 whitespace-nowrap">
-                              {formatRelativeTime(file.createdAt)}
-                            </td>
-
-                            <td className="py-4 px-4 text-zinc-300">
-                              {file.downloadsCount || 0} hits
-                            </td>
-
-                            <td className="py-4 px-4 sm:px-6 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => handleGenerateDownload(file)}
-                                  className="text-xs h-8 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1 rounded-lg"
-                                >
-                                  <Download className="h-3.5 w-3.5" />
-                                  <span>Download</span>
-                                </Button>
-
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setSelectedFileForDelete(file)}
-                                  className="h-8 w-8 p-0 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg"
-                                  title="Delete from R2"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
+              {/* Presets */}
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {[10, 50, 100, 500, 1000, 2048].map((gb) => (
+                  <button
+                    key={gb}
+                    type="button"
+                    onClick={() => setEditQuotaGb(gb)}
+                    className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
+                      editQuotaGb === gb
+                        ? "border-purple-500 bg-purple-500/20 text-purple-300"
+                        : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
+                    }`}
+                  >
+                    {gb >= 1024 ? `${gb / 1024} TB` : `${gb} GB`}
+                  </button>
+                ))}
+              </div>
             </div>
-          )}
 
-          {/* TAB 2: User's Shares */}
-          {activeTab === "shares" && (
-            <div className="space-y-4">
-              {shares.length === 0 ? (
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-12 text-center space-y-2">
-                  <Share2 className="h-8 w-8 text-zinc-600 mx-auto" />
-                  <p className="text-sm font-semibold text-zinc-300">No Share Links</p>
-                  <p className="text-xs text-zinc-500">This user has not generated any share links yet.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-zinc-400">Quota Value in Gigabytes (GB)</label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={10000}
+                  value={editQuotaGb}
+                  onChange={(e) => setEditQuotaGb(Number(e.target.value))}
+                  className="bg-zinc-900 text-white rounded-xl text-xs"
+                />
+              </div>
+
+              {/* Visual usage preview */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[11px] text-zinc-400">
+                  <span>Usage Preview</span>
+                  <span>{Math.round((user.usedBytes / (editQuotaGb * 1024 * 1024 * 1024 || 1)) * 100)}%</span>
                 </div>
-              ) : (
-                <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase text-zinc-400">
-                        <tr>
-                          <th className="py-3 px-4 sm:px-6">Share Token</th>
-                          <th className="py-3 px-4">Target File</th>
-                          <th className="py-3 px-4">Security</th>
-                          <th className="py-3 px-4">Downloads</th>
-                          <th className="py-3 px-4">Expires</th>
-                          <th className="py-3 px-4 sm:px-6 text-right">Status / Control</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-zinc-800/60">
-                        {shares.map((share) => (
-                          <tr key={share.id} className="hover:bg-zinc-800/40 transition-colors">
-                            <td className="py-3.5 px-4 sm:px-6 font-mono text-purple-400 font-semibold">
+                <div className="h-2 w-full rounded-full bg-zinc-900 overflow-hidden border border-zinc-800">
+                  <div
+                    style={{ width: `${Math.min(100, (user.usedBytes / (editQuotaGb * 1024 * 1024 * 1024 || 1)) * 100)}%` }}
+                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Admin Notes */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-white flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5 text-zinc-400" />
+              <span>Internal Admin Notes</span>
+            </label>
+            <textarea
+              value={editNotes}
+              onChange={(e) => setEditNotes(e.target.value)}
+              placeholder="Write private notes about this user, history, or special permissions..."
+              rows={2}
+              className="w-full bg-zinc-950/80 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-purple-500"
+            />
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex border-b border-zinc-800 gap-6 text-sm font-semibold">
+          <button
+            onClick={() => setActiveTab("files")}
+            className={`pb-3 flex items-center gap-2 transition-colors relative ${
+              activeTab === "files" ? "text-purple-400 font-bold" : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <FolderOpen className="h-4 w-4" />
+            <span>Files ({files.length})</span>
+            {activeTab === "files" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />}
+          </button>
+
+          <button
+            onClick={() => setActiveTab("shares")}
+            className={`pb-3 flex items-center gap-2 transition-colors relative ${
+              activeTab === "shares" ? "text-purple-400 font-bold" : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Share2 className="h-4 w-4" />
+            <span>Active Shares ({shares.length})</span>
+            {activeTab === "shares" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />}
+          </button>
+
+          <button
+            onClick={() => setActiveTab("devices")}
+            className={`pb-3 flex items-center gap-2 transition-colors relative ${
+              activeTab === "devices" ? "text-purple-400 font-bold" : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Laptop className="h-4 w-4" />
+            <span>Devices & IP Telemetry ({devices.length})</span>
+            {activeTab === "devices" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />}
+          </button>
+        </div>
+
+        {/* Tab 1: Cloud Files */}
+        {activeTab === "files" && (
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
+            {files.length === 0 ? (
+              <div className="py-16 text-center text-zinc-500 space-y-2">
+                <FolderOpen className="h-8 w-8 mx-auto text-zinc-600" />
+                <p className="text-xs">User has not uploaded any files yet.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                    <tr>
+                      <th className="py-3.5 px-4 sm:px-6">Filename</th>
+                      <th className="py-3.5 px-4">Size</th>
+                      <th className="py-3.5 px-4">MIME Type</th>
+                      <th className="py-3.5 px-4">Uploaded</th>
+                      <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-800/60">
+                    {files.map((file) => (
+                      <tr key={file.id} className="hover:bg-zinc-800/40 transition-colors">
+                        <td className="py-3.5 px-4 sm:px-6">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-950 border border-zinc-800">
+                              {renderFileIcon(file)}
+                            </div>
+                            <span className="font-semibold text-white truncate max-w-xs">{file.filename}</span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4 text-zinc-300 font-mono">{formatBytes(file.size)}</td>
+                        <td className="py-3.5 px-4 text-zinc-400 font-mono text-[11px]">{file.mimeType}</td>
+                        <td className="py-3.5 px-4 text-zinc-400 text-[11px] whitespace-nowrap">
+                          {formatRelativeTime(file.createdAt)}
+                        </td>
+                        <td className="py-3.5 px-4 sm:px-6 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleGetDownloadLink(file)}
+                              title="Download file"
+                              className="h-8 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1 rounded-lg text-xs"
+                            >
+                              <Download className="h-3.5 w-3.5" />
+                              <span>Download</span>
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setSelectedFileForDelete(file)}
+                              title="Delete from R2"
+                              className="h-8 w-8 p-0 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Tab 2: Shared Links */}
+        {activeTab === "shares" && (
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
+            {shares.length === 0 ? (
+              <div className="py-16 text-center text-zinc-500 space-y-2">
+                <Share2 className="h-8 w-8 mx-auto text-zinc-600" />
+                <p className="text-xs">User has not created any public share links.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                    <tr>
+                      <th className="py-3.5 px-4 sm:px-6">Share Token / Link</th>
+                      <th className="py-3.5 px-4">Status</th>
+                      <th className="py-3.5 px-4">Password</th>
+                      <th className="py-3.5 px-4">Downloads</th>
+                      <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-800/60">
+                    {shares.map((share) => (
+                      <tr key={share.id} className="hover:bg-zinc-800/40 transition-colors">
+                        <td className="py-3.5 px-4 sm:px-6">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-purple-300 bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
                               /s/{share.token}
-                            </td>
-                            <td className="py-3.5 px-4 font-medium text-white">
-                              {share.cloudFile?.filename || "Deleted file"}
-                            </td>
-                            <td className="py-3.5 px-4">
-                              {share.passwordProtected ? (
-                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-400 border border-amber-500/20 font-semibold">
-                                  <Lock className="h-3 w-3" /> Locked
-                                </span>
-                              ) : (
-                                <span className="text-zinc-500">Public</span>
-                              )}
-                            </td>
-                            <td className="py-3.5 px-4 text-zinc-200">
-                              {share.downloadCount} downloads
-                            </td>
-                            <td className="py-3.5 px-4 text-zinc-400">
-                              {formatExpiresIn(share.expiresAt)}
-                            </td>
-                            <td className="py-3.5 px-4 sm:px-6 text-right">
-                              <button
-                                onClick={() => handleToggleShare(share)}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                                  share.isActive
-                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-rose-500/10 hover:text-rose-400"
-                                    : "bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-emerald-500/10 hover:text-emerald-400"
-                                }`}
-                              >
-                                {share.isActive ? "Active (Revoke)" : "Revoked (Restore)"}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* TAB 3: Connected Devices & IP Addresses */}
-          {activeTab === "devices" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between px-1">
-                <p className="text-xs text-zinc-400">
-                  Registered client hardware, browsers, and network IP addresses used by this user to access NearDrop.
-                </p>
+                            </span>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/s/${share.token}`);
+                                toast.success("Share URL copied!");
+                              }}
+                              className="text-zinc-500 hover:text-white"
+                              title="Copy URL"
+                            >
+                              <Copy className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`rounded-md px-2 py-0.5 text-[10px] font-semibold border ${
+                              share.isActive
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                            }`}
+                          >
+                            {share.isActive ? "Active" : "Revoked"}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-zinc-400">
+                          {share.passwordProtected ? (
+                            <span className="flex items-center gap-1 text-amber-400">
+                              <Lock className="h-3 w-3" />
+                              <span>Protected</span>
+                            </span>
+                          ) : (
+                            <span className="text-zinc-500">Public</span>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-4 text-zinc-300 font-mono">{share.downloadCount}</td>
+                        <td className="py-3.5 px-4 sm:px-6 text-right">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleToggleShare(share)}
+                            className={`text-xs rounded-xl ${
+                              share.isActive
+                                ? "text-rose-400 hover:text-rose-300 border-rose-500/30 hover:bg-rose-500/10"
+                                : "text-emerald-400 hover:text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/10"
+                            }`}
+                          >
+                            {share.isActive ? "Revoke Link" : "Activate Link"}
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
+            )}
+          </div>
+        )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {devices.length === 0 ? (
-                  <div className="col-span-2 rounded-3xl border border-zinc-800 bg-zinc-900/40 p-10 text-center space-y-3">
-                    <Laptop className="h-10 w-10 text-purple-400 mx-auto opacity-70" />
-                    <div>
-                      <h4 className="text-sm font-semibold text-white">Active Web Session</h4>
-                      <p className="text-xs text-zinc-400 mt-1">
-                        Current IP: <span className="font-mono text-purple-300">127.0.0.1</span>
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  devices.map((device: any) => {
+        {/* Tab 3: Devices & Detailed IP Telemetry */}
+        {activeTab === "devices" && (
+          <div className="space-y-4">
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
+                <Wifi className="h-4 w-4 text-purple-400" />
+                <span>Recorded Client Sessions & Devices</span>
+              </h3>
+
+              {devices.length === 0 ? (
+                <div className="py-12 text-center text-zinc-500 space-y-2">
+                  <Laptop className="h-8 w-8 mx-auto text-zinc-600" />
+                  <p className="text-xs">No registered client devices found for this user.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {devices.map((device) => {
                     const devIp = device.ip_address || "127.0.0.1";
                     return (
                       <div
                         key={device.id}
-                        className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4 hover:border-purple-500/30 transition-all apple-card"
+                        className="flex items-start justify-between p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800/80 shadow-md space-y-2"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-purple-500/10 border border-purple-500/20 flex-shrink-0">
-                              {renderDeviceIcon(device.platform, device.device_type)}
-                            </div>
-                            <div className="min-w-0">
-                              <h4 className="font-bold text-xs sm:text-sm text-white truncate">
-                                {device.device_name || "Client Device"}
-                              </h4>
-                              <p className="text-[11px] text-zinc-400 capitalize">
-                                {device.platform} • {device.device_type}
-                              </p>
-                            </div>
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 flex-shrink-0">
+                            {renderDeviceIcon(device.platform, device.device_type)}
                           </div>
+                          <div className="space-y-1 min-w-0">
+                            <p className="font-semibold text-white text-xs truncate">
+                              {device.device_name || "Desktop Web Client"}
+                            </p>
+                            <p className="text-[11px] text-zinc-400 font-mono truncate">
+                              ID: {device.device_id?.slice(0, 16)}...
+                            </p>
 
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20 flex-shrink-0">
-                            <Radio className="h-2.5 w-2.5 animate-pulse" />
-                            Connected
-                          </span>
-                        </div>
-
-                        {/* Network & IP Details */}
-                        <div className="rounded-2xl bg-zinc-950/60 border border-zinc-800/80 p-3.5 space-y-2 text-xs">
-                          <div className="flex items-center justify-between">
-                            <span className="text-[11px] text-zinc-400 flex items-center gap-1.5">
-                              <Globe className="h-3.5 w-3.5 text-sky-400" />
-                              <span>IP Address</span>
-                            </span>
-                            <div className="flex items-center gap-1.5">
-                              <code className="font-mono text-[11px] text-purple-300 font-semibold">
+                            {/* IP Box */}
+                            <div className="flex items-center gap-1.5 pt-1">
+                              <span className="font-mono text-[11px] text-purple-300 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30 flex items-center gap-1">
+                                <Wifi className="h-3 w-3 text-purple-400" />
                                 {devIp}
-                              </code>
+                              </span>
                               <button
                                 onClick={() => handleCopyIp(devIp)}
                                 title="Copy IP"
-                                className="p-1 rounded text-zinc-500 hover:text-white"
+                                className="text-zinc-500 hover:text-white"
                               >
                                 {copiedIp === devIp ? (
-                                  <Check className="h-3.5 w-3.5 text-emerald-400" />
+                                  <Check className="h-3 w-3 text-emerald-400" />
                                 ) : (
-                                  <Copy className="h-3.5 w-3.5" />
+                                  <Copy className="h-3 w-3" />
                                 )}
                               </button>
                             </div>
-                          </div>
 
-                          <div className="flex items-center justify-between pt-1.5 border-t border-zinc-800/60">
-                            <span className="text-[11px] text-zinc-400">Device ID</span>
-                            <span className="font-mono text-[10px] text-zinc-400 truncate max-w-[170px]">
-                              {device.device_id}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-1.5 border-t border-zinc-800/60">
-                            <span className="text-[11px] text-zinc-400">Last Seen</span>
-                            <span className="text-[11px] text-zinc-300">
-                              {formatRelativeTime(device.last_seen || device.created_at)}
-                            </span>
+                            <p className="text-[10px] text-zinc-500 pt-1">
+                              Browser: <strong className="text-zinc-400">{device.browser || "Web Browser"}</strong> • Last seen {formatRelativeTime(device.last_seen || device.created_at)}
+                            </p>
                           </div>
                         </div>
 
-                        {/* Action: Disconnect device */}
-                        <div className="flex justify-end pt-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDisconnectDevice(device.id)}
-                            className="text-[11px] h-7 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg gap-1"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                            <span>Disconnect Device</span>
-                          </Button>
-                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDisconnectDevice(device.id)}
+                          title="Revoke session"
+                          className="h-8 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg flex-shrink-0"
+                        >
+                          Disconnect
+                        </Button>
                       </div>
                     );
-                  })
-                )}
-              </div>
+                  })}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* Admin Download Presigned URL Modal */}
+      {/* Direct Download Link Modal */}
       <Dialog
         open={Boolean(downloadLinkModal)}
         onOpenChange={(open) => !open && setDownloadLinkModal(null)}
       >
-        <DialogContent className="max-w-lg rounded-3xl border border-zinc-800 bg-zinc-950 p-6 space-y-4">
+        <DialogContent className="max-w-md rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
               <Download className="h-4 w-4 text-sky-400" />
-              <span>Admin Presigned Download Link</span>
+              <span>Signed R2 Download Link</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-3 py-1">
-            <p className="text-xs text-zinc-400">
-              Generated direct R2 signed URL for <strong className="text-white">{downloadLinkModal?.filename}</strong> (Valid for 60 minutes).
+          <div className="space-y-4 py-2 text-xs">
+            <p className="text-zinc-300">
+              Download link for: <strong className="text-white">{downloadLinkModal?.filename}</strong>
             </p>
-
-            <div className="flex items-center gap-2">
-              <Input
-                readOnly
-                value={downloadLinkModal?.url || ""}
-                className="bg-zinc-900 font-mono text-[11px] text-zinc-300 rounded-xl"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (downloadLinkModal) {
-                    navigator.clipboard.writeText(downloadLinkModal.url);
-                    setCopiedLink(true);
-                    toast.success("URL copied to clipboard!");
-                    setTimeout(() => setCopiedLink(false), 2000);
-                  }
-                }}
-                className="gap-1.5 h-10 flex-shrink-0 rounded-xl"
-              >
-                {copiedLink ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
-                <span>{copiedLink ? "Copied" : "Copy"}</span>
-              </Button>
+            <div className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 font-mono text-[11px] text-zinc-300 break-all select-all">
+              {downloadLinkModal?.url}
             </div>
           </div>
 
@@ -770,34 +893,30 @@ export default function UserDetailPage() {
             <Button variant="ghost" size="sm" onClick={() => setDownloadLinkModal(null)}>
               Close
             </Button>
-            <a
-              href={downloadLinkModal?.url}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-500 transition-colors"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              <span>Open & Download</span>
+            <a href={downloadLinkModal?.url} download={downloadLinkModal?.filename} target="_blank" rel="noreferrer">
+              <Button variant="primary" size="sm" className="bg-sky-600 hover:bg-sky-500 text-xs rounded-xl">
+                Open / Download Now
+              </Button>
             </a>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete File Confirmation Modal */}
       <Dialog
         open={Boolean(selectedFileForDelete)}
         onOpenChange={(open) => !open && setSelectedFileForDelete(null)}
       >
-        <DialogContent className="max-w-md rounded-3xl border border-rose-500/30 bg-zinc-950 p-6 space-y-4">
+        <DialogContent className="max-w-md rounded-3xl border border-rose-500/30 bg-zinc-950 p-6">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-rose-400 flex items-center gap-2">
               <Trash2 className="h-4 w-4" />
-              <span>Confirm Delete Object</span>
+              <span>Delete File from R2</span>
             </DialogTitle>
           </DialogHeader>
 
-          <p className="text-xs text-zinc-300">
-            Are you sure you want to permanently delete <strong className="text-white">{selectedFileForDelete?.filename}</strong>? This will purge the object from Cloudflare R2 bucket and recalculate the user&apos;s used storage quota.
+          <p className="text-xs text-zinc-300 py-2">
+            Are you sure you want to delete file <strong className="text-white">{selectedFileForDelete?.filename}</strong> ({formatBytes(selectedFileForDelete?.size || 0)}) from Cloudflare R2 storage?
           </p>
 
           <DialogFooter className="gap-2 sm:gap-0">
@@ -811,7 +930,7 @@ export default function UserDetailPage() {
               disabled={isDeletingFile}
               className="text-xs rounded-xl"
             >
-              {isDeletingFile ? "Deleting..." : "Permanently Delete"}
+              {isDeletingFile ? "Deleting..." : "Delete Permanently"}
             </Button>
           </DialogFooter>
         </DialogContent>

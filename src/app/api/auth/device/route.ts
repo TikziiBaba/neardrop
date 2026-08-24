@@ -13,12 +13,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Missing required device parameters" }, { status: 400 });
     }
 
-    // Extract real client IP
+    // Extract real client IP with priority on proxy/Cloudflare/Vercel headers
+    const forwardedFor = req.headers.get("x-forwarded-for");
     const clientIp =
       req.headers.get("cf-connecting-ip") ||
       req.headers.get("x-real-ip") ||
-      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      (forwardedFor ? forwardedFor.split(",")[0].trim() : null) ||
+      req.headers.get("x-client-ip") ||
+      req.headers.get("x-cluster-client-ip") ||
       "127.0.0.1";
+
+    const rawUserAgent = req.headers.get("user-agent") || userAgent || "";
+    let detectedBrowser = browser || "Web Browser";
+    if (rawUserAgent.includes("Edg/")) detectedBrowser = "Edge";
+    else if (rawUserAgent.includes("Chrome/") && !rawUserAgent.includes("Chromium/")) detectedBrowser = "Chrome";
+    else if (rawUserAgent.includes("Safari/") && !rawUserAgent.includes("Chrome/")) detectedBrowser = "Safari";
+    else if (rawUserAgent.includes("Firefox/")) detectedBrowser = "Firefox";
+    else if (rawUserAgent.includes("Opera/") || rawUserAgent.includes("OPR/")) detectedBrowser = "Opera";
 
     const supabase = getServiceClient();
     const now = new Date().toISOString();
@@ -32,13 +43,16 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (existingDevice) {
-      // Update existing device with new IP and last_seen
+      // Update existing device with new IP, browser, and last_seen
       await supabase
         .from("devices")
         .update({
           device_name: deviceName || "Unknown Device",
           device_type: deviceType || "desktop",
           platform: platform || "windows",
+          ip_address: clientIp,
+          browser: detectedBrowser,
+          user_agent: rawUserAgent,
           last_seen: now,
           updated_at: now,
         })
@@ -51,19 +65,38 @@ export async function POST(req: NextRequest) {
         device_name: deviceName || "Unknown Device",
         device_type: deviceType || "desktop",
         platform: platform || "windows",
+        ip_address: clientIp,
+        browser: detectedBrowser,
+        user_agent: rawUserAgent,
         public_key: `pk_${deviceId.substring(0, 16)}`,
         last_seen: now,
       });
     }
 
-    // 2. Log device sync / login event in admin audit trail with the IP address
+    // 2. Sync to profiles table for fast admin user directory rendering
+    try {
+      await supabase
+        .from("profiles")
+        .update({
+          last_ip: clientIp,
+          last_device: deviceName || "Desktop Web",
+          last_browser: detectedBrowser,
+          last_platform: platform || "windows",
+          updated_at: now,
+        })
+        .eq("id", userId);
+    } catch (profErr) {
+      console.warn("Could not sync last_ip to profiles:", profErr);
+    }
+
+    // 3. Log device sync / login event in admin audit trail with the IP address
     logAdminAction({
       action: "DEVICE_LOGIN",
       resourceType: "auth",
       userId,
       userEmail: email || "User",
       resourceId: deviceId,
-      details: `${deviceName || "Client Device"} authenticated (${platform || "desktop"}) from IP ${clientIp}`,
+      details: `${deviceName || "Client Device"} (${detectedBrowser} on ${platform || "windows"}) from IP ${clientIp}`,
       ipAddress: clientIp,
       status: "success",
     });
@@ -71,6 +104,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ip: clientIp,
+      browser: detectedBrowser,
       deviceId,
       lastSeen: now,
     });

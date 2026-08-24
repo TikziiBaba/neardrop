@@ -30,6 +30,11 @@ export interface UserProfile {
   status?: 'active' | 'suspended' | 'banned';
   lastIpAddress?: string;
   lastDevice?: string;
+  lastBrowser?: string;
+  lastPlatform?: string;
+  lastCountry?: string;
+  lastCity?: string;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
 }

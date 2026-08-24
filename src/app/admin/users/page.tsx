@@ -4,7 +4,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { AdminLayout } from "@/components/admin/AdminLayout";
-import { AdminUser } from "@/types";
+import { UserAvatar } from "@/components/ui/UserAvatar";
+import { AdminUser, UserRole, SubscriptionTier } from "@/types";
 import { formatBytes, formatRelativeTime } from "@/lib/utils";
 import {
   Users,
@@ -15,6 +16,7 @@ import {
   Edit2,
   Trash2,
   ShieldCheck,
+  ShieldAlert,
   RefreshCw,
   Copy,
   Check,
@@ -24,6 +26,15 @@ import {
   Smartphone,
   Globe,
   Wifi,
+  Filter,
+  Download,
+  MoreVertical,
+  Zap,
+  UserCheck,
+  Ban,
+  AlertTriangle,
+  Lock,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,9 +45,18 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUserForQuota, setSelectedUserForQuota] = useState<AdminUser | null>(null);
+  const [roleFilter, setRoleFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  // Edit User Modal State
+  const [selectedUserForEdit, setSelectedUserForEdit] = useState<AdminUser | null>(null);
+  const [editRole, setEditRole] = useState<UserRole>("member");
+  const [editTier, setEditTier] = useState<SubscriptionTier>("free");
+  const [editQuotaGb, setEditQuotaGb] = useState<number>(10);
+  const [editStatus, setEditStatus] = useState<"active" | "suspended" | "banned">("active");
+  const [editNotes, setEditNotes] = useState<string>("");
+
   const [selectedUserForDelete, setSelectedUserForDelete] = useState<AdminUser | null>(null);
-  const [newQuotaGb, setNewQuotaGb] = useState<number>(10);
   const [isUpdating, setIsUpdating] = useState(false);
   const [copiedIp, setCopiedIp] = useState<string | null>(null);
 
@@ -60,36 +80,105 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
-  const handleOpenQuotaModal = (user: AdminUser, e: React.MouseEvent) => {
+  const handleOpenEditModal = (u: AdminUser, e: React.MouseEvent) => {
     e.stopPropagation();
-    setSelectedUserForQuota(user);
-    setNewQuotaGb(Math.round(user.quotaBytes / (1024 * 1024 * 1024)) || 10);
+    setSelectedUserForEdit(u);
+    setEditRole(u.role);
+    setEditTier(u.subscriptionTier || "free");
+    setEditQuotaGb(Math.round(u.quotaBytes / (1024 * 1024 * 1024)) || 10);
+    setEditStatus((u.status as any) || "active");
+    setEditNotes(u.notes || "");
   };
 
-  const handleSaveQuota = async () => {
-    if (!selectedUserForQuota) return;
+  const handleSaveUserEdit = async () => {
+    if (!selectedUserForEdit) return;
     setIsUpdating(true);
     try {
-      const quotaBytes = newQuotaGb * 1024 * 1024 * 1024;
+      const quotaBytes = editQuotaGb * 1024 * 1024 * 1024;
       const res = await fetch("/api/admin/users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: selectedUserForQuota.id, quotaBytes }),
+        body: JSON.stringify({
+          userId: selectedUserForEdit.id,
+          role: editRole,
+          subscriptionTier: editTier,
+          quotaBytes,
+          status: editStatus,
+          notes: editNotes,
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        toast.success(`Updated ${selectedUserForQuota.displayName}'s quota to ${newQuotaGb} GB`);
+        toast.success(`User ${selectedUserForEdit.displayName} updated successfully!`);
         setUsers((prev) =>
-          prev.map((u) => (u.id === selectedUserForQuota.id ? { ...u, quotaBytes } : u))
+          prev.map((u) =>
+            u.id === selectedUserForEdit.id
+              ? {
+                  ...u,
+                  role: editRole,
+                  subscriptionTier: editTier,
+                  quotaBytes,
+                  status: editStatus,
+                  notes: editNotes,
+                }
+              : u
+          )
         );
-        setSelectedUserForQuota(null);
+        setSelectedUserForEdit(null);
       } else {
-        toast.error(data.error || "Failed to update quota");
+        toast.error(data.error || "Failed to update user");
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to update quota");
+      toast.error(err.message || "Failed to update user");
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleQuickChangeRole = async (u: AdminUser, newRole: UserRole, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      // Optimistic update
+      setUsers((prev) => prev.map((item) => (item.id === u.id ? { ...item, role: newRole } : item)));
+
+      const res = await fetch(`/api/admin/users/${u.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: newRole }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Role for ${u.displayName} changed to ${newRole.toUpperCase()}`);
+      } else {
+        toast.error(data.error || "Failed to change role");
+        fetchUsers();
+      }
+    } catch (err: any) {
+      toast.error("Failed to change role");
+      fetchUsers();
+    }
+  };
+
+  const handleQuickChangeStatus = async (u: AdminUser, newStatus: "active" | "banned" | "suspended", e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      setUsers((prev) => prev.map((item) => (item.id === u.id ? { ...item, status: newStatus } : item)));
+
+      const res = await fetch(`/api/admin/users/${u.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Status for ${u.displayName} set to ${newStatus.toUpperCase()}`);
+      } else {
+        toast.error(data.error || "Failed to change status");
+        fetchUsers();
+      }
+    } catch (err: any) {
+      toast.error("Failed to change status");
+      fetchUsers();
     }
   };
 
@@ -123,14 +212,49 @@ export default function AdminUsersPage() {
     setTimeout(() => setCopiedIp(null), 2000);
   };
 
+  const exportUsersCsv = () => {
+    const headers = ["ID", "Display Name", "Email", "Role", "Plan", "Status", "Quota (GB)", "Used (MB)", "Last IP", "Device", "Platform", "Browser", "Created At"];
+    const rows = filteredUsers.map((u) => [
+      u.id,
+      `"${u.displayName.replace(/"/g, '""')}"`,
+      `"${u.email}"`,
+      u.role,
+      u.subscriptionTier,
+      u.status || "active",
+      Math.round(u.quotaBytes / (1024 * 1024 * 1024)),
+      Math.round(u.usedBytes / (1024 * 1024)),
+      u.lastIpAddress || "127.0.0.1",
+      `"${(u.lastDevice || "Desktop Web").replace(/"/g, '""')}"`,
+      u.lastPlatform || "windows",
+      u.lastBrowser || "Chrome",
+      u.createdAt,
+    ]);
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `neardrop_users_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Exported users directory to CSV");
+  };
+
   const filteredUsers = users.filter((u) => {
     const q = searchQuery.toLowerCase();
-    return (
+    const matchesSearch =
       u.email.toLowerCase().includes(q) ||
       u.displayName.toLowerCase().includes(q) ||
       (u.lastIpAddress && u.lastIpAddress.toLowerCase().includes(q)) ||
-      (u.lastDevice && u.lastDevice.toLowerCase().includes(q))
-    );
+      (u.lastDevice && u.lastDevice.toLowerCase().includes(q)) ||
+      (u.lastBrowser && u.lastBrowser.toLowerCase().includes(q)) ||
+      (u.lastPlatform && u.lastPlatform.toLowerCase().includes(q));
+
+    const matchesRole = roleFilter === "all" || u.role === roleFilter;
+    const matchesStatus = statusFilter === "all" || (u.status || "active") === statusFilter;
+
+    return matchesSearch && matchesRole && matchesStatus;
   });
 
   return (
@@ -140,51 +264,100 @@ export default function AdminUsersPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-              <span>User & Device Directory</span>
+              <span>User & Client Directory</span>
               <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
-                {users.length} Registered Accounts
+                {users.length} Total Accounts
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Inspect user accounts, recorded client devices, active IP addresses, and manage storage quotas.
+              Live directory with real-time IP tracking, direct role management, quota controls, and device telemetry.
             </p>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchUsers}
-            disabled={loading}
-            className="gap-2 text-xs self-start sm:self-auto rounded-xl"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
-            <span>Refresh Directory</span>
-          </Button>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportUsersCsv}
+              className="gap-1.5 text-xs rounded-xl border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800"
+            >
+              <Download className="h-3.5 w-3.5 text-purple-400" />
+              <span>Export CSV</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchUsers}
+              disabled={loading}
+              className="gap-2 text-xs rounded-xl"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+              <span>Refresh</span>
+            </Button>
+          </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-          <Input
-            placeholder="Search by name, email, IP address, or device..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
-          />
+        {/* Filter Controls Bar */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-zinc-900/40 p-3 rounded-2xl border border-zinc-800/80">
+          {/* Search Bar */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Input
+              placeholder="Search by name, email, IP address, device, browser, platform..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 text-xs bg-zinc-950/60 border-zinc-800 rounded-xl"
+            />
+          </div>
+
+          {/* Filters */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            {/* Role Filter */}
+            <div className="flex items-center gap-1 bg-zinc-950/80 px-2.5 py-1.5 rounded-xl border border-zinc-800 text-xs">
+              <span className="text-zinc-500 text-[11px] font-medium mr-1">Role:</span>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="bg-transparent text-xs text-zinc-300 font-semibold focus:outline-none cursor-pointer"
+              >
+                <option value="all" className="bg-zinc-900">All Roles</option>
+                <option value="admin" className="bg-zinc-900">Admin Only</option>
+                <option value="moderator" className="bg-zinc-900">Moderators</option>
+                <option value="premium" className="bg-zinc-900">Premium</option>
+                <option value="member" className="bg-zinc-900">Members</option>
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div className="flex items-center gap-1 bg-zinc-950/80 px-2.5 py-1.5 rounded-xl border border-zinc-800 text-xs">
+              <span className="text-zinc-500 text-[11px] font-medium mr-1">Status:</span>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="bg-transparent text-xs text-zinc-300 font-semibold focus:outline-none cursor-pointer"
+              >
+                <option value="all" className="bg-zinc-900">All Statuses</option>
+                <option value="active" className="bg-zinc-900">Active</option>
+                <option value="banned" className="bg-zinc-900">Banned</option>
+                <option value="suspended" className="bg-zinc-900">Suspended</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         {/* Users Table */}
         <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <thead className="border-b border-zinc-800 bg-zinc-950/80 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">User / Identity</th>
-                  <th className="py-3.5 px-4">Role</th>
-                  <th className="py-3.5 px-4">Device & IP Address</th>
+                  <th className="py-3.5 px-4">Role & Plan</th>
+                  <th className="py-3.5 px-4">IP Address & Telemetry</th>
                   <th className="py-3.5 px-4">Storage Usage</th>
+                  <th className="py-3.5 px-4">Status</th>
                   <th className="py-3.5 px-4">Files / Shares</th>
-                  <th className="py-3.5 px-4">Last Active</th>
                   <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
                 </tr>
               </thead>
@@ -199,16 +372,15 @@ export default function AdminUsersPage() {
                 ) : filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      No users match &ldquo;{searchQuery}&rdquo;
+                      No users match your search and filter criteria.
                     </td>
                   </tr>
                 ) : (
                   filteredUsers.map((u) => {
-                    const usagePercent = Math.min(
-                      100,
-                      Math.round((u.usedBytes / (u.quotaBytes || 1)) * 100)
-                    );
+                    const usagePercent = Math.min(100, Math.round((u.usedBytes / (u.quotaBytes || 1)) * 100));
                     const isAdmin = u.role === "admin";
+                    const isMod = u.role === "moderator";
+                    const isPrem = u.role === "premium";
 
                     return (
                       <tr
@@ -216,16 +388,14 @@ export default function AdminUsersPage() {
                         onClick={() => (window.location.href = `/admin/users/${u.id}`)}
                         className="hover:bg-zinc-800/40 transition-colors group cursor-pointer"
                       >
-                        {/* User identity */}
+                        {/* User Identity with Smart Avatar */}
                         <td className="py-4 px-4 sm:px-6">
                           <div className="flex items-center gap-3">
-                            <img
-                              src={
-                                u.avatarUrl ||
-                                "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                              }
-                              alt={u.displayName}
-                              className="h-9 w-9 rounded-full object-cover ring-1 ring-zinc-700 flex-shrink-0"
+                            <UserAvatar
+                              user={u}
+                              size="md"
+                              showStatusDot={true}
+                              className="ring-2 ring-purple-500/20"
                             />
                             <div className="min-w-0">
                               <p className="font-semibold text-white truncate group-hover:text-purple-300 transition-colors flex items-center gap-1.5">
@@ -237,35 +407,48 @@ export default function AdminUsersPage() {
                           </div>
                         </td>
 
-                        {/* Role */}
-                        <td className="py-4 px-4">
-                          {isAdmin ? (
-                            <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2 py-0.5 text-[10px] font-semibold text-purple-400 border border-purple-500/20">
-                              <ShieldCheck className="h-3 w-3" />
-                              Admin
+                        {/* Role & Plan Switcher */}
+                        <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex flex-col gap-1 items-start">
+                            {/* Role Select */}
+                            <select
+                              value={u.role}
+                              onChange={(e) => handleQuickChangeRole(u, e.target.value as UserRole, e as any)}
+                              className={`text-[10px] font-bold rounded-md px-2 py-0.5 border transition-all cursor-pointer ${
+                                isAdmin
+                                  ? "bg-purple-500/10 text-purple-400 border-purple-500/30"
+                                  : isMod
+                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/30"
+                                  : isPrem
+                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                                  : "bg-zinc-800 text-zinc-300 border-zinc-700"
+                              }`}
+                            >
+                              <option value="admin" className="bg-zinc-900 text-purple-400 font-bold">Admin</option>
+                              <option value="moderator" className="bg-zinc-900 text-sky-400 font-bold">Moderator</option>
+                              <option value="premium" className="bg-zinc-900 text-emerald-400 font-bold">Premium</option>
+                              <option value="member" className="bg-zinc-900 text-zinc-300">Member</option>
+                            </select>
+
+                            <span className="text-[10px] text-zinc-400 uppercase font-mono tracking-wider">
+                              Plan: <strong className="text-zinc-300">{u.subscriptionTier?.toUpperCase() || "FREE"}</strong>
                             </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
-                              User
-                            </span>
-                          )}
+                          </div>
                         </td>
 
-                        {/* Device & IP Address */}
+                        {/* Detailed IP Address & Telemetry */}
                         <td className="py-4 px-4">
-                          <div className="space-y-1 min-w-[150px]">
-                            <div className="flex items-center gap-1.5 text-[11px] text-zinc-300 font-medium truncate">
-                              <Laptop className="h-3.5 w-3.5 text-purple-400 flex-shrink-0" />
-                              <span className="truncate">{u.lastDevice || "Desktop Web"}</span>
-                            </div>
-                            <div className="flex items-center gap-1.5 text-[10px]">
-                              <span className="font-mono text-zinc-400 bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800">
+                          <div className="space-y-1 min-w-[170px]">
+                            {/* IP Box with Copy button */}
+                            <div className="flex items-center gap-1.5 text-[11px]">
+                              <span className="font-mono text-purple-300 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/30 font-semibold flex items-center gap-1">
+                                <Wifi className="h-3 w-3 text-purple-400" />
                                 {u.lastIpAddress || "127.0.0.1"}
                               </span>
                               <button
                                 onClick={(e) => handleCopyIp(u.lastIpAddress || "127.0.0.1", e)}
-                                title="Copy IP"
-                                className="p-0.5 rounded text-zinc-500 hover:text-white"
+                                title="Copy IP Address"
+                                className="p-1 rounded bg-zinc-800/80 text-zinc-400 hover:text-white transition-colors"
                               >
                                 {copiedIp === (u.lastIpAddress || "127.0.0.1") ? (
                                   <Check className="h-3 w-3 text-emerald-400" />
@@ -274,13 +457,23 @@ export default function AdminUsersPage() {
                                 )}
                               </button>
                             </div>
+
+                            {/* Device and Browser */}
+                            <div className="flex items-center gap-2 text-[10px] text-zinc-400 truncate">
+                              <span className="flex items-center gap-1 text-zinc-300">
+                                <Laptop className="h-3 w-3 text-zinc-400" />
+                                {u.lastDevice || "Desktop"}
+                              </span>
+                              <span>•</span>
+                              <span className="truncate text-zinc-400 font-medium">{u.lastBrowser || "Web"}</span>
+                            </div>
                           </div>
                         </td>
 
-                        {/* Storage Progress */}
-                        <td className="py-4 px-4 min-w-[150px]">
+                        {/* Storage Usage Progress */}
+                        <td className="py-4 px-4 min-w-[140px]">
                           <div className="space-y-1">
-                            <div className="flex justify-between text-[11px]">
+                            <div className="flex justify-between text-[10px]">
                               <span className="font-medium text-zinc-300">{formatBytes(u.usedBytes)}</span>
                               <span className="text-zinc-500">{formatBytes(u.quotaBytes)}</span>
                             </div>
@@ -295,23 +488,37 @@ export default function AdminUsersPage() {
                           </div>
                         </td>
 
+                        {/* Account Status Switcher */}
+                        <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
+                          <select
+                            value={u.status || "active"}
+                            onChange={(e) => handleQuickChangeStatus(u, e.target.value as any, e as any)}
+                            className={`text-[10px] font-bold rounded-md px-2 py-0.5 border transition-all cursor-pointer ${
+                              u.status === "banned"
+                                ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                                : u.status === "suspended"
+                                ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                            }`}
+                          >
+                            <option value="active" className="bg-zinc-900 text-emerald-400 font-bold">Active</option>
+                            <option value="suspended" className="bg-zinc-900 text-amber-400 font-bold">Suspended</option>
+                            <option value="banned" className="bg-zinc-900 text-rose-400 font-bold">Banned</option>
+                          </select>
+                        </td>
+
                         {/* Files & Shares count */}
                         <td className="py-4 px-4 text-zinc-300">
-                          <div className="flex items-center gap-3 text-[11px]">
-                            <span className="flex items-center gap-1 text-zinc-300 font-semibold">
+                          <div className="flex items-center gap-2.5 text-[11px]">
+                            <span className="flex items-center gap-1 text-zinc-300 font-semibold" title="Files count">
                               <FolderOpen className="h-3.5 w-3.5 text-sky-400" />
                               {u.filesCount}
                             </span>
-                            <span className="flex items-center gap-1 text-zinc-300 font-semibold">
+                            <span className="flex items-center gap-1 text-zinc-300 font-semibold" title="Shares count">
                               <Share2 className="h-3.5 w-3.5 text-emerald-400" />
                               {u.sharesCount}
                             </span>
                           </div>
-                        </td>
-
-                        {/* Joined / Last Active Date */}
-                        <td className="py-4 px-4 text-[11px] text-zinc-400 whitespace-nowrap">
-                          {formatRelativeTime(u.lastLogin || u.createdAt)}
                         </td>
 
                         {/* Actions */}
@@ -325,7 +532,7 @@ export default function AdminUsersPage() {
                                 variant="ghost"
                                 size="sm"
                                 className="text-xs h-8 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 gap-1 rounded-lg"
-                                title="Inspect User Files, Devices & Profile"
+                                title="Inspect User Full Details & IP History"
                               >
                                 <Eye className="h-3.5 w-3.5" />
                                 <span>Inspect</span>
@@ -335,12 +542,12 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={(e) => handleOpenQuotaModal(u, e)}
-                              title="Edit Storage Quota"
+                              onClick={(e) => handleOpenEditModal(u, e)}
+                              title="Edit User Role, Quota & Status"
                               className="text-xs h-8 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1 rounded-lg"
                             >
-                              <HardDrive className="h-3.5 w-3.5" />
-                              <span>Quota</span>
+                              <Edit2 className="h-3.5 w-3.5" />
+                              <span>Edit</span>
                             </Button>
 
                             <Button
@@ -364,67 +571,119 @@ export default function AdminUsersPage() {
         </div>
       </div>
 
-      {/* Quota Modal */}
+      {/* Comprehensive Edit User Modal */}
       <Dialog
-        open={Boolean(selectedUserForQuota)}
-        onOpenChange={(open) => !open && setSelectedUserForQuota(null)}
+        open={Boolean(selectedUserForEdit)}
+        onOpenChange={(open) => !open && setSelectedUserForEdit(null)}
       >
-        <DialogContent className="max-w-md rounded-3xl border border-zinc-800 bg-zinc-950 p-6">
+        <DialogContent className="max-w-lg rounded-3xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-              <HardDrive className="h-4 w-4 text-purple-400" />
-              <span>Adjust Cloud Quota</span>
+            <DialogTitle className="text-base font-bold text-white flex items-center gap-2.5">
+              <UserAvatar user={selectedUserForEdit} size="sm" />
+              <span>Edit Account: {selectedUserForEdit?.displayName}</span>
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
-            <p className="text-xs text-zinc-400">
-              Set storage limit for <strong className="text-white">{selectedUserForQuota?.displayName}</strong> ({selectedUserForQuota?.email}).
-            </p>
-
-            {/* Presets */}
-            <div className="grid grid-cols-3 gap-2">
-              {[10, 25, 50, 100, 250, 500].map((gb) => (
-                <button
-                  key={gb}
-                  type="button"
-                  onClick={() => setNewQuotaGb(gb)}
-                  className={`rounded-xl border p-2.5 text-xs font-semibold transition-all ${
-                    newQuotaGb === gb
-                      ? "border-purple-500 bg-purple-500/15 text-purple-300"
-                      : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700"
-                  }`}
-                >
-                  {gb} GB
-                </button>
-              ))}
+          <div className="space-y-4 py-2 text-xs">
+            {/* User Meta Summary */}
+            <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-1">
+              <p className="text-zinc-300 font-semibold">{selectedUserForEdit?.email}</p>
+              <p className="text-[11px] text-zinc-400 font-mono">
+                IP: <strong className="text-purple-300">{selectedUserForEdit?.lastIpAddress || "127.0.0.1"}</strong> • Client: {selectedUserForEdit?.lastDevice || "Desktop"} ({selectedUserForEdit?.lastBrowser || "Web"})
+              </p>
             </div>
 
-            <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-medium text-zinc-300">Custom Storage Quota (GB)</label>
-              <Input
-                type="number"
-                min={1}
-                max={5000}
-                value={newQuotaGb}
-                onChange={(e) => setNewQuotaGb(Number(e.target.value))}
-                className="bg-zinc-900 text-white rounded-xl"
+            {/* Role & Status Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-zinc-300">User Role</label>
+                <select
+                  value={editRole}
+                  onChange={(e) => setEditRole(e.target.value as UserRole)}
+                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
+                >
+                  <option value="member">Standard Member</option>
+                  <option value="premium">Premium Member</option>
+                  <option value="moderator">Support / Moderator</option>
+                  <option value="admin">Administrator (Full Access)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-zinc-300">Account Status</label>
+                <select
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value as any)}
+                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
+                >
+                  <option value="active">Active (Normal Access)</option>
+                  <option value="suspended">Suspended (Temporary)</option>
+                  <option value="banned">Banned (Blocked)</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Subscription Tier & Quota */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-zinc-300">Subscription Plan</label>
+                <select
+                  value={editTier}
+                  onChange={(e) => {
+                    const newT = e.target.value as SubscriptionTier;
+                    setEditTier(newT);
+                    if (newT === "enterprise") setEditQuotaGb(2048);
+                    else if (newT === "ultra") setEditQuotaGb(500);
+                    else if (newT === "pro") setEditQuotaGb(100);
+                    else if (newT === "free") setEditQuotaGb(10);
+                  }}
+                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
+                >
+                  <option value="free">Free Starter (10 GB)</option>
+                  <option value="pro">Pro Plan (100 GB)</option>
+                  <option value="ultra">Ultra Plan (500 GB)</option>
+                  <option value="enterprise">Enterprise (2 TB)</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-zinc-300">Quota Limit (GB)</label>
+                <Input
+                  type="number"
+                  min={1}
+                  max={10000}
+                  value={editQuotaGb}
+                  onChange={(e) => setEditQuotaGb(Number(e.target.value))}
+                  className="bg-zinc-900 text-white rounded-xl text-xs"
+                />
+              </div>
+            </div>
+
+            {/* Admin Notes */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-zinc-300">Internal Admin Notes</label>
+              <textarea
+                value={editNotes}
+                onChange={(e) => setEditNotes(e.target.value)}
+                placeholder="Write private notes about this user, reasons for bans/upgrades, or special permissions..."
+                rows={3}
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-purple-500"
               />
             </div>
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="ghost" size="sm" onClick={() => setSelectedUserForQuota(null)}>
+            <Button variant="ghost" size="sm" onClick={() => setSelectedUserForEdit(null)}>
               Cancel
             </Button>
             <Button
               variant="primary"
               size="sm"
-              onClick={handleSaveQuota}
+              onClick={handleSaveUserEdit}
               disabled={isUpdating}
               className="bg-purple-600 hover:bg-purple-500 text-xs rounded-xl"
             >
-              {isUpdating ? "Saving..." : "Save Quota"}
+              {isUpdating ? "Saving Changes..." : "Save All Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -444,7 +703,7 @@ export default function AdminUsersPage() {
           </DialogHeader>
 
           <p className="text-xs text-zinc-300 py-2">
-            Are you sure you want to permanently delete user <strong className="text-white">{selectedUserForDelete?.email}</strong>? All their stored files in R2 and active share links will be purged.
+            Are you sure you want to permanently delete user <strong className="text-white">{selectedUserForDelete?.email}</strong>? All their stored files in R2 and active share links will be purged immediately.
           </p>
 
           <DialogFooter className="gap-2 sm:gap-0">

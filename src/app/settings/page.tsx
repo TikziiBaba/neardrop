@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import {
   User,
   Shield,
@@ -209,14 +210,11 @@ export default function SettingsPage() {
               {/* Avatar File Uploader */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80">
                 <div className="relative group flex-shrink-0">
-                  <img
-                    src={
-                      avatarUrl ||
-                      user?.avatarUrl ||
-                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                    }
-                    alt="Avatar"
-                    className="h-20 w-20 rounded-full object-cover ring-2 ring-purple-500/40"
+                  <UserAvatar
+                    src={avatarUrl || user?.avatarUrl}
+                    user={user}
+                    size="2xl"
+                    className="ring-2 ring-purple-500/40"
                   />
                   {isUploadingAvatar && (
                     <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center text-[10px] text-white font-bold">

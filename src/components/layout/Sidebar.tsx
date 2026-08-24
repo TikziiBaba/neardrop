@@ -23,6 +23,7 @@ import { useStorage } from "@/lib/storage/store";
 import { formatBytes } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Logo } from "@/components/ui/Logo";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
@@ -155,14 +156,7 @@ export const Sidebar: React.FC = () => {
         {user && (
           <div className="flex items-center justify-between rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-2.5">
             <div className="flex items-center gap-2.5 min-w-0">
-              <img
-                src={
-                  user.avatarUrl ||
-                  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                }
-                alt={user.displayName}
-                className="h-8 w-8 rounded-full object-cover ring-1 ring-sky-500/30 flex-shrink-0"
-              />
+              <UserAvatar user={user} size="sm" className="ring-1 ring-sky-500/30" />
               <div className="truncate">
                 <div className="flex items-center gap-1.5">
                   <p className="text-xs font-semibold text-white truncate">{user.displayName}</p>

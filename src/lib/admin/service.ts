@@ -1,7 +1,7 @@
 import { getServiceClient } from "@/lib/supabase/auth-helper";
 import { getR2Client, deleteR2Object } from "@/lib/r2/s3-client";
 import { HeadBucketCommand } from "@aws-sdk/client-s3";
-import { AdminStats, AdminUser, CloudFile, ShareLink, AdminAuditLog, SystemHealth, UserProfile } from "@/types";
+import { AdminStats, AdminUser, CloudFile, ShareLink, AdminAuditLog, SystemHealth, UserProfile, SubscriptionTier, UserRole } from "@/types";
 import { getFileCategory } from "@/lib/utils";
 
 // In-memory audit log buffer for live tracking
@@ -188,13 +188,17 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
     shareCountMap[s.user_id] = (shareCountMap[s.user_id] || 0) + 1;
   });
 
-  const userLatestDeviceMap: Record<string, { deviceName: string; ipAddress: string; platform: string; lastSeen: string }> = {};
+  const userLatestDeviceMap: Record<
+    string,
+    { deviceName: string; ipAddress: string; platform: string; browser: string; lastSeen: string }
+  > = {};
   devices?.forEach((d) => {
     if (!userLatestDeviceMap[d.user_id]) {
       userLatestDeviceMap[d.user_id] = {
         deviceName: d.device_name || "Web Client",
         ipAddress: (d as any).ip_address || "127.0.0.1",
         platform: d.platform || "windows",
+        browser: (d as any).browser || "Chrome / Web",
         lastSeen: d.last_seen || d.created_at,
       };
     }
@@ -203,7 +207,9 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   return profiles.map((p, idx) => {
     const devInfo = userLatestDeviceMap[p.id];
     const quota = Number(p.quota_bytes || 10737418240);
-    const tier = quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free";
+    const tier =
+      (p.subscription_tier as SubscriptionTier) ||
+      (quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free");
     const envAdmins = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
       .toLowerCase()
       .split(",")
@@ -228,10 +234,13 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       usedBytes: userRealUsageMap[p.id] || Number(p.used_bytes || 0),
       role,
       subscriptionTier: tier,
-      subscriptionStatus: "active",
-      status: "active",
-      lastIpAddress: devInfo?.ipAddress || "127.0.0.1",
-      lastDevice: devInfo?.deviceName || "Desktop Web",
+      subscriptionStatus: p.subscription_status || "active",
+      status: (p.status as any) || "active",
+      lastIpAddress: p.last_ip || devInfo?.ipAddress || "127.0.0.1",
+      lastDevice: p.last_device || devInfo?.deviceName || "Desktop Web",
+      lastBrowser: p.last_browser || devInfo?.browser || "Web Browser",
+      lastPlatform: p.last_platform || devInfo?.platform || "windows",
+      notes: p.notes || "",
       createdAt: p.created_at,
       updatedAt: p.updated_at,
       filesCount: fileCountMap[p.id] || 0,
@@ -241,24 +250,61 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
   });
 }
 
-export async function updateUserStorageQuota(userId: string, quotaBytes: number) {
+export async function updateAdminUser(
+  userId: string,
+  updates: {
+    role?: UserRole;
+    subscriptionTier?: SubscriptionTier;
+    quotaBytes?: number;
+    status?: "active" | "suspended" | "banned";
+    displayName?: string;
+    notes?: string;
+  }
+) {
   const supabase = getServiceClient();
-  const { error } = await supabase
+  const updatePayload: Record<string, any> = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (updates.role !== undefined) updatePayload.role = updates.role;
+  if (updates.subscriptionTier !== undefined) {
+    updatePayload.subscription_tier = updates.subscriptionTier;
+    if (updates.quotaBytes === undefined) {
+      if (updates.subscriptionTier === "enterprise") updatePayload.quota_bytes = 2199023255552;
+      else if (updates.subscriptionTier === "ultra") updatePayload.quota_bytes = 536870912000;
+      else if (updates.subscriptionTier === "pro") updatePayload.quota_bytes = 107374182400;
+      else if (updates.subscriptionTier === "free") updatePayload.quota_bytes = 10737418240;
+    }
+  }
+  if (updates.quotaBytes !== undefined) updatePayload.quota_bytes = Number(updates.quotaBytes);
+  if (updates.status !== undefined) updatePayload.status = updates.status;
+  if (updates.displayName !== undefined) updatePayload.display_name = updates.displayName;
+  if (updates.notes !== undefined) updatePayload.notes = updates.notes;
+
+  const { data, error } = await supabase
     .from("profiles")
-    .update({ quota_bytes: quotaBytes, updated_at: new Date().toISOString() })
-    .eq("id", userId);
+    .update(updatePayload)
+    .eq("id", userId)
+    .select()
+    .single();
 
   if (error) throw error;
 
   logAdminAction({
-    action: "UPDATE_QUOTA",
+    action: "UPDATE_USER",
     resourceType: "user",
     resourceId: userId,
-    details: `Updated storage quota to ${(quotaBytes / (1024 * 1024 * 1024)).toFixed(0)} GB`,
-    status: "success",
+    details: `Updated parameters: ${Object.keys(updates)
+      .map((k) => `${k}=${(updates as any)[k]}`)
+      .join(", ")}`,
+    status: updates.status === "banned" ? "danger" : "success",
   });
 
-  return true;
+  return data;
+}
+
+export async function updateUserStorageQuota(userId: string, quotaBytes: number) {
+  return updateAdminUser(userId, { quotaBytes });
 }
 
 export async function fetchAdminFiles(userIdFilter?: string): Promise<CloudFile[]> {
@@ -466,6 +512,7 @@ export async function fetchUserFullDetail(userId: string) {
       ? "premium"
       : "member";
 
+  const firstDev = devices[0];
   const user: AdminUser = {
     id: profile.id,
     email: profile.email,
@@ -475,8 +522,13 @@ export async function fetchUserFullDetail(userId: string) {
     usedBytes: actualUsedBytes || Number(profile.used_bytes || 0),
     role,
     subscriptionTier: tier,
-    subscriptionStatus: "active",
-    status: "active",
+    subscriptionStatus: profile.subscription_status || "active",
+    status: (profile.status as any) || "active",
+    lastIpAddress: profile.last_ip || (firstDev as any)?.ip_address || "127.0.0.1",
+    lastDevice: profile.last_device || firstDev?.device_name || "Desktop Web",
+    lastBrowser: profile.last_browser || (firstDev as any)?.browser || "Web Browser",
+    lastPlatform: profile.last_platform || firstDev?.platform || "windows",
+    notes: profile.notes || "",
     createdAt: profile.created_at,
     updatedAt: profile.updated_at,
     filesCount: files.length,
