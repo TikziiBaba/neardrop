@@ -1,9 +1,9 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useAuth } from "@/lib/auth/context";
@@ -19,6 +19,7 @@ import {
   ShieldAlert,
   Server,
   HardDrive,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -28,7 +29,33 @@ interface AdminLayoutProps {
 
 export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!user) {
+        router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+      } else if (user.role !== "admin" && user.role !== "moderator") {
+        router.replace("/dashboard");
+      }
+    }
+  }, [user, isLoading, router, pathname]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-950">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+          <p className="text-xs text-zinc-400 font-medium animate-pulse">Loading Admin Control Plane...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user || (user.role !== "admin" && user.role !== "moderator")) {
+    return null;
+  }
 
   const navItems = [
     { label: "Overview", href: "/admin", icon: LayoutDashboard },

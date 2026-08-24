@@ -6,11 +6,13 @@ import { ArrowRight, Sparkles, Shield, Zap, Lock, HardDrive, CheckCircle2 } from
 import { Button } from "@/components/ui/button";
 import { DropZone } from "@/components/upload/DropZone";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
 
 export const HeroSection: React.FC = () => {
   const router = useRouter();
+  const { user } = useAuth();
   const { t } = useLanguage();
 
   return (
@@ -69,7 +71,7 @@ export const HeroSection: React.FC = () => {
               transition={{ delay: 0.35, duration: 0.5 }}
               className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2"
             >
-              <Link href="/dashboard">
+              <Link href={user ? "/dashboard" : "/register"}>
                 <Button variant="primary" size="lg" className="gap-2 shadow-xl shadow-sky-500/20 hover:scale-[1.02] transition-transform">
                   <span>{t.hero.ctaPrimary}</span>
                   <ArrowRight className="h-4 w-4" />
@@ -121,7 +123,7 @@ export const HeroSection: React.FC = () => {
                 <span className="text-[11px] font-mono text-zinc-500">{t.hero.dropzoneMockUrl}</span>
               </div>
 
-              <DropZone onUploadStarted={() => router.push("/dashboard")} />
+              <DropZone onUploadStarted={() => router.push(user ? "/dashboard" : "/register")} />
             </div>
           </motion.div>
         </div>

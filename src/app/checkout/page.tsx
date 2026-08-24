@@ -35,7 +35,7 @@ function CheckoutContent() {
   const [cardNumber, setCardNumber] = useState("•••• •••• •••• 4242");
   const [expiry, setExpiry] = useState("12/28");
   const [cvc, setCvc] = useState("•••");
-  const [cardHolder, setCardHolder] = useState(user?.displayName || "Bekir");
+  const [cardHolder, setCardHolder] = useState(user?.displayName || "Cardholder");
   const [coupon, setCoupon] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Sparkles, Mail, Lock, ArrowRight, AlertCircle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Sparkles, Mail, Lock, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
@@ -12,8 +12,10 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/dashboard";
   const { login, signInWithOAuth } = useAuth();
   const { t } = useLanguage();
 
@@ -39,7 +41,7 @@ export default function LoginPage() {
         setError(res.error || t.login.invalidCredentials);
       } else {
         toast.success(t.login.welcomeToast);
-        router.push("/dashboard");
+        router.push(redirectUrl);
       }
     } catch (err: any) {
       setError(err.message || t.login.unexpectedError);
@@ -205,5 +207,19 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

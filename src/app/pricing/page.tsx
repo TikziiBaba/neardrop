@@ -170,7 +170,7 @@ export default function PricingPage() {
                     Current Plan
                   </Button>
                 ) : plan.id === "free" ? (
-                  <Link href="/dashboard" className="block w-full">
+                  <Link href={user ? "/dashboard" : "/register"} className="block w-full">
                     <Button variant="outline" className="w-full text-xs rounded-xl">
                       Get Started Free
                     </Button>

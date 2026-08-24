@@ -24,21 +24,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Helper: Determine role
   const determineRole = (email: string, dbRole?: string): UserRole => {
-    if (dbRole === "admin" || dbRole === "moderator" || dbRole === "premium") {
+    if (dbRole === "admin" || dbRole === "moderator" || dbRole === "premium" || dbRole === "member") {
       return dbRole as UserRole;
     }
-    const lower = email.toLowerCase();
+    const lower = email.toLowerCase().trim();
     const envAdmins = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
       .toLowerCase()
       .split(",")
       .map((e) => e.trim())
       .filter(Boolean);
 
-    if (envAdmins.includes(lower) || lower.includes("admin") || lower.includes("bekir")) {
+    if (envAdmins.length > 0 && envAdmins.includes(lower)) {
       return "admin";
-    }
-    if (lower.includes("mod") || lower.includes("support") || lower.includes("yetkili")) {
-      return "moderator";
     }
     return "member";
   };

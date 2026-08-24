@@ -4,10 +4,12 @@ import React from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
 
 export const CtaSection: React.FC = () => {
+  const { user } = useAuth();
   const { t } = useLanguage();
 
   return (
@@ -36,13 +38,13 @@ export const CtaSection: React.FC = () => {
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-3.5 pt-4">
-          <Link href="/register">
+          <Link href={user ? "/dashboard" : "/register"}>
             <Button variant="primary" size="lg" className="gap-2 shadow-xl shadow-sky-500/25 hover:scale-[1.02] transition-transform">
               <span>{t.cta.ctaPrimary}</span>
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <Link href="/dashboard">
+          <Link href={user ? "/dashboard" : "/login"}>
             <Button variant="outline" size="lg" className="hover:bg-zinc-800/80">
               {t.cta.ctaSecondary}
             </Button>

@@ -1,9 +1,9 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
@@ -16,15 +16,36 @@ import {
   HardDrive,
   Settings,
   Sparkles,
-  Upload,
-  Search,
-  Bell,
+  Loader2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [user, isLoading, router, pathname]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-zinc-950">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+          <p className="text-xs text-zinc-400 font-medium animate-pulse">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const isStaffOrAdmin = user?.role === "admin" || user?.role === "moderator";
 
   const mobileNav = [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -64,16 +85,18 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-2.5">
-            <Link
-              href="/admin"
-              className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-950/40 px-2.5 py-1 text-xs font-semibold text-purple-300 hover:bg-purple-900/40 transition-colors"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-              </span>
-              <span>Admin</span>
-            </Link>
+            {isStaffOrAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 rounded-full border border-purple-500/30 bg-purple-950/40 px-2.5 py-1 text-xs font-semibold text-purple-300 hover:bg-purple-900/40 transition-colors"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                </span>
+                <span>Admin</span>
+              </Link>
+            )}
 
             <LanguageToggle />
             <ThemeToggle />

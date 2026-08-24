@@ -211,13 +211,9 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
       .filter(Boolean);
 
     const role =
-      p.role === "admin" ||
-      idx === 0 ||
-      envAdmins.includes(p.email.toLowerCase()) ||
-      p.email.includes("admin") ||
-      p.email.includes("bekir")
+      p.role === "admin" || (envAdmins.length > 0 && envAdmins.includes(p.email.toLowerCase()))
         ? "admin"
-        : p.role === "moderator" || p.email.includes("mod") || p.email.includes("support")
+        : p.role === "moderator"
         ? "moderator"
         : tier !== "free" || p.role === "premium"
         ? "premium"
@@ -455,13 +451,20 @@ export async function fetchUserFullDetail(userId: string) {
   const actualUsedBytes = files.reduce((acc, f) => acc + f.size, 0);
   const quota = Number(profile.quota_bytes || 10737418240);
   const tier = quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free";
-  const role = profile.email.includes("admin") || profile.email.includes("bekir")
-    ? "admin"
-    : profile.email.includes("mod") || profile.email.includes("support")
-    ? "moderator"
-    : tier !== "free"
-    ? "premium"
-    : "member";
+  const envAdmins = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
+    .toLowerCase()
+    .split(",")
+    .map((e) => e.trim())
+    .filter(Boolean);
+
+  const role =
+    profile.role === "admin" || (envAdmins.length > 0 && envAdmins.includes(profile.email.toLowerCase()))
+      ? "admin"
+      : profile.role === "moderator"
+      ? "moderator"
+      : tier !== "free" || profile.role === "premium"
+      ? "premium"
+      : "member";
 
   const user: AdminUser = {
     id: profile.id,

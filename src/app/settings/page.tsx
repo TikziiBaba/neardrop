@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useAuth } from "@/lib/auth/context";
@@ -38,11 +38,19 @@ export default function SettingsPage() {
   const { settings, updateSettings } = useStorage();
 
   // Profile form state
-  const [displayName, setDisplayName] = useState(user?.displayName || "Bekir");
-  const [email] = useState(user?.email || "bekir@neardrop.bekirr.dev");
+  const [displayName, setDisplayName] = useState(user?.displayName || "");
+  const [email, setEmail] = useState(user?.email || "");
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl || "");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName || "");
+      setEmail(user.email || "");
+      setAvatarUrl(user.avatarUrl || "");
+    }
+  }, [user]);
 
   // Preferences
   const [defaultExpiry, setDefaultExpiry] = useState<number>(settings.defaultExpirationHours || 24);
