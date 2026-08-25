@@ -5,8 +5,6 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useAuth } from "@/lib/auth/context";
 import {
   LayoutDashboard,
@@ -98,9 +96,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                 <span>Admin</span>
               </Link>
             )}
-
-            <LanguageToggle />
-            <ThemeToggle />
 
             {user && (
               <Link href="/settings" className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 p-1 pr-2.5 hover:border-zinc-700 transition-colors">

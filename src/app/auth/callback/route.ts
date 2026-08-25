@@ -44,20 +44,34 @@ export async function GET(request: NextRequest) {
 
         const { data: existingProfile } = await supabase
           .from("profiles")
-          .select("id")
+          .select("id, avatar_url")
           .eq("id", user.id)
-          .single();
+          .maybeSingle();
 
         if (!existingProfile) {
+          // Check if an existing profile with the same email already exists (e.g. Google <-> GitHub)
+          const { data: sameEmailProfile } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("email", email)
+            .order("created_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
+
+          const finalAvatar = sameEmailProfile?.avatar_url || avatarUrl;
+          const finalRole = sameEmailProfile?.role || "member";
+          const finalTier = sameEmailProfile?.subscription_tier || "free";
+          const finalQuota = sameEmailProfile?.quota_bytes || 10737418240;
+
           await supabase.from("profiles").insert({
             id: user.id,
             email,
-            display_name: displayName,
-            avatar_url: avatarUrl,
-            quota_bytes: 10737418240, // 10 GB Free starter
-            used_bytes: 0,
-            role: "member",
-            subscription_tier: "free",
+            display_name: sameEmailProfile?.display_name || displayName,
+            avatar_url: finalAvatar,
+            quota_bytes: finalQuota,
+            used_bytes: sameEmailProfile?.used_bytes || 0,
+            role: finalRole,
+            subscription_tier: finalTier,
             subscription_status: "active",
           });
         }

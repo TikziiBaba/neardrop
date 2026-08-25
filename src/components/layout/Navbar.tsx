@@ -7,8 +7,6 @@ import { usePathname } from "next/navigation";
 import { Menu, X, ArrowRight, LogOut, Settings, Layers } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/Logo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
@@ -16,18 +14,23 @@ import { UserAvatar } from "@/components/ui/UserAvatar";
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { locale, setLocale, t } = useLanguage();
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/forgot-password");
   const isPublicSharePage = pathname.startsWith("/s/");
+  const isDashboardOrAppPage =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/files") ||
+    pathname.startsWith("/shared") ||
+    pathname.startsWith("/transfers") ||
+    pathname.startsWith("/storage") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/support") ||
+    pathname.startsWith("/admin");
 
-  if (isAuthPage || isPublicSharePage) return null;
-
-  const toggleLanguage = () => {
-    setLocale(locale === "tr" ? "en" : "tr");
-  };
+  if (isAuthPage || isPublicSharePage || isDashboardOrAppPage) return null;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-colors">
@@ -111,9 +114,6 @@ export const Navbar: React.FC = () => {
 
         {/* Right CTA / Auth controls */}
         <div className="hidden md:flex items-center gap-3">
-          <LanguageToggle />
-          <ThemeToggle />
-
           {!user ? (
             <div className="flex items-center gap-2">
               <Link href="/login">
@@ -185,8 +185,6 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile Hamburger Button */}
         <div className="flex items-center gap-2 md:hidden">
-          <LanguageToggle />
-          <ThemeToggle />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"

@@ -5,8 +5,6 @@ import Link from "next/link";
 import { Sparkles, Mail, ArrowRight, CheckCircle2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
@@ -28,12 +26,6 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative">
-      {/* Top right quick controls */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-2 z-10">
-        <LanguageToggle />
-        <ThemeToggle />
-      </div>
-
       <div className="pointer-events-none absolute inset-0 hero-glow" />
 
       <div className="relative w-full max-w-md space-y-6">

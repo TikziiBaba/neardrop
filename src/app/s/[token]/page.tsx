@@ -24,12 +24,10 @@ import {
   HardDrive,
   Hash,
   ArrowRight,
-  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 
@@ -37,7 +35,7 @@ export default function PublicSharePage() {
   const params = useParams();
   const token = params?.token as string;
   const { getShareByToken, unlockShareDownload } = useStorage();
-  const { locale, setLocale, t } = useLanguage();
+  const { t } = useLanguage();
 
   const [share, setShare] = useState<ShareLink | null>(null);
   const [file, setFile] = useState<CloudFile | null>(null);
@@ -129,10 +127,6 @@ export default function PublicSharePage() {
     }
   };
 
-  const toggleLanguage = () => {
-    setLocale(locale === "tr" ? "en" : "tr");
-  };
-
   return (
     <div className="min-h-screen flex flex-col justify-between bg-zinc-950 text-foreground relative overflow-hidden">
       {/* Background glow */}
@@ -147,17 +141,6 @@ export default function PublicSharePage() {
           </div>
           <span className="text-base font-bold text-white tracking-tight">NearDrop</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleLanguage}
-            aria-label={t.langToggle.label}
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-2.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition-colors text-xs font-semibold"
-          >
-            <Globe className="h-4 w-4" />
-            <span>{locale === "tr" ? "EN" : "TR"}</span>
-          </button>
-          <ThemeToggle />
-        </div>
       </header>
 
       {/* Main Share Card Content */}

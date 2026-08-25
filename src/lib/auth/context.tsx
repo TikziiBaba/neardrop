@@ -55,15 +55,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchProfile = useCallback(
     async (userId: string, email: string, userMetadata?: any): Promise<UserProfile | null> => {
       if (!supabase) return null;
-      const { data: profile } = await supabase
+
+      // 1. Check profile by user ID
+      let { data: profile } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
+
+      // 2. If not found by ID, look up by email to link same-user accounts (e.g. Google & GitHub)
+      if (!profile && email) {
+        const { data: profileByEmail } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("email", email)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (profileByEmail) {
+          profile = profileByEmail;
+        }
+      }
+
+      // 3. Check if there is an existing custom avatar in any profile with this email
+      let existingAvatar = profile?.avatar_url;
+      if (!existingAvatar && email) {
+        const { data: pWithAvatar } = await supabase
+          .from("profiles")
+          .select("avatar_url")
+          .eq("email", email)
+          .not("avatar_url", "is", null)
+          .limit(1)
+          .maybeSingle();
+
+        if (pWithAvatar?.avatar_url) {
+          existingAvatar = pWithAvatar.avatar_url;
+        }
+      }
 
       const meta = userMetadata || {};
       const displayName = profile?.display_name || meta.full_name || meta.user_name || meta.name || email.split("@")[0] || "User";
-      const avatarUrl = profile?.avatar_url || meta.avatar_url || meta.picture || "";
+      const avatarUrl = existingAvatar || meta.avatar_url || meta.picture || "";
       const quotaBytes = profile?.quota_bytes || 10737418240; // 10 GB default
       const role = determineRole(email, profile?.role);
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
@@ -73,7 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: profile.id,
           email: profile.email || email,
           displayName: profile.display_name || displayName,
-          avatarUrl: profile.avatar_url || avatarUrl,
+          avatarUrl: existingAvatar || avatarUrl,
           quotaBytes,
           usedBytes: profile.used_bytes || 0,
           role,
@@ -247,15 +280,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = { ...user, ...updates, updatedAt: new Date().toISOString() };
       setUser(updated);
 
+      const updateData = {
+        display_name: updated.displayName,
+        avatar_url: updated.avatarUrl,
+        quota_bytes: updated.quotaBytes,
+        updated_at: updated.updatedAt,
+      };
+
       await supabase
         .from("profiles")
-        .update({
-          display_name: updated.displayName,
-          avatar_url: updated.avatarUrl,
-          quota_bytes: updated.quotaBytes,
-          updated_at: updated.updatedAt,
-        })
+        .update(updateData)
         .eq("id", user.id);
+
+      if (user.email) {
+        await supabase
+          .from("profiles")
+          .update(updateData)
+          .eq("email", user.email);
+      }
     },
     [user, supabase]
   );

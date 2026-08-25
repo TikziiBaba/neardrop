@@ -54,13 +54,28 @@ export async function POST(req: NextRequest) {
 
     // Update in Supabase
     const supabase = getServiceClient();
+    const { data: userProfile } = await supabase
+      .from("profiles")
+      .select("email")
+      .eq("id", userId)
+      .maybeSingle();
+
+    const updatePayload = {
+      avatar_url: avatarUrl,
+      updated_at: new Date().toISOString(),
+    };
+
     const { error: dbError } = await supabase
       .from("profiles")
-      .update({
-        avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updatePayload)
       .eq("id", userId);
+
+    if (userProfile?.email) {
+      await supabase
+        .from("profiles")
+        .update(updatePayload)
+        .eq("email", userProfile.email);
+    }
 
     if (dbError) {
       console.error("Failed to update profile avatar in DB:", dbError);

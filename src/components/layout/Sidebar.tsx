@@ -42,7 +42,6 @@ export const Sidebar: React.FC = () => {
     { label: "Shared Links", href: "/shared", icon: Share2, badge: stats.sharedCount },
     { label: "Pricing & Plans", href: "/pricing", icon: CreditCard },
     { label: "Support", href: "/support", icon: LifeBuoy },
-    { label: "Settings", href: "/settings", icon: Settings },
   ];
 
   const quotaPercent = Math.round((stats.usedBytes / (stats.quotaBytes || 1)) * 100) || 0;
@@ -90,33 +89,31 @@ export const Sidebar: React.FC = () => {
             );
           })}
 
-          {isStaffOrAdmin && (
-            <>
-              <div className="pt-3 pb-1">
-                <div className="h-[1px] bg-zinc-800/80" />
-              </div>
+          <div className="pt-3 pb-1">
+            <div className="h-[1px] bg-zinc-800/80" />
+          </div>
 
-              <Link
-                href="/admin"
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                  pathname.startsWith("/admin")
-                    ? "bg-purple-950/40 text-purple-300 border border-purple-500/30 font-semibold shadow-sm"
-                    : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <ShieldCheck
-                    className={`h-4 w-4 transition-colors ${
-                      pathname.startsWith("/admin") ? "text-purple-400" : "text-zinc-400 group-hover:text-purple-400"
-                    }`}
-                  />
-                  <span>Admin Panel</span>
-                </div>
-                <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-purple-400">
-                  {user?.role === "admin" ? "Admin" : "Staff"}
-                </span>
-              </Link>
-            </>
+          {isStaffOrAdmin && (
+            <Link
+              href="/admin"
+              className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                pathname.startsWith("/admin")
+                  ? "bg-purple-950/40 text-purple-300 border border-purple-500/30 font-semibold shadow-sm"
+                  : "text-zinc-400 hover:text-purple-300 hover:bg-purple-500/10"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <ShieldCheck
+                  className={`h-4 w-4 transition-colors ${
+                    pathname.startsWith("/admin") ? "text-purple-400" : "text-zinc-400 group-hover:text-purple-400"
+                  }`}
+                />
+                <span>Admin Panel</span>
+              </div>
+              <span className="rounded-md bg-purple-500/10 border border-purple-500/20 px-1.5 py-0.5 text-[9px] font-semibold text-purple-400">
+                {user?.role === "admin" ? "Admin" : "Staff"}
+              </span>
+            </Link>
           )}
 
           <Link
@@ -129,7 +126,7 @@ export const Sidebar: React.FC = () => {
           >
             <Settings
               className={`h-4 w-4 transition-colors ${
-                pathname === "/settings" ? "text-sky-400" : "text-zinc-400 group-hover:text-zinc-200"
+                pathname === "/settings" ? "text-purple-400" : "text-zinc-400 group-hover:text-zinc-200"
               }`}
             />
             <span>Settings</span>

@@ -167,10 +167,6 @@ export default function SettingsPage() {
               <HardDrive className="h-3.5 w-3.5" />
               <span>Share Defaults</span>
             </TabsTrigger>
-            <TabsTrigger value="appearance" className="gap-2 text-xs">
-              <Palette className="h-3.5 w-3.5" />
-              <span>Appearance</span>
-            </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2 text-xs">
               <Bell className="h-3.5 w-3.5" />
               <span>Notifications</span>
@@ -399,45 +395,7 @@ export default function SettingsPage() {
             </div>
           </TabsContent>
 
-          {/* 4. Appearance Tab */}
-          <TabsContent value="appearance" className="space-y-6">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
-              <h3 className="text-sm font-bold text-white">Theme Selection</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  { id: "dark", label: "Dark Mode", desc: "Default dark-first palette", icon: Moon },
-                  { id: "light", label: "Light Mode", desc: "Crisp bright clean interface", icon: Sun },
-                  { id: "system", label: "System Sync", desc: "Follows OS appearance", icon: Laptop },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  const isSelected = themePreference === item.id;
-                  return (
-                    <div
-                      key={item.id}
-                      onClick={() => handleThemeChange(item.id as any)}
-                      className={`cursor-pointer rounded-2xl border p-5 space-y-3 transition-all ${
-                        isSelected
-                          ? "border-sky-500 bg-sky-500/10 text-white"
-                          : "border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:border-zinc-700"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <Icon className={`h-5 w-5 ${isSelected ? "text-sky-400" : "text-zinc-500"}`} />
-                        {isSelected && <Check className="h-4 w-4 text-sky-400" />}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-xs text-white">{item.label}</h4>
-                        <p className="text-[11px] text-zinc-500">{item.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </TabsContent>
-
-          {/* 5. Notifications Tab */}
+          {/* 4. Notifications Tab */}
           <TabsContent value="notifications" className="space-y-6">
             <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
               <h3 className="text-sm font-bold text-white">Email & Activity Alerts</h3>

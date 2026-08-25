@@ -4,8 +4,6 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useAuth } from "@/lib/auth/context";
 import {
   LayoutDashboard,
@@ -179,13 +177,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           <div className="flex items-center gap-3">
             <Link
               href="/dashboard"
-              className="sm:hidden flex items-center gap-1 text-xs text-zinc-400 hover:text-white"
+              className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
             >
-              <ArrowLeft className="h-3 w-3" />
-              <span>App</span>
+              <ArrowLeft className="h-3.5 w-3.5" />
+              <span>Back to App</span>
             </Link>
-            <LanguageToggle />
-            <ThemeToggle />
             {user && (
               <div className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/60 p-1 pr-3">
                 <UserAvatar user={user} size="sm" className="ring-1 ring-purple-500/40" />
