@@ -3,6 +3,8 @@
 import React, { useState, useRef } from "react";
 import { UploadCloud, FolderUp, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, ArrowRight } from "lucide-react";
 import { useStorage } from "@/lib/storage/store";
+import { useLanguage } from "@/lib/i18n/context";
+import { extractFilesFromDataTransfer } from "@/lib/utils/folder-upload";
 import { formatBytes, formatSpeed } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -15,6 +17,7 @@ interface DropZoneProps {
 
 export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadStarted }) => {
   const { uploadFiles, transfers, cancelTransfer } = useStorage();
+  const { t } = useLanguage();
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -38,24 +41,26 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
     e.stopPropagation();
     setIsDragging(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      toast.info(`Preparing upload for ${e.dataTransfer.files.length} file(s)...`);
-      onUploadStarted?.();
-      try {
-        await uploadFiles(e.dataTransfer.files);
+    try {
+      const extractedFiles = await extractFilesFromDataTransfer(e.dataTransfer);
+      if (extractedFiles.length > 0) {
+        toast.info(`Preparing upload for ${extractedFiles.length} file(s)...`);
+        onUploadStarted?.();
+        await uploadFiles(extractedFiles);
         toast.success("Files successfully uploaded to cloud storage!");
-      } catch (err: any) {
-        toast.error(err.message || "Upload failed. Please check your storage settings.");
       }
+    } catch (err: any) {
+      toast.error(err.message || "Upload failed. Please check your storage settings.");
     }
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      toast.info(`Preparing upload for ${e.target.files.length} file(s)...`);
+      const filesArray = Array.from(e.target.files);
+      toast.info(`Preparing upload for ${filesArray.length} file(s)...`);
       onUploadStarted?.();
       try {
-        await uploadFiles(e.target.files);
+        await uploadFiles(filesArray);
         toast.success("Files successfully uploaded to cloud storage!");
       } catch (err: any) {
         toast.error(err.message || "Upload failed. Please check your storage settings.");
@@ -108,10 +113,10 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
 
           <div className="space-y-1.5 max-w-md mx-auto">
             <h3 className="text-base sm:text-lg font-semibold tracking-tight text-white">
-              {isDragging ? "Drop your files here" : "Drag & drop files or folders"}
+              {isDragging ? t.dropzone.dropHere : t.dropzone.dragDropHint}
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Files are securely encrypted and stored with Cloudflare R2 presigned URLs. Up to available quota.
+              {t.dropzone.r2Description}
             </p>
           </div>
 
@@ -125,7 +130,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
               className="gap-2 shadow-lg shadow-sky-500/25"
             >
               <UploadCloud className="h-4 w-4" />
-              <span>Choose Files</span>
+              <span>{t.dropzone.chooseFiles}</span>
             </Button>
 
             <Button
@@ -136,14 +141,14 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
               className="gap-2"
             >
               <FolderUp className="h-4 w-4 text-sky-400" />
-              <span>Upload Folder</span>
+              <span>{t.dropzone.uploadFolder}</span>
             </Button>
           </div>
 
           <div className="flex items-center gap-4 text-[11px] text-zinc-500 pt-1">
-            <span className="flex items-center gap-1">✓ End-to-end encrypted</span>
-            <span className="flex items-center gap-1">✓ Direct streaming</span>
-            <span className="flex items-center gap-1">✓ Unlimited speed</span>
+            <span className="flex items-center gap-1">✓ {t.dropzone.encrypted}</span>
+            <span className="flex items-center gap-1">✓ {t.dropzone.directStreaming}</span>
+            <span className="flex items-center gap-1">✓ {t.dropzone.unlimitedSpeed}</span>
           </div>
         </div>
       </div>
@@ -154,9 +159,9 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
           <div className="flex items-center justify-between text-xs font-semibold text-zinc-300 px-1">
             <span className="flex items-center gap-2">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-400" />
-              <span>Uploading ({activeTransfers.length})</span>
+              <span>{t.dropzone.uploading} ({activeTransfers.length})</span>
             </span>
-            <span className="text-zinc-500 font-normal">Streaming to R2</span>
+            <span className="text-zinc-500 font-normal">{t.dropzone.streamingToR2}</span>
           </div>
 
           <div className="space-y-2">
@@ -176,7 +181,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                       onClick={() => cancelTransfer(item.id)}
                       className="text-[11px] text-zinc-500 hover:text-rose-400 transition-colors"
                     >
-                      Cancel
+                      {t.dropzone.cancel}
                     </button>
                   </div>
                 </div>

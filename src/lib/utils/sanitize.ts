@@ -7,29 +7,35 @@ export function sanitizeFilename(filename: string): string {
     return "unnamed-file";
   }
 
-  // Remove path separators (prevent traversal)
-  let sanitized = filename.replace(/[/\\]/g, "");
+  // Normalize backslashes to forward slashes
+  const normalized = filename.replace(/\\/g, "/");
 
-  // Remove null bytes
-  sanitized = sanitized.replace(/\0/g, "");
+  // Clean each path segment to prevent directory traversal
+  const segments = normalized
+    .split("/")
+    .map((segment) => {
+      // Remove null bytes
+      let clean = segment.replace(/\0/g, "");
+      // Remove leading dots (prevent hidden files / dotfile attacks / relative ..)
+      clean = clean.replace(/^\.+/, "");
+      // Remove leading/trailing whitespace
+      clean = clean.trim();
+      // Truncate segment to 255 chars
+      if (clean.length > 255) {
+        const extIdx = clean.lastIndexOf(".");
+        if (extIdx > 0) {
+          const extension = clean.substring(extIdx);
+          const name = clean.substring(0, 255 - extension.length);
+          clean = name + extension;
+        } else {
+          clean = clean.substring(0, 255);
+        }
+      }
+      return clean;
+    })
+    .filter((segment) => segment.length > 0 && segment !== "." && segment !== "..");
 
-  // Remove leading dots (prevent hidden files / dotfile attacks)
-  sanitized = sanitized.replace(/^\.+/, "");
-
-  // Remove leading/trailing whitespace
-  sanitized = sanitized.trim();
-
-  // Limit length to 255 characters (filesystem limit)
-  if (sanitized.length > 255) {
-    const ext = sanitized.lastIndexOf(".");
-    if (ext > 0) {
-      const extension = sanitized.substring(ext);
-      const name = sanitized.substring(0, 255 - extension.length);
-      sanitized = name + extension;
-    } else {
-      sanitized = sanitized.substring(0, 255);
-    }
-  }
+  const sanitized = segments.join("/");
 
   // Fallback if sanitization removed everything
   if (!sanitized || sanitized.length === 0) {

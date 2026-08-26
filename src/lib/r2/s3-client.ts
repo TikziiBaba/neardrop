@@ -51,11 +51,12 @@ export async function createPresignedDownloadUrl(
 ) {
   const s3 = getR2Client();
   const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const downloadName = filename.split("/").pop() || filename;
 
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: r2ObjectKey,
-    ResponseContentDisposition: `attachment; filename="${encodeURIComponent(filename)}"`,
+    ResponseContentDisposition: `attachment; filename="${encodeURIComponent(downloadName)}"`,
   });
 
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });

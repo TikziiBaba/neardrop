@@ -150,10 +150,11 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const authHeaders = await getAuthHeaders();
 
     for (const file of rawFiles) {
+      const fullFilename = (file as any).relativePath || file.webkitRelativePath || file.name;
       const transferId = `tr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       const newTransfer: TransferItem = {
         id: transferId,
-        filename: file.name,
+        filename: fullFilename,
         size: file.size,
         progress: 0,
         transferredBytes: 0,
@@ -178,7 +179,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              filename: file.name,
+              filename: fullFilename,
               size: file.size,
               mimeType: file.type || "application/octet-stream",
             }),
@@ -232,6 +233,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (!uploadSucceeded) {
           const formData = new FormData();
           formData.append("file", file);
+          formData.append("filename", fullFilename);
 
           const fallbackRes = await fetch("/api/upload", {
             method: "POST",

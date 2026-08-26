@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "No file provided" }, { status: 400 });
       }
 
-      const filename = sanitizeFilename(file.name);
+      const rawFilename = (formData.get("filename") as string) || file.name;
+      const filename = sanitizeFilename(rawFilename);
       const size = file.size;
       const mimeType = file.type || "application/octet-stream";
 

@@ -272,6 +272,35 @@ export const translations = {
       locked: "Kilitli",
     },
 
+    // ===== DROPZONE =====
+    dropzone: {
+      dropHere: "Dosyaları veya klasörleri buraya bırakın",
+      dragDropHint: "Dosya veya klasörleri sürükleyip bırakın",
+      r2Description: "Dosyalar ve klasörler Cloudflare R2 ile uçtan uca güvenli şifrelenir. Kota dahilinde sınırsız hız.",
+      chooseFiles: "Dosya Seç",
+      uploadFolder: "Klasör Yükle",
+      encrypted: "Uçtan uca şifreli",
+      directStreaming: "Doğrudan akış",
+      unlimitedSpeed: "Sınırsız hız",
+      uploading: "Yükleniyor",
+      streamingToR2: "R2'ye aktarılıyor",
+      cancel: "İptal",
+    },
+
+    // ===== FILES PAGE =====
+    filesPage: {
+      title: "Dosyalarım",
+      subtitle: "Kayıtlı tüm dosya ve klasörlerinizi inceleyin, arayın, yeniden adlandırın, indirin ve paylaşım linkleri oluşturun.",
+      uploadFiles: "Dosya Yükle",
+      uploadFolder: "Klasör Yükle",
+      searchPlaceholder: "Dosya veya klasör ara...",
+      noFilesFound: "Henüz dosya bulunamadı",
+      noFilesFoundDesc: "Paylaşmaya başlamak için dosya veya klasör yükleyin.",
+      noFilesMatchSearch: "Aramanızla eşleşen dosya bulunamadı.",
+      dropHere: "Dosya veya klasörleri buraya bırakın",
+      dropDesc: "Klasörler ve tüm alt klasörler taranarak doğrudan Cloudflare R2'ye yüklenecektir.",
+    },
+
     // ===== NOT FOUND =====
     notFound: {
       title: "404",
@@ -573,6 +602,35 @@ export const translations = {
         "Select any file from your dashboard to create a share link.",
       sharedFile: "Shared File",
       locked: "Locked",
+    },
+
+    // ===== DROPZONE =====
+    dropzone: {
+      dropHere: "Drop files or folders here",
+      dragDropHint: "Drag & drop files or folders",
+      r2Description: "Files and folders are securely encrypted and stored with Cloudflare R2 presigned URLs. Up to available quota.",
+      chooseFiles: "Choose Files",
+      uploadFolder: "Upload Folder",
+      encrypted: "End-to-end encrypted",
+      directStreaming: "Direct streaming",
+      unlimitedSpeed: "Unlimited speed",
+      uploading: "Uploading",
+      streamingToR2: "Streaming to R2",
+      cancel: "Cancel",
+    },
+
+    // ===== FILES PAGE =====
+    filesPage: {
+      title: "My Files",
+      subtitle: "Browse, search, rename, download, and create share links for all stored files and folders.",
+      uploadFiles: "Upload Files",
+      uploadFolder: "Upload Folder",
+      searchPlaceholder: "Search files or folders by name...",
+      noFilesFound: "No files found",
+      noFilesFoundDesc: "Upload your first file or entire folder to get started.",
+      noFilesMatchSearch: "No files match your search query.",
+      dropHere: "Drop files or folders here",
+      dropDesc: "Folders and nested subfolders will be scanned and uploaded directly to Cloudflare R2.",
     },
 
     // ===== NOT FOUND =====
