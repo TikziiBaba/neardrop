@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion, AnimatePresence } from "framer-motion";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export const ProductPreviewSection: React.FC = () => {
   const { t } = useLanguage();
@@ -33,24 +34,11 @@ export const ProductPreviewSection: React.FC = () => {
   return (
     <section className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/40 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center max-w-2xl mx-auto space-y-4 mb-12"
-        >
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>{t.productPreview.sectionLabel}</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {t.productPreview.title}
-          </h2>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            {t.productPreview.subtitle}
-          </p>
-        </motion.div>
+        <SectionHeader
+          label={t.productPreview.sectionLabel}
+          title={t.productPreview.title}
+          subtitle={t.productPreview.subtitle}
+        />
 
         {/* Tab Buttons */}
         <div className="flex justify-center mb-8">

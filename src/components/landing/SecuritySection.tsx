@@ -4,6 +4,7 @@ import React from "react";
 import { Shield, KeyRound, Database, FileLock, RefreshCw, EyeOff } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export const SecuritySection: React.FC = () => {
   const { t } = useLanguage();
@@ -44,24 +45,12 @@ export const SecuritySection: React.FC = () => {
   return (
     <section id="security" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/60 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center max-w-2xl mx-auto space-y-4 mb-16"
-        >
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">
-            <Shield className="h-3.5 w-3.5" />
-            <span>{t.security.badge}</span>
-          </div>
-          <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {t.security.title}
-          </p>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            {t.security.subtitle}
-          </p>
-        </motion.div>
+        <SectionHeader
+          label={t.security.badge}
+          title={t.security.title}
+          subtitle={t.security.subtitle}
+          icon={Shield}
+        />
 
         {/* Security Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

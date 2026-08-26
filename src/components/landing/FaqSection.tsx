@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ChevronDown, HelpCircle } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion, AnimatePresence } from "framer-motion";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export const FaqSection: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -21,21 +22,11 @@ export const FaqSection: React.FC = () => {
   return (
     <section id="faq" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center space-y-4 mb-16"
-        >
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/20 bg-sky-500/10 px-3 py-1 text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            <HelpCircle className="h-3.5 w-3.5" />
-            <span>{t.faq.sectionLabel}</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {t.faq.title}
-          </h2>
-        </motion.div>
+        <SectionHeader
+          label={t.faq.sectionLabel}
+          title={t.faq.title}
+          icon={HelpCircle}
+        />
 
         <div className="space-y-3.5">
           {faqs.map((faq, index) => {

@@ -21,6 +21,72 @@ export async function POST(req: NextRequest) {
 
     const supabase = getServiceClient();
 
+    // Get current profile
+    const { data: currentProfile } = await supabase.from("profiles").select("role, email").eq("id", userId).single();
+    const currentRole = currentProfile?.role;
+
+    // Allow free plan downgrade without payment
+    if (planId === "free") {
+      const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "member";
+      await supabase
+        .from("profiles")
+        .update({
+          quota_bytes: plan.quotaBytes,
+          role: newRole,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", userId);
+
+      logAdminAction({
+        action: "SUBSCRIPTION_DOWNGRADE",
+        resourceType: "billing",
+        userId,
+        userEmail: userEmail || currentProfile?.email || "User",
+        resourceId: planId,
+        details: `Switched to Free Starter plan (${plan.quotaLabel})`,
+        status: "success",
+      });
+
+      return NextResponse.json({
+        success: true,
+        planId,
+        planName: plan.name,
+        quotaBytes: plan.quotaBytes,
+        quotaLabel: plan.quotaLabel,
+        role: newRole,
+        message: `Free plan activated. Storage quota set to ${plan.quotaLabel}.`,
+      });
+    }
+
+    // Check if live payment gateway mock is explicitly enabled or if requester is admin
+    const isMockCheckoutAllowed = process.env.ENABLE_MOCK_CHECKOUT === "true" || currentRole === "admin";
+
+    if (!isMockCheckoutAllowed) {
+      // Record user interest / checkout intent in audit logs
+      logAdminAction({
+        action: "PAYMENT_INTENT_WAITLIST",
+        resourceType: "billing",
+        userId,
+        userEmail: userEmail || currentProfile?.email || "User",
+        resourceId: planId,
+        details: `User attempted checkout for ${plan.name} (${billingCycle || "monthly"}). Payment gateway is pending integration.`,
+        status: "warning",
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          gatewayStatus: "pending_integration",
+          message:
+            "Ödeme altyapısı entegrasyon aşamasındadır. Kredi kartı ve güvenli ödeme yöntemleri çok yakında aktif edilecektir.",
+          messageEn:
+            "Payment gateway integration is currently in progress. Direct card payments will be active very soon.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // SANDBOX / ADMIN TESTING ONLY:
     // Calculate renewal date
     const renewsDate = new Date();
     if (billingCycle === "yearly") {
@@ -29,13 +95,8 @@ export async function POST(req: NextRequest) {
       renewsDate.setMonth(renewsDate.getMonth() + 1);
     }
 
-    // Get current profile
-    const { data: currentProfile } = await supabase.from("profiles").select("role").eq("id", userId).single();
-    const currentRole = currentProfile?.role;
-    // Don't downgrade admin or moderator role
-    const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : (planId === "free" ? "member" : "premium");
+    const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "premium";
 
-    // Update profile with new quota and subscription
     const { error: updateErr } = await supabase
       .from("profiles")
       .update({
@@ -50,14 +111,13 @@ export async function POST(req: NextRequest) {
       throw updateErr;
     }
 
-    // Audit log
     logAdminAction({
-      action: "SUBSCRIPTION_UPGRADE",
+      action: "SUBSCRIPTION_UPGRADE_SANDBOX",
       resourceType: "billing",
       userId,
-      userEmail: userEmail || "User",
+      userEmail: userEmail || currentProfile?.email || "User",
       resourceId: planId,
-      details: `Subscribed to ${plan.name} (${billingCycle || "monthly"}) with ${plan.quotaLabel} storage`,
+      details: `[Sandbox/Admin] Subscribed to ${plan.name} (${billingCycle || "monthly"}) with ${plan.quotaLabel} storage`,
       status: "success",
     });
 
@@ -69,7 +129,7 @@ export async function POST(req: NextRequest) {
       quotaLabel: plan.quotaLabel,
       role: newRole,
       renewsAt: renewsDate.toISOString(),
-      message: `Successfully upgraded to ${plan.name}! Your storage quota is now ${plan.quotaLabel}.`,
+      message: `[Sandbox] Upgraded to ${plan.name}! Storage quota: ${plan.quotaLabel}.`,
     });
   } catch (error: any) {
     console.error("Subscription checkout error:", error);

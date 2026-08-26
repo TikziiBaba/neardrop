@@ -32,11 +32,7 @@ function CheckoutContent() {
   const plan = PRICING_PLANS.find((p) => p.id === planId) || PRICING_PLANS[1];
   const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
 
-  const [cardNumber, setCardNumber] = useState("•••• •••• •••• 4242");
-  const [expiry, setExpiry] = useState("12/28");
-  const [cvc, setCvc] = useState("•••");
-  const [cardHolder, setCardHolder] = useState(user?.displayName || "Cardholder");
-  const [coupon, setCoupon] = useState("");
+  const [cardHolder, setCardHolder] = useState(user?.displayName || "Ad Soyad");
   const [isProcessing, setIsProcessing] = useState(false);
 
   if (!user) {
@@ -116,64 +112,51 @@ function CheckoutContent() {
             </p>
           </div>
 
+          {/* Payment Gateway Integration Notice */}
+          <div className="rounded-3xl border border-sky-500/30 bg-sky-500/10 p-5 space-y-2.5 backdrop-blur-xl">
+            <div className="flex items-center gap-2 text-sky-400 font-bold text-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+              </span>
+              <span>Ödeme Altyapısı Entegrasyonu Devam Ediyor / Payment Gateway In Progress</span>
+            </div>
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              Kredi kartı ve dijital ödeme ağ geçidi altyapımız entegrasyon aşamasındadır. Çok yakında otomatik ödeme ve anında aktivasyon sistemi devreye alınacaktır.
+            </p>
+          </div>
+
           <form onSubmit={handleCheckout} className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-5 apple-card">
             <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
-                <CreditCard className="h-4 w-4 text-purple-400" />
-                <span>Payment Details</span>
+                <CreditCard className="h-4 w-4 text-sky-400" />
+                <span>Ödeme / Ön Kayıt Bilgileri</span>
               </div>
               <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                256-Bit SSL Encrypted
+                256-Bit SSL Koruması
               </span>
             </div>
 
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Name on Card</label>
+                <label className="text-xs font-semibold text-zinc-300">Kart Üzerindeki İsim</label>
                 <Input
                   value={cardHolder}
                   onChange={(e) => setCardHolder(e.target.value)}
-                  placeholder="Full Name"
+                  placeholder="Ad Soyad"
                   className="rounded-xl text-xs bg-zinc-950/60"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Card Number</label>
-                <div className="relative">
-                  <Input
-                    value={cardNumber}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    placeholder="4242 •••• •••• 4242"
-                    className="rounded-xl text-xs bg-zinc-950/60 font-mono"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">Expiry Date</label>
-                  <Input
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    placeholder="MM/YY"
-                    className="rounded-xl text-xs bg-zinc-950/60 font-mono"
-                    required
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">CVC / CVV</label>
-                  <Input
-                    value={cvc}
-                    onChange={(e) => setCvc(e.target.value)}
-                    placeholder="123"
-                    className="rounded-xl text-xs bg-zinc-950/60 font-mono"
-                    required
-                  />
-                </div>
+                <label className="text-xs font-semibold text-zinc-300">E-Posta (Bildirim İçin)</label>
+                <Input
+                  value={user.email}
+                  disabled
+                  className="rounded-xl text-xs bg-zinc-950/40 text-zinc-400 font-mono"
+                />
               </div>
 
               <div className="pt-2">
@@ -181,15 +164,15 @@ function CheckoutContent() {
                   type="submit"
                   variant="primary"
                   disabled={isProcessing}
-                  className="w-full text-xs rounded-xl py-3 bg-purple-600 hover:bg-purple-500 shadow-xl shadow-purple-600/30 gap-2 font-bold"
+                  className="w-full text-xs rounded-xl py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-xl shadow-sky-500/25 gap-2 font-bold"
                 >
                   <Zap className="h-4 w-4" />
-                  <span>{isProcessing ? "Activating Subscription..." : `Pay $${price} & Upgrade Instantly`}</span>
+                  <span>{isProcessing ? "İşleniyor..." : `Ön Kayıt Ol & Açıldığında Haberdar Et ($${price})`}</span>
                 </Button>
               </div>
 
               <p className="text-[11px] text-center text-zinc-500">
-                You can cancel renewal at any time from your account settings.
+                Ödeme sistemi canlıya alındığında e-posta adresinize bilgilendirme ve indirim kuponu iletilecektir.
               </p>
             </div>
           </form>

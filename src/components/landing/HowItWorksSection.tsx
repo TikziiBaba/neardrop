@@ -4,6 +4,7 @@ import React from "react";
 import { UploadCloud, Link as LinkIcon, Share2, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export const HowItWorksSection: React.FC = () => {
   const { t } = useLanguage();
@@ -35,23 +36,11 @@ export const HowItWorksSection: React.FC = () => {
   return (
     <section id="how-it-works" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/40 relative overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="text-center max-w-2xl mx-auto space-y-4 mb-16"
-        >
-          <h2 className="text-xs font-semibold text-sky-400 uppercase tracking-widest">
-            {t.howItWorks.sectionLabel}
-          </h2>
-          <p className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-            {t.howItWorks.title}
-          </p>
-          <p className="text-sm text-zinc-400 leading-relaxed">
-            {t.howItWorks.subtitle}
-          </p>
-        </motion.div>
+        <SectionHeader
+          label={t.howItWorks.sectionLabel}
+          title={t.howItWorks.title}
+          subtitle={t.howItWorks.subtitle}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {steps.map((step, index) => {
