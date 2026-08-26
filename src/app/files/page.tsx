@@ -925,7 +925,7 @@ export default function FilesPage() {
           <div className="space-y-4 pt-2">
             <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
               <Trash2 className="h-4 w-4 text-rose-400 flex-shrink-0" />
-              <span>All files inside this folder path will be permanently deleted from Cloudflare R2 and database.</span>
+              <span>All files inside this folder path will be permanently deleted from secure cloud storage and database.</span>
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setFolderToDelete(null)}>

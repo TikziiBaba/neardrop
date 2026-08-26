@@ -102,7 +102,7 @@ export default function AdminSystemPage() {
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Live status, ping latency, and maintenance routines for Cloudflare R2 and Supabase.
+              Live status, ping latency, and maintenance routines for Primary Object Storage and Database.
             </p>
           </div>
 
@@ -120,7 +120,7 @@ export default function AdminSystemPage() {
 
         {/* Infrastructure Nodes Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* 1. Cloudflare R2 Node */}
+          {/* 1. Cloud Object Storage Node */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4 apple-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -128,8 +128,8 @@ export default function AdminSystemPage() {
                   <Cloud className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white">Cloudflare R2</h3>
-                  <p className="text-[11px] text-zinc-400">Object Storage</p>
+                  <h3 className="font-bold text-sm text-white">Primary Object Storage</h3>
+                  <p className="text-[11px] text-zinc-400">Encrypted Cloud Storage</p>
                 </div>
               </div>
               <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
@@ -161,7 +161,7 @@ export default function AdminSystemPage() {
                   <Database className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white">Supabase PostgreSQL</h3>
+                  <h3 className="font-bold text-sm text-white">Primary Database (PostgreSQL)</h3>
                   <p className="text-[11px] text-zinc-400">Relational Database & Auth</p>
                 </div>
               </div>

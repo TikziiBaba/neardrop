@@ -212,7 +212,7 @@ function CheckoutContent() {
               </div>
               <div className="flex items-center gap-1.5 text-xs text-sky-400 font-semibold">
                 <HardDrive className="h-3.5 w-3.5" />
-                <span>{plan.quotaLabel} High-Speed R2 Storage</span>
+                <span>{plan.quotaLabel} High-Speed Secure Cloud Storage</span>
               </div>
             </div>
 

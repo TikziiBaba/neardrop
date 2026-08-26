@@ -44,7 +44,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ file, op
         <div className="flex items-center gap-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs">
           <AlertTriangle className="h-4 w-4 flex-shrink-0 text-rose-400" />
           <p>
-            <span className="font-semibold">{file.filename}</span> will be permanently deleted from Cloudflare R2 and database records.
+            <span className="font-semibold">{file.filename}</span> will be permanently deleted from secure cloud storage and database records.
           </p>
         </div>
 

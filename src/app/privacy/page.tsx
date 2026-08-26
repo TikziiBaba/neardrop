@@ -142,8 +142,8 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p className="text-zinc-400 text-sm">
               {isTr
-                ? "Yüklenen dosyalar güvenli ve yüksek hızlı Cloudflare R2 nesne depolama altyapısında barındırılır. Veritabanı ve kimlik doğrulama işlemleri Supabase altyapısı ve Row-Level Security (Satır Düzeyi Güvenlik - RLS) protokolleri ile korunur. Kullanıcılar yalnızca kendi yetkileri dahilindeki verilere erişebilir."
-                : "Uploaded files are securely hosted on high-performance Cloudflare R2 object storage. Database and authentication services are protected with Supabase infrastructure and strict Row-Level Security (RLS) policies. Users can only access their authorized files."}
+                ? "Yüklenen dosyalar güvenli, izole ve yüksek hızlı bulut depolama altyapımızda barındırılır. Veritabanı ve kimlik doğrulama işlemleri gelişmiş güvenlik protokolleri ve Row-Level Security (Satır Düzeyi Güvenlik - RLS) standartları ile korunur. Kullanıcılar yalnızca kendi yetkileri dahilindeki verilere erişebilir."
+                : "Uploaded files are securely hosted on isolated, high-performance cloud storage. Database and authentication services are protected with modern encryption and strict Row-Level Security (RLS) policies. Users can only access their authorized files."}
             </p>
           </section>
 

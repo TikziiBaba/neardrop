@@ -911,12 +911,12 @@ export default function UserDetailPage() {
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-rose-400 flex items-center gap-2">
               <Trash2 className="h-4 w-4" />
-              <span>Delete File from R2</span>
+              <span>Delete File from Storage</span>
             </DialogTitle>
           </DialogHeader>
 
           <p className="text-xs text-zinc-300 py-2">
-            Are you sure you want to delete file <strong className="text-white">{selectedFileForDelete?.filename}</strong> ({formatBytes(selectedFileForDelete?.size || 0)}) from Cloudflare R2 storage?
+            Are you sure you want to delete file <strong className="text-white">{selectedFileForDelete?.filename}</strong> ({formatBytes(selectedFileForDelete?.size || 0)}) from secure cloud storage?
           </p>
 
           <DialogFooter className="gap-2 sm:gap-0">

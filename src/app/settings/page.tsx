@@ -455,7 +455,7 @@ export default function SettingsPage() {
                     <span>Danger Zone</span>
                   </div>
                   <p className="text-[11px] text-zinc-400">
-                    Permanently delete your account and all associated files stored in Cloudflare R2.
+                    Permanently delete your account and all associated files stored in your cloud storage.
                   </p>
                   <Button variant="destructive" size="sm" className="mt-2 text-xs rounded-xl">
                     Delete Account

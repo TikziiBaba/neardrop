@@ -131,7 +131,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
-              <span className="text-[11px] font-medium text-zinc-300">R2 & Supabase Active</span>
+              <span className="text-[11px] font-medium text-zinc-300">Storage & Database Active</span>
             </div>
             <Server className="h-3.5 w-3.5 text-zinc-500" />
           </div>

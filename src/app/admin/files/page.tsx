@@ -153,11 +153,11 @@ export default function AdminFilesPage() {
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <span>All Stored Files</span>
               <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
-                {files.length} R2 Objects
+                {files.length} Stored Objects
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Global catalog of objects across all user accounts in Cloudflare R2 bucket.
+              Global catalog of objects across all user accounts in secure cloud storage.
             </p>
           </div>
 
@@ -395,7 +395,7 @@ export default function AdminFilesPage() {
           </DialogHeader>
 
           <p className="text-xs text-zinc-300">
-            Are you sure you want to permanently delete <strong className="text-white">{selectedFileForDelete?.filename}</strong>? This will purge the object from Cloudflare R2 bucket and invalidate all associated share links.
+            Are you sure you want to permanently delete <strong className="text-white">{selectedFileForDelete?.filename}</strong>? This will purge the object from secure cloud storage and invalidate all associated share links.
           </p>
 
           <DialogFooter className="gap-2 sm:gap-0">

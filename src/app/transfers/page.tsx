@@ -3,7 +3,8 @@
 import React from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { useStorage } from "@/lib/storage/store";
-import { formatBytes, formatSpeed } from "@/lib/utils";
+import { formatBytes, formatSpeed, formatEta } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/context";
 import {
   ArrowLeftRight,
   UploadCloud,
@@ -22,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 
 export default function TransfersPage() {
   const { transfers, cancelTransfer, retryTransfer, clearCompletedTransfers } = useStorage();
+  const { locale } = useLanguage();
 
   const uploading = transfers.filter((t) => t.status === "uploading" || t.status === "pending");
   const completed = transfers.filter((t) => t.status === "completed");
@@ -34,13 +36,15 @@ export default function TransfersPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              <span>Transfer Monitor</span>
+              <span>{locale === "tr" ? "Transfer İzleyici" : "Transfer Monitor"}</span>
               <Badge variant="secondary" className="text-xs">
-                {transfers.length} total
+                {transfers.length} {locale === "tr" ? "toplam" : "total"}
               </Badge>
             </h1>
             <p className="text-xs text-zinc-400 mt-0.5">
-              Live streaming queue, transfer speeds, and upload history.
+              {locale === "tr"
+                ? "Canlı aktarım kuyruğu, transfer hızları ve yükleme geçmişi."
+                : "Live streaming queue, transfer speeds, and upload history."}
             </p>
           </div>
 
@@ -52,7 +56,7 @@ export default function TransfersPage() {
               className="gap-1.5 self-start sm:self-auto text-xs"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              <span>Clear Completed ({completed.length})</span>
+              <span>{locale === "tr" ? `Tamamlananları Temizle (${completed.length})` : `Clear Completed (${completed.length})`}</span>
             </Button>
           )}
         </div>
@@ -62,16 +66,18 @@ export default function TransfersPage() {
           <div className="flex items-center justify-between px-1">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <UploadCloud className="h-4 w-4 text-sky-400" />
-              <span>Active Transfers ({uploading.length})</span>
+              <span>{locale === "tr" ? `Aktif Yüklemeler (${uploading.length})` : `Active Transfers (${uploading.length})`}</span>
             </h3>
             {uploading.length > 0 && (
-              <span className="text-xs text-sky-400 font-mono animate-pulse">Streaming live</span>
+              <span className="text-xs text-sky-400 font-mono animate-pulse">
+                {locale === "tr" ? "Canlı akış devam ediyor" : "Streaming live"}
+              </span>
             )}
           </div>
 
           {uploading.length === 0 ? (
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900/30 p-8 text-center space-y-1 text-xs text-zinc-500">
-              <p>No active transfers running at the moment.</p>
+              <p>{locale === "tr" ? "Şu anda devam eden aktif bir transfer yok." : "No active transfers running at the moment."}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -87,30 +93,44 @@ export default function TransfersPage() {
                         <p className="font-semibold text-white truncate max-w-xs sm:max-w-md">
                           {item.filename}
                         </p>
-                        <p className="text-[11px] text-zinc-400">
-                          {formatBytes(item.transferredBytes)} of {formatBytes(item.size)}
+                        <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+                          {formatBytes(item.transferredBytes)} / {formatBytes(item.size)}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="font-mono text-sky-400 font-semibold">{formatSpeed(item.speed)}</span>
+                      <span className="rounded-md bg-sky-500/20 px-2 py-0.5 font-mono text-xs font-bold text-sky-400">
+                        %{item.progress}
+                      </span>
+                      <span className="font-mono text-sky-400 font-semibold text-[11px]">{formatSpeed(item.speed)}</span>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => cancelTransfer(item.id)}
                         className="text-xs text-zinc-400 hover:text-rose-400 h-7 px-2"
                       >
-                        Cancel
+                        {locale === "tr" ? "İptal" : "Cancel"}
                       </Button>
                     </div>
                   </div>
 
-                  <Progress value={item.progress} max={100} />
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div
+                      className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 transition-all duration-200"
+                      style={{ width: `${item.progress}%` }}
+                    />
+                  </div>
 
                   <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                    <span>{item.progress}% Completed</span>
-                    <span>Direct R2 stream</span>
+                    <span>%{item.progress} {locale === "tr" ? "Yüklendi" : "Completed"}</span>
+                    <div className="flex items-center gap-2">
+                      {item.eta !== undefined && (
+                        <span>{formatEta(item.eta, locale)}</span>
+                      )}
+                      <span>•</span>
+                      <span className="text-zinc-500">{locale === "tr" ? "Güvenli Depolama Akışı" : "Secure Cloud Stream"}</span>
+                    </div>
                   </div>
                 </div>
               ))}

@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/lib/i18n/context";
 import { Toaster } from "sonner";
 
 import { DeviceTracker } from "@/components/auth/DeviceTracker";
+import { GlobalTransferProgress } from "@/components/upload/GlobalTransferProgress";
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -15,6 +16,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
         <DeviceTracker />
         <StorageProvider>
           {children}
+          <GlobalTransferProgress />
           <Toaster
             position="bottom-right"
             theme="dark"

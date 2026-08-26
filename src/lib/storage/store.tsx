@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { CloudFile, ShareLink, TransferItem, StorageStats, UserSettings } from "@/types";
 import { getFileCategory } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
@@ -176,7 +176,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     loadData();
   }, [user, refreshFiles]);
 
-  // Upload handler with R2 presigned URL and auto fallback to direct upload
+  const activeXHRsRef = useRef<Record<string, XMLHttpRequest>>({});
+
+  // Upload handler with presigned URL and auto fallback to direct upload (both with full XHR progress)
   const uploadFiles = useCallback(async (fileList: File[] | FileList) => {
     const rawFiles = Array.from(fileList);
     if (!rawFiles.length || !user) return;
@@ -186,6 +188,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     for (const file of rawFiles) {
       const fullFilename = (file as any).relativePath || file.webkitRelativePath || file.name;
       const transferId = `tr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const startedAt = Date.now();
       const newTransfer: TransferItem = {
         id: transferId,
         filename: fullFilename,
@@ -193,18 +196,37 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         progress: 0,
         transferredBytes: 0,
         speed: 0,
+        eta: undefined,
         status: "uploading",
         direction: "upload",
-        startedAt: Date.now(),
+        startedAt,
         file,
       };
 
       setTransfers((prev) => [newTransfer, ...prev]);
 
+      const handleProgressEvent = (e: ProgressEvent) => {
+        if (e.lengthComputable && e.total > 0) {
+          const progress = Math.min(99, Math.max(1, Math.round((e.loaded / e.total) * 100)));
+          const elapsedSec = (Date.now() - startedAt) / 1000;
+          const speed = elapsedSec > 0 ? Math.round(e.loaded / elapsedSec) : 0;
+          const remainingBytes = Math.max(0, e.total - e.loaded);
+          const eta = speed > 0 ? Math.round(remainingBytes / speed) : undefined;
+
+          setTransfers((prev) =>
+            prev.map((t) =>
+              t.id === transferId
+                ? { ...t, progress, transferredBytes: e.loaded, speed, eta }
+                : t
+            )
+          );
+        }
+      };
+
       try {
         let uploadSucceeded = false;
 
-        // Step 1: Try Presigned R2 URL first
+        // Step 1: Try Presigned URL first
         try {
           const apiRes = await fetch("/api/upload", {
             method: "POST",
@@ -222,72 +244,102 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (apiRes.ok) {
             const { uploadUrl } = await apiRes.json();
 
-            // Try direct XHR PUT to presigned R2 URL
+            // Direct XHR PUT to presigned URL
             await new Promise<void>((resolve, reject) => {
               const xhr = new XMLHttpRequest();
+              activeXHRsRef.current[transferId] = xhr;
 
-              xhr.upload.addEventListener("progress", (e) => {
-                if (e.lengthComputable) {
-                  const progress = Math.round((e.loaded / e.total) * 100);
-                  const elapsedSec = (Date.now() - newTransfer.startedAt) / 1000;
-                  const speed = elapsedSec > 0 ? Math.round(e.loaded / elapsedSec) : 0;
-
-                  setTransfers((prev) =>
-                    prev.map((t) =>
-                      t.id === transferId
-                        ? { ...t, progress, transferredBytes: e.loaded, speed }
-                        : t
-                    )
-                  );
-                }
-              });
+              xhr.upload.addEventListener("progress", handleProgressEvent);
 
               xhr.addEventListener("load", () => {
+                delete activeXHRsRef.current[transferId];
                 if (xhr.status >= 200 && xhr.status < 300) {
                   uploadSucceeded = true;
                   resolve();
                 } else {
-                  reject(new Error(`Presigned upload status ${xhr.status}`));
+                  reject(new Error(`Direct storage upload returned status ${xhr.status}`));
                 }
               });
 
-              xhr.addEventListener("error", () => reject(new Error("Network / CORS error on presigned upload")));
-              xhr.addEventListener("abort", () => reject(new Error("Upload aborted")));
+              xhr.addEventListener("error", () => {
+                delete activeXHRsRef.current[transferId];
+                reject(new Error("Network connection error during direct upload"));
+              });
+              xhr.addEventListener("abort", () => {
+                delete activeXHRsRef.current[transferId];
+                reject(new Error("Upload cancelled"));
+              });
 
               xhr.open("PUT", uploadUrl);
               xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
               xhr.send(file);
             });
           }
-        } catch (presignedErr) {
-          console.warn("Direct R2 presigned upload failed, attempting direct proxy upload fallback...", presignedErr);
+        } catch (presignedErr: any) {
+          if (presignedErr?.message === "Upload cancelled") {
+            throw presignedErr;
+          }
+          console.warn("Direct storage upload failed, falling back to secure tunnel upload...", presignedErr);
         }
 
-        // Step 2: If direct R2 PUT failed (e.g. CORS not configured yet), fallback to server proxy
+        // Step 2: Fallback to server proxy upload with full progress tracking
         if (!uploadSucceeded) {
           const formData = new FormData();
           formData.append("file", file);
           formData.append("filename", fullFilename);
 
-          const fallbackRes = await fetch("/api/upload", {
-            method: "POST",
-            headers: authHeaders,
-            body: formData,
+          await new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            activeXHRsRef.current[transferId] = xhr;
+
+            xhr.upload.addEventListener("progress", handleProgressEvent);
+
+            xhr.addEventListener("load", () => {
+              delete activeXHRsRef.current[transferId];
+              if (xhr.status >= 200 && xhr.status < 300) {
+                uploadSucceeded = true;
+                resolve();
+              } else {
+                try {
+                  const data = JSON.parse(xhr.responseText);
+                  reject(new Error(data.error || `Upload failed (${xhr.status})`));
+                } catch {
+                  reject(new Error(`Upload failed (${xhr.status})`));
+                }
+              }
+            });
+
+            xhr.addEventListener("error", () => {
+              delete activeXHRsRef.current[transferId];
+              reject(new Error("Network error during upload"));
+            });
+            xhr.addEventListener("abort", () => {
+              delete activeXHRsRef.current[transferId];
+              reject(new Error("Upload cancelled"));
+            });
+
+            xhr.open("POST", "/api/upload");
+            if (authHeaders.Authorization) {
+              xhr.setRequestHeader("Authorization", authHeaders.Authorization);
+            }
+            xhr.send(formData);
           });
-
-          if (!fallbackRes.ok) {
-            const errData = await fallbackRes.json();
-            throw new Error(errData.error || "Upload failed");
-          }
-
-          uploadSucceeded = true;
         }
 
         // Mark transfer completed
+        delete activeXHRsRef.current[transferId];
         setTransfers((prev) =>
           prev.map((t) =>
             t.id === transferId
-              ? { ...t, progress: 100, transferredBytes: file.size, status: "completed", completedAt: Date.now() }
+              ? {
+                  ...t,
+                  progress: 100,
+                  transferredBytes: file.size,
+                  speed: 0,
+                  eta: 0,
+                  status: "completed",
+                  completedAt: Date.now(),
+                }
               : t
           )
         );
@@ -296,15 +348,25 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         await fetchFiles();
 
       } catch (err: any) {
+        delete activeXHRsRef.current[transferId];
+        const isCancelled = err?.message === "Upload cancelled";
         console.error("Upload error:", err);
         setTransfers((prev) =>
           prev.map((t) =>
             t.id === transferId
-              ? { ...t, status: "failed", errorMessage: err.message }
+              ? {
+                  ...t,
+                  status: isCancelled ? "cancelled" : "failed",
+                  speed: 0,
+                  eta: undefined,
+                  errorMessage: err.message,
+                }
               : t
           )
         );
-        throw err; // Propagate to DropZone for user alert
+        if (!isCancelled) {
+          throw err;
+        }
       }
     }
   }, [user, fetchFiles, getAuthHeaders]);
@@ -560,8 +622,20 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const cancelTransfer = (transferId: string) => {
+    if (activeXHRsRef.current[transferId]) {
+      try {
+        activeXHRsRef.current[transferId].abort();
+      } catch (e) {
+        console.warn("Error aborting XHR:", e);
+      }
+      delete activeXHRsRef.current[transferId];
+    }
     setTransfers((prev) =>
-      prev.map((t) => (t.id === transferId ? { ...t, status: "cancelled" } : t))
+      prev.map((t) =>
+        t.id === transferId
+          ? { ...t, status: "cancelled", speed: 0, eta: undefined }
+          : t
+      )
     );
   };
 
@@ -573,7 +647,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const clearCompletedTransfers = () => {
-    setTransfers((prev) => prev.filter((t) => t.status === "uploading" || t.status === "pending"));
+    setTransfers((prev) =>
+      prev.filter((t) => t.status === "uploading" || t.status === "pending")
+    );
   };
 
   const updateSettings = (newSettings: Partial<UserSettings>) => {

@@ -85,7 +85,7 @@ export default function AdminOverviewPage() {
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-zinc-400">
-              Real-time NearDrop cloud telemetry, Cloudflare R2 bucket usage, active user quotas, and traffic.
+              Real-time NearDrop cloud telemetry, secure storage usage, active user quotas, and traffic.
             </p>
           </div>
 
@@ -146,7 +146,7 @@ export default function AdminOverviewPage() {
                   {loading ? "..." : stats?.totalFiles ?? 0}
                 </p>
                 <div className="flex items-center gap-1.5 text-[11px] text-sky-400 mt-1">
-                  <span>Cloudflare R2 Object Store</span>
+                  <span>Secure Object Store</span>
                 </div>
               </div>
             </div>
@@ -312,7 +312,7 @@ export default function AdminOverviewPage() {
               </div>
               <div className="space-y-0.5">
                 <span className="text-[10px] text-zinc-500 font-medium">Target Storage Class</span>
-                <p className="text-sm font-bold text-purple-300">Cloudflare R2 Standard</p>
+                <p className="text-sm font-bold text-purple-300">Secure Object Storage</p>
               </div>
             </div>
           </div>
@@ -443,7 +443,7 @@ export default function AdminOverviewPage() {
                   <ChevronRight className="h-4 w-4 text-zinc-500 group-hover:text-sky-400 transition-colors" />
                 </div>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Browse and search all objects in Cloudflare R2, generate admin presigned download links, and delete.
+                  Browse and search all objects in secure cloud storage, generate admin download links, and delete.
                 </p>
               </Link>
 

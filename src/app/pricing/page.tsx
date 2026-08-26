@@ -30,7 +30,7 @@ export default function PricingPage() {
   const faqs = [
     {
       q: "How does storage quota expansion work?",
-      a: "As soon as you upgrade to Pro, Ultra, or Enterprise, your Cloudflare R2 storage quota expands immediately up to 2 TB with zero downtime. Any previously uploaded files remain intact.",
+      a: "As soon as you upgrade to Pro, Ultra, or Enterprise, your secure cloud storage quota expands immediately up to 2 TB with zero downtime. Any previously uploaded files remain intact.",
     },
     {
       q: "Can I cancel or switch my plan at any time?",
@@ -215,9 +215,9 @@ export default function PricingPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
               <Zap className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-bold text-white">Direct S3-Compatible Uploads</h3>
+            <h3 className="text-sm font-bold text-white">Direct-to-Storage Uploads</h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Browser-to-Cloudflare-R2 direct upload bypasses server bottlenecks for maximum network saturation.
+              Direct high-speed streaming upload bypasses server bottlenecks for maximum network saturation and fast transfers.
             </p>
           </div>
 

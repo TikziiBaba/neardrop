@@ -85,6 +85,7 @@ export interface TransferItem {
   progress: number; // 0 - 100
   transferredBytes: number;
   speed: number; // bytes per second
+  eta?: number; // estimated seconds remaining
   status: 'pending' | 'uploading' | 'completed' | 'failed' | 'cancelled';
   direction: 'upload' | 'download';
   errorMessage?: string;

@@ -26,7 +26,7 @@ export const translations = {
       titleLine1: "Dosya paylaşımı.",
       titleLine2: "Basit & Güvenli.",
       subtitle:
-        "Dosyalarınızı yükleyin. Opsiyonel şifre korumalı, süre sınırlı tahmin edilemez bir link oluşturun. Cloudflare R2 ile doğrudan akış, karmaşıklık olmadan.",
+        "Dosyalarınızı yükleyin. Opsiyonel şifre korumalı, süre sınırlı tahmin edilemez bir link oluşturun. Güvenilir ve şifreli depolama yerimiz ile doğrudan yüksek hızlı aktarım, karmaşıklık olmadan.",
       ctaPrimary: "Şimdi Paylaşmaya Başla",
       ctaSecondary: "Nasıl Çalışır?",
       check1: "Dosya boyutu kısıtlaması yok",
@@ -44,7 +44,7 @@ export const translations = {
       step1Num: "01",
       step1Title: "Dosyalarınızı Yükleyin",
       step1Desc:
-        "Herhangi bir dosyayı veya klasörü sürükleyip bırakın. Yüksek hızlı akış yükleme doğrudan Cloudflare R2'ye, bellek taşması olmadan.",
+        "Herhangi bir dosyayı veya klasörü sürükleyip bırakın. Yüksek hızlı doğrudan akış ile güvenli bulut depolama alanımıza aktarılır, bellek taşması olmadan.",
       step1Badge: "Parçalı Akış",
       step2Num: "02",
       step2Title: "Güvenlik & Linki Yapılandır",
@@ -54,7 +54,7 @@ export const translations = {
       step3Num: "03",
       step3Title: "Anında Paylaş",
       step3Desc:
-        "Tahmin edilemez güvenli linkinizi kopyalayın veya mobil QR kodu oluşturun. Alıcılar geçici imzalı URL'ler aracılığıyla doğrudan indirir.",
+        "Tahmin edilemez güvenli linkinizi kopyalayın veya mobil QR kodu oluşturun. Alıcılar geçici imzalı bağlantılar aracılığıyla doğrudan indirir.",
       step3Badge: "Hızlı Doğrudan İndirme",
     },
 
@@ -66,7 +66,7 @@ export const translations = {
         "Sıkı güvenlik standartları, hafif mimari ve sorunsuz kullanıcı deneyimi ile tasarlandı.",
       blazingFastTitle: "Ultra Hızlı Yüklemeler",
       blazingFastDesc:
-        "Doğrudan depolama presigned URL'leri, ara web sunucularını atlar — maksimum aktarım hızı, sıfır bant genişliği kısıtlaması.",
+        "Doğrudan depolama presigned bağlantıları, ara web sunucularını atlar — maksimum aktarım hızı, sıfır bant genişliği kısıtlaması.",
       cryptoTokenTitle: "Kriptografik Paylaşım Token'ları",
       cryptoTokenDesc:
         "12 karakterli yüksek entropili rastgele token'lar tahmin veya taramayı önler. Her indirme geçici imzalı URL'ler ile korunur.",
@@ -76,9 +76,9 @@ export const translations = {
       sha256Title: "SHA-256 Şifre Kilidi",
       sha256Desc:
         "Hassas transferleri isteğe bağlı şifrelerle koruyun. İstemci taraflı SHA-256 hash'leri ile doğrulanır — hiçbir zaman düz metin kullanılmaz.",
-      r2StorageTitle: "Cloudflare R2 Depolama",
+      r2StorageTitle: "Güvenilir & Yüksek Hızlı Bulut Depolama",
       r2StorageDesc:
-        "Küresel uç çoğaltmalı, sıfır çıkış ücretli ve %99.999999999 dayanıklılığa sahip dağıtık S3 uyumlu bulut depolama üzerine kuruldu.",
+        "Küresel yedekli, sıfır bant kısıtlamalı ve %99.999999999 dayanıklılığa sahip kurumsal düzeyde özel ve güvenli depolama yerimiz.",
       fileManagementTitle: "Eksiksiz Dosya Yönetimi",
       fileManagementDesc:
         "Checksum hash'lerini inceleyin, dosyaları yeniden adlandırın, gerçek zamanlı indirme sayaçlarını görüntüleyin, aktif linkleri tek tıkla iptal edin ve transfer geçmişini takip edin.",
@@ -89,13 +89,13 @@ export const translations = {
       badge: "Altyapı & Veri Güvenliği",
       title: "Derinlemesine Savunma Üzerine Kuruldu",
       subtitle:
-        "NearDrop güvenliği basit, denetlenebilir ve güvenilir tutar — tarayıcıdan bulut depolamaya kadar.",
+        "NearDrop güvenliği basit, denetlenebilir ve güvenilir tutar — tarayıcıdan güvenilir depolama alanımıza kadar.",
       rlsTitle: "Satır Düzeyinde Güvenlik (RLS)",
       rlsDesc:
-        "PostgreSQL, veritabanı katmanında ayrıntılı kiracı izolasyonu uygular. Hiçbir kullanıcı başka bir kullanıcının dosya kayıtlarını görüntüleyemez, sorgulayamaz veya silemez.",
-      signedUrlTitle: "Geçici İmzalı URL'ler",
+        "Veritabanı katmanında ayrıntılı kiracı izolasyonu uygulanır. Hiçbir kullanıcı başka bir kullanıcının dosya kayıtlarını görüntüleyemez, sorgulayamaz veya silemez.",
+      signedUrlTitle: "Geçici İmzalı Bağlantılar",
       signedUrlDesc:
-        "Özel R2 kovası tamamen genel internetten izole edilmiştir. Dosya indirmeleri dakikalar içinde süresi dolan imzalı URL'ler aracılığıyla sağlanır.",
+        "Özel depolama alanımız tamamen genel internetten izole edilmiştir. Dosya indirmeleri dakikalar içinde süresi dolan güvenli imzalı bağlantılar aracılığıyla sağlanır.",
       highEntropyTitle: "Yüksek Entropili Token URL'leri",
       highEntropyDesc:
         "Paylaşım linkleri 12 karakterlik kriptografik rastgele token'lar kullanır, brute-force tahmini pratikte imkansız kılar.",
@@ -107,17 +107,17 @@ export const translations = {
         "Zamanlanmış arka plan temizlik rutinleri, süresi dolmuş token'ları geçersiz kılar ve eski depolama nesnelerini otomatik olarak temizler.",
       egressTitle: "Sıkı Çıkış Kısıtlamaları",
       egressDesc:
-        "Doğrudan tarayıcı-R2 akışı, ara sunucu tamponlamasını ortadan kaldırır ve bellek tabanlı veri sızdırma riskini azaltır.",
+        "Doğrudan tarayıcı-depolama akışı, ara sunucu tamponlamasını ortadan kaldırır ve bellek tabanlı veri sızdırma riskini azaltır.",
       archTitle: "Mimari Bir Bakışta",
       arch1Title: "1. Tarayıcı İstemcisi",
       arch1Desc:
-        "Supabase Auth ile kimlik doğrulaması yapar. Presigned yükleme veya indirme yetkilendirmesi ister.",
-      arch2Title: "2. Supabase + RLS",
+        "Güvenli oturum açma ile kimlik doğrulaması yapar. Doğrudan yükleme veya indirme yetkilendirmesi ister.",
+      arch2Title: "2. Güvenli Veri & Erişim Katmanı",
       arch2Desc:
         "Kullanıcı kimliğini doğrular, kota limitlerini kontrol eder, token üretir ve meta verileri yönetir.",
-      arch3Title: "3. Cloudflare R2",
+      arch3Title: "3. Özel Güvenli Depolama Alanı",
       arch3Desc:
-        "İmzalı S3 URL'leri aracılığıyla doğrudan şifreli yük alır. Alıcı indirmesi için doğrudan akış sağlar.",
+        "İmzalı güvenli anahtarlar aracılığıyla doğrudan şifreli yük alır. Alıcı indirmesi için doğrudan akış sağlar.",
     },
 
     // ===== PRODUCT PREVIEW =====
@@ -156,13 +156,13 @@ export const translations = {
       q1: "Alıcıların paylaşılan dosyaları indirmek için NearDrop hesabına ihtiyacı var mı?",
       a1: "Hayır. Tahmin edilemez linke sahip olan herkes, kayıt olmadan veya giriş yapmadan paylaşılan dosyayı hemen erişip indirebilir (şifre koyduysan şifreyi girmeleri yeterli).",
       q2: "Dosyalar ne kadar büyük olabilir?",
-      a2: "NearDrop, presigned URL'ler aracılığıyla doğrudan Cloudflare R2'ye akış yükleme yapar, dosyaları sunucu belleğine yüklemeden. Tahsis edilen depolama kotanıza kadar büyük dosyalar yükleyebilirsiniz.",
+      a2: "NearDrop, güvenli presigned bağlantılar aracılığıyla doğrudan yüksek hızlı bulut depolama yerimize akış yükleme yapar, dosyaları sunucu belleğine yüklemeden. Tahsis edilen depolama kotanıza kadar büyük dosyalar yükleyebilirsiniz.",
       q3: "Paylaşım linkleri ne kadar süre aktif kalır?",
       a3: "Tam kontrol sizdedir. Linklerin 1 saat, 24 saat, 7 gün, 30 gün sonra veya hiçbir zaman sona ermesini ayarlayabilirsiniz. Link süresi dolduğunda, artık kimse erişemez.",
       q4: "Dosyalarım herkese açık veya arama motorları tarafından dizine eklenebilir mi?",
-      a4: "Hayır. Bulut depolamanızdaki tüm dosyalar özeldir ve PostgreSQL Satır Düzeyinde Güvenlik (RLS) ile korunur. Paylaşım linkleri herkese açık şekilde dizine alınmayan veya listellenmeyen yüksek entropili rastgele token'lar kullanır.",
+      a4: "Hayır. Bulut depolamanızdaki tüm dosyalar özeldir ve Satır Düzeyinde Güvenlik (RLS) ile korunur. Paylaşım linkleri herkese açık şekilde dizine alınmayan veya listellenmeyen yüksek entropili rastgele token'lar kullanır.",
       q5: "Paylaşılan bir dosyayı istediğim zaman iptal edebilir veya silebilir miyim?",
-      a5: "Evet. Panelinizden veya Paylaşılanlar sekmesinden aktif herhangi bir linki anında devre dışı bırakabilir veya temel dosyayı silebilirsiniz; bu, dosyayı R2'den temizler ve ilişkili tüm linkleri geçersiz kılar.",
+      a5: "Evet. Panelinizden veya Paylaşılanlar sekmesinden aktif herhangi bir linki anında devre dışı bırakabilir veya temel dosyayı silebilirsiniz; bu, dosyayı güvenli depolama yerimizden temizler ve ilişkili tüm linkleri geçersiz kılar.",
       q6: "Hangi depolama kotası dahildir?",
       a6: "Her yeni hesap varsayılan olarak 10 GB yüksek hızlı bulut depolama alır. Gerçek zamanlı kullanım ve kategori dağılımlarını Depolama sayfanızdan istediğiniz zaman takip edebilirsiniz.",
     },
@@ -181,7 +181,7 @@ export const translations = {
     // ===== FOOTER =====
     footer: {
       description:
-        "Hızlı, özel ve güvenli dosya paylaşımı, karmaşıklık olmadan. Cloudflare R2 depolama mimarisi ve PostgreSQL satır düzeyinde güvenlik ile desteklenmektedir.",
+        "Hızlı, özel ve güvenli dosya paylaşımı, karmaşıklık olmadan. Kurumsal düzeyde güvenli depolama mimarisi ve satır düzeyinde veri güvenliği ile desteklenmektedir.",
       systemsOperational: "Tüm sistemler çalışıyor",
       productTitle: "Ürün",
       instantDrop: "Anında Paylaşım",
@@ -189,7 +189,7 @@ export const translations = {
       cloudDashboard: "Bulut Paneli",
       storageQuotas: "Depolama Kotaları",
       securityTitle: "Güvenlik",
-      signedUrls: "Uçtan Uca İmzalı URL'ler",
+      signedUrls: "Uçtan Uca İmzalı Bağlantılar",
       rls: "Satır Düzeyinde Güvenlik (RLS)",
       expiringLinks: "Süresi Dolan Linkler",
       passwordEncryption: "Şifre Şifreleme",
@@ -256,7 +256,7 @@ export const translations = {
       activeShares: "Aktif Paylaşımlar",
       totalDownloads: "Toplam İndirmeler",
       instantCloudUpload: "Anında Bulut Yükleme",
-      encryptedR2Storage: "Şifreli R2 Depolama",
+      encryptedR2Storage: "Güvenli & Şifreli Depolama",
       recentFiles: "Son Dosyalar",
       browseAll: "Hepsini gör",
       noFilesTitle: "Henüz dosya yüklenmemiş",
@@ -276,14 +276,14 @@ export const translations = {
     dropzone: {
       dropHere: "Dosyaları veya klasörleri buraya bırakın",
       dragDropHint: "Dosya veya klasörleri sürükleyip bırakın",
-      r2Description: "Dosyalar ve klasörler Cloudflare R2 ile uçtan uca güvenli şifrelenir. Kota dahilinde sınırsız hız.",
+      r2Description: "Dosyalar ve klasörler güvenli depolama yerimizde uçtan uca korunur. Kota dahilinde sınırsız aktarım hızı.",
       chooseFiles: "Dosya Seç",
       uploadFolder: "Klasör Yükle",
       encrypted: "Uçtan uca şifreli",
       directStreaming: "Doğrudan akış",
       unlimitedSpeed: "Sınırsız hız",
       uploading: "Yükleniyor",
-      streamingToR2: "R2'ye aktarılıyor",
+      streamingToR2: "Güvenli depolamaya aktarılıyor",
       cancel: "İptal",
     },
 
@@ -298,7 +298,7 @@ export const translations = {
       noFilesFoundDesc: "Paylaşmaya başlamak için dosya veya klasör yükleyin.",
       noFilesMatchSearch: "Aramanızla eşleşen dosya veya klasör bulunamadı.",
       dropHere: "Dosya veya klasörleri buraya bırakın",
-      dropDesc: "Klasörler ve tüm alt klasörler taranarak doğrudan Cloudflare R2'ye yüklenecektir.",
+      dropDesc: "Klasörler ve tüm alt klasörler taranarak doğrudan güvenilir depolama alanımıza yüklenecektir.",
       allFilesRoot: "Kök Dizin",
       folders: "Klasörler",
       files: "Dosyalar",
@@ -322,12 +322,13 @@ export const translations = {
     langToggle: {
       label: "Dili Değiştir",
     },
+
     // ===== PUBLIC SHARE PAGE =====
     publicShare: {
       secureCloudShare: "Güvenli Bulut Paylaşımı",
       fileSharedWithYou: "Sizinle Paylaşılan Dosya",
       folderSharedWithYou: "Sizinle Paylaşılan Klasör",
-      encryptedSubtitle: "Cloudflare R2 ve geçici imzalı URL'ler ile şifreli transfer.",
+      encryptedSubtitle: "Güvenilir depolama yerimiz ve geçici imzalı bağlantılar ile şifreli transfer.",
       passwordProtected: "Şifre Korumalı",
       enterPasswordLabel: "Kilidi Açmak İçin Şifreyi Girin",
       enterPasswordPlaceholder: "Şifrenizi girin...",
@@ -341,6 +342,26 @@ export const translations = {
       linkUnavailable: "Link Kullanılamıyor",
       goToHome: "NearDrop Ana Sayfasına Git",
       footerTagline: "NearDrop • Güvenli Uçtan Uca Dosya Alışverişi",
+    },
+
+    // ===== GLOBAL TRANSFER WIDGET =====
+    transferWidget: {
+      activeTransfers: "Aktif Transferler",
+      uploadingCount: "dosya yükleniyor",
+      allUploadsCompleted: "Tüm yüklemeler tamamlandı",
+      uploadProgress: "Yükleme İlerlemesi",
+      cancelAll: "Hepsini İptal Et",
+      clearCompleted: "Temizle",
+      minimize: "Küçült",
+      expand: "Genişlet",
+      cancelUpload: "İptal Et",
+      retry: "Tekrar Dene",
+      completed: "Tamamlandı",
+      failed: "Başarısız",
+      cancelled: "İptal Edildi",
+      speed: "Hız",
+      remaining: "Kalan Süre",
+      totalTransferred: "Toplam Aktarılan",
     },
   },
 
@@ -369,7 +390,7 @@ export const translations = {
       titleLine1: "Share files.",
       titleLine2: "Simply & Securely.",
       subtitle:
-        "Upload your files. Generate an unguessable expiring link with optional password protection. Direct Cloudflare R2 streaming without the clutter.",
+        "Upload your files. Generate an unguessable expiring link with optional password protection. Direct high-speed streaming through our dedicated secure cloud storage without the clutter.",
       ctaPrimary: "Start Sharing Now",
       ctaSecondary: "See How It Works",
       check1: "No file size bottlenecks",
@@ -387,7 +408,7 @@ export const translations = {
       step1Num: "01",
       step1Title: "Upload Your Files",
       step1Desc:
-        "Drag and drop any file or entire folder. High-speed streaming uploads directly to Cloudflare R2 without memory bloat.",
+        "Drag and drop any file or entire folder. High-speed streaming uploads directly to our secure cloud storage without memory bloat.",
       step1Badge: "Chunked Stream",
       step2Num: "02",
       step2Title: "Configure Security & Link",
@@ -397,7 +418,7 @@ export const translations = {
       step3Num: "03",
       step3Title: "Share Instantly",
       step3Desc:
-        "Copy your unguessable secure link or generate a mobile QR code. Recipients download directly through temporary presigned URLs.",
+        "Copy your unguessable secure link or generate a mobile QR code. Recipients download directly through temporary signed URLs.",
       step3Badge: "Fast Direct Download",
     },
 
@@ -419,9 +440,9 @@ export const translations = {
       sha256Title: "SHA-256 Password Lock",
       sha256Desc:
         "Protect sensitive transfers with optional passwords. Stored using client-verified SHA-256 hashes—never plaintext.",
-      r2StorageTitle: "Cloudflare R2 Storage",
+      r2StorageTitle: "High-Speed Secure Cloud Storage",
       r2StorageDesc:
-        "Built on distributed S3-compatible cloud storage with global edge replication, zero egress fees, and 99.999999999% durability.",
+        "Built on enterprise-grade isolated cloud storage with global edge replication, zero egress bottlenecks, and 99.999999999% durability.",
       fileManagementTitle: "Complete File Management",
       fileManagementDesc:
         "Inspect checksum hashes, rename files, view real-time download counters, revoke active links in 1-click, and track transfer history.",
@@ -432,13 +453,13 @@ export const translations = {
       badge: "Infrastructure & Data Safety",
       title: "Built on Defense in Depth",
       subtitle:
-        "NearDrop keeps security straightforward, auditable, and reliable from browser to cloud storage.",
+        "NearDrop keeps security straightforward, auditable, and reliable from browser to our dedicated cloud storage vault.",
       rlsTitle: "Row Level Security (RLS)",
       rlsDesc:
-        "PostgreSQL enforces granular tenant isolation at the database layer. No user can view, query, or delete another user's file records.",
+        "Granular tenant isolation is enforced at the database layer. No user can view, query, or delete another user's file records.",
       signedUrlTitle: "Temporary Signed URLs",
       signedUrlDesc:
-        "Private R2 buckets are completely isolated from public internet. File downloads are granted through signed URLs that expire within minutes.",
+        "Our private storage vault is completely isolated from public internet. File downloads are granted through signed URLs that expire within minutes.",
       highEntropyTitle: "High-Entropy Token URLs",
       highEntropyDesc:
         "Share links use 12-character cryptographically random tokens, making brute-force enumeration practically impossible.",
@@ -450,17 +471,17 @@ export const translations = {
         "Scheduled backend cleanup routines invalidate expired tokens and purge stale storage objects automatically.",
       egressTitle: "Strict Egress Restrictions",
       egressDesc:
-        "Direct browser-to-R2 streaming eliminates intermediary server buffering and reduces risk of memory-based data exfiltration.",
+        "Direct browser-to-storage streaming eliminates intermediary server buffering and reduces risk of memory-based data exfiltration.",
       archTitle: "Architecture at a Glance",
       arch1Title: "1. Browser Client",
       arch1Desc:
-        "Authenticates via Supabase Auth. Requests presigned upload or download authorization.",
-      arch2Title: "2. Supabase + RLS",
+        "Authenticates securely via encrypted session tokens. Requests presigned upload or download authorization.",
+      arch2Title: "2. Access & Security Layer",
       arch2Desc:
-        "Validates user identity, verifies quota limits, generates token, and manages metadata.",
-      arch3Title: "3. Cloudflare R2",
+        "Validates user identity, verifies quota limits, generates tokens, and manages metadata.",
+      arch3Title: "3. Dedicated Storage Vault",
       arch3Desc:
-        "Receives encrypted payload directly via signed S3 URLs. Direct streaming for recipient download.",
+        "Receives encrypted payload directly via temporary signed tokens. Direct streaming for recipient download.",
     },
 
     // ===== PRODUCT PREVIEW =====
@@ -499,13 +520,13 @@ export const translations = {
       q1: "Do recipients need a NearDrop account to download shared files?",
       a1: "No. Anyone with the unguessable link can access and download the shared file immediately without registering or logging in (unless you set a password, in which case they only need to enter the password).",
       q2: "How large can files be?",
-      a2: "NearDrop streams uploads directly to Cloudflare R2 via presigned URLs without loading entire files into server memory. You can upload large files up to your allocated storage quota limit.",
+      a2: "NearDrop streams uploads directly to our secure cloud storage via presigned URLs without loading entire files into server memory. You can upload large files up to your allocated storage quota limit.",
       q3: "How long do share links remain active?",
       a3: "You have full control. You can set links to expire in 1 hour, 24 hours, 7 days, 30 days, or never. Once a link expires, it can no longer be accessed by anyone.",
       q4: "Are my files public or indexable by search engines?",
-      a4: "No. All files in your cloud storage are private and protected by PostgreSQL Row Level Security (RLS). Share links use high-entropy random tokens that are never publicly indexed or listed.",
+      a4: "No. All files in your cloud storage are private and protected by strict Row Level Security (RLS). Share links use high-entropy random tokens that are never publicly indexed or listed.",
       q5: "Can I revoke or delete a shared file at any time?",
-      a5: "Yes. From your dashboard or Shared tab, you can disable any active link instantly or delete the underlying file, which purges the file from R2 and invalidates all associated links.",
+      a5: "Yes. From your dashboard or Shared tab, you can disable any active link instantly or delete the underlying file, which purges the file from secure cloud storage and invalidates all associated links.",
       q6: "What storage quota is included?",
       a6: "Every new account receives 10 GB of high-speed cloud storage by default. You can track real-time usage and category breakdowns anytime on your Storage page.",
     },
@@ -524,7 +545,7 @@ export const translations = {
     // ===== FOOTER =====
     footer: {
       description:
-        "Fast, private, and secure file sharing without the clutter. Powered by Cloudflare R2 storage architecture and PostgreSQL row-level security.",
+        "Fast, private, and secure file sharing without the clutter. Powered by dedicated secure cloud storage architecture and row-level security.",
       systemsOperational: "All systems operational",
       productTitle: "Product",
       instantDrop: "Instant Drop",
@@ -599,7 +620,7 @@ export const translations = {
       activeShares: "Active Shares",
       totalDownloads: "Total Downloads",
       instantCloudUpload: "Instant Cloud Upload",
-      encryptedR2Storage: "Encrypted R2 Storage",
+      encryptedR2Storage: "Encrypted Secure Storage",
       recentFiles: "Recent Files",
       browseAll: "Browse all",
       noFilesTitle: "No files uploaded yet",
@@ -619,14 +640,14 @@ export const translations = {
     dropzone: {
       dropHere: "Drop files or folders here",
       dragDropHint: "Drag & drop files or folders",
-      r2Description: "Files and folders are securely encrypted and stored with Cloudflare R2 presigned URLs. Up to available quota.",
+      r2Description: "Files and folders are securely encrypted and stored in our dedicated cloud storage. Up to available quota.",
       chooseFiles: "Choose Files",
       uploadFolder: "Upload Folder",
       encrypted: "End-to-end encrypted",
       directStreaming: "Direct streaming",
       unlimitedSpeed: "Unlimited speed",
       uploading: "Uploading",
-      streamingToR2: "Streaming to R2",
+      streamingToR2: "Streaming to secure storage",
       cancel: "Cancel",
     },
 
@@ -641,7 +662,7 @@ export const translations = {
       noFilesFoundDesc: "Upload your first file or entire folder to get started.",
       noFilesMatchSearch: "No files or folders match your search query.",
       dropHere: "Drop files or folders here",
-      dropDesc: "Folders and nested subfolders will be scanned and uploaded directly to Cloudflare R2.",
+      dropDesc: "Folders and nested subfolders will be scanned and uploaded directly to secure cloud storage.",
       allFilesRoot: "All Files",
       folders: "Folders",
       files: "Files",
@@ -671,7 +692,7 @@ export const translations = {
       secureCloudShare: "Secure Cloud Share",
       fileSharedWithYou: "File Shared with You",
       folderSharedWithYou: "Folder Shared with You",
-      encryptedSubtitle: "Encrypted transfer powered by Cloudflare R2 and temporary signed URLs.",
+      encryptedSubtitle: "Encrypted transfer powered by dedicated secure cloud storage and temporary signed links.",
       passwordProtected: "Password Protected",
       enterPasswordLabel: "Enter Password to Unlock",
       enterPasswordPlaceholder: "Enter password...",
@@ -685,6 +706,26 @@ export const translations = {
       linkUnavailable: "Link Unavailable",
       goToHome: "Go to NearDrop Home",
       footerTagline: "NearDrop • Secure End-to-End File Exchange",
+    },
+
+    // ===== GLOBAL TRANSFER WIDGET =====
+    transferWidget: {
+      activeTransfers: "Active Transfers",
+      uploadingCount: "files uploading",
+      allUploadsCompleted: "All uploads completed",
+      uploadProgress: "Upload Progress",
+      cancelAll: "Cancel All",
+      clearCompleted: "Clear",
+      minimize: "Minimize",
+      expand: "Expand",
+      cancelUpload: "Cancel Upload",
+      retry: "Retry",
+      completed: "Completed",
+      failed: "Failed",
+      cancelled: "Cancelled",
+      speed: "Speed",
+      remaining: "Remaining",
+      totalTransferred: "Total Transferred",
     },
   },
 } as const;

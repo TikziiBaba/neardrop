@@ -10,7 +10,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     priceMonthly: 0,
     priceYearly: 0,
     features: [
-      "10 GB Cloudflare R2 Storage",
+      "10 GB High-Speed Secure Cloud Storage",
       "24-Hour Link Lifespan",
       "Unlimited Local LAN Transfers (450+ Mbps)",
       "Standard End-to-End Encryption",
@@ -29,7 +29,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     popular: true,
     badge: "Most Popular",
     features: [
-      "100 GB Cloudflare R2 Storage",
+      "100 GB High-Speed Secure Cloud Storage",
       "7-Day Link Lifespan",
       "Password Protected Share Links",
       "Custom Download Limits & Expiry",
@@ -48,7 +48,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     priceYearly: 129,
     badge: "Creator Choice",
     features: [
-      "500 GB Cloudflare R2 Storage",
+      "500 GB High-Speed Secure Cloud Storage",
       "30-Day Link Lifespan",
       "Cryptographic Password & Pin Locks",
       "Custom Slug & Branded Download Pages",
