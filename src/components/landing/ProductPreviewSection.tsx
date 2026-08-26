@@ -52,27 +52,23 @@ export const ProductPreviewSection: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Tab Buttons with Animated Slider Indicator */}
+        {/* Tab Buttons */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-2xl border border-zinc-800/90 bg-zinc-900/80 p-1.5 backdrop-blur-xl relative">
+          <div className="inline-flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border border-zinc-800/90 bg-zinc-900/80 p-1.5 backdrop-blur-xl">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`relative px-4 sm:px-5 py-2.5 rounded-xl text-xs font-medium transition-colors z-10 ${
-                    isActive ? "text-white font-semibold" : "text-zinc-400 hover:text-zinc-200"
+                  type="button"
+                  className={`relative px-4 sm:px-5 py-2.5 rounded-xl text-xs font-medium border transition-all duration-200 ${
+                    isActive
+                      ? "bg-gradient-to-r from-sky-500/20 via-zinc-800 to-indigo-500/20 border-sky-500/40 text-white font-semibold shadow-lg shadow-sky-500/10"
+                      : "border-transparent text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
                   }`}
                 >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeProductTabPill"
-                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-sky-500/20 via-zinc-800 to-indigo-500/20 border border-sky-500/30 shadow-lg shadow-sky-500/10 z-[-1]"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  {tab.label}
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
@@ -94,15 +90,9 @@ export const ProductPreviewSection: React.FC = () => {
               <div className="h-3 w-3 rounded-full bg-amber-500/80 ring-1 ring-amber-400/30" />
               <div className="h-3 w-3 rounded-full bg-emerald-500/80 ring-1 ring-emerald-400/30" />
             </div>
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400"
-            >
+            <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400">
               <span>https://neardrop.bekirr.dev/{activeTab}</span>
-            </motion.div>
+            </div>
             <div className="w-12" />
           </div>
 
@@ -112,10 +102,10 @@ export const ProductPreviewSection: React.FC = () => {
               {activeTab === "dashboard" && (
                 <motion.div
                   key="tab-dashboard"
-                  initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
-                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className="space-y-6"
                 >
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -124,17 +114,14 @@ export const ProductPreviewSection: React.FC = () => {
                       { label: t.productPreview.storageUsed, value: "2.4 GB", color: "text-sky-400" },
                       { label: t.productPreview.activeShares, value: "18", color: "text-emerald-400" },
                       { label: t.productPreview.totalDownloads, value: "426", color: "text-indigo-400" },
-                    ].map((stat, idx) => (
-                      <motion.div
+                    ].map((stat) => (
+                      <div
                         key={stat.label}
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05 + 0.05, duration: 0.3 }}
                         className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800/80 space-y-1 hover:border-zinc-700 transition-colors"
                       >
                         <span className="text-[11px] text-zinc-400">{stat.label}</span>
                         <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
 
@@ -149,14 +136,14 @@ export const ProductPreviewSection: React.FC = () => {
                           <FileArchive className="h-4 w-4 text-amber-400" />
                           <span className="font-medium text-white">client-project-v2.zip</span>
                         </div>
-                        <span className="text-zinc-400">1.82 GB</span>
+                        <span className="text-zinc-400 font-mono">1.82 GB</span>
                       </div>
                       <div className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/60 border border-zinc-800/80 text-xs hover:border-zinc-700 transition-colors">
                         <div className="flex items-center gap-3">
                           <FileText className="h-4 w-4 text-sky-400" />
                           <span className="font-medium text-white">brand-guidelines.pdf</span>
                         </div>
-                        <span className="text-zinc-400">14.8 MB</span>
+                        <span className="text-zinc-400 font-mono">14.8 MB</span>
                       </div>
                     </div>
                   </div>
@@ -166,10 +153,10 @@ export const ProductPreviewSection: React.FC = () => {
               {activeTab === "files" && (
                 <motion.div
                   key="tab-files"
-                  initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
-                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className="space-y-4"
                 >
                   <div className="flex items-center justify-between">
@@ -181,14 +168,11 @@ export const ProductPreviewSection: React.FC = () => {
                       { name: "design-assets-2026.zip", size: "1.82 GB", date: t.productPreview.today, shares: `1 ${t.productPreview.activeLabel}`, icon: FileArchive, color: "text-amber-400" },
                       { name: "product-demo-4k.mp4", size: "420 MB", date: t.productPreview.yesterday, shares: t.productPreview.noShares, icon: FileVideo, color: "text-purple-400" },
                       { name: "client-brand-guidelines.pdf", size: "14.8 MB", date: "Aug 15", shares: `1 ${t.productPreview.activeLabel}`, icon: FileText, color: "text-sky-400" },
-                    ].map((f, i) => {
+                    ].map((f) => {
                       const Icon = f.icon;
                       return (
-                        <motion.div
+                        <div
                           key={f.name}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.06 + 0.05, duration: 0.25 }}
                           className="flex items-center justify-between p-3 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs hover:border-zinc-700 hover:bg-zinc-900/40 transition-all"
                         >
                           <div className="flex items-center gap-3">
@@ -196,11 +180,11 @@ export const ProductPreviewSection: React.FC = () => {
                             <span className="font-semibold text-white">{f.name}</span>
                           </div>
                           <div className="flex items-center gap-4 text-zinc-400">
-                            <span>{f.size}</span>
+                            <span className="font-mono">{f.size}</span>
                             <span className="text-[11px] text-zinc-500">{f.date}</span>
                             <Badge variant="secondary">{f.shares}</Badge>
                           </div>
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>
@@ -210,10 +194,10 @@ export const ProductPreviewSection: React.FC = () => {
               {activeTab === "share" && (
                 <motion.div
                   key="tab-share"
-                  initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
-                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className="max-w-md mx-auto p-6 rounded-3xl bg-zinc-950 border border-zinc-800 space-y-4 shadow-xl"
                 >
                   <div className="flex items-center gap-2 text-xs font-semibold text-white">
@@ -234,10 +218,10 @@ export const ProductPreviewSection: React.FC = () => {
               {activeTab === "transfers" && (
                 <motion.div
                   key="tab-transfers"
-                  initial={{ opacity: 0, y: 16, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -16, filter: "blur(4px)" }}
-                  transition={{ duration: 0.28, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
                   className="space-y-4 max-w-lg mx-auto w-full"
                 >
                   <div className="p-5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3 shadow-lg">
@@ -246,7 +230,7 @@ export const ProductPreviewSection: React.FC = () => {
                       <span className="text-sky-400 font-semibold font-mono">48.2 MB/s</span>
                     </div>
                     <Progress value={74} max={100} />
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400">
+                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
                       <span>2.4 GB / 3.3 GB</span>
                       <span className="text-emerald-400 font-medium">74% • 18 {t.productPreview.remaining}</span>
                     </div>
