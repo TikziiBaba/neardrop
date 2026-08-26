@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef } from "react";
 import { LucideIcon, Sparkles } from "lucide-react";
 
 interface SectionHeaderProps {
@@ -17,159 +16,132 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
   label,
   title,
   subtitle,
-  icon: Icon = Sparkles,
+  icon: Icon,
   badgeContent,
   className = "",
 }) => {
-  // Twinkling / blinking star dots
-  const twinklingStars = [
-    { id: 1, top: "14%", left: "12%", size: "h-1 w-1", duration: 3.2, delay: 0 },
-    { id: 2, top: "28%", left: "22%", size: "h-1.5 w-1.5", duration: 4.0, delay: 1.2 },
-    { id: 3, top: "10%", left: "38%", size: "h-1 w-1", duration: 3.6, delay: 0.4 },
-    { id: 4, top: "24%", left: "48%", size: "h-1 w-1", duration: 4.4, delay: 1.8 },
-    { id: 5, top: "12%", left: "64%", size: "h-1.5 w-1.5", duration: 3.8, delay: 0.8 },
-    { id: 6, top: "26%", left: "78%", size: "h-1 w-1", duration: 4.2, delay: 1.4 },
-    { id: 7, top: "16%", left: "88%", size: "h-1 w-1", duration: 3.4, delay: 2.1 },
-    { id: 8, top: "38%", left: "16%", size: "h-1 w-1", duration: 4.6, delay: 0.6 },
-    { id: 9, top: "34%", left: "82%", size: "h-1.5 w-1.5", duration: 3.9, delay: 1.6 },
-    { id: 10, top: "8%", left: "72%", size: "h-1 w-1", duration: 3.5, delay: 2.4 },
-  ];
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Star particles animation on canvas
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let width = (canvas.width = canvas.parentElement?.clientWidth || 960);
+    let height = (canvas.height = canvas.parentElement?.clientHeight || 320);
+
+    const handleResize = () => {
+      if (!canvas || !canvas.parentElement) return;
+      width = canvas.width = canvas.parentElement.clientWidth || 960;
+      height = canvas.height = canvas.parentElement.clientHeight || 320;
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Create 45 subtle twinkling star particles
+    const stars = Array.from({ length: 45 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height * 0.75,
+      radius: Math.random() * 1.4 + 0.6,
+      baseAlpha: Math.random() * 0.5 + 0.3,
+      alpha: Math.random() * 0.5 + 0.3,
+      speed: Math.random() * 0.02 + 0.008,
+      phase: Math.random() * Math.PI * 2,
+    }));
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      stars.forEach((star) => {
+        star.phase += star.speed;
+        star.alpha = star.baseAlpha + Math.sin(star.phase) * 0.35;
+        const currentAlpha = Math.max(0.1, Math.min(1, star.alpha));
+
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${currentAlpha})`;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = "#38bdf8";
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
 
   return (
-    <div className={`relative w-full max-w-5xl mx-auto text-center pt-10 pb-12 select-none ${className}`}>
-      {/* 1. Ultra-Smooth Multi-Layer Blue-to-Black Ambient Atmosphere */}
-      <div className="pointer-events-none absolute inset-0 -top-24 h-96 w-full flex items-center justify-center overflow-visible">
-        {/* Deep wide radial gradient that softly vanishes into pure black */}
-        <div className="absolute w-[120%] max-w-5xl h-96 bg-[radial-gradient(ellipse_75%_65%_at_50%_15%,rgba(14,165,233,0.18)_0%,rgba(2,132,199,0.09)_30%,rgba(15,23,42,0.03)_60%,transparent_85%)] blur-2xl" />
-        
-        {/* Soft centered cyan core haze */}
-        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-80 h-32 bg-sky-500/15 blur-3xl rounded-full" />
-        
-        {/* Vertical gentle light falloff */}
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 via-transparent to-transparent" />
-      </div>
+    <div className={`container mx-auto flex flex-col items-center justify-center pt-6 pb-8 select-none ${className}`}>
+      {/* 1. Dome Horizon Arc Container with Blue Atmospheric Gradient & Grid */}
+      <div className="relative h-72 sm:h-80 w-full overflow-hidden [mask-image:radial-gradient(50%_50%,white,transparent_90%)] before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_bottom_center,rgb(14_165_233),transparent_55%)] before:opacity-75 after:absolute after:border-2 after:-left-1/2 after:top-1/2 after:aspect-[1/1.8] after:w-[200%] after:rounded-[50%] after:border-t after:border-sky-400/50 after:bg-zinc-950">
+        {/* Subtle Geometric Grid Overlay */}
+        <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#ffffff18_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:70px_70px]" />
 
-      {/* 2. Soft Twinkling Star Dots */}
-      <div className="pointer-events-none absolute inset-0 -top-12 h-64 overflow-hidden [mask-image:radial-gradient(ellipse_75%_65%_at_50%_35%,#000_30%,transparent_90%)]">
-        {twinklingStars.map((star) => (
-          <motion.div
-            key={star.id}
-            animate={{
-              opacity: [0.15, 0.85, 0.15],
-              scale: [0.75, 1.2, 0.75],
-            }}
-            transition={{
-              duration: star.duration,
-              repeat: Infinity,
-              delay: star.delay,
-              ease: "easeInOut",
-            }}
-            style={{ top: star.top, left: star.left }}
-            className={`absolute ${star.size} rounded-full bg-white shadow-[0_0_6px_#38bdf8]`}
+        {/* Twinkling Star Particles Canvas */}
+        <div className="absolute inset-x-0 top-0 h-full w-full [mask-image:radial-gradient(50%_50%,white,transparent_85%)]">
+          <canvas
+            ref={canvasRef}
+            className="w-full h-full block"
+            aria-hidden="true"
           />
-        ))}
-      </div>
-
-      {/* 3. Smooth Curved Dome Horizon Arc (Softly Faded to Transparent) */}
-      <div className="relative w-full flex items-center justify-center pt-2 mb-3">
-        <div className="w-full max-w-3xl h-12 sm:h-14 relative flex items-center justify-center [mask-image:linear-gradient(to_right,transparent,black_18%,black_82%,transparent)]">
-          <svg
-            viewBox="0 0 1000 130"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full overflow-visible drop-shadow-[0_0_12px_rgba(56,189,248,0.35)]"
-            preserveAspectRatio="none"
-          >
-            <defs>
-              <linearGradient id="seamlessBlueArc" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="rgba(56, 189, 248, 0)" />
-                <stop offset="20%" stopColor="rgba(56, 189, 248, 0.25)" />
-                <stop offset="40%" stopColor="rgba(56, 189, 248, 0.75)" />
-                <stop offset="50%" stopColor="rgba(255, 255, 255, 0.95)" />
-                <stop offset="60%" stopColor="rgba(56, 189, 248, 0.75)" />
-                <stop offset="80%" stopColor="rgba(56, 189, 248, 0.25)" />
-                <stop offset="100%" stopColor="rgba(56, 189, 248, 0)" />
-              </linearGradient>
-              <filter id="softArcGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="4" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-
-            {/* Glowing diffuse back-arc */}
-            <path
-              d="M 0 125 Q 500 -10 1000 125"
-              stroke="rgba(14, 165, 233, 0.45)"
-              strokeWidth="4"
-              fill="none"
-              filter="url(#softArcGlow)"
-              className="opacity-60"
-            />
-            {/* Crisp foreground luminous arc */}
-            <path
-              d="M 0 125 Q 500 -10 1000 125"
-              stroke="url(#seamlessBlueArc)"
-              strokeWidth="1.8"
-              fill="none"
-            />
-          </svg>
-
-          {/* 4. Circular Peak Badge (Centered on the Horizon Peak) */}
-          <motion.div
-            initial={{ scale: 0.85, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="absolute -top-4 sm:-top-5 z-20"
-          >
-            <div className="relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full bg-white p-3 text-zinc-950 shadow-[0_0_24px_rgba(56,189,248,0.5),0_4px_14px_rgba(0,0,0,0.5)] ring-4 ring-zinc-950 border border-sky-200/80 transition-transform duration-300 hover:scale-105">
-              {/* Subtle inner ring */}
-              <div className="absolute inset-0.5 rounded-full border border-zinc-200/60 pointer-events-none" />
-              
-              {badgeContent || (
-                <Icon className="h-6 w-6 text-zinc-950 fill-zinc-950 relative z-10" />
-              )}
-            </div>
-          </motion.div>
         </div>
       </div>
 
-      {/* 5. Section Label Pill (Optional) */}
-      {label && (
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.35, delay: 0.05 }}
-          className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/25 bg-sky-500/10 px-3.5 py-1 text-[11px] font-semibold text-sky-300 uppercase tracking-widest mb-3 backdrop-blur-md"
-        >
-          <span>{label}</span>
-        </motion.div>
-      )}
+      {/* 2. Circular Peak Badge (Overlapping the Horizon Arc) */}
+      <div className="mx-auto -mt-48 sm:-mt-52 w-full max-w-2xl relative z-10 flex flex-col items-center">
+        <div className="bg-white border-solid border-4 border-zinc-950 p-4 w-24 h-24 sm:w-28 sm:h-28 mx-auto grid place-content-center rounded-full shadow-[0_0_40px_rgba(56,189,248,0.5),0_8px_20px_rgba(0,0,0,0.7)] transition-transform duration-300 hover:scale-105">
+          {badgeContent ? (
+            badgeContent
+          ) : Icon ? (
+            <Icon className="h-10 w-10 sm:h-12 sm:w-12 text-neutral-900" />
+          ) : (
+            /* Default 4-Point Sparkle Icon matching exact SVG path */
+            <svg
+              stroke="currentColor"
+              fill="currentColor"
+              strokeWidth="0"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="text-neutral-900 h-10 w-10 sm:h-12 sm:w-12"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                d="M9 4.5a.75.75 0 0 1 .721.544l.813 2.846a3.75 3.75 0 0 0 2.576 2.576l2.846.813a.75.75 0 0 1 0 1.442l-2.846.813a3.75 3.75 0 0 0-2.576 2.576l-.813 2.846a.75.75 0 0 1-1.442 0l-.813-2.846a3.75 3.75 0 0 0-2.576-2.576l-2.846-.813a.75.75 0 0 1 0-1.442l2.846-.813A3.75 3.75 0 0 0 7.466 7.89l.813-2.846A.75.75 0 0 1 9 4.5ZM18 1.5a.75.75 0 0 1 .728.568l.258 1.036c.236.94.97 1.674 1.91 1.91l1.036.258a.75.75 0 0 1 0 1.456l-1.036.258c-.94.236-1.674.97-1.91 1.91l-.258 1.036a.75.75 0 0 1-1.456 0l-.258-1.036a2.625 2.625 0 0 0-1.91-1.91l-1.036-.258a.75.75 0 0 1 0-1.456l1.036-.258a2.625 2.625 0 0 0 1.91-1.91l.258-1.036A.75.75 0 0 1 18 1.5ZM16.5 15a.75.75 0 0 1 .712.513l.394 1.183c.15.447.5.799.948.948l1.183.395a.75.75 0 0 1 0 1.422l-1.183.395c-.447.15-.799.5-.948.948l-.395 1.183a.75.75 0 0 1-1.422 0l-.395-1.183a1.5 1.5 0 0 0-.948-.948l-1.183-.395a.75.75 0 0 1 0-1.422l1.183-.395c.447-.15.799-.5.948-.948l.395-1.183A.75.75 0 0 1 16.5 15Z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </div>
+      </div>
 
-      {/* 6. Main Section Title */}
-      <motion.h2
-        initial={{ opacity: 0, y: 12 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-3 leading-tight"
-      >
-        {title}
-      </motion.h2>
+      {/* 3. Heading & Subtitle Article */}
+      <article className="pt-4 w-full max-w-3xl mx-auto block text-center z-10 relative space-y-2.5">
+        {label && (
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-sky-500/25 bg-sky-500/10 px-3.5 py-1 text-[11px] font-semibold text-sky-300 uppercase tracking-widest backdrop-blur-md mb-1">
+            <span>{label}</span>
+          </div>
+        )}
 
-      {/* 7. Subtitle Description */}
-      {subtitle && (
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto leading-relaxed px-4"
-        >
-          {subtitle}
-        </motion.p>
-      )}
+        <h2 className="scroll-m-20 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white py-1">
+          {title}
+        </h2>
+
+        {subtitle && (
+          <p className="text-sm sm:text-base text-zinc-400 max-w-xl mx-auto leading-relaxed px-4">
+            {subtitle}
+          </p>
+        )}
+      </article>
     </div>
   );
 };
