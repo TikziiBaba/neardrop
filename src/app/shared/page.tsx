@@ -18,6 +18,7 @@ import {
   ExternalLink,
   ShieldCheck,
   Plus,
+  Folder,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,8 +90,15 @@ export default function SharedPage() {
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden divide-y divide-zinc-800/60">
             {shares.map((share) => {
               const file = files.find((f) => f.id === share.cloudFileId);
+              const isFolder = Boolean(share.folderPath || share.isFolder);
               const isCopied = copiedToken === share.token;
               const isExpired = share.expiresAt && new Date(share.expiresAt).getTime() < Date.now();
+              const displayName = isFolder
+                ? share.title || share.folderPath?.split("/").pop() || "Shared Folder"
+                : file?.filename || "Shared Object";
+              const displaySize = isFolder
+                ? share.folderTotalBytes || 0
+                : file?.size || 0;
 
               return (
                 <div
@@ -100,10 +108,26 @@ export default function SharedPage() {
                   {/* Left: Info */}
                   <div className="space-y-2 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h4 className="font-semibold text-sm text-white truncate max-w-md">
-                        {file?.filename || "Shared Object"}
-                      </h4>
-                      {file && <span className="text-xs text-zinc-400">({formatBytes(file.size)})</span>}
+                      <div className="flex items-center gap-2">
+                        {isFolder ? (
+                          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                            <Folder className="h-3.5 w-3.5" />
+                          </div>
+                        ) : null}
+                        <h4 className="font-semibold text-sm text-white truncate max-w-md">
+                          {displayName}
+                        </h4>
+                      </div>
+
+                      {isFolder ? (
+                        <Badge variant="sky" className="text-[10px]">
+                          Folder ({share.folderFilesCount || 0} files)
+                        </Badge>
+                      ) : null}
+
+                      {displaySize > 0 && (
+                        <span className="text-xs text-zinc-400">({formatBytes(displaySize)})</span>
+                      )}
 
                       {/* Status Badges */}
                       {isExpired ? (
@@ -173,7 +197,7 @@ export default function SharedPage() {
                       onClick={() =>
                         setSelectedQrShare({
                           token: share.token,
-                          filename: file?.filename || "Shared File",
+                          filename: displayName,
                         })
                       }
                       className="h-8 w-8 p-0"

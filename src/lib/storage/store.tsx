@@ -15,7 +15,10 @@ interface StorageContextType {
   isLoading: boolean;
   uploadFiles: (fileList: File[] | FileList) => Promise<void>;
   createShareLink: (params: {
-    cloudFileId: string;
+    cloudFileId?: string;
+    folderPath?: string;
+    title?: string;
+    description?: string;
     expiresInHours?: number;
     maxDownloads?: number;
     password?: string;
@@ -25,8 +28,39 @@ interface StorageContextType {
   revokeShareLink: (shareId: string) => Promise<void>;
   deleteShareLink: (shareId: string) => Promise<void>;
   updateShareExpiry: (shareId: string, expiresInHours: number) => Promise<void>;
-  getShareByToken: (token: string) => Promise<{ share: ShareLink | null; file: CloudFile | null; error?: string }>;
-  unlockShareDownload: (token: string, password?: string) => Promise<{ downloadUrl: string; filename: string; size: number } | null>;
+  getShareByToken: (token: string) => Promise<{
+    share: ShareLink | null;
+    file: CloudFile | null;
+    files?: CloudFile[];
+    isFolder?: boolean;
+    folderPath?: string;
+    title?: string;
+    description?: string;
+    totalSize?: number;
+    totalCount?: number;
+    error?: string;
+  }>;
+  unlockShareDownload: (
+    token: string,
+    password?: string,
+    fileId?: string
+  ) => Promise<{ downloadUrl: string; filename: string; size: number } | null>;
+  unlockFolderBatchDownload: (
+    token: string,
+    password?: string
+  ) => Promise<{
+    isFolder: boolean;
+    folderName: string;
+    items: {
+      id: string;
+      filename: string;
+      fullPath: string;
+      relativePath: string;
+      size: number;
+      mimeType: string;
+      downloadUrl: string;
+    }[];
+  } | null>;
   downloadFile: (fileId: string) => Promise<void>;
   cancelTransfer: (transferId: string) => void;
   retryTransfer: (transferId: string) => void;
@@ -276,7 +310,10 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [user, fetchFiles, getAuthHeaders]);
 
   const createShareLink = async (params: {
-    cloudFileId: string;
+    cloudFileId?: string;
+    folderPath?: string;
+    title?: string;
+    description?: string;
     expiresInHours?: number;
     maxDownloads?: number;
     password?: string;
@@ -411,7 +448,18 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const getShareByToken = async (
     token: string
-  ): Promise<{ share: ShareLink | null; file: CloudFile | null; error?: string }> => {
+  ): Promise<{
+    share: ShareLink | null;
+    file: CloudFile | null;
+    files?: CloudFile[];
+    isFolder?: boolean;
+    folderPath?: string;
+    title?: string;
+    description?: string;
+    totalSize?: number;
+    totalCount?: number;
+    error?: string;
+  }> => {
     try {
       const res = await fetch(`/api/download?token=${encodeURIComponent(token)}`);
 
@@ -423,7 +471,14 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const data = await res.json();
       return {
         share: data.share,
-        file: data.file,
+        file: data.file || null,
+        files: data.files || undefined,
+        isFolder: data.isFolder,
+        folderPath: data.folderPath,
+        title: data.title,
+        description: data.description,
+        totalSize: data.totalSize,
+        totalCount: data.totalCount,
       };
     } catch (err: any) {
       return { share: null, file: null, error: err.message };
@@ -432,17 +487,48 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const unlockShareDownload = async (
     token: string,
-    password?: string
+    password?: string,
+    fileId?: string
   ): Promise<{ downloadUrl: string; filename: string; size: number } | null> => {
     const res = await fetch("/api/download", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, password }),
+      body: JSON.stringify({ token, password, fileId }),
     });
 
     if (!res.ok) {
       const errData = await res.json();
       throw new Error(errData.error || "Download failed");
+    }
+
+    return await res.json();
+  };
+
+  const unlockFolderBatchDownload = async (
+    token: string,
+    password?: string
+  ): Promise<{
+    isFolder: boolean;
+    folderName: string;
+    items: {
+      id: string;
+      filename: string;
+      fullPath: string;
+      relativePath: string;
+      size: number;
+      mimeType: string;
+      downloadUrl: string;
+    }[];
+  } | null> => {
+    const res = await fetch("/api/download", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password, batch: true }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Batch download failed");
     }
 
     return await res.json();
@@ -560,6 +646,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateShareExpiry,
         getShareByToken,
         unlockShareDownload,
+        unlockFolderBatchDownload,
         downloadFile,
         cancelTransfer,
         retryTransfer,

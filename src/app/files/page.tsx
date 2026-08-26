@@ -63,6 +63,7 @@ export default function FilesPage() {
 
   // Modals state
   const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null);
+  const [selectedFolderForShare, setSelectedFolderForShare] = useState<FolderItem | null>(null);
   const [selectedFileForDetails, setSelectedFileForDetails] = useState<CloudFile | null>(null);
   const [selectedFileForRename, setSelectedFileForRename] = useState<CloudFile | null>(null);
   const [selectedFileForDelete, setSelectedFileForDelete] = useState<CloudFile | null>(null);
@@ -504,15 +505,38 @@ export default function FilesPage() {
             </div>
 
             {currentFolderPath && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={navigateUp}
-                className="text-xs text-zinc-400 hover:text-white h-7 px-2 gap-1 flex-shrink-0 ml-2"
-              >
-                <CornerLeftUp className="h-3.5 w-3.5 text-sky-400" />
-                <span className="hidden sm:inline">{t.filesPage.goUp}</span>
-              </Button>
+              <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const currentFiles = files.filter(
+                      (f) => f.filename === currentFolderPath || f.filename.startsWith(currentFolderPath + "/")
+                    );
+                    setSelectedFolderForShare({
+                      name: currentFolderPath.split("/").pop() || currentFolderPath,
+                      fullPath: currentFolderPath,
+                      filesCount: currentFiles.length,
+                      totalBytes: currentFiles.reduce((acc, f) => acc + (f.size || 0), 0),
+                      latestCreatedAt: currentFiles[0]?.createdAt || new Date().toISOString(),
+                    });
+                  }}
+                  className="text-xs text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 border-sky-500/30 h-7 px-2 gap-1"
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Share Folder</span>
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={navigateUp}
+                  className="text-xs text-zinc-400 hover:text-white h-7 px-2 gap-1"
+                >
+                  <CornerLeftUp className="h-3.5 w-3.5 text-sky-400" />
+                  <span className="hidden sm:inline">{t.filesPage.goUp}</span>
+                </Button>
+              </div>
             )}
           </div>
         )}
@@ -618,7 +642,17 @@ export default function FilesPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedFolderForShare(folder);
+                    }}
+                    className="p-1.5 text-zinc-400 hover:text-sky-400 rounded-lg hover:bg-sky-500/10 transition-colors"
+                    title="Share Folder"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </button>
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -768,16 +802,28 @@ export default function FilesPage() {
                         <span className="flex items-center gap-1 group-hover:underline">
                           Open folder <ChevronRight className="h-3.5 w-3.5" />
                         </span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setFolderToDelete(folder);
-                          }}
-                          className="p-1 text-zinc-500 hover:text-rose-400 rounded transition-colors"
-                          title="Delete Folder"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedFolderForShare(folder);
+                            }}
+                            className="p-1 text-zinc-400 hover:text-sky-400 rounded transition-colors"
+                            title="Share Folder"
+                          >
+                            <Share2 className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFolderToDelete(folder);
+                            }}
+                            className="p-1 text-zinc-500 hover:text-rose-400 rounded transition-colors"
+                            title="Delete Folder"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -896,8 +942,14 @@ export default function FilesPage() {
       {/* Modals */}
       <ShareModal
         file={selectedFileForShare}
-        open={Boolean(selectedFileForShare)}
-        onOpenChange={(open) => !open && setSelectedFileForShare(null)}
+        folder={selectedFolderForShare}
+        open={Boolean(selectedFileForShare || selectedFolderForShare)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedFileForShare(null);
+            setSelectedFolderForShare(null);
+          }
+        }}
       />
 
       <FileDetailsDrawer

@@ -59,7 +59,10 @@ export interface CloudFile {
 export interface ShareLink {
   id: string;
   userId: string;
-  cloudFileId: string;
+  cloudFileId?: string;
+  folderPath?: string;
+  title?: string;
+  description?: string;
   token: string;
   passwordProtected: boolean;
   passwordHash?: string | null;
@@ -70,6 +73,9 @@ export interface ShareLink {
   createdAt: string;
   cloudFile?: CloudFile;
   userEmail?: string;
+  folderFilesCount?: number;
+  folderTotalBytes?: number;
+  isFolder?: boolean;
 }
 
 export interface TransferItem {

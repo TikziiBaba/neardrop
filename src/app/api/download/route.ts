@@ -44,24 +44,72 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "This link has reached its maximum download limit." }, { status: 410 });
     }
 
+    const isFolder = Boolean(share.folder_path);
+
+    const shareData = {
+      id: share.id,
+      userId: share.user_id,
+      cloudFileId: share.cloud_file_id,
+      folderPath: share.folder_path || undefined,
+      title: share.title || (isFolder ? share.folder_path?.split("/").pop() : undefined),
+      description: share.description || undefined,
+      token: share.token,
+      passwordProtected: Boolean(share.password_hash),
+      expiresAt: share.expires_at,
+      downloadCount: share.download_count,
+      maxDownloads: share.max_downloads,
+      isActive: share.is_active,
+      createdAt: share.created_at,
+      isFolder,
+    };
+
+    if (isFolder && share.folder_path) {
+      // Query all files for user matching this folder path
+      const prefix = `${share.folder_path}/`;
+      const { data: folderFiles, error: filesErr } = await serviceClient
+        .from("cloud_files")
+        .select("*")
+        .eq("user_id", share.user_id)
+        .eq("is_deleted", false)
+        .or(`filename.eq."${share.folder_path}",filename.ilike."${prefix}%"`)
+        .order("filename", { ascending: true });
+
+      if (filesErr) throw filesErr;
+
+      const activeFiles = (folderFiles || []).map((f: any) => ({
+        id: f.id,
+        userId: f.user_id,
+        filename: f.filename,
+        size: f.size,
+        mimeType: f.mime_type,
+        checksum: f.checksum,
+        isDeleted: f.is_deleted,
+        createdAt: f.created_at,
+      }));
+
+      const totalSize = activeFiles.reduce((acc: number, f: any) => acc + (f.size || 0), 0);
+
+      return NextResponse.json({
+        share: shareData,
+        isFolder: true,
+        folderPath: share.folder_path,
+        title: share.title || share.folder_path.split("/").pop(),
+        description: share.description,
+        files: activeFiles,
+        totalSize,
+        totalCount: activeFiles.length,
+      });
+    }
+
+    // Single File share
     const file = share.cloud_files;
     if (!file || file.is_deleted) {
       return NextResponse.json({ error: "The underlying file was removed." }, { status: 404 });
     }
 
     return NextResponse.json({
-      share: {
-        id: share.id,
-        userId: share.user_id,
-        cloudFileId: share.cloud_file_id,
-        token: share.token,
-        passwordProtected: Boolean(share.password_hash),
-        expiresAt: share.expires_at,
-        downloadCount: share.download_count,
-        maxDownloads: share.max_downloads,
-        isActive: share.is_active,
-        createdAt: share.created_at,
-      },
+      share: shareData,
+      isFolder: false,
       file: {
         id: file.id,
         userId: file.user_id,
@@ -79,11 +127,11 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: Validate password, increment download count, return presigned R2 download URL
+// POST: Validate password, increment download count, return presigned R2 download URL(s)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { token, password } = body;
+    const { token, password, fileId, batch } = body;
 
     if (!token || token.length < 8 || token.length > 64) {
       return NextResponse.json({ error: "Invalid share token." }, { status: 400 });
@@ -116,10 +164,13 @@ export async function POST(req: NextRequest) {
     // Check password
     if (share.password_hash) {
       if (!password) {
-        return NextResponse.json({ 
-          error: "This file is password protected. Please provide a password.",
-          passwordRequired: true 
-        }, { status: 403 });
+        return NextResponse.json(
+          {
+            error: "This share is password protected. Please provide a password.",
+            passwordRequired: true,
+          },
+          { status: 403 }
+        );
       }
       const hash = serverSHA256(password.trim());
       if (hash !== share.password_hash) {
@@ -127,45 +178,115 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (!isR2Configured()) {
+      return NextResponse.json({ error: "R2 storage is not configured" }, { status: 500 });
+    }
+
+    const isFolder = Boolean(share.folder_path);
+
+    // Atomically increment download count helper
+    const incrementDownloadCount = async () => {
+      if (share.max_downloads) {
+        await serviceClient
+          .from("share_links")
+          .update({ download_count: share.download_count + 1 })
+          .eq("id", share.id)
+          .lt("download_count", share.max_downloads);
+      } else {
+        await serviceClient
+          .from("share_links")
+          .update({ download_count: share.download_count + 1 })
+          .eq("id", share.id);
+      }
+    };
+
+    // Case 1: Folder Share with batch download request (for ZIP generator or bulk download)
+    if (isFolder && batch) {
+      const prefix = `${share.folder_path}/`;
+      const { data: folderFiles, error: filesErr } = await serviceClient
+        .from("cloud_files")
+        .select("*")
+        .eq("user_id", share.user_id)
+        .eq("is_deleted", false)
+        .or(`filename.eq."${share.folder_path}",filename.ilike."${prefix}%"`);
+
+      if (filesErr || !folderFiles || folderFiles.length === 0) {
+        return NextResponse.json({ error: "No files found in this shared folder." }, { status: 404 });
+      }
+
+      // Generate presigned URLs for all files
+      const items = await Promise.all(
+        folderFiles.map(async (f: any) => {
+          const downloadUrl = await createPresignedDownloadUrl(f.r2_object_key, f.filename, 1800);
+          // Calculate relative path inside the folder
+          let relativePath = f.filename;
+          if (f.filename.startsWith(prefix)) {
+            relativePath = f.filename.slice(prefix.length);
+          } else if (f.filename === share.folder_path) {
+            relativePath = f.filename.split("/").pop() || f.filename;
+          }
+          return {
+            id: f.id,
+            filename: f.filename.split("/").pop() || f.filename,
+            fullPath: f.filename,
+            relativePath,
+            size: f.size,
+            mimeType: f.mime_type,
+            downloadUrl,
+          };
+        })
+      );
+
+      await incrementDownloadCount();
+
+      return NextResponse.json({
+        isFolder: true,
+        folderName: share.folder_path.split("/").pop() || "download",
+        items,
+      });
+    }
+
+    // Case 2: Folder Share with single file download requested (fileId provided)
+    if (isFolder && fileId) {
+      const { data: specificFile, error: fileErr } = await serviceClient
+        .from("cloud_files")
+        .select("*")
+        .eq("id", fileId)
+        .eq("user_id", share.user_id)
+        .eq("is_deleted", false)
+        .single();
+
+      if (fileErr || !specificFile) {
+        return NextResponse.json({ error: "File not found." }, { status: 404 });
+      }
+
+      const downloadUrl = await createPresignedDownloadUrl(
+        specificFile.r2_object_key,
+        specificFile.filename,
+        900
+      );
+
+      await incrementDownloadCount();
+
+      return NextResponse.json({
+        downloadUrl,
+        filename: specificFile.filename.split("/").pop() || specificFile.filename,
+        size: specificFile.size,
+      });
+    }
+
+    // Case 3: Single File Share
     const file = share.cloud_files;
     if (!file || file.is_deleted) {
       return NextResponse.json({ error: "The underlying file was removed." }, { status: 404 });
     }
 
-    // Generate presigned download URL
-    if (!isR2Configured()) {
-      return NextResponse.json({ error: "R2 storage is not configured" }, { status: 500 });
-    }
-
     const downloadUrl = await createPresignedDownloadUrl(file.r2_object_key, file.filename, 900);
-
-    // Atomically increment download count to prevent race conditions.
-    // Uses Supabase RPC if available, otherwise falls back to direct update.
-    // The re-check of max_downloads prevents concurrent requests from exceeding the limit.
-    if (share.max_downloads) {
-      // Re-fetch and check atomicity: only update if download_count hasn't exceeded max
-      const { data: updatedShare, error: updateErr } = await serviceClient
-        .from("share_links")
-        .update({ download_count: share.download_count + 1 })
-        .eq("id", share.id)
-        .lt("download_count", share.max_downloads)
-        .select("id")
-        .single();
-
-      if (updateErr || !updatedShare) {
-        return NextResponse.json({ error: "This link has reached its maximum download limit." }, { status: 410 });
-      }
-    } else {
-      // No max_downloads limit — just increment
-      await serviceClient
-        .from("share_links")
-        .update({ download_count: share.download_count + 1 })
-        .eq("id", share.id);
-    }
+    await incrementDownloadCount();
 
     return NextResponse.json({
       downloadUrl,
-      filename: file.filename,
+      filename: file.filename.split("/").pop() || file.filename,
       size: file.size,
     });
   } catch (error: any) {

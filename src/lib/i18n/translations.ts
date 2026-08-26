@@ -326,6 +326,7 @@ export const translations = {
     publicShare: {
       secureCloudShare: "Güvenli Bulut Paylaşımı",
       fileSharedWithYou: "Sizinle Paylaşılan Dosya",
+      folderSharedWithYou: "Sizinle Paylaşılan Klasör",
       encryptedSubtitle: "Cloudflare R2 ve geçici imzalı URL'ler ile şifreli transfer.",
       passwordProtected: "Şifre Korumalı",
       enterPasswordLabel: "Kilidi Açmak İçin Şifreyi Girin",
@@ -334,6 +335,8 @@ export const translations = {
       browserDidNotStart: "Tarayıcınız indirmeyi otomatik başlatmadıysa:",
       clickToRedownload: "Tekrar indirmek için tıklayın",
       downloadFile: "Dosyayı İndir",
+      downloadZip: "ZIP Olarak İndir",
+      downloadingZip: "ZIP İndiriliyor...",
       verifying: "Doğrulanıyor & çözülüyor...",
       linkUnavailable: "Link Kullanılamıyor",
       goToHome: "NearDrop Ana Sayfasına Git",
@@ -667,6 +670,7 @@ export const translations = {
     publicShare: {
       secureCloudShare: "Secure Cloud Share",
       fileSharedWithYou: "File Shared with You",
+      folderSharedWithYou: "Folder Shared with You",
       encryptedSubtitle: "Encrypted transfer powered by Cloudflare R2 and temporary signed URLs.",
       passwordProtected: "Password Protected",
       enterPasswordLabel: "Enter Password to Unlock",
@@ -675,6 +679,8 @@ export const translations = {
       browserDidNotStart: "If your browser did not start the download automatically:",
       clickToRedownload: "Click here to re-download",
       downloadFile: "Download File",
+      downloadZip: "Download as ZIP",
+      downloadingZip: "Downloading ZIP...",
       verifying: "Verifying & decrypting...",
       linkUnavailable: "Link Unavailable",
       goToHome: "Go to NearDrop Home",
