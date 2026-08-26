@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Shield, KeyRound, Database, FileLock, RefreshCw, EyeOff } from "lucide-react";
+import { ShieldCheck, KeyRound, Fingerprint, FileCheck2, Hourglass, Lock } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -16,27 +16,27 @@ export const SecuritySection: React.FC = () => {
       desc: t.security.rlsDesc,
     },
     {
-      icon: FileLock,
+      icon: FileCheck2,
       title: t.security.signedUrlTitle,
       desc: t.security.signedUrlDesc,
     },
     {
-      icon: EyeOff,
+      icon: Fingerprint,
       title: t.security.highEntropyTitle,
       desc: t.security.highEntropyDesc,
     },
     {
-      icon: Database,
+      icon: Lock,
       title: t.security.zeroKnowledgeTitle,
       desc: t.security.zeroKnowledgeDesc,
     },
     {
-      icon: RefreshCw,
+      icon: Hourglass,
       title: t.security.lifespanTitle,
       desc: t.security.lifespanDesc,
     },
     {
-      icon: Shield,
+      icon: ShieldCheck,
       title: t.security.egressTitle,
       desc: t.security.egressDesc,
     },
@@ -49,7 +49,7 @@ export const SecuritySection: React.FC = () => {
           label={t.security.badge}
           title={t.security.title}
           subtitle={t.security.subtitle}
-          icon={Shield}
+          icon={ShieldCheck}
         />
 
         {/* Security Grid */}

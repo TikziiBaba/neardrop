@@ -18,6 +18,7 @@ import {
   Clock,
   Lock,
   ChevronDown,
+  Crown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -55,6 +56,7 @@ export default function PricingPage() {
           label="Next-Generation Cloud Storage & Sharing"
           title="Simple, transparent pricing."
           subtitle="Choose the capacity that fits your workflow. From lightning LAN transfers to permanent 2 TB encrypted cloud hosting."
+          icon={Crown}
         />
 
         {/* Monthly / Yearly Billing Toggle */}

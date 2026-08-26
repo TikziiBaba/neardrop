@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { UploadCloud, Link as LinkIcon, Share2, ArrowRight } from "lucide-react";
+import { FolderUp, QrCode, Send, Compass } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -14,21 +14,21 @@ export const HowItWorksSection: React.FC = () => {
       num: t.howItWorks.step1Num,
       title: t.howItWorks.step1Title,
       description: t.howItWorks.step1Desc,
-      icon: UploadCloud,
+      icon: FolderUp,
       badge: t.howItWorks.step1Badge,
     },
     {
       num: t.howItWorks.step2Num,
       title: t.howItWorks.step2Title,
       description: t.howItWorks.step2Desc,
-      icon: LinkIcon,
+      icon: QrCode,
       badge: t.howItWorks.step2Badge,
     },
     {
       num: t.howItWorks.step3Num,
       title: t.howItWorks.step3Title,
       description: t.howItWorks.step3Desc,
-      icon: Share2,
+      icon: Send,
       badge: t.howItWorks.step3Badge,
     },
   ];
@@ -40,6 +40,7 @@ export const HowItWorksSection: React.FC = () => {
           label={t.howItWorks.sectionLabel}
           title={t.howItWorks.title}
           subtitle={t.howItWorks.subtitle}
+          icon={Compass}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, HelpCircle } from "lucide-react";
+import { ChevronDown, MessageCircleQuestion } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -25,7 +25,7 @@ export const FaqSection: React.FC = () => {
         <SectionHeader
           label={t.faq.sectionLabel}
           title={t.faq.title}
-          icon={HelpCircle}
+          icon={MessageCircleQuestion}
         />
 
         <div className="space-y-3.5">

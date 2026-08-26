@@ -2,14 +2,12 @@
 
 import React from "react";
 import {
-  Zap,
+  Rocket,
+  KeyRound,
+  Hourglass,
   ShieldCheck,
-  Clock,
-  Lock,
-  HardDrive,
-  FolderKanban,
-  QrCode,
-  Gauge,
+  CloudLightning,
+  FolderHeart,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
@@ -20,42 +18,42 @@ export const FeaturesSection: React.FC = () => {
 
   const features = [
     {
-      icon: Zap,
+      icon: Rocket,
       title: t.features.blazingFastTitle,
       description: t.features.blazingFastDesc,
       color: "text-amber-400",
       bg: "bg-amber-500/10",
     },
     {
-      icon: ShieldCheck,
+      icon: KeyRound,
       title: t.features.cryptoTokenTitle,
       description: t.features.cryptoTokenDesc,
       color: "text-emerald-400",
       bg: "bg-emerald-500/10",
     },
     {
-      icon: Clock,
+      icon: Hourglass,
       title: t.features.autoExpiryTitle,
       description: t.features.autoExpiryDesc,
       color: "text-sky-400",
       bg: "bg-sky-500/10",
     },
     {
-      icon: Lock,
+      icon: ShieldCheck,
       title: t.features.sha256Title,
       description: t.features.sha256Desc,
       color: "text-violet-400",
       bg: "bg-violet-500/10",
     },
     {
-      icon: HardDrive,
+      icon: CloudLightning,
       title: t.features.r2StorageTitle,
       description: t.features.r2StorageDesc,
       color: "text-blue-400",
       bg: "bg-blue-500/10",
     },
     {
-      icon: FolderKanban,
+      icon: FolderHeart,
       title: t.features.fileManagementTitle,
       description: t.features.fileManagementDesc,
       color: "text-pink-400",
