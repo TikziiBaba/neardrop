@@ -288,9 +288,7 @@ export default function FilesPage() {
       const extractedFiles = await extractFilesFromDataTransfer(e.dataTransfer);
       if (extractedFiles.length > 0) {
         const prepared = processFilesForCurrentFolder(extractedFiles);
-        toast.info(`Preparing upload for ${prepared.length} file(s)...`);
         await uploadFiles(prepared);
-        toast.success("Files successfully uploaded to cloud storage!");
       }
     } catch (err: any) {
       toast.error(err.message || "Upload failed. Please check your storage settings.");
@@ -301,10 +299,8 @@ export default function FilesPage() {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
       const prepared = processFilesForCurrentFolder(filesArray);
-      toast.info(`Preparing upload for ${prepared.length} file(s)...`);
       try {
         await uploadFiles(prepared);
-        toast.success("Files successfully uploaded to cloud storage!");
       } catch (err: any) {
         toast.error(err.message || "Upload failed. Please check your storage settings.");
       } finally {

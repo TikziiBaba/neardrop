@@ -44,10 +44,8 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
     try {
       const extractedFiles = await extractFilesFromDataTransfer(e.dataTransfer);
       if (extractedFiles.length > 0) {
-        toast.info(locale === "tr" ? `${extractedFiles.length} dosya hazırlanıyor...` : `Preparing upload for ${extractedFiles.length} file(s)...`);
         onUploadStarted?.();
         await uploadFiles(extractedFiles);
-        toast.success(locale === "tr" ? "Dosyalar güvenli depolama yerimize başarıyla yüklendi!" : "Files successfully uploaded to secure storage!");
       }
     } catch (err: any) {
       toast.error(err.message || "Upload failed. Please check your storage settings.");
@@ -57,11 +55,9 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
-      toast.info(locale === "tr" ? `${filesArray.length} dosya hazırlanıyor...` : `Preparing upload for ${filesArray.length} file(s)...`);
       onUploadStarted?.();
       try {
         await uploadFiles(filesArray);
-        toast.success(locale === "tr" ? "Dosyalar güvenli depolama yerimize başarıyla yüklendi!" : "Files successfully uploaded to secure storage!");
       } catch (err: any) {
         toast.error(err.message || "Upload failed. Please check your storage settings.");
       } finally {
