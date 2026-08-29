@@ -39,7 +39,7 @@ export const HowItWorksSection: React.FC = () => {
         <div className="h-28 w-full rounded-2xl bg-zinc-950/80 border border-zinc-800/80 p-3.5 flex flex-col items-center justify-center gap-2 relative overflow-hidden">
           <div className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-700/80 text-[11px] font-mono text-sky-300 flex items-center gap-2">
             <LinkIcon className="h-3 w-3 text-sky-400" />
-            <span>neardrop.app/s/9fA7bE4k</span>
+            <span>neardrop.bekirr.dev/s/9fA7bE4k</span>
           </div>
           <div className="flex items-center gap-2 text-[10px] font-mono text-emerald-400">
             <CheckCircle2 className="h-3 w-3" />

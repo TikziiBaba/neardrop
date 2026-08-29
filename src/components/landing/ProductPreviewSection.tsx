@@ -116,7 +116,7 @@ export const ProductPreviewSection: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400">
               <span className="text-sky-400">https://</span>
-              <span>neardrop.app/{activeTab}</span>
+              <span>neardrop.bekirr.dev/{activeTab}</span>
             </div>
             <div className="flex items-center gap-1.5 text-zinc-500 text-xs">
               <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -283,7 +283,7 @@ export const ProductPreviewSection: React.FC = () => {
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 text-xs font-mono text-sky-400 flex items-center justify-between gap-2 shadow-inner">
-                    <span className="truncate">https://neardrop.app/s/7fH9k2Lm90</span>
+                    <span className="truncate">https://neardrop.bekirr.dev/s/7fH9k2Lm90</span>
                     <button
                       onClick={handleCopyLink}
                       className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 text-xs font-sans font-semibold border border-sky-500/30 transition-all cursor-pointer"
