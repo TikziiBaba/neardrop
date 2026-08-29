@@ -20,7 +20,7 @@ export const FaqSection: React.FC = () => {
   ];
 
   return (
-    <section id="faq" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden">
+    <section id="faq" className="py-20 md:py-32 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden select-none">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={t.faq.sectionLabel}
@@ -28,35 +28,35 @@ export const FaqSection: React.FC = () => {
           icon={MessageCircleQuestion}
         />
 
-        <div className="space-y-3.5">
+        <div className="space-y-3">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ delay: index * 0.05, duration: 0.4 }}
-                className={`rounded-2xl border transition-colors duration-200 overflow-hidden ${
+                transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
                   isOpen
-                    ? "border-sky-500/40 bg-zinc-900/80 shadow-lg shadow-sky-500/5 ring-1 ring-sky-500/20"
-                    : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/60"
+                    ? "border-zinc-700 bg-zinc-900/80 shadow-lg shadow-black/30"
+                    : "border-zinc-800/80 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/60"
                 }`}
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-white transition-colors"
+                  className="flex w-full items-center justify-between p-5 text-left text-sm font-semibold text-white transition-colors cursor-pointer select-none"
                 >
-                  <span className="pr-4">{faq.q}</span>
+                  <span className="pr-4 tracking-tight">{faq.q}</span>
                   <motion.div
                     animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.25, ease: "easeInOut" }}
-                    className={`flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-lg border transition-colors ${
+                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                    className={`flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-xl border transition-colors ${
                       isOpen
                         ? "border-sky-500/30 bg-sky-500/10 text-sky-400"
-                        : "border-zinc-800 bg-zinc-950 text-zinc-400"
+                        : "border-zinc-800 bg-zinc-950/60 text-zinc-400"
                     }`}
                   >
                     <ChevronDown className="h-4 w-4" />
@@ -72,21 +72,21 @@ export const FaqSection: React.FC = () => {
                         height: "auto",
                         opacity: 1,
                         transition: {
-                          height: { duration: 0.3, ease: [0.04, 0.62, 0.23, 0.98] },
-                          opacity: { duration: 0.25, delay: 0.05 },
+                          height: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
+                          opacity: { duration: 0.2, delay: 0.05 },
                         },
                       }}
                       exit={{
                         height: 0,
                         opacity: 0,
                         transition: {
-                          height: { duration: 0.25, ease: [0.04, 0.62, 0.23, 0.98] },
-                          opacity: { duration: 0.15 },
+                          height: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
+                          opacity: { duration: 0.12 },
                         },
                       }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 text-xs sm:text-sm text-zinc-400 leading-relaxed border-t border-zinc-800/60 pt-3.5">
+                      <div className="px-5 pb-5 text-xs sm:text-sm text-zinc-400 leading-relaxed border-t border-zinc-800/60 pt-3.5 font-normal">
                         {faq.a}
                       </div>
                     </motion.div>

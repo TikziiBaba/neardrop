@@ -34,7 +34,7 @@ export const HowItWorksSection: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/40 relative overflow-hidden">
+    <section id="how-it-works" className="py-20 md:py-32 border-t border-zinc-800/80 bg-zinc-950/40 relative overflow-hidden select-none">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={t.howItWorks.sectionLabel}
@@ -49,32 +49,32 @@ export const HowItWorksSection: React.FC = () => {
             return (
               <motion.div
                 key={step.num}
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: index * 0.12, duration: 0.5, ease: "easeOut" }}
-                whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                className="relative rounded-3xl border border-zinc-800 bg-zinc-900/60 p-8 space-y-6 hover:border-zinc-700 hover:shadow-xl hover:shadow-sky-500/5 transition-colors duration-200"
+                transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="relative rounded-3xl border border-zinc-800/90 bg-zinc-900/40 p-8 space-y-6 hover:border-zinc-700 hover:bg-zinc-900/70 hover:shadow-xl hover:shadow-black/30 transition-all duration-200"
               >
-                {/* Header: Number and Badge */}
+                {/* Header: Step Number & Badge */}
                 <div className="flex items-center justify-between">
-                  <span className="text-4xl font-extrabold text-zinc-700/60 font-mono">
+                  <span className="text-3xl font-bold text-zinc-700/80 font-mono">
                     {step.num}
                   </span>
-                  <span className="rounded-lg bg-sky-500/10 px-2.5 py-1 text-[11px] font-semibold text-sky-400 border border-sky-500/20">
+                  <span className="rounded-full bg-sky-500/10 px-3 py-0.5 text-[11px] font-semibold text-sky-400 border border-sky-500/20">
                     {step.badge}
                   </span>
                 </div>
 
-                {/* Icon Box */}
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700 text-sky-400 shadow-md shadow-sky-500/10">
-                  <Icon className="h-6 w-6" />
+                {/* Icon Squircle Box */}
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800/90 border border-zinc-700/80 text-sky-400 shadow-md shadow-sky-500/5">
+                  <Icon className="h-5 w-5" />
                 </div>
 
                 {/* Content */}
                 <div className="space-y-2">
                   <h3 className="text-lg font-bold text-white tracking-tight">{step.title}</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">{step.description}</p>
+                  <p className="text-xs text-zinc-400 leading-relaxed font-normal">{step.description}</p>
                 </div>
               </motion.div>
             );

@@ -43,7 +43,7 @@ export const SecuritySection: React.FC = () => {
   ];
 
   return (
-    <section id="security" className="py-20 md:py-28 border-t border-zinc-800/80 bg-zinc-950/60 relative overflow-hidden">
+    <section id="security" className="py-20 md:py-32 border-t border-zinc-800/80 bg-zinc-950/60 relative overflow-hidden select-none">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={t.security.badge}
@@ -59,18 +59,18 @@ export const SecuritySection: React.FC = () => {
             return (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ delay: index * 0.08, duration: 0.45, ease: "easeOut" }}
-                whileHover={{ y: -4, transition: { duration: 0.2 } }}
-                className="rounded-3xl border border-zinc-800/80 bg-zinc-900/40 p-6 space-y-3 hover:border-zinc-700 hover:bg-zinc-900/70 transition-colors"
+                transition={{ delay: index * 0.06, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                className="rounded-3xl border border-zinc-800/90 bg-zinc-900/40 p-7 space-y-3 hover:border-zinc-700 hover:bg-zinc-900/70 transition-all duration-200"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 text-emerald-400 border border-zinc-700">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-sm font-semibold text-white">{item.title}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{item.desc}</p>
+                <h3 className="text-base font-semibold text-white tracking-tight">{item.title}</h3>
+                <p className="text-xs text-zinc-400 leading-relaxed font-normal">{item.desc}</p>
               </motion.div>
             );
           })}
@@ -78,31 +78,31 @@ export const SecuritySection: React.FC = () => {
 
         {/* Technical Architecture Flow */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mt-12 rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 backdrop-blur-xl"
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="mt-12 rounded-3xl border border-zinc-800/90 bg-zinc-900/60 p-6 sm:p-8 backdrop-blur-xl ring-1 ring-white/[0.04]"
         >
-          <h3 className="text-xs font-bold uppercase tracking-wider text-sky-400 mb-4">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-sky-400 mb-4">
             {t.security.archTitle}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
-            <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 hover:border-zinc-700 transition-colors">
+            <div className="p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 space-y-2 hover:border-zinc-700 transition-colors">
               <span className="text-sky-400 font-bold">{t.security.arch1Title}</span>
-              <p className="text-zinc-400 text-[11px] font-sans">
+              <p className="text-zinc-400 text-xs font-sans leading-relaxed">
                 {t.security.arch1Desc}
               </p>
             </div>
-            <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 hover:border-zinc-700 transition-colors">
+            <div className="p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 space-y-2 hover:border-zinc-700 transition-colors">
               <span className="text-blue-400 font-bold">{t.security.arch2Title}</span>
-              <p className="text-zinc-400 text-[11px] font-sans">
+              <p className="text-zinc-400 text-xs font-sans leading-relaxed">
                 {t.security.arch2Desc}
               </p>
             </div>
-            <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2 hover:border-zinc-700 transition-colors">
+            <div className="p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 space-y-2 hover:border-zinc-700 transition-colors">
               <span className="text-indigo-400 font-bold">{t.security.arch3Title}</span>
-              <p className="text-zinc-400 text-[11px] font-sans">
+              <p className="text-zinc-400 text-xs font-sans leading-relaxed">
                 {t.security.arch3Desc}
               </p>
             </div>

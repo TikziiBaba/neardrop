@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Shield, Zap, Lock, HardDrive, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropZone } from "@/components/upload/DropZone";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ export const HeroSection: React.FC = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-28">
+    <section className="relative overflow-hidden pt-16 pb-20 md:pt-24 md:pb-32 select-none">
       {/* Background ambient lighting */}
       <div className="pointer-events-none absolute inset-0 hero-glow" />
       <div className="pointer-events-none absolute inset-0 mesh-grid opacity-30 dark:opacity-40" />
@@ -27,17 +27,17 @@ export const HeroSection: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-7 space-y-6 text-center lg:text-left"
           >
-            {/* Pill Badge */}
+            {/* Apple-style Pill Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1, duration: 0.4 }}
+              transition={{ delay: 0.1, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3.5 py-1 text-xs font-medium text-sky-400 backdrop-blur-md"
             >
-              <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+              <Sparkles className="h-3.5 w-3.5 text-sky-400" />
               <span>{t.hero.badge}</span>
             </motion.div>
 
@@ -45,11 +45,11 @@ export const HeroSection: React.FC = () => {
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15, duration: 0.5 }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]"
+              transition={{ delay: 0.15, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.08]"
             >
               {t.hero.titleLine1} <br />
-              <span className="bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-sky-400 via-sky-300 to-blue-500 bg-clip-text text-transparent">
                 {t.hero.titleLine2}
               </span>
             </motion.h1>
@@ -58,8 +58,8 @@ export const HeroSection: React.FC = () => {
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.5 }}
-              className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+              transition={{ delay: 0.25, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal"
             >
               {t.hero.subtitle}
             </motion.p>
@@ -68,11 +68,11 @@ export const HeroSection: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35, duration: 0.5 }}
+              transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-wrap items-center justify-center lg:justify-start gap-3.5 pt-2"
             >
               <Link href={user ? "/dashboard" : "/register"}>
-                <Button variant="primary" size="lg" className="gap-2 shadow-xl shadow-sky-500/20 hover:scale-[1.02] transition-transform">
+                <Button variant="primary" size="lg" className="gap-2 shadow-lg shadow-sky-500/20 hover:scale-[1.02] transition-transform">
                   <span>{t.hero.ctaPrimary}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -100,27 +100,31 @@ export const HeroSection: React.FC = () => {
                 <span>{t.hero.check2}</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-blue-400" />
+                <CheckCircle2 className="h-4 w-4 text-sky-400" />
                 <span>{t.hero.check3}</span>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Right Column: Live Interactive Dropzone */}
+          {/* Right Column: Live Interactive macOS Window Frame */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.7, ease: "easeOut" }}
+            transition={{ delay: 0.25, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             className="lg:col-span-5"
           >
-            <div className="relative rounded-3xl border border-zinc-800/80 bg-zinc-900/70 p-4 shadow-2xl backdrop-blur-2xl ring-1 ring-zinc-800/50">
+            <div className="relative rounded-3xl border border-zinc-800/90 bg-zinc-900/80 p-4 shadow-2xl backdrop-blur-2xl ring-1 ring-white/[0.06]">
+              {/* macOS Window Titlebar with authentic traffic lights */}
               <div className="flex items-center justify-between border-b border-zinc-800/80 px-2 pb-3 mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-2.5 w-2.5 rounded-full bg-rose-500/80" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-amber-500/80" />
-                  <div className="h-2.5 w-2.5 rounded-full bg-emerald-500/80" />
+                  <div className="h-3 w-3 rounded-full bg-[#ff5f56] border border-[#e0443e]/50 shadow-inner" />
+                  <div className="h-3 w-3 rounded-full bg-[#ffbd2e] border border-[#dea123]/50 shadow-inner" />
+                  <div className="h-3 w-3 rounded-full bg-[#27c93f] border border-[#1aab29]/50 shadow-inner" />
                 </div>
-                <span className="text-[11px] font-mono text-zinc-500">{t.hero.dropzoneMockUrl}</span>
+                <div className="px-3 py-1 rounded-lg bg-zinc-950/60 border border-zinc-800/80 text-[11px] font-mono text-zinc-400">
+                  {t.hero.dropzoneMockUrl}
+                </div>
+                <div className="w-10" />
               </div>
 
               <DropZone onUploadStarted={() => router.push(user ? "/dashboard" : "/register")} />
