@@ -4,6 +4,13 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { CloudFile } from "@/types";
 import { formatBytes, getFileCategory } from "@/lib/utils";
 import { useStorage } from "@/lib/storage/store";
+import {
+  parseXlsxBlob,
+  parseDocxBlob,
+  spreadsheetToCsv,
+  SpreadsheetData,
+  WordDocumentData,
+} from "@/lib/utils/office-parser";
 import { toast } from "sonner";
 import {
   X,
@@ -32,6 +39,9 @@ import {
   WrapText,
   Search,
   FileSpreadsheet,
+  Plus,
+  Eye,
+  Type,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +75,8 @@ const EXT_LANG_MAP: Record<string, string> = {
   md: "Markdown", markdown: "Markdown",
   txt: "Text", text: "Text", log: "Log",
   csv: "CSV", tsv: "TSV",
+  docx: "Word Belgesi", doc: "Word Belgesi",
+  xlsx: "Excel Tablosu", xls: "Excel Tablosu",
   dockerfile: "Dockerfile",
   makefile: "Makefile",
   graphql: "GraphQL", gql: "GraphQL",
@@ -86,6 +98,16 @@ function getLanguageLabel(filename: string): string {
   return EXT_LANG_MAP[baseName] || EXT_LANG_MAP[ext] || "Plaintext";
 }
 
+function getColumnLetter(colIndex: number): string {
+  let letter = "";
+  let temp = colIndex;
+  while (temp >= 0) {
+    letter = String.fromCharCode((temp % 26) + 65) + letter;
+    temp = Math.floor(temp / 26) - 1;
+  }
+  return letter;
+}
+
 export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   file,
   open,
@@ -100,6 +122,11 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const [isTextFile, setIsTextFile] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Office & Document State
+  const [parsedDocx, setParsedDocx] = useState<WordDocumentData | null>(null);
+  const [parsedXlsx, setParsedXlsx] = useState<SpreadsheetData | null>(null);
+  const [activeSheetIndex, setActiveSheetIndex] = useState(0);
+
   // Image zoom & pan state
   const [imageZoom, setImageZoom] = useState(1);
   const [imageRotation, setImageRotation] = useState(0);
@@ -108,14 +135,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const dragStartRef = useRef({ x: 0, y: 0 });
   const panStartRef = useRef({ x: 0, y: 0 });
 
-  // Code editing state
+  // Code & text editing state
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [originalContent, setOriginalContent] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [wordWrap, setWordWrap] = useState(false);
-  const [csvTableView, setCsvTableView] = useState(false);
+  const [showLivePreview, setShowLivePreview] = useState(false);
+
+  // Spreadsheet cell editor state
+  const [spreadsheetGrid, setSpreadsheetGrid] = useState<string[][]>([]);
+  const [selectedCell, setSelectedCell] = useState<{ r: number; c: number } | null>(null);
 
   // Search in editor
   const [showSearch, setShowSearch] = useState(false);
@@ -132,6 +163,11 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     setTextContent(null);
     setIsTextFile(false);
     setError(null);
+    setParsedDocx(null);
+    setParsedXlsx(null);
+    setActiveSheetIndex(0);
+    setSpreadsheetGrid([]);
+    setSelectedCell(null);
     setImageZoom(1);
     setImageRotation(0);
     setImagePan({ x: 0, y: 0 });
@@ -143,7 +179,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     setIsSaving(false);
     setHasChanges(false);
     setWordWrap(false);
-    setCsvTableView(false);
+    setShowLivePreview(false);
     setShowSearch(false);
     setSearchQuery("");
   }, []);
@@ -161,22 +197,67 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       try {
         const data = await previewFile(file.id);
         if (cancelled) return;
+
         if (data) {
           setPreviewUrl(data.previewUrl);
           setTextContent(data.textContent);
           setIsTextFile(data.isTextFile);
+
+          const ext = file.filename.split(".").pop()?.toLowerCase() || "";
+
+          // If it's a Word document (.docx), fetch blob and parse in-browser
+          if (ext === "docx" && data.previewUrl) {
+            try {
+              const res = await fetch(data.previewUrl);
+              const blob = await res.blob();
+              const docData = await parseDocxBlob(blob);
+              if (!cancelled) {
+                setParsedDocx(docData);
+                setTextContent(docData.rawText);
+                setOriginalContent(docData.rawText);
+                setEditContent(docData.rawText);
+              }
+            } catch (docErr) {
+              console.error("Failed to parse docx:", docErr);
+            }
+          }
+
+          // If it's an Excel document (.xlsx), fetch blob and parse in-browser
+          if (ext === "xlsx" && data.previewUrl) {
+            try {
+              const res = await fetch(data.previewUrl);
+              const blob = await res.blob();
+              const xlsxData = await parseXlsxBlob(blob);
+              if (!cancelled) {
+                setParsedXlsx(xlsxData);
+                const activeRows = xlsxData.sheets[0]?.rows || [[""]];
+                setSpreadsheetGrid(activeRows);
+                const csvStr = spreadsheetToCsv(activeRows);
+                setTextContent(csvStr);
+                setOriginalContent(csvStr);
+                setEditContent(csvStr);
+              }
+            } catch (xlsxErr) {
+              console.error("Failed to parse xlsx:", xlsxErr);
+            }
+          }
+
+          // If it's a CSV or TSV file, initialize spreadsheet grid
+          if ((ext === "csv" || ext === "tsv") && data.textContent !== null) {
+            const sep = ext === "tsv" ? "\t" : ",";
+            const lines = data.textContent.split("\n").filter((l) => l.trim().length > 0);
+            const grid = lines.map((l) => l.split(sep).map((c) => c.replace(/^"(.*)"$/, "$1")));
+            setSpreadsheetGrid(grid.length > 0 ? grid : [[""]]);
+          }
+
           if (data.textContent !== null) {
             setOriginalContent(data.textContent);
             setEditContent(data.textContent);
-            const ext = file.filename.split(".").pop()?.toLowerCase() || "";
-            if (ext === "csv" || ext === "tsv") {
-              setCsvTableView(true);
-            }
           }
         }
       } catch (err: any) {
         if (!cancelled) {
-          setError(err.message || "Failed to load preview");
+          setError(err.message || "Önizleme yüklenemedi");
         }
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -210,7 +291,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
   const handleStartEditing = useCallback(() => {
     setIsEditing(true);
-    setCsvTableView(false);
+    setShowLivePreview(false);
     setEditContent(textContent || "");
     setTimeout(() => editorRef.current?.focus(), 50);
   }, [textContent]);
@@ -220,6 +301,38 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     setIsEditing(false);
     setHasChanges(false);
   }, [originalContent]);
+
+  // Update cell in spreadsheet grid and sync to edit content
+  const handleCellChange = (rIdx: number, cIdx: number, val: string) => {
+    const updatedGrid = spreadsheetGrid.map((row, r) =>
+      r === rIdx
+        ? row.map((cell, c) => (c === cIdx ? val : cell))
+        : [...row]
+    );
+    setSpreadsheetGrid(updatedGrid);
+    const ext = file?.filename.split(".").pop()?.toLowerCase() || "";
+    const sep = ext === "tsv" ? "\t" : ",";
+    const newCsv = spreadsheetToCsv(updatedGrid, sep);
+    setEditContent(newCsv);
+    setHasChanges(true);
+  };
+
+  const handleAddSpreadsheetRow = () => {
+    const colCount = spreadsheetGrid[0]?.length || 5;
+    const newGrid = [...spreadsheetGrid, new Array(colCount).fill("")];
+    setSpreadsheetGrid(newGrid);
+    const ext = file?.filename.split(".").pop()?.toLowerCase() || "";
+    setEditContent(spreadsheetToCsv(newGrid, ext === "tsv" ? "\t" : ","));
+    setHasChanges(true);
+  };
+
+  const handleAddSpreadsheetCol = () => {
+    const newGrid = spreadsheetGrid.map((row) => [...row, ""]);
+    setSpreadsheetGrid(newGrid);
+    const ext = file?.filename.split(".").pop()?.toLowerCase() || "";
+    setEditContent(spreadsheetToCsv(newGrid, ext === "tsv" ? "\t" : ","));
+    setHasChanges(true);
+  };
 
   // Sync editor scroll with line numbers gutter
   const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
@@ -244,24 +357,24 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         }
         onClose();
       }
-      // Ctrl+S to save when editing
+      // Ctrl+S to save
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
         e.preventDefault();
-        if (isEditing) {
+        if (isEditing || hasChanges) {
           handleSave();
-        } else if (isTextFile) {
+        } else if (isTextFile || parsedDocx || parsedXlsx) {
           handleStartEditing();
         }
       }
       // Ctrl+F to search
-      if ((e.ctrlKey || e.metaKey) && e.key === "f" && isTextFile) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "f") {
         e.preventDefault();
         setShowSearch((s) => !s);
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [open, onClose, isEditing, hasChanges, isTextFile, showSearch, handleSave, handleStartEditing]);
+  }, [open, onClose, isEditing, hasChanges, isTextFile, parsedDocx, parsedXlsx, showSearch, handleSave, handleStartEditing]);
 
   // Image drag handlers
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -285,7 +398,6 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     setIsDragging(false);
   }, []);
 
-  // Touch drag for mobile/tablets
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       setIsDragging(true);
@@ -304,7 +416,6 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     });
   }, [isDragging]);
 
-  // Image scroll zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.15 : 0.15;
@@ -348,36 +459,14 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     }
   };
 
-  // Determine preview type
   const isImage = category === "image";
   const isVideo = category === "video";
   const isAudio = category === "audio";
   const isPdf = ext === "pdf" || file.mimeType === "application/pdf";
-  const isOfficeDoc = ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "ods", "odp"].includes(ext);
-  const isCsvOrTsv = ext === "csv" || ext === "tsv";
-
-  // Parse CSV/TSV table
-  const parseCsvToRows = (content: string, separator: string = ",") => {
-    const lines = content.split("\n").filter((l) => l.trim().length > 0);
-    return lines.map((line) => {
-      const row: string[] = [];
-      let inQuotes = false;
-      let cell = "";
-      for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') {
-          inQuotes = !inQuotes;
-        } else if (char === separator && !inQuotes) {
-          row.push(cell.trim());
-          cell = "";
-        } else {
-          cell += char;
-        }
-      }
-      row.push(cell.trim());
-      return row;
-    });
-  };
+  const isHtml = ext === "html" || ext === "htm";
+  const isMarkdown = ext === "md" || ext === "markdown";
+  const isSpreadsheet = Boolean(parsedXlsx || ext === "csv" || ext === "tsv" || ext === "xlsx" || ext === "xls");
+  const isWordDoc = Boolean(parsedDocx || ext === "docx" || ext === "doc" || ext === "rtf" || ext === "odt");
 
   const renderPreviewContent = () => {
     if (isLoading) {
@@ -387,7 +476,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             <div className="absolute inset-0 rounded-full bg-sky-500/20 blur-xl animate-pulse" />
             <Loader2 className="h-10 w-10 text-sky-400 animate-spin relative z-10" />
           </div>
-          <p className="text-sm text-zinc-400 font-medium">Loading preview...</p>
+          <p className="text-sm text-zinc-400 font-medium">Dosya açılıyor...</p>
         </div>
       );
     }
@@ -398,17 +487,17 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20">
             <X className="h-8 w-8 text-rose-400" />
           </div>
-          <p className="text-sm text-rose-300 font-medium">Preview failed</p>
+          <p className="text-sm text-rose-300 font-medium">Önizleme yüklenemedi</p>
           <p className="text-xs text-zinc-500 max-w-sm">{error}</p>
           <Button variant="outline" size="sm" onClick={handleDownload} className="mt-2 gap-1.5">
             <Download className="h-3.5 w-3.5" />
-            <span>Download Instead</span>
+            <span>Dosyayı İndir</span>
           </Button>
         </div>
       );
     }
 
-    // ─── Image Preview (with Dotted Grid & Drag-to-Pan) ───
+    // ─── 1. Image Preview (Dotted Grid & Drag-to-Pan) ───
     if (isImage && previewUrl) {
       return (
         <div
@@ -423,7 +512,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           onWheel={handleWheel}
           style={{ cursor: isDragging ? "grabbing" : "grab" }}
         >
-          {/* Zoom Controls & Pan Reset Toolbar */}
+          {/* Zoom Controls Toolbar */}
           <div
             className="absolute top-4 right-4 z-30 flex items-center gap-1 bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/60 rounded-2xl p-1.5 shadow-2xl"
             onMouseDown={(e) => e.stopPropagation()}
@@ -431,21 +520,21 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             <button
               onClick={() => setImageZoom((z) => Math.max(0.1, parseFloat((z - 0.25).toFixed(2))))}
               className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
-              title="Zoom out (Mouse wheel down)"
+              title="Uzaklaştır (Tekerlek aşağı)"
             >
               <ZoomOut className="h-4 w-4" />
             </button>
             <button
               onClick={() => { setImageZoom(1); setImagePan({ x: 0, y: 0 }); }}
               className="px-2 py-1 text-xs text-zinc-300 font-mono hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-              title="Click to reset to 100%"
+              title="%100 Görünüme Sıfırla"
             >
               {Math.round(imageZoom * 100)}%
             </button>
             <button
               onClick={() => setImageZoom((z) => Math.min(10, parseFloat((z + 0.25).toFixed(2))))}
-              className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
-              title="Zoom in (Mouse wheel up)"
+              className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+              title="Yakınlaştır (Tekerlek yukarı)"
             >
               <ZoomIn className="h-4 w-4" />
             </button>
@@ -453,23 +542,21 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             <button
               onClick={() => setImageRotation((r) => (r + 90) % 360)}
               className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
-              title="Rotate 90°"
+              title="90° Döndür"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
             <button
               onClick={() => { setImageZoom(1); setImageRotation(0); setImagePan({ x: 0, y: 0 }); }}
               className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
-              title="Reset View"
+              title="Konumu ve Yakınlaştırmayı Sıfırla"
             >
               <Maximize2 className="h-4 w-4" />
             </button>
           </div>
 
           {/* Canvas Navigation Hint */}
-          <div
-            className="absolute bottom-4 left-4 z-20 pointer-events-none px-3 py-1.5 rounded-xl bg-zinc-900/80 backdrop-blur-md border border-zinc-800 text-[11px] text-zinc-400 flex items-center gap-2"
-          >
+          <div className="absolute bottom-4 left-4 z-20 pointer-events-none px-3 py-1.5 rounded-xl bg-zinc-900/80 backdrop-blur-md border border-zinc-800 text-[11px] text-zinc-400 flex items-center gap-2">
             <span>🖐️ Sürükle (Pan)</span>
             <span>•</span>
             <span>🔍 Tekerlek (Zoom)</span>
@@ -477,7 +564,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             <span>⚡ Çift tık (2x)</span>
           </div>
 
-          {/* Crisp Dotted Grid Background (. . .) */}
+          {/* Dotted Grid Background */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
@@ -487,7 +574,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             }}
           />
 
-          {/* The Image (draggable & zoomable) */}
+          {/* Image */}
           <img
             src={previewUrl}
             alt={displayName}
@@ -511,101 +598,294 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       );
     }
 
-    // ─── Video Preview ───
-    if (isVideo && previewUrl) {
-      return (
-        <div className="flex items-center justify-center h-full w-full p-4">
-          <video
-            src={previewUrl}
-            controls
-            autoPlay={false}
-            className="max-w-full max-h-full rounded-2xl shadow-2xl shadow-black/60 border border-zinc-800"
-            style={{ backgroundColor: "#000" }}
-          >
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      );
-    }
+    // ─── 2. Excel & CSV/TSV Native Spreadsheet Viewer / Editor ───
+    if (isSpreadsheet && spreadsheetGrid.length > 0 && !isEditing) {
+      const colCount = spreadsheetGrid[0]?.length || 5;
 
-    // ─── Audio Preview ───
-    if (isAudio && previewUrl) {
       return (
-        <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
-          <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 blur-3xl" />
-            <div className="relative flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 shadow-2xl">
-              <FileAudio className="h-16 w-16 text-pink-400" />
+        <div className="flex flex-col h-full w-full bg-zinc-950">
+          {/* Spreadsheet Header Toolbar */}
+          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="text-[10px] font-mono text-emerald-400 border-emerald-500/30">
+                <FileSpreadsheet className="h-3 w-3 mr-1 inline" />
+                {ext.toUpperCase()} TABLOSU
+              </Badge>
+              <span className="text-xs text-zinc-400">
+                {spreadsheetGrid.length} satır • {colCount} sütun
+              </span>
+              {hasChanges && (
+                <Badge variant="warning" className="text-[10px]">
+                  Kaydedilmemiş Değişiklikler
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAddSpreadsheetRow}
+                className="text-xs h-7 gap-1 border-zinc-700 hover:bg-zinc-800"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Satır Ekle</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleAddSpreadsheetCol}
+                className="text-xs h-7 gap-1 border-zinc-700 hover:bg-zinc-800"
+              >
+                <Plus className="h-3 w-3" />
+                <span>Sütun Ekle</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleStartEditing}
+                className="text-xs h-7 gap-1 border-zinc-700 hover:bg-zinc-800"
+                title="Düz Metin / Kod Olarak Düzenle"
+              >
+                <CodeIcon className="h-3.5 w-3.5" />
+                <span>Metin Editörü</span>
+              </Button>
+              {hasChanges && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="text-xs h-7 gap-1 bg-emerald-600 hover:bg-emerald-500"
+                >
+                  {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                  <span>Kaydet</span>
+                </Button>
+              )}
             </div>
           </div>
-          <div className="text-center space-y-1">
-            <h4 className="font-semibold text-white text-lg">{displayName}</h4>
-            <p className="text-xs text-zinc-400">{formatBytes(file.size)}</p>
-          </div>
-          <audio
-            src={previewUrl}
-            controls
-            className="w-full max-w-md"
-            style={{ filter: "invert(1) hue-rotate(180deg) brightness(0.85)" }}
-          >
-            Your browser does not support the audio tag.
-          </audio>
-        </div>
-      );
-    }
 
-    // ─── PDF Preview ───
-    if (isPdf && previewUrl) {
-      return (
-        <div className="flex items-center justify-center h-full w-full p-4">
-          <iframe
-            src={previewUrl}
-            className="w-full h-full rounded-2xl border border-zinc-800 bg-white shadow-2xl"
-            title={displayName}
-          />
-        </div>
-      );
-    }
-
-    // ─── Office Documents (.docx, .xlsx, .pptx) ───
-    if (isOfficeDoc && previewUrl) {
-      const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(previewUrl)}`;
-      const googleDocsUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(previewUrl)}&embedded=true`;
-
-      return (
-        <div className="flex flex-col h-full w-full">
-          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/90 border-b border-zinc-800/60 flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <FileSpreadsheet className="h-4 w-4 text-emerald-400" />
-              <span className="text-xs text-zinc-300 font-medium">{displayName}</span>
-              <Badge variant="secondary" className="text-[10px]">{ext.toUpperCase()}</Badge>
+          {/* Cell Formula / Info Bar */}
+          <div className="flex items-center gap-3 px-4 py-1.5 bg-zinc-900/60 border-b border-zinc-800/80 text-xs">
+            <div className="font-mono font-semibold text-sky-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700/60 min-w-[3rem] text-center">
+              {selectedCell ? `${getColumnLetter(selectedCell.c)}${selectedCell.r + 1}` : "A1"}
             </div>
+            <div className="text-zinc-400 font-mono text-[11px] truncate flex-1">
+              Değer: <span className="text-zinc-200">{selectedCell ? spreadsheetGrid[selectedCell.r]?.[selectedCell.c] || "" : spreadsheetGrid[0]?.[0] || ""}</span>
+            </div>
+          </div>
+
+          {/* Interactive Spreadsheet Grid */}
+          <div className="flex-1 overflow-auto bg-zinc-950 p-2">
+            <div className="border border-zinc-800 rounded-xl overflow-hidden shadow-2xl bg-zinc-900/40 inline-block min-w-full">
+              <table className="w-full text-xs text-left border-collapse font-sans">
+                <thead>
+                  <tr className="bg-zinc-900 border-b border-zinc-800 select-none">
+                    <th className="px-2 py-2 text-[10px] text-zinc-500 bg-zinc-900/90 border-r border-zinc-800 text-center w-12 sticky left-0 z-20">
+                      #
+                    </th>
+                    {Array.from({ length: colCount }).map((_, cIdx) => (
+                      <th
+                        key={cIdx}
+                        className="px-3 py-2 text-center text-[11px] font-semibold text-zinc-400 border-r border-zinc-800/80 bg-zinc-900 min-w-[120px]"
+                      >
+                        {getColumnLetter(cIdx)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {spreadsheetGrid.map((row, rIdx) => (
+                    <tr
+                      key={rIdx}
+                      className="border-b border-zinc-800/50 hover:bg-sky-500/5 transition-colors"
+                    >
+                      {/* Row Index Header */}
+                      <td className="px-2 py-1 text-[10px] text-zinc-500 bg-zinc-900/90 border-r border-zinc-800 select-none text-center font-mono sticky left-0 z-10">
+                        {rIdx + 1}
+                      </td>
+                      {/* Editable Cells */}
+                      {Array.from({ length: colCount }).map((_, cIdx) => {
+                        const cellVal = row[cIdx] || "";
+                        const isSelected = selectedCell?.r === rIdx && selectedCell?.c === cIdx;
+                        return (
+                          <td
+                            key={cIdx}
+                            onClick={() => setSelectedCell({ r: rIdx, c: cIdx })}
+                            className={`p-0 border-r border-zinc-800/40 relative ${
+                              isSelected ? "ring-2 ring-sky-500 z-10" : ""
+                            }`}
+                          >
+                            <input
+                              type="text"
+                              value={cellVal}
+                              onChange={(e) => handleCellChange(rIdx, cIdx, e.target.value)}
+                              onFocus={() => setSelectedCell({ r: rIdx, c: cIdx })}
+                              className="w-full bg-transparent px-2.5 py-1.5 text-xs text-zinc-100 outline-none font-sans hover:bg-zinc-800/40 focus:bg-zinc-900 transition-colors"
+                            />
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── 3. Word Document (.docx / .doc) Native Document Sheet ───
+    if (isWordDoc && parsedDocx && !isEditing) {
+      return (
+        <div className="flex flex-col h-full w-full bg-zinc-950">
+          {/* Word Header Toolbar */}
+          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800 flex-shrink-0">
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="text-[10px] font-mono text-sky-400 border-sky-500/30">
+                <Type className="h-3 w-3 mr-1 inline" />
+                WORD BELGESİ
+              </Badge>
+              <span className="text-xs text-zinc-400">
+                {parsedDocx.paragraphs.length} paragraf / bölüm
+              </span>
+            </div>
+
             <div className="flex items-center gap-2">
-              <Button variant="primary" size="sm" onClick={handleDownload} className="gap-1.5 text-xs h-7">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleStartEditing}
+                className="text-xs h-7 gap-1 bg-sky-600 hover:bg-sky-500"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Belgeyi Düzenle</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownload}
+                className="text-xs h-7 gap-1 border-zinc-700"
+              >
                 <Download className="h-3.5 w-3.5" />
                 <span>İndir</span>
               </Button>
             </div>
           </div>
-          <div className="flex-1 bg-zinc-950 p-2">
-            <iframe
-              src={googleDocsUrl}
-              className="w-full h-full rounded-xl border border-zinc-800 bg-white"
-              title={displayName}
-            />
+
+          {/* Paper Document Layout */}
+          <div className="flex-1 overflow-auto bg-zinc-950 p-6 flex justify-center">
+            <div className="w-full max-w-3xl bg-zinc-900 border border-zinc-800 rounded-2xl p-8 sm:p-12 shadow-2xl space-y-4 text-zinc-100 font-sans leading-relaxed select-text min-h-full">
+              {parsedDocx.paragraphs.map((p, idx) => {
+                if (p.isTable && p.tableRows) {
+                  return (
+                    <div key={idx} className="my-4 overflow-x-auto border border-zinc-800 rounded-xl">
+                      <table className="w-full text-xs border-collapse">
+                        <tbody>
+                          {p.tableRows.map((tr, rIdx) => (
+                            <tr key={rIdx} className="border-b border-zinc-800 hover:bg-zinc-800/40">
+                              {tr.map((td, cIdx) => (
+                                <td key={cIdx} className="px-3 py-2 border-r border-zinc-800">
+                                  {td}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                }
+
+                if (p.isHeading) {
+                  return (
+                    <h2
+                      key={idx}
+                      className="text-xl font-bold text-white tracking-tight pt-3 border-b border-zinc-800 pb-1"
+                    >
+                      {p.text}
+                    </h2>
+                  );
+                }
+
+                if (p.isBullet) {
+                  return (
+                    <li key={idx} className="ml-4 text-sm text-zinc-300 list-disc">
+                      {p.text}
+                    </li>
+                  );
+                }
+
+                return (
+                  <p
+                    key={idx}
+                    className={`text-sm ${p.isBold ? "font-semibold text-white" : "text-zinc-300"}`}
+                  >
+                    {p.text}
+                  </p>
+                );
+              })}
+            </div>
           </div>
         </div>
       );
     }
 
-    // ─── Text / Code / HTML / CSS / JS / CSV / TSV Preview & Editor ───
-    if (isTextFile && textContent !== null) {
-      const displayContent = isEditing ? editContent : textContent;
+    // ─── 4. HTML / Markdown Live Preview Mode ───
+    if (showLivePreview && (isHtml || isMarkdown) && !isEditing) {
+      return (
+        <div className="flex flex-col h-full w-full bg-zinc-950">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800 flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <Eye className="h-4 w-4 text-sky-400" />
+              <span className="text-xs text-zinc-300 font-semibold">CANLI ÖNİZLEME ({ext.toUpperCase()})</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLivePreview(false)}
+                className="text-xs h-7 gap-1 border-zinc-700"
+              >
+                <CodeIcon className="h-3.5 w-3.5" />
+                <span>Kodu Göster</span>
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleStartEditing}
+                className="text-xs h-7 gap-1 bg-sky-600 hover:bg-sky-500"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>Düzenle</span>
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 bg-white p-4 overflow-auto">
+            {isHtml ? (
+              <iframe
+                srcDoc={textContent || editContent}
+                className="w-full h-full border-none"
+                sandbox="allow-scripts"
+                title="Live HTML Preview"
+              />
+            ) : (
+              <div className="prose max-w-3xl mx-auto text-zinc-900 p-6 whitespace-pre-wrap font-sans">
+                {textContent || editContent}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── 5. Text / Code / HTML / CSS / JS / Python / SQL Editor ───
+    if (isTextFile || isWordDoc || isSpreadsheet) {
+      const displayContent = isEditing ? editContent : textContent || "";
       const lines = displayContent.split("\n");
       const lang = getLanguageLabel(file.filename);
       const lineDigits = String(lines.length).length;
-
-      // Filtered lines for search
       const matchesSearch = searchQuery.trim().length > 0;
 
       return (
@@ -630,26 +910,34 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             </div>
 
             <div className="flex items-center gap-2">
-              {/* CSV/TSV Table View Toggle */}
-              {isCsvOrTsv && !isEditing && (
+              {/* HTML / Markdown Live Preview Switcher */}
+              {(isHtml || isMarkdown) && !isEditing && (
                 <button
-                  onClick={() => setCsvTableView((t) => !t)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border transition-colors ${
-                    csvTableView
-                      ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
-                      : "text-zinc-400 hover:text-white bg-zinc-800/80 border-zinc-700/50"
-                  }`}
-                  title={csvTableView ? "Kod Olarak Göster" : "Tablo Olarak Göster"}
+                  onClick={() => setShowLivePreview(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 rounded-xl transition-colors"
+                  title="Canlı Render Önizlemesi"
                 >
-                  {csvTableView ? <CodeIcon className="h-3.5 w-3.5" /> : <TableIcon className="h-3.5 w-3.5" />}
-                  <span>{csvTableView ? "Kod Görünümü" : "Tablo Görünümü"}</span>
+                  <Eye className="h-3.5 w-3.5" />
+                  <span>Canlı Önizleme</span>
+                </button>
+              )}
+
+              {/* Spreadsheet Table View Switcher */}
+              {isSpreadsheet && !isEditing && (
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition-colors"
+                  title="Tablo Görünümüne Dön"
+                >
+                  <TableIcon className="h-3.5 w-3.5" />
+                  <span>Tablo Görünümü</span>
                 </button>
               )}
 
               {/* Word Wrap Toggle */}
               <button
                 onClick={() => setWordWrap((w) => !w)}
-                className={`p-1.5 text-xs rounded-lg border transition-colors ${
+                className={`p-1.5 text-xs rounded-xl border transition-colors ${
                   wordWrap
                     ? "text-sky-400 bg-sky-500/10 border-sky-500/30"
                     : "text-zinc-400 hover:text-white bg-zinc-800/80 border-zinc-700/50"
@@ -662,7 +950,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               {/* Search Toggle */}
               <button
                 onClick={() => setShowSearch((s) => !s)}
-                className={`p-1.5 text-xs rounded-lg border transition-colors ${
+                className={`p-1.5 text-xs rounded-xl border transition-colors ${
                   showSearch
                     ? "text-sky-400 bg-sky-500/10 border-sky-500/30"
                     : "text-zinc-400 hover:text-white bg-zinc-800/80 border-zinc-700/50"
@@ -771,38 +1059,9 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             </div>
           )}
 
-          {/* Main Content Area */}
-          {csvTableView && !isEditing ? (
-            /* ── CSV / TSV Table Mode ── */
-            <div className="flex-1 overflow-auto p-4 select-text">
-              <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900/40">
-                <table className="w-full text-xs text-left border-collapse">
-                  <tbody>
-                    {parseCsvToRows(displayContent, ext === "tsv" ? "\t" : ",").map((row, rIdx) => (
-                      <tr
-                        key={rIdx}
-                        className={
-                          rIdx === 0
-                            ? "bg-zinc-800/80 font-semibold text-white border-b border-zinc-700/80"
-                            : "border-b border-zinc-800/40 hover:bg-sky-500/5 text-zinc-300 transition-colors"
-                        }
-                      >
-                        <td className="px-3 py-2 text-[10px] text-zinc-500 bg-zinc-900/80 border-r border-zinc-800 select-none w-10 text-right">
-                          {rIdx + 1}
-                        </td>
-                        {row.map((cell, cIdx) => (
-                          <td key={cIdx} className="px-3 py-2 border-r border-zinc-800/40 truncate max-w-xs">
-                            {cell || <span className="text-zinc-600 italic">empty</span>}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ) : isEditing ? (
-            /* ── Edit Mode: Live Editor with Synced Line Numbers ── */
+          {/* Content Area */}
+          {isEditing ? (
+            /* ── Live Editor with Line Numbers ── */
             <div className="flex-1 flex overflow-hidden relative">
               {/* Line numbers gutter */}
               <div
@@ -833,7 +1092,6 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   caretColor: "#38bdf8",
                 }}
                 onKeyDown={(e) => {
-                  // Tab support: insert 2 spaces
                   if (e.key === "Tab") {
                     e.preventDefault();
                     const ta = e.currentTarget;
@@ -845,7 +1103,6 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                       ta.selectionStart = ta.selectionEnd = start + 2;
                     });
                   }
-                  // Auto-indent on Enter
                   if (e.key === "Enter") {
                     const ta = e.currentTarget;
                     const start = ta.selectionStart;
@@ -865,7 +1122,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               />
             </div>
           ) : (
-            /* ── View Mode: Table with Line Numbers & Search Highlight ── */
+            /* ── View Mode: Table with Line Numbers ── */
             <div className="flex-1 overflow-auto font-mono text-[13px] leading-[1.6] select-text py-2">
               <table className="w-full border-collapse">
                 <tbody>
@@ -902,7 +1159,63 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       );
     }
 
-    // ─── Fallback: unsupported file type ───
+    // ─── 6. Video Preview ───
+    if (isVideo && previewUrl) {
+      return (
+        <div className="flex items-center justify-center h-full w-full p-4">
+          <video
+            src={previewUrl}
+            controls
+            autoPlay={false}
+            className="max-w-full max-h-full rounded-2xl shadow-2xl shadow-black/60 border border-zinc-800"
+            style={{ backgroundColor: "#000" }}
+          >
+            Tarayıcınız video etiketini desteklemiyor.
+          </video>
+        </div>
+      );
+    }
+
+    // ─── 7. Audio Preview ───
+    if (isAudio && previewUrl) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
+          <div className="relative">
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 blur-3xl" />
+            <div className="relative flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 shadow-2xl">
+              <FileAudio className="h-16 w-16 text-pink-400" />
+            </div>
+          </div>
+          <div className="text-center space-y-1">
+            <h4 className="font-semibold text-white text-lg">{displayName}</h4>
+            <p className="text-xs text-zinc-400">{formatBytes(file.size)}</p>
+          </div>
+          <audio
+            src={previewUrl}
+            controls
+            className="w-full max-w-md"
+            style={{ filter: "invert(1) hue-rotate(180deg) brightness(0.85)" }}
+          >
+            Tarayıcınız ses etiketini desteklemiyor.
+          </audio>
+        </div>
+      );
+    }
+
+    // ─── 8. PDF Preview (Native browser iframe) ───
+    if (isPdf && previewUrl) {
+      return (
+        <div className="flex items-center justify-center h-full w-full p-4">
+          <iframe
+            src={previewUrl}
+            className="w-full h-full rounded-2xl border border-zinc-800 bg-white shadow-2xl"
+            title={displayName}
+          />
+        </div>
+      );
+    }
+
+    // ─── 9. Fallback: unsupported binary file ───
     return (
       <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-6">
         <div className="relative">
@@ -918,7 +1231,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           </p>
         </div>
         <p className="text-xs text-zinc-500 max-w-sm">
-          Bu dosya türü tarayıcıda doğrudan düzenlenemez. İndirip cihazınızda açabilirsiniz.
+          Bu ikili dosya türü doğrudan önizlenemez. İndirip cihazınızda açabilirsiniz.
         </p>
         <Button variant="primary" size="default" onClick={handleDownload} className="gap-2">
           <Download className="h-4 w-4" />
@@ -957,7 +1270,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 <span>{formatBytes(file.size)}</span>
                 <span>•</span>
                 <Badge variant="secondary" className="text-[10px] py-0 font-mono">
-                  {file.mimeType.split("/")[1]?.toUpperCase() || ext.toUpperCase() || "FILE"}
+                  {file.mimeType.split("/")[1]?.toUpperCase() || ext.toUpperCase() || "DOSYA"}
                 </Badge>
                 {isEditing && (
                   <>
