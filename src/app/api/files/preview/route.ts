@@ -3,22 +3,23 @@ import { createPresignedPreviewUrl, isR2Configured, getR2Client } from "@/lib/r2
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 
-// Text/code file extensions that should be fetched as text content
+// Text/code/data file extensions that should be fetched as editable text content
 const TEXT_EXTENSIONS = new Set([
-  "txt", "md", "markdown", "json", "xml", "csv", "tsv", "log",
+  "txt", "text", "md", "markdown", "json", "xml", "csv", "tsv", "log",
   "js", "jsx", "ts", "tsx", "mjs", "cjs",
   "py", "pyw", "rb", "go", "rs", "c", "cpp", "h", "hpp", "cs",
   "java", "kt", "swift", "scala", "clj",
-  "html", "htm", "css", "scss", "sass", "less",
-  "yaml", "yml", "toml", "ini", "cfg", "conf", "env",
+  "html", "htm", "xhtml", "css", "scss", "sass", "less",
+  "yaml", "yml", "toml", "ini", "cfg", "conf", "env", "properties",
   "sh", "bash", "zsh", "fish", "ps1", "bat", "cmd",
   "sql", "graphql", "gql",
-  "dockerfile", "makefile", "gitignore", "editorconfig",
+  "dockerfile", "makefile", "gitignore", "editorconfig", "lock",
   "r", "lua", "dart", "php", "pl", "pm",
   "vue", "svelte", "astro",
+  "svg", "rtf", "tex",
 ]);
 
-const MAX_TEXT_SIZE = 512 * 1024; // 512 KB max for text preview
+const MAX_TEXT_SIZE = 2 * 1024 * 1024; // 2 MB max for text preview/edit
 
 // POST: Generate presigned preview URL (inline) for authenticated file owner
 export async function POST(req: NextRequest) {

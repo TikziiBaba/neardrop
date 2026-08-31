@@ -72,6 +72,7 @@ interface StorageContextType {
   } | null>;
   downloadFile: (fileId: string) => Promise<void>;
   previewFile: (fileId: string) => Promise<FilePreviewData | null>;
+  saveFileContent: (fileId: string, content: string) => Promise<void>;
   downloadFolder: (folderPath: string) => Promise<void>;
   cancelTransfer: (transferId: string) => void;
   retryTransfer: (transferId: string) => void;
@@ -701,6 +702,29 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     URL.revokeObjectURL(url);
   };
 
+  const saveFileContent = async (fileId: string, content: string) => {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch("/api/files/save", {
+      method: "PUT",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileId, content }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Save failed");
+    }
+
+    const { size } = await res.json();
+    // Optimistic update file size
+    setFiles((prev) =>
+      prev.map((f) => (f.id === fileId ? { ...f, size } : f))
+    );
+  };
+
   const cancelTransfer = (transferId: string) => {
     if (activeXHRsRef.current[transferId]) {
       try {
@@ -805,6 +829,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         unlockFolderBatchDownload,
         downloadFile,
         previewFile,
+        saveFileContent,
         downloadFolder,
         cancelTransfer,
         retryTransfer,
