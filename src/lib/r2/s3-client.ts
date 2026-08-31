@@ -62,6 +62,26 @@ export async function createPresignedDownloadUrl(
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
 }
 
+export async function createPresignedPreviewUrl(
+  r2ObjectKey: string,
+  filename: string,
+  contentType: string,
+  expiresInSeconds = 900
+) {
+  const s3 = getR2Client();
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const displayName = filename.split("/").pop() || filename;
+
+  const command = new GetObjectCommand({
+    Bucket: bucketName,
+    Key: r2ObjectKey,
+    ResponseContentDisposition: `inline; filename="${encodeURIComponent(displayName)}"`,
+    ResponseContentType: contentType || "application/octet-stream",
+  });
+
+  return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
+}
+
 export async function uploadR2Buffer(
   r2ObjectKey: string,
   buffer: Buffer,

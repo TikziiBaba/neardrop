@@ -6,6 +6,15 @@ import { getFileCategory } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/client";
 
+interface FilePreviewData {
+  previewUrl: string;
+  filename: string;
+  size: number;
+  mimeType: string;
+  textContent: string | null;
+  isTextFile: boolean;
+}
+
 interface StorageContextType {
   files: CloudFile[];
   shares: ShareLink[];
@@ -62,6 +71,8 @@ interface StorageContextType {
     }[];
   } | null>;
   downloadFile: (fileId: string) => Promise<void>;
+  previewFile: (fileId: string) => Promise<FilePreviewData | null>;
+  downloadFolder: (folderPath: string) => Promise<void>;
   cancelTransfer: (transferId: string) => void;
   retryTransfer: (transferId: string) => void;
   clearCompletedTransfers: () => void;
@@ -621,6 +632,75 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     document.body.removeChild(a);
   };
 
+  const previewFile = async (fileId: string): Promise<FilePreviewData | null> => {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch("/api/files/preview", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileId }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Preview failed");
+    }
+
+    return await res.json();
+  };
+
+  const downloadFolder = async (folderPath: string) => {
+    const authHeaders = await getAuthHeaders();
+    const res = await fetch("/api/files/folder-download", {
+      method: "POST",
+      headers: {
+        ...authHeaders,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ folderPath }),
+    });
+
+    if (!res.ok) {
+      const errData = await res.json();
+      throw new Error(errData.error || "Folder download failed");
+    }
+
+    const data = await res.json();
+    const { default: JSZip } = await import("jszip");
+    const zip = new JSZip();
+
+    // Fetch each file and add to ZIP
+    let completed = 0;
+    const total = data.items.length;
+
+    for (const item of data.items) {
+      try {
+        const fileRes = await fetch(item.downloadUrl);
+        if (fileRes.ok) {
+          const blob = await fileRes.blob();
+          zip.file(item.relativePath, blob);
+        }
+        completed++;
+      } catch (err) {
+        console.error(`Failed to fetch file for ZIP: ${item.relativePath}`, err);
+        completed++;
+      }
+    }
+
+    // Generate ZIP and trigger download
+    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const url = URL.createObjectURL(zipBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${data.folderName}.zip`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const cancelTransfer = (transferId: string) => {
     if (activeXHRsRef.current[transferId]) {
       try {
@@ -724,6 +804,8 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         unlockShareDownload,
         unlockFolderBatchDownload,
         downloadFile,
+        previewFile,
+        downloadFolder,
         cancelTransfer,
         retryTransfer,
         clearCompletedTransfers,

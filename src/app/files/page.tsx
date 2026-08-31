@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useRef } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ShareModal } from "@/components/sharing/ShareModal";
+import { FilePreviewModal } from "@/components/files/FilePreviewModal";
 import { FileDetailsDrawer } from "@/components/files/FileDetailsDrawer";
 import { RenameModal } from "@/components/files/RenameModal";
 import { DeleteConfirmModal } from "@/components/files/DeleteConfirmModal";
@@ -35,6 +36,7 @@ import {
   CornerLeftUp,
   X,
   Sparkles,
+  Archive,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,7 +53,7 @@ interface FolderItem {
 }
 
 export default function FilesPage() {
-  const { files, uploadFiles, downloadFile, deleteFile } = useStorage();
+  const { files, uploadFiles, downloadFile, deleteFile, downloadFolder } = useStorage();
   const { t } = useLanguage();
 
   const [currentFolderPath, setCurrentFolderPath] = useState<string>("");
@@ -65,9 +67,11 @@ export default function FilesPage() {
   const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null);
   const [selectedFolderForShare, setSelectedFolderForShare] = useState<FolderItem | null>(null);
   const [selectedFileForDetails, setSelectedFileForDetails] = useState<CloudFile | null>(null);
+  const [selectedFileForPreview, setSelectedFileForPreview] = useState<CloudFile | null>(null);
   const [selectedFileForRename, setSelectedFileForRename] = useState<CloudFile | null>(null);
   const [selectedFileForDelete, setSelectedFileForDelete] = useState<CloudFile | null>(null);
   const [folderToDelete, setFolderToDelete] = useState<FolderItem | null>(null);
+  const [downloadingFolder, setDownloadingFolder] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -223,6 +227,20 @@ export default function FilesPage() {
       toast.success("Download started!");
     } catch (err: any) {
       toast.error(err.message || "Download failed");
+    }
+  };
+
+  const handleDownloadFolder = async (folder: FolderItem) => {
+    if (downloadingFolder) return;
+    setDownloadingFolder(folder.fullPath);
+    toast.info(`Creating ZIP for "${folder.name}"... This may take a moment.`);
+    try {
+      await downloadFolder(folder.fullPath);
+      toast.success(`"${folder.name}.zip" download started!`);
+    } catch (err: any) {
+      toast.error(err.message || "Folder download failed");
+    } finally {
+      setDownloadingFolder(null);
     }
   };
 
@@ -642,6 +660,21 @@ export default function FilesPage() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      handleDownloadFolder(folder);
+                    }}
+                    className={`p-1.5 rounded-lg transition-colors ${
+                      downloadingFolder === folder.fullPath
+                        ? "text-sky-400 animate-pulse"
+                        : "text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+                    }`}
+                    title="Download as ZIP"
+                    disabled={downloadingFolder === folder.fullPath}
+                  >
+                    <Archive className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setSelectedFolderForShare(folder);
                     }}
                     className="p-1.5 text-zinc-400 hover:text-sky-400 rounded-lg hover:bg-sky-500/10 transition-colors"
@@ -674,7 +707,7 @@ export default function FilesPage() {
                 >
                   <div
                     className="flex items-center gap-3.5 min-w-0 flex-1 cursor-pointer"
-                    onClick={() => setSelectedFileForDetails(file)}
+                    onClick={() => setSelectedFileForPreview(file)}
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
                       {renderFileIcon(file)}
@@ -714,6 +747,16 @@ export default function FilesPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedFileForDetails(file)}
+                      className="text-zinc-400 hover:text-white h-8 w-8 p-0"
+                      title="Details"
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+
                     <Button
                       variant="ghost"
                       size="sm"
@@ -802,6 +845,21 @@ export default function FilesPage() {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
+                              handleDownloadFolder(folder);
+                            }}
+                            className={`p-1 rounded transition-colors ${
+                              downloadingFolder === folder.fullPath
+                                ? "text-sky-400 animate-pulse"
+                                : "text-zinc-400 hover:text-emerald-400"
+                            }`}
+                            title="Download as ZIP"
+                            disabled={downloadingFolder === folder.fullPath}
+                          >
+                            <Archive className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
                               setSelectedFolderForShare(folder);
                             }}
                             className="p-1 text-zinc-400 hover:text-sky-400 rounded transition-colors"
@@ -845,7 +903,7 @@ export default function FilesPage() {
                       >
                         <div
                           className="space-y-3 cursor-pointer"
-                          onClick={() => setSelectedFileForDetails(file)}
+                          onClick={() => setSelectedFileForPreview(file)}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60">
@@ -946,6 +1004,14 @@ export default function FilesPage() {
             setSelectedFolderForShare(null);
           }
         }}
+      />
+
+      <FilePreviewModal
+        file={selectedFileForPreview}
+        open={Boolean(selectedFileForPreview)}
+        onClose={() => setSelectedFileForPreview(null)}
+        onShare={(f) => setSelectedFileForShare(f)}
+        onDelete={(f) => setSelectedFileForDelete(f)}
       />
 
       <FileDetailsDrawer
