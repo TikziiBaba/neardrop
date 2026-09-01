@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PRICING_PLANS } from "@/lib/subscription/plans";
+import { TIER_LIMITS } from "@/lib/subscription/permissions";
 import { useAuth } from "@/lib/auth/context";
 import { formatBytes } from "@/lib/utils";
 import {
@@ -19,9 +20,12 @@ import {
   Lock,
   ChevronDown,
   Crown,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { Badge } from "@/components/ui/badge";
 
 export default function PricingPage() {
   const router = useRouter();
@@ -31,31 +35,35 @@ export default function PricingPage() {
 
   const faqs = [
     {
-      q: "How does storage quota expansion work?",
-      a: "As soon as you upgrade to Pro, Ultra, or Enterprise, your secure cloud storage quota expands immediately up to 2 TB with zero downtime. Any previously uploaded files remain intact.",
+      q: "Abonelik yükseltildiğinde depolama kotası ne zaman aktif olur?",
+      a: "Pro, Ultra veya Enterprise plana geçtiğiniz anda yeni depolama alanınız (100 GB, 500 GB veya 2 TB) anında tanımlanır. Mevcut tüm dosyalarınız korunur.",
     },
     {
-      q: "Can I cancel or switch my plan at any time?",
-      a: "Yes. You can upgrade, downgrade, or cancel your subscription at any point from your Settings panel without penalties.",
+      q: "Planımı istediğim zaman değiştirebilir veya iptal edebilir miyim?",
+      a: "Evet. Ayarlar panelinizden dilediğiniz an paketinizi yükseltebilir, düşürebilir veya aboneliğinizi sonlandırabilirsiniz.",
     },
     {
-      q: "What payment methods are supported?",
-      a: "We support major Credit/Debit cards (Visa, MasterCard, American Express), Apple Pay, Google Pay, and localized digital payment methods.",
+      q: "Hangi ödeme yöntemleri destekleniyor?",
+      a: "Tüm yerli ve uluslararası kredi/banka kartları (Troy, Visa, MasterCard), Sanal POS altyapısı ve 3D Secure güvenli ödeme desteklenmektedir.",
     },
     {
-      q: "What happens if I reach my storage limit?",
-      a: "If your storage is full, existing share links will continue working normally, but new file uploads will be paused until you either delete unused files or upgrade your quota.",
+      q: "Ücretsiz plandaki kısıtlamalar nelerdir?",
+      a: "Ücretsiz planda 2 GB depolama alanı, maksimum 100 MB tekil dosya yükleme boyutu, aynı anda 1 adet aktif paylaşım linki ve maksimum 12 saat geçerlilik süresi bulunmaktadır.",
+    },
+    {
+      q: "Depolama kotam dolduğunda ne olur?",
+      a: "Mevcut paylaşım linkleriniz ve dosyalarınız çalışmaya devam eder. Ancak yeni dosya yüklemek için bazı dosyaları silmeniz veya paketinizi yükseltmeniz gerekir.",
     },
   ];
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 space-y-12 max-w-7xl mx-auto">
-      {/* Hero Header with Blue Dome Arc */}
+      {/* Hero Header with Arc */}
       <div className="space-y-4">
         <SectionHeader
-          label="Next-Generation Cloud Storage & Sharing"
-          title="Simple, transparent pricing."
-          subtitle="Choose the capacity that fits your workflow. From lightning LAN transfers to permanent 2 TB encrypted cloud hosting."
+          label="Yeni Nesil Güvenli Bulut Depolama & Paylaşım"
+          title="Şeffaf ve Esnek Fiyatlandırma."
+          subtitle="İster bireysel hızlı transferler, ister 2 TB kurumsal güvenli bulut alanı. İhtiyacınıza en uygun paketi seçin."
           icon={Crown}
         />
 
@@ -71,7 +79,7 @@ export default function PricingPage() {
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              Monthly Billing
+              Aylık Ödeme
             </button>
             <button
               type="button"
@@ -82,9 +90,9 @@ export default function PricingPage() {
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              <span>Annual Billing</span>
+              <span>Yıllık Ödeme</span>
               <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-400 border border-emerald-500/30">
-                Save 20%
+                2 Ay Bedava
               </span>
             </button>
           </div>
@@ -95,8 +103,9 @@ export default function PricingPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {PRICING_PLANS.map((plan) => {
           const isCurrentPlan = user?.subscriptionTier === plan.id;
+          const limits = TIER_LIMITS[plan.id];
           const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-          const period = billingCycle === "yearly" ? "/year" : "/month";
+          const period = billingCycle === "yearly" ? "/yıl" : "/ay";
 
           return (
             <div
@@ -127,27 +136,35 @@ export default function PricingPage() {
                 {/* Storage Pill */}
                 <div className="inline-flex items-center gap-2 rounded-xl bg-zinc-950/80 border border-zinc-800 px-3 py-1.5 text-xs font-bold text-sky-400">
                   <HardDrive className="h-3.5 w-3.5" />
-                  <span>{plan.quotaLabel} High-Speed Storage</span>
+                  <span>{plan.quotaLabel} Yüksek Hızlı Depolama</span>
                 </div>
 
-                {/* Price */}
+                {/* Price in TL */}
                 <div className="flex items-baseline gap-1 pt-1">
                   <span className="text-3xl sm:text-4xl font-extrabold text-white">
-                    ${price}
+                    {price === 0 ? "0 ₺" : `${price} ₺`}
                   </span>
-                  <span className="text-xs font-semibold text-zinc-500">{period}</span>
+                  {price > 0 && (
+                    <span className="text-xs font-semibold text-zinc-400 font-mono">{period}</span>
+                  )}
                 </div>
 
                 {/* Features List */}
                 <div className="space-y-3 pt-2 border-t border-zinc-800/80">
                   <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                    Included Features:
+                    Paket Detayları:
                   </span>
                   <ul className="space-y-2.5">
-                    {plan.features.map((feat, idx) => (
+                    {limits.features.map((feat, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-xs text-zinc-300">
-                        <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span>{feat}</span>
+                        <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{feat}</span>
+                      </li>
+                    ))}
+                    {limits.limitations.map((lim, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-xs text-zinc-500">
+                        <XCircle className="h-4 w-4 text-zinc-600 flex-shrink-0 mt-0.5" />
+                        <span className="leading-relaxed">{lim}</span>
                       </li>
                     ))}
                   </ul>
@@ -162,12 +179,12 @@ export default function PricingPage() {
                     disabled
                     className="w-full text-xs rounded-xl bg-zinc-900 border-zinc-700 text-zinc-400"
                   >
-                    Current Plan
+                    Mevcut Paketiniz
                   </Button>
                 ) : plan.id === "free" ? (
                   <Link href={user ? "/dashboard" : "/register"} className="block w-full">
                     <Button variant="outline" className="w-full text-xs rounded-xl">
-                      Get Started Free
+                      Ücretsiz Başla
                     </Button>
                   </Link>
                 ) : (
@@ -178,12 +195,10 @@ export default function PricingPage() {
                     <Button
                       variant="primary"
                       className={`w-full text-xs rounded-xl gap-1.5 ${
-                        plan.popular
-                          ? "bg-purple-600 hover:bg-purple-500 shadow-lg shadow-purple-600/30"
-                          : ""
+                        plan.popular ? "shadow-lg shadow-purple-500/20" : ""
                       }`}
                     >
-                      <span>Upgrade to {plan.name}</span>
+                      <span>{plan.name} Paketini Seç</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Button>
                   </Link>
@@ -194,82 +209,91 @@ export default function PricingPage() {
         })}
       </div>
 
-      {/* Feature Matrix / Highlights */}
-      <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-8 sm:p-10 space-y-8 apple-card">
-        <div className="text-center space-y-2 max-w-2xl mx-auto">
-          <h2 className="text-2xl font-extrabold text-white tracking-tight">
-            Engineered for speed, privacy, and simplicity
+      {/* Feature Comparison Highlights */}
+      <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-8 sm:p-10 space-y-6">
+        <div className="text-center space-y-2 max-w-xl mx-auto">
+          <Badge variant="outline" className="text-[11px] font-mono border-sky-500/30 text-sky-400">
+            TÜM PAKETLERDE STANDART
+          </Badge>
+          <h2 className="text-xl sm:text-2xl font-bold text-white">
+            Güvenlikten ve Hızdan Asla Ödün Vermeyin
           </h2>
           <p className="text-xs text-zinc-400">
-            Every NearDrop plan comes standard with enterprise cryptographic protections.
+            NearDrop altyapısında tüm verileriniz en yüksek şifreleme ve gizlilik standartlarıyla korunur.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/50 p-5 space-y-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
+          <div className="flex gap-4 items-start p-4 rounded-2xl bg-zinc-950/60 border border-zinc-800/80">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex-shrink-0">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-xs font-bold text-white">Uçtan Uca Şifreleme</h3>
+              <p className="text-[11px] text-zinc-400">
+                AES-256-GCM ve Zero-Knowledge mimarisi ile dosyalarınızı yalnızca siz ve paylaştığınız kişiler açabilir.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4 items-start p-4 rounded-2xl bg-zinc-950/60 border border-zinc-800/80">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex-shrink-0">
               <Zap className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-bold text-white">Direct-to-Storage Uploads</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Direct high-speed streaming upload bypasses server bottlenecks for maximum network saturation and fast transfers.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/50 p-5 space-y-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
-              <Lock className="h-5 w-5" />
+            <div className="space-y-1">
+              <h3 className="text-xs font-bold text-white">Global Cloudflare R2 & CDN</h3>
+              <p className="text-[11px] text-zinc-400">
+                280+ küresel uç nokta üzerinden bekleme süresi olmadan ışık hızında yükleme ve doğrudan akış indirme.
+              </p>
             </div>
-            <h3 className="text-sm font-bold text-white">Cryptographic Access Control</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Argon2 password hashing, one-time self-destruct download links, and automated expiration policies.
-            </p>
           </div>
 
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/50 p-5 space-y-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <div className="flex gap-4 items-start p-4 rounded-2xl bg-zinc-950/60 border border-zinc-800/80">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex-shrink-0">
               <InfinityIcon className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-bold text-white">Zero Ingress & Egress Fees</h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              Never pay extra for downloads. Share large datasets, videos, and archives with unlimited download traffic.
-            </p>
+            <div className="space-y-1">
+              <h3 className="text-xs font-bold text-white">Sınırsız Yerel Ağ Transferi</h3>
+              <p className="text-[11px] text-zinc-400">
+                Aynı Wi-Fi ağındaki cihazlar arasında internet kotası harcamadan 450+ Mbps hızla sınırsız aktarım.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* FAQ Section */}
+      {/* Frequently Asked Questions */}
       <div className="max-w-3xl mx-auto space-y-6">
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-extrabold text-white">Frequently Asked Questions</h2>
-          <p className="text-xs text-zinc-400">Everything you need to know about our plans and billing.</p>
+        <div className="text-center space-y-1">
+          <h2 className="text-xl font-bold text-white">Sıkça Sorulan Sorular</h2>
+          <p className="text-xs text-zinc-400">Paketler, faturalandırma ve kullanım hakkında merak edilenler.</p>
         </div>
 
         <div className="space-y-3">
-          {faqs.map((faq, i) => {
-            const isOpen = openFaq === i;
-            return (
-              <div
-                key={i}
-                onClick={() => setOpenFaq(isOpen ? null : i)}
-                className="cursor-pointer rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 transition-all hover:border-zinc-700"
+          {faqs.map((faq, idx) => (
+            <div
+              key={idx}
+              className="rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden transition-colors"
+            >
+              <button
+                type="button"
+                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
+                className="w-full flex items-center justify-between p-4 text-left text-xs font-semibold text-zinc-200 hover:text-white"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <h3 className="text-xs sm:text-sm font-bold text-white">{faq.q}</h3>
-                  <ChevronDown
-                    className={`h-4 w-4 text-zinc-400 transition-transform ${
-                      isOpen ? "rotate-180 text-purple-400" : ""
-                    }`}
-                  />
+                <span>{faq.q}</span>
+                <ChevronDown
+                  className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${
+                    openFaq === idx ? "rotate-180 text-sky-400" : ""
+                  }`}
+                />
+              </button>
+              {openFaq === idx && (
+                <div className="px-4 pb-4 text-xs text-zinc-400 leading-relaxed border-t border-zinc-800/50 pt-3">
+                  {faq.a}
                 </div>
-                {isOpen && (
-                  <p className="text-xs text-zinc-400 leading-relaxed pt-3 border-t border-zinc-800/60 mt-3">
-                    {faq.a}
-                  </p>
-                )}
-              </div>
-            );
-          })}
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>

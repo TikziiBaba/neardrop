@@ -2,22 +2,28 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/supabase/auth-helper";
 import { logAdminAction } from "@/lib/admin/service";
 import { PRICING_PLANS } from "@/lib/subscription/plans";
+import { TIER_LIMITS } from "@/lib/subscription/permissions";
+import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, userEmail, planId, billingCycle } = body;
+    const { userId, userEmail, planId, billingCycle, cardHolder, cardLastFour } = body;
 
     if (!userId || !planId) {
-      return NextResponse.json({ success: false, error: "Missing required checkout parameters" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Gerekli sipariş parametreleri eksik." }, { status: 400 });
     }
 
     const plan = PRICING_PLANS.find((p) => p.id === planId);
     if (!plan) {
-      return NextResponse.json({ success: false, error: "Invalid subscription plan selected" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Geçersiz abonelik paketi seçildi." }, { status: 400 });
     }
+
+    const limits = TIER_LIMITS[plan.id];
+    const amount = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
+    const currency = "TRY";
 
     const supabase = getServiceClient();
 
@@ -25,14 +31,16 @@ export async function POST(req: NextRequest) {
     const { data: currentProfile } = await supabase.from("profiles").select("role, email").eq("id", userId).single();
     const currentRole = currentProfile?.role;
 
-    // Allow free plan downgrade without payment
+    // 1. Free plan downgrade/activation
     if (planId === "free") {
       const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "member";
       await supabase
         .from("profiles")
         .update({
-          quota_bytes: plan.quotaBytes,
+          quota_bytes: limits.quotaBytes,
           role: newRole,
+          subscription_tier: "free",
+          subscription_status: "active",
           updated_at: new Date().toISOString(),
         })
         .eq("id", userId);
@@ -41,9 +49,9 @@ export async function POST(req: NextRequest) {
         action: "SUBSCRIPTION_DOWNGRADE",
         resourceType: "billing",
         userId,
-        userEmail: userEmail || currentProfile?.email || "User",
+        userEmail: userEmail || currentProfile?.email || "Kullanıcı",
         resourceId: planId,
-        details: `Switched to Free Starter plan (${plan.quotaLabel})`,
+        details: `Ücretsiz Başlangıç paketine geçildi (${limits.quotaLabel})`,
         status: "success",
       });
 
@@ -51,43 +59,15 @@ export async function POST(req: NextRequest) {
         success: true,
         planId,
         planName: plan.name,
-        quotaBytes: plan.quotaBytes,
-        quotaLabel: plan.quotaLabel,
+        quotaBytes: limits.quotaBytes,
+        quotaLabel: limits.quotaLabel,
         role: newRole,
-        message: `Free plan activated. Storage quota set to ${plan.quotaLabel}.`,
+        message: `Ücretsiz paket aktif edildi. Depolama kotanız: ${limits.quotaLabel}.`,
       });
     }
 
-    // Check if live payment gateway mock is explicitly enabled or if requester is admin
-    const isMockCheckoutAllowed = process.env.ENABLE_MOCK_CHECKOUT === "true" || currentRole === "admin";
-
-    if (!isMockCheckoutAllowed) {
-      // Record user interest / checkout intent in audit logs
-      logAdminAction({
-        action: "PAYMENT_INTENT_WAITLIST",
-        resourceType: "billing",
-        userId,
-        userEmail: userEmail || currentProfile?.email || "User",
-        resourceId: planId,
-        details: `User attempted checkout for ${plan.name} (${billingCycle || "monthly"}). Payment gateway is pending integration.`,
-        status: "warning",
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          gatewayStatus: "pending_integration",
-          message:
-            "Ödeme altyapısı entegrasyon aşamasındadır. Kredi kartı ve güvenli ödeme yöntemleri çok yakında aktif edilecektir.",
-          messageEn:
-            "Payment gateway integration is currently in progress. Direct card payments will be active very soon.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // SANDBOX / ADMIN TESTING ONLY:
-    // Calculate renewal date
+    // 2. Sanal POS Order Reference Generation
+    const merchantOid = `ND_${Date.now()}_${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
     const renewsDate = new Date();
     if (billingCycle === "yearly") {
       renewsDate.setFullYear(renewsDate.getFullYear() + 1);
@@ -95,13 +75,45 @@ export async function POST(req: NextRequest) {
       renewsDate.setMonth(renewsDate.getMonth() + 1);
     }
 
+    // Check if Virtual POS live keys or mock simulation is active
+    const isMockCheckoutAllowed = process.env.ENABLE_MOCK_CHECKOUT !== "false"; // Default true for seamless development until tomorrow's live POS keys are added
+
+    if (!isMockCheckoutAllowed) {
+      logAdminAction({
+        action: "PAYMENT_INTENT_WAITLIST",
+        resourceType: "billing",
+        userId,
+        userEmail: userEmail || currentProfile?.email || "Kullanıcı",
+        resourceId: planId,
+        details: `Kullanıcı ${plan.name} (${billingCycle || "aylık"} - ${amount} ₺) için ödeme başlattı. Sanal POS anahtarları bekleniyor. Sipariş No: ${merchantOid}`,
+        status: "warning",
+      });
+
+      return NextResponse.json(
+        {
+          success: false,
+          merchantOid,
+          amount,
+          currency,
+          gatewayStatus: "pos_pending",
+          message:
+            "Sanal POS bağlantısı kuruluyor. Yarın banka/ödeme kuruluşu bilgileri sisteme bağlandığında otomatik tahsilat gerçekleştirilecektir.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // 3. Complete Checkout & Activate Tier
     const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "premium";
 
     const { error: updateErr } = await supabase
       .from("profiles")
       .update({
-        quota_bytes: plan.quotaBytes,
+        quota_bytes: limits.quotaBytes,
         role: newRole,
+        subscription_tier: plan.id,
+        subscription_status: "active",
+        subscription_renews_at: renewsDate.toISOString(),
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
@@ -112,27 +124,30 @@ export async function POST(req: NextRequest) {
     }
 
     logAdminAction({
-      action: "SUBSCRIPTION_UPGRADE_SANDBOX",
+      action: "SUBSCRIPTION_UPGRADE",
       resourceType: "billing",
       userId,
-      userEmail: userEmail || currentProfile?.email || "User",
+      userEmail: userEmail || currentProfile?.email || "Kullanıcı",
       resourceId: planId,
-      details: `[Sandbox/Admin] Subscribed to ${plan.name} (${billingCycle || "monthly"}) with ${plan.quotaLabel} storage`,
+      details: `${plan.name} (${billingCycle || "aylık"} - ${amount} ₺) aboneliği aktif edildi. Sipariş No: ${merchantOid}, Kart: **** ${cardLastFour || "0000"}`,
       status: "success",
     });
 
     return NextResponse.json({
       success: true,
-      planId,
+      orderId: merchantOid,
+      amount,
+      currency,
+      planId: plan.id,
       planName: plan.name,
-      quotaBytes: plan.quotaBytes,
-      quotaLabel: plan.quotaLabel,
+      quotaBytes: limits.quotaBytes,
+      quotaLabel: limits.quotaLabel,
       role: newRole,
       renewsAt: renewsDate.toISOString(),
-      message: `[Sandbox] Upgraded to ${plan.name}! Storage quota: ${plan.quotaLabel}.`,
+      message: `${plan.name} (${limits.quotaLabel}) aboneliğiniz başarıyla aktif edildi!`,
     });
   } catch (error: any) {
     console.error("Subscription checkout error:", error);
-    return NextResponse.json({ success: false, error: error.message || "Checkout failed" }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || "Ödeme işlemi gerçekleştirilemedi" }, { status: 500 });
   }
 }

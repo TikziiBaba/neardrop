@@ -4,7 +4,6 @@ import React, { useState, useMemo, useRef } from "react";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { ShareModal } from "@/components/sharing/ShareModal";
 import { FilePreviewModal } from "@/components/files/FilePreviewModal";
-import { FileDetailsDrawer } from "@/components/files/FileDetailsDrawer";
 import { RenameModal } from "@/components/files/RenameModal";
 import { DeleteConfirmModal } from "@/components/files/DeleteConfirmModal";
 import { useStorage } from "@/lib/storage/store";
@@ -66,7 +65,6 @@ export default function FilesPage() {
   // Modals state
   const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null);
   const [selectedFolderForShare, setSelectedFolderForShare] = useState<FolderItem | null>(null);
-  const [selectedFileForDetails, setSelectedFileForDetails] = useState<CloudFile | null>(null);
   const [selectedFileForPreview, setSelectedFileForPreview] = useState<CloudFile | null>(null);
   const [selectedFileForRename, setSelectedFileForRename] = useState<CloudFile | null>(null);
   const [selectedFileForDelete, setSelectedFileForDelete] = useState<CloudFile | null>(null);
@@ -700,14 +698,20 @@ export default function FilesPage() {
             {/* 2. Files in List */}
             {directFiles.map((file) => {
               const { dir, name } = formatFilenameDisplay(file.filename);
+              const cat = getFileCategory(file.mimeType, file.filename);
+              const isMedia = cat === "image" || cat === "video";
               return (
                 <div
                   key={file.id}
                   className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-zinc-800/40 transition-colors group"
                 >
                   <div
-                    className="flex items-center gap-3.5 min-w-0 flex-1 cursor-pointer"
-                    onClick={() => setSelectedFileForPreview(file)}
+                    className={`flex items-center gap-3.5 min-w-0 flex-1 ${isMedia ? "cursor-pointer" : "cursor-default"}`}
+                    onClick={() => {
+                      if (isMedia) {
+                        setSelectedFileForPreview(file);
+                      }
+                    }}
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
                       {renderFileIcon(file)}
@@ -727,7 +731,7 @@ export default function FilesPage() {
                             {dir}/
                           </span>
                         )}
-                        <p className="font-semibold text-xs sm:text-sm text-zinc-100 truncate group-hover:text-sky-300 transition-colors">
+                        <p className={`font-semibold text-xs sm:text-sm text-zinc-100 truncate transition-colors ${isMedia ? "group-hover:text-sky-300" : ""}`}>
                           {isSearching ? name : file.filename.split("/").pop() || file.filename}
                         </p>
                       </div>
@@ -747,16 +751,6 @@ export default function FilesPage() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedFileForDetails(file)}
-                      className="text-zinc-400 hover:text-white h-8 w-8 p-0"
-                      title="Details"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-
                     <Button
                       variant="ghost"
                       size="sm"
@@ -896,14 +890,20 @@ export default function FilesPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {directFiles.map((file) => {
                     const { dir, name } = formatFilenameDisplay(file.filename);
+                    const cat = getFileCategory(file.mimeType, file.filename);
+                    const isMedia = cat === "image" || cat === "video";
                     return (
                       <div
                         key={file.id}
                         className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3 hover:border-zinc-700 transition-all group flex flex-col justify-between"
                       >
                         <div
-                          className="space-y-3 cursor-pointer"
-                          onClick={() => setSelectedFileForPreview(file)}
+                          className={`space-y-3 ${isMedia ? "cursor-pointer" : "cursor-default"}`}
+                          onClick={() => {
+                            if (isMedia) {
+                              setSelectedFileForPreview(file);
+                            }
+                          }}
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60">
@@ -922,7 +922,7 @@ export default function FilesPage() {
                                 <span className="truncate">{dir}</span>
                               </div>
                             )}
-                            <h4 className="font-semibold text-xs text-white truncate group-hover:text-sky-300 transition-colors">
+                            <h4 className={`font-semibold text-xs text-white truncate transition-colors ${isMedia ? "group-hover:text-sky-300" : ""}`}>
                               {isSearching ? name : file.filename.split("/").pop() || file.filename}
                             </h4>
                             <p className="text-[11px] text-zinc-400 mt-0.5">
@@ -1010,14 +1010,6 @@ export default function FilesPage() {
         file={selectedFileForPreview}
         open={Boolean(selectedFileForPreview)}
         onClose={() => setSelectedFileForPreview(null)}
-        onShare={(f) => setSelectedFileForShare(f)}
-        onDelete={(f) => setSelectedFileForDelete(f)}
-      />
-
-      <FileDetailsDrawer
-        file={selectedFileForDetails}
-        open={Boolean(selectedFileForDetails)}
-        onClose={() => setSelectedFileForDetails(null)}
         onShare={(f) => setSelectedFileForShare(f)}
         onDelete={(f) => setSelectedFileForDelete(f)}
       />

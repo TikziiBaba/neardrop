@@ -8,7 +8,7 @@ interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, displayName: string) => Promise<{ success: boolean; error?: string }>;
+  register: (email: string, password: string, displayName: string, selectedTier?: SubscriptionTier) => Promise<{ success: boolean; error?: string }>;
   signInWithOAuth: (provider: "google" | "github") => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
@@ -97,7 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const meta = userMetadata || {};
       const displayName = profile?.display_name || meta.full_name || meta.user_name || meta.name || email.split("@")[0] || "User";
       const avatarUrl = existingAvatar || meta.avatar_url || meta.picture || "";
-      const quotaBytes = profile?.quota_bytes || 10737418240; // 10 GB default
+      const quotaBytes = profile?.quota_bytes || 2147483648; // 2 GB default for free starter
       const role = determineRole(email, profile?.role);
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
 
@@ -219,24 +219,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (email: string, password: string, displayName: string): Promise<{ success: boolean; error?: string }> => {
+  const register = async (
+    email: string,
+    password: string,
+    displayName: string,
+    selectedTier: SubscriptionTier = "free"
+  ): Promise<{ success: boolean; error?: string }> => {
     if (!supabase) {
       return { success: false, error: "Supabase is not configured." };
     }
 
     setIsLoading(true);
     try {
+      const initialQuota = selectedTier === "free" ? 2147483648 : 2147483648; // initialize with free quota until checkout
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { display_name: displayName },
+          data: {
+            display_name: displayName,
+            subscription_tier: selectedTier,
+          },
         },
       });
       if (error) throw error;
       if (data.user) {
         const profile = await fetchProfile(data.user.id, data.user.email || email);
-        setUser(profile);
+        if (profile) {
+          // If a specific tier was picked on signup, ensure profile reflects it
+          if (selectedTier && selectedTier !== "free") {
+            profile.subscriptionTier = selectedTier;
+          }
+          setUser(profile);
+        }
         return { success: true };
       }
       return { success: false, error: "Registration failed." };
@@ -280,12 +295,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = { ...user, ...updates, updatedAt: new Date().toISOString() };
       setUser(updated);
 
-      const updateData = {
+      const updateData: any = {
         display_name: updated.displayName,
         avatar_url: updated.avatarUrl,
         quota_bytes: updated.quotaBytes,
         updated_at: updated.updatedAt,
       };
+
+      if (updates.role) updateData.role = updates.role;
+      if (updates.subscriptionTier) updateData.subscription_tier = updates.subscriptionTier;
+      if (updates.subscriptionStatus) updateData.subscription_status = updates.subscriptionStatus;
+      if (updates.subscriptionRenewsAt) updateData.subscription_renews_at = updates.subscriptionRenewsAt;
 
       await supabase
         .from("profiles")

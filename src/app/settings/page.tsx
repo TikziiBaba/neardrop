@@ -307,7 +307,7 @@ export default function SettingsPage() {
                     <HardDrive className="h-4 w-4 text-purple-400" />
                     <span className="font-bold text-white">Total Quota</span>
                     <span className="text-zinc-400 font-mono">
-                      ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 10737418240)})
+                      ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 2147483648)})
                     </span>
                   </div>
                   <span className="font-bold text-purple-400">{usagePercent}% Used</span>

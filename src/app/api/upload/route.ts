@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createPresignedUploadUrl, getR2Client, isR2Configured } from "@/lib/r2/s3-client";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 import { sanitizeFilename, isDangerousExtension, isFileSizeValid, MAX_UPLOAD_SIZE } from "@/lib/utils/sanitize";
+import { validateUploadSize } from "@/lib/subscription/permissions";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(req: NextRequest) {
@@ -10,6 +11,16 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const serviceClient = getServiceClient();
+    const { data: profile } = await serviceClient
+      .from("profiles")
+      .select("quota_bytes, used_bytes, role, subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const userTier = profile?.subscription_tier || "free";
+    const userRole = profile?.role || "member";
 
     const contentType = req.headers.get("content-type") || "";
 
@@ -35,24 +46,26 @@ export async function POST(req: NextRequest) {
       // Security: Validate file size
       if (!isFileSizeValid(size)) {
         return NextResponse.json(
-          { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
+          { error: `Dosya boyutu 1 bayt ile ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB arasında olmalıdır.` },
           { status: 400 }
         );
       }
 
-      // Security: Check user quota
-      const serviceClient = getServiceClient();
-      const { data: profile } = await serviceClient
-        .from("profiles")
-        .select("quota_bytes, used_bytes")
-        .eq("id", user.id)
-        .single();
+      // Tier check: Validate single file upload size for user's tier
+      const sizeValidation = validateUploadSize(size, userTier, userRole);
+      if (!sizeValidation.allowed) {
+        return NextResponse.json({ error: sizeValidation.error }, { status: 400 });
+      }
 
+      // Security: Check user quota
       if (profile) {
-        const quotaBytes = profile.quota_bytes || 10737418240; // 10 GB default
+        const quotaBytes = profile.quota_bytes || 2147483648; // 2 GB default
         const usedBytes = profile.used_bytes || 0;
         if (usedBytes + size > quotaBytes) {
-          return NextResponse.json({ error: "Storage quota exceeded. Please delete some files or upgrade your plan." }, { status: 413 });
+          return NextResponse.json(
+            { error: "Depolama kotanız doldu. Yeni dosya yüklemek için bazı dosyaları silin veya paketinizi yükseltin." },
+            { status: 413 }
+          );
         }
       }
 
@@ -120,24 +133,26 @@ export async function POST(req: NextRequest) {
     // Security: Validate file size
     if (!isFileSizeValid(size)) {
       return NextResponse.json(
-        { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
+        { error: `Dosya boyutu 1 bayt ile ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB arasında olmalıdır.` },
         { status: 400 }
       );
     }
 
-    // Security: Check user quota
-    const serviceClient = getServiceClient();
-    const { data: profile } = await serviceClient
-      .from("profiles")
-      .select("quota_bytes, used_bytes")
-      .eq("id", user.id)
-      .single();
+    // Tier check: Validate single file upload size for user's tier
+    const sizeValidation = validateUploadSize(size, userTier, userRole);
+    if (!sizeValidation.allowed) {
+      return NextResponse.json({ error: sizeValidation.error }, { status: 400 });
+    }
 
+    // Security: Check user quota
     if (profile) {
-      const quotaBytes = profile.quota_bytes || 10737418240;
+      const quotaBytes = profile.quota_bytes || 2147483648;
       const usedBytes = profile.used_bytes || 0;
       if (usedBytes + size > quotaBytes) {
-        return NextResponse.json({ error: "Storage quota exceeded. Please delete some files or upgrade your plan." }, { status: 413 });
+        return NextResponse.json(
+          { error: "Depolama kotanız doldu. Yeni dosya yüklemek için bazı dosyaları silin veya paketinizi yükseltin." },
+          { status: 413 }
+        );
       }
     }
 

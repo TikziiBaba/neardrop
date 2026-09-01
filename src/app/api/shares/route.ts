@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
+import { validateShareCreation } from "@/lib/subscription/permissions";
 import crypto from "crypto";
 
 function serverSHA256(text: string): string {
@@ -105,6 +106,32 @@ export async function POST(req: NextRequest) {
     }
 
     const serviceClient = getServiceClient();
+
+    // Fetch user profile and active shares count for tier enforcement
+    const [{ data: profile }, { count: activeSharesCount }] = await Promise.all([
+      serviceClient.from("profiles").select("role, subscription_tier").eq("id", user.id).single(),
+      serviceClient.from("share_links").select("id", { count: "exact", head: true }).eq("user_id", user.id).eq("is_active", true),
+    ]);
+
+    const userTier = profile?.subscription_tier || "free";
+    const userRole = profile?.role || "member";
+
+    // Validate share creation parameters against subscription tier
+    const shareValidation = validateShareCreation(
+      {
+        activeSharesCount: activeSharesCount || 0,
+        hasPassword: Boolean(password && password.trim().length > 0),
+        expiresInHours: Number(expiresInHours) || 12,
+        isFolder: Boolean(folderPath),
+      },
+      userTier,
+      userRole
+    );
+
+    if (!shareValidation.allowed) {
+      return NextResponse.json({ error: shareValidation.error }, { status: 403 });
+    }
+
     let effectiveCloudFileId = cloudFileId || null;
 
     // If it's a folder share and cloud_file_id is null, find the first file inside folder as a safe fallback

@@ -24,10 +24,14 @@ import {
   FileText,
   Layers,
   ExternalLink,
+  Crown,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth/context";
+import { getTierLimits } from "@/lib/subscription/permissions";
+import Link from "next/link";
 
 export interface FolderShareTarget {
   name: string;
@@ -49,11 +53,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   open,
   onOpenChange,
 }) => {
-  const { createShareLink } = useStorage();
+  const { user } = useAuth();
+  const { createShareLink, shares } = useStorage();
+  const tierLimits = getTierLimits(user?.subscriptionTier || "free", user?.role || "member");
+  const isFreeTier = (user?.subscriptionTier || "free") === "free" && user?.role !== "admin" && user?.role !== "moderator";
 
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [expirationHours, setExpirationHours] = useState<number>(24);
+  const [expirationHours, setExpirationHours] = useState<number>(isFreeTier ? 12 : 24);
   const [downloadLimit, setDownloadLimit] = useState<number | undefined>(undefined);
   const [password, setPassword] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -311,33 +318,62 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
           </div>
 
+          {/* Free Tier Warning if active link count reached */}
+          {isFreeTier && shares.filter((s) => s.isActive).length >= 1 && (
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                <span>Ücretsiz planda 1 aktif link sınırına ulaştınız.</span>
+              </div>
+              <Link href="/pricing" className="text-sky-400 hover:underline font-bold whitespace-nowrap ml-2">
+                {"Pro'ya Geç"}
+              </Link>
+            </div>
+          )}
+
           {/* Expiration selection */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-sky-400" />
-              <span>Link Expiration</span>
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-sky-400" />
+                <span>Link Geçerlilik Süresi</span>
+              </label>
+              {isFreeTier && (
+                <span className="text-[10px] text-zinc-400 font-mono">Ücretsiz: Maks. 12 Saat</span>
+              )}
+            </div>
             <div className="grid grid-cols-5 gap-1.5">
               {[
-                { label: "1 hour", hours: 1 },
-                { label: "24 hours", hours: 24 },
-                { label: "7 days", hours: 168 },
-                { label: "30 days", hours: 720 },
-                { label: "Never", hours: 0 },
-              ].map((opt) => (
-                <button
-                  key={opt.hours}
-                  type="button"
-                  onClick={() => setExpirationHours(opt.hours)}
-                  className={`py-2 px-1 rounded-xl text-xs font-medium border transition-all text-center ${
-                    expirationHours === opt.hours
-                      ? "border-sky-500 bg-sky-500/15 text-sky-400 font-semibold"
-                      : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+                { label: "1 Saat", hours: 1, minTier: "free" },
+                { label: "6 Saat", hours: 6, minTier: "free" },
+                { label: "12 Saat", hours: 12, minTier: "free" },
+                { label: "7 Gün", hours: 168, minTier: "pro" },
+                { label: "30 Gün", hours: 720, minTier: "ultra" },
+              ].map((opt) => {
+                const isLocked = isFreeTier && opt.minTier !== "free";
+                return (
+                  <button
+                    key={opt.hours}
+                    type="button"
+                    disabled={isLocked}
+                    onClick={() => setExpirationHours(opt.hours)}
+                    className={`py-2 px-1 rounded-xl text-xs font-medium border transition-all text-center relative ${
+                      isLocked
+                        ? "border-zinc-800/40 bg-zinc-950/40 text-zinc-600 cursor-not-allowed"
+                        : expirationHours === opt.hours
+                        ? "border-sky-500 bg-sky-500/15 text-sky-400 font-semibold"
+                        : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                    }`}
+                  >
+                    <span>{opt.label}</span>
+                    {isLocked && (
+                      <span className="block text-[8px] text-purple-400 uppercase font-bold mt-0.5">
+                        {opt.minTier}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -345,14 +381,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           <div className="space-y-2">
             <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
               <Download className="h-3.5 w-3.5 text-blue-400" />
-              <span>Download Limit</span>
+              <span>İndirme Limiti</span>
             </label>
             <div className="grid grid-cols-4 gap-1.5">
               {[
-                { label: "Unlimited", limit: undefined },
-                { label: "5 times", limit: 5 },
-                { label: "20 times", limit: 20 },
-                { label: "50 times", limit: 50 },
+                { label: "Sınırsız", limit: undefined },
+                { label: "5 İndirme", limit: 5 },
+                { label: "20 İndirme", limit: 20 },
+                { label: "50 İndirme", limit: 50 },
               ].map((opt, i) => (
                 <button
                   key={i}
@@ -370,21 +406,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({
             </div>
           </div>
 
-          {/* Optional Password Protection */}
+          {/* Password Protection */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-300 flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
                 <Lock className="h-3.5 w-3.5 text-amber-400" />
-                <span>Password Protection (Optional)</span>
-              </span>
-              <span className="text-[10px] text-zinc-500 font-normal">SHA-256 encrypted</span>
-            </label>
+                <span>Şifre Koruması (İsteğe Bağlı)</span>
+              </label>
+              {isFreeTier ? (
+                <Link href="/pricing" className="text-[10px] text-purple-400 font-bold hover:underline flex items-center gap-1">
+                  <Crown className="h-3 w-3" />
+                  <span>Pro Özelliği</span>
+                </Link>
+              ) : (
+                <span className="text-[10px] text-zinc-500 font-normal">SHA-256 Şifreli</span>
+              )}
+            </div>
             <Input
               type="password"
-              placeholder="Leave empty for public link or enter password..."
+              placeholder={isFreeTier ? "Şifre korumalı linkler için Pro plana geçin..." : "Şifre belirleyin veya genel link için boş bırakın..."}
               value={password}
+              disabled={isFreeTier}
               onChange={(e) => setPassword(e.target.value)}
-              className="text-xs"
+              className={`text-xs ${isFreeTier ? "opacity-60 bg-zinc-950/40 cursor-not-allowed" : ""}`}
             />
           </div>
 
@@ -395,7 +439,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              İptal
             </Button>
             <Button
               type="button"
@@ -407,10 +451,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <Share2 className="h-4 w-4" />
               <span>
                 {isSubmitting
-                  ? "Creating link..."
+                  ? "Oluşturuluyor..."
                   : isFolder
-                  ? "Create Folder Link"
-                  : "Create Link"}
+                  ? "Klasör Linki Oluştur"
+                  : "Paylaşım Linki Oluştur"}
               </span>
             </Button>
           </div>

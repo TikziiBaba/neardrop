@@ -190,6 +190,12 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       return;
     }
 
+    const category = getFileCategory(file.mimeType, file.filename);
+    if (category !== "image" && category !== "video") {
+      resetState();
+      return;
+    }
+
     let cancelled = false;
     const loadPreview = async () => {
       setIsLoading(true);
@@ -425,6 +431,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   if (!open || !file) return null;
 
   const category = getFileCategory(file.mimeType, file.filename);
+  if (category !== "image" && category !== "video") return null;
+
   const displayName = file.filename.split("/").pop() || file.filename;
   const ext = displayName.split(".").pop()?.toLowerCase() || "";
 
@@ -447,26 +455,21 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     }
   };
 
-  const renderCategoryIcon = () => {
-    const cls = "h-4 w-4";
-    switch (category) {
-      case "archive": return <FileArchive className={`${cls} text-amber-400`} />;
-      case "image": return <FileImage className={`${cls} text-emerald-400`} />;
-      case "video": return <FileVideo className={`${cls} text-purple-400`} />;
-      case "audio": return <FileAudio className={`${cls} text-pink-400`} />;
-      case "code": return <FileCode className={`${cls} text-cyan-400`} />;
-      default: return <FileText className={`${cls} text-sky-400`} />;
-    }
-  };
-
   const isImage = category === "image";
   const isVideo = category === "video";
-  const isAudio = category === "audio";
-  const isPdf = ext === "pdf" || file.mimeType === "application/pdf";
-  const isHtml = ext === "html" || ext === "htm";
-  const isMarkdown = ext === "md" || ext === "markdown";
-  const isSpreadsheet = Boolean(parsedXlsx || ext === "csv" || ext === "tsv" || ext === "xlsx" || ext === "xls");
-  const isWordDoc = Boolean(parsedDocx || ext === "docx" || ext === "doc" || ext === "rtf" || ext === "odt");
+  const isSpreadsheet = false;
+  const isWordDoc = false;
+  const isHtml = false;
+  const isMarkdown = false;
+  const isAudio = false;
+  const isPdf = false;
+
+  const renderCategoryIcon = () => {
+    if (isVideo) {
+      return <FileVideo className="h-4 w-4 text-purple-400" />;
+    }
+    return <FileImage className="h-4 w-4 text-emerald-400" />;
+  };
 
   const renderPreviewContent = () => {
     if (isLoading) {
@@ -1162,16 +1165,19 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     // ─── 6. Video Preview ───
     if (isVideo && previewUrl) {
       return (
-        <div className="flex items-center justify-center h-full w-full p-4">
-          <video
-            src={previewUrl}
-            controls
-            autoPlay={false}
-            className="max-w-full max-h-full rounded-2xl shadow-2xl shadow-black/60 border border-zinc-800"
-            style={{ backgroundColor: "#000" }}
-          >
-            Tarayıcınız video etiketini desteklemiyor.
-          </video>
+        <div className="flex flex-col items-center justify-center h-full w-full p-4 sm:p-8 bg-zinc-950/80 relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/10 via-zinc-950/40 to-zinc-950" />
+          <div className="relative z-10 max-w-5xl w-full max-h-[82vh] flex items-center justify-center rounded-2xl overflow-hidden border border-zinc-800/80 bg-black/90 shadow-2xl shadow-purple-500/5">
+            <video
+              src={previewUrl}
+              controls
+              autoPlay={false}
+              playsInline
+              className="max-w-full max-h-[78vh] w-auto h-auto rounded-xl outline-none"
+            >
+              Tarayıcınız video etiketini desteklemiyor.
+            </video>
+          </div>
         </div>
       );
     }

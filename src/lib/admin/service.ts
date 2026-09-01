@@ -273,7 +273,7 @@ export async function updateAdminUser(
       if (updates.subscriptionTier === "enterprise") updatePayload.quota_bytes = 2199023255552;
       else if (updates.subscriptionTier === "ultra") updatePayload.quota_bytes = 536870912000;
       else if (updates.subscriptionTier === "pro") updatePayload.quota_bytes = 107374182400;
-      else if (updates.subscriptionTier === "free") updatePayload.quota_bytes = 10737418240;
+      else if (updates.subscriptionTier === "free") updatePayload.quota_bytes = 2147483648; // 2 GB
     }
   }
   if (updates.quotaBytes !== undefined) updatePayload.quota_bytes = Number(updates.quotaBytes);

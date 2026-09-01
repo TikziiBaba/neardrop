@@ -286,9 +286,12 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
               xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
               xhr.send(file);
             });
+          } else {
+            const errData = await apiRes.json().catch(() => ({}));
+            throw new Error(errData.error || `Yükleme başlatılamadı (${apiRes.status})`);
           }
         } catch (presignedErr: any) {
-          if (presignedErr?.message === "Upload cancelled") {
+          if (presignedErr?.message === "Upload cancelled" || presignedErr?.message?.includes("kotanız") || presignedErr?.message?.includes("paketinde")) {
             throw presignedErr;
           }
           console.warn("Direct storage upload failed, falling back to secure tunnel upload...", presignedErr);
