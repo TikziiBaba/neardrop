@@ -65,20 +65,20 @@ export default function DashboardPage() {
   // Dynamic Greeting based on current local hour
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return "Günaydın";
-    if (hour >= 12 && hour < 18) return "Tünaydın";
-    if (hour >= 18 && hour < 22) return "İyi Akşamlar";
-    return "İyi Geceler";
+    if (hour >= 5 && hour < 12) return "Good morning";
+    if (hour >= 12 && hour < 18) return "Good afternoon";
+    if (hour >= 18 && hour < 22) return "Good evening";
+    return "Good night";
   }, []);
 
   // Category statistics breakdown
   const categoryStats = useMemo(() => {
     const counts = {
-      image: { count: 0, bytes: 0, label: "Görseller", color: "bg-emerald-500", text: "text-emerald-400" },
-      video: { count: 0, bytes: 0, label: "Videolar", color: "bg-purple-500", text: "text-purple-400" },
-      document: { count: 0, bytes: 0, label: "Belgeler", color: "bg-sky-500", text: "text-sky-400" },
-      archive: { count: 0, bytes: 0, label: "Arşivler", color: "bg-amber-500", text: "text-amber-400" },
-      code: { count: 0, bytes: 0, label: "Kod & Diğer", color: "bg-pink-500", text: "text-pink-400" },
+      image: { count: 0, bytes: 0, label: "Images", color: "bg-emerald-500", text: "text-emerald-400" },
+      video: { count: 0, bytes: 0, label: "Videos", color: "bg-purple-500", text: "text-purple-400" },
+      document: { count: 0, bytes: 0, label: "Documents", color: "bg-sky-500", text: "text-sky-400" },
+      archive: { count: 0, bytes: 0, label: "Archives", color: "bg-amber-500", text: "text-amber-400" },
+      code: { count: 0, bytes: 0, label: "Code & Other", color: "bg-pink-500", text: "text-pink-400" },
     };
 
     files.forEach((f) => {
@@ -197,22 +197,22 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-[11px] font-mono border-sky-500/30 text-sky-400 bg-sky-500/10 py-0.5 px-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5 inline-block" />
-                  Bulut Çevrimiçi • R2 Storage
+                  Cloud Online • R2 Object Storage
                 </Badge>
                 <span className="text-xs text-zinc-500">
-                  {new Date().toLocaleDateString("tr-TR", { weekday: "long", day: "numeric", month: "long" })}
+                  {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" })}
                 </span>
               </div>
 
               <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                 <span>{greeting}, </span>
                 <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
-                  {user?.displayName || "NearDrop Kullanıcısı"}
+                  {user?.displayName || "NearDrop User"}
                 </span>
               </h1>
 
               <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
-                Dosyalarınızı ve medyalarınızı güvenle depolayın, fotoğrafları ve videoları doğrudan inceleyin ve şifreli linklerle anında paylaşın.
+                Store your assets securely, preview photos and videos directly in your browser, and share with encrypted links.
               </p>
             </div>
 
@@ -221,19 +221,19 @@ export default function DashboardPage() {
               <Link href="/files">
                 <Button variant="primary" size="sm" className="gap-2 shadow-lg shadow-sky-500/20 text-xs sm:text-sm h-9">
                   <FolderOpen className="h-4 w-4" />
-                  <span>Dosyalarım</span>
+                  <span>My Files</span>
                 </Button>
               </Link>
               <Link href="/shared">
                 <Button variant="outline" size="sm" className="gap-2 border-zinc-700 bg-zinc-800/60 hover:bg-zinc-800 text-xs sm:text-sm h-9">
                   <Share2 className="h-4 w-4 text-emerald-400" />
-                  <span>Paylaşılanlar ({shares.length})</span>
+                  <span>Shared ({shares.length})</span>
                 </Button>
               </Link>
               <Link href="/transfers">
                 <Button variant="outline" size="sm" className="gap-2 border-zinc-700 bg-zinc-800/60 hover:bg-zinc-800 text-xs sm:text-sm h-9">
                   <Activity className="h-4 w-4 text-purple-400" />
-                  <span>Transferler</span>
+                  <span>Transfers</span>
                 </Button>
               </Link>
             </div>
@@ -254,12 +254,12 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{stats.filesCount}</p>
-              <span className="text-xs text-zinc-500 font-mono">dosya & klasör</span>
+              <span className="text-xs text-zinc-500 font-mono">files & folders</span>
             </div>
             <div className="flex items-center gap-2 pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
-              <span className="text-emerald-400 font-medium">📷 {categoryStats.counts.image.count} Resim</span>
+              <span className="text-emerald-400 font-medium">📷 {categoryStats.counts.image.count} Images</span>
               <span>•</span>
-              <span className="text-purple-400 font-medium">🎬 {categoryStats.counts.video.count} Video</span>
+              <span className="text-purple-400 font-medium">🎬 {categoryStats.counts.video.count} Videos</span>
             </div>
           </div>
 
@@ -273,7 +273,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-teal-300 tracking-tight">{formatBytes(stats.usedBytes)}</p>
-              <span className="text-xs text-zinc-500 font-mono">/ {formatBytes(stats.quotaBytes || 10737418240)}</span>
+              <span className="text-xs text-zinc-500 font-mono">/ {formatBytes(stats.quotaBytes || 2147483648)}</span>
             </div>
             <div className="space-y-1 pt-1">
               <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
@@ -282,7 +282,7 @@ export default function DashboardPage() {
                   style={{ width: `${Math.max(2, quotaPercent)}%` }}
                 />
               </div>
-              <p className="text-[10px] text-zinc-500 text-right font-mono">%{quotaPercent} kullanıldı</p>
+              <p className="text-[10px] text-zinc-500 text-right font-mono">{quotaPercent}% Used</p>
             </div>
           </div>
 
@@ -296,12 +296,12 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-emerald-400 tracking-tight">{stats.sharedCount}</p>
-              <Badge variant="success" className="text-[10px]">Canlı Linkler</Badge>
+              <Badge variant="success" className="text-[10px]">Live Links</Badge>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
-              <span>Şifre & Süre Korumalı</span>
+              <span>Encrypted & Ephemeral</span>
               <Link href="/shared" className="text-sky-400 hover:underline flex items-center gap-0.5">
-                Yönet <ArrowUpRight className="h-3 w-3" />
+                Manage <ArrowUpRight className="h-3 w-3" />
               </Link>
             </div>
           </div>
@@ -316,13 +316,13 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-purple-400 tracking-tight">{stats.totalDownloads}</p>
-              <span className="text-xs text-zinc-500 font-mono">başarılı indirme</span>
+              <span className="text-xs text-zinc-500 font-mono">successful hits</span>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
               <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                <Zap className="h-3 w-3" /> Doğrudan Akış
+                <Zap className="h-3 w-3" /> Direct Edge Stream
               </span>
-              <span className="text-zinc-500 font-mono">Sıfır Bekleme</span>
+              <span className="text-zinc-500 font-mono">Zero Waiting</span>
             </div>
           </div>
         </div>
@@ -334,10 +334,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-sky-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">Depolama Dağılımı</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">Storage Distribution</h3>
             </div>
             <span className="text-xs text-zinc-400 font-mono">
-              Toplam {formatBytes(stats.usedBytes)} / {files.length} dosya
+              Total {formatBytes(stats.usedBytes)} across {files.length} files
             </span>
           </div>
 
@@ -347,35 +347,35 @@ export default function DashboardPage() {
               <div
                 style={{ width: `${categoryStats.percentages.image}%` }}
                 className="bg-emerald-500 hover:opacity-90 transition-all"
-                title={`Fotoğraflar: ${formatBytes(categoryStats.counts.image.bytes)} (%${categoryStats.percentages.image})`}
+                title={`Photos: ${formatBytes(categoryStats.counts.image.bytes)} (${categoryStats.percentages.image}%)`}
               />
             )}
             {categoryStats.percentages.video > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.video}%` }}
                 className="bg-purple-500 hover:opacity-90 transition-all"
-                title={`Videolar: ${formatBytes(categoryStats.counts.video.bytes)} (%${categoryStats.percentages.video})`}
+                title={`Videos: ${formatBytes(categoryStats.counts.video.bytes)} (${categoryStats.percentages.video}%)`}
               />
             )}
             {categoryStats.percentages.document > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.document}%` }}
                 className="bg-sky-500 hover:opacity-90 transition-all"
-                title={`Belgeler: ${formatBytes(categoryStats.counts.document.bytes)} (%${categoryStats.percentages.document})`}
+                title={`Documents: ${formatBytes(categoryStats.counts.document.bytes)} (${categoryStats.percentages.document}%)`}
               />
             )}
             {categoryStats.percentages.archive > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.archive}%` }}
                 className="bg-amber-500 hover:opacity-90 transition-all"
-                title={`Arşivler: ${formatBytes(categoryStats.counts.archive.bytes)} (%${categoryStats.percentages.archive})`}
+                title={`Archives: ${formatBytes(categoryStats.counts.archive.bytes)} (${categoryStats.percentages.archive}%)`}
               />
             )}
             {categoryStats.percentages.code > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.code}%` }}
                 className="bg-pink-500 hover:opacity-90 transition-all"
-                title={`Diğer: ${formatBytes(categoryStats.counts.code.bytes)} (%${categoryStats.percentages.code})`}
+                title={`Code: ${formatBytes(categoryStats.counts.code.bytes)} (${categoryStats.percentages.code}%)`}
               />
             )}
           </div>
@@ -384,19 +384,19 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs text-zinc-400 pt-1">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <span>Görseller ({formatBytes(categoryStats.counts.image.bytes)})</span>
+              <span>Images ({formatBytes(categoryStats.counts.image.bytes)})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-              <span>Videolar ({formatBytes(categoryStats.counts.video.bytes)})</span>
+              <span>Videos ({formatBytes(categoryStats.counts.video.bytes)})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-              <span>Belgeler ({formatBytes(categoryStats.counts.document.bytes)})</span>
+              <span>Documents ({formatBytes(categoryStats.counts.document.bytes)})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-              <span>Arşivler ({formatBytes(categoryStats.counts.archive.bytes)})</span>
+              <span>Archives ({formatBytes(categoryStats.counts.archive.bytes)})</span>
             </div>
           </div>
         </div>
@@ -412,7 +412,7 @@ export default function DashboardPage() {
             </h2>
             <div className="flex items-center gap-2 text-xs text-zinc-400">
               <ShieldCheck className="h-4 w-4 text-emerald-400 inline" />
-              <span>Uçtan Uca Şifreli R2 Depolama</span>
+              <span>End-to-End Encrypted R2 Storage</span>
             </div>
           </div>
           <DropZone />
@@ -426,13 +426,13 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <Play className="h-4 w-4 text-purple-400" />
-                <h3 className="text-sm font-bold text-white">Son Yüklenen Medyalar (Fotoğraf & Video)</h3>
+                <h3 className="text-sm font-bold text-white">Recent Media (Photos & Videos)</h3>
                 <Badge variant="secondary" className="text-[10px]">
-                  {recentMediaFiles.length} medya
+                  {recentMediaFiles.length} media
                 </Badge>
               </div>
               <span className="text-xs text-zinc-400 hidden sm:inline">
-                Tıklayarak tam ekran inceleyin veya oynatın
+                Click to preview or play in full screen
               </span>
             </div>
 
@@ -506,7 +506,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-white">{t.dashboard.recentFiles}</h3>
                 <Badge variant="secondary" className="text-[10px]">
-                  {files.length} dosya
+                  {files.length} files
                 </Badge>
               </div>
 
@@ -518,7 +518,7 @@ export default function DashboardPage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Dosyalarda ara..."
+                    placeholder="Search files..."
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                 </div>
@@ -537,10 +537,10 @@ export default function DashboardPage() {
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 text-center space-y-2">
                 <FolderOpen className="h-8 w-8 text-zinc-600 mx-auto" />
                 <h4 className="text-sm font-semibold text-zinc-300">
-                  {searchQuery ? "Aramaya uygun dosya bulunamadı" : t.dashboard.noFilesTitle}
+                  {searchQuery ? "No matching files found" : t.dashboard.noFilesTitle}
                 </h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  {searchQuery ? `"${searchQuery}" için sonuç bulunamadı.` : t.dashboard.noFilesDesc}
+                  {searchQuery ? `No results found for "${searchQuery}".` : t.dashboard.noFilesDesc}
                 </p>
               </div>
             ) : (
@@ -576,7 +576,7 @@ export default function DashboardPage() {
                             <span>{formatRelativeTime(file.createdAt)}</span>
                             {isMedia && (
                               <Badge variant="outline" className="text-[9px] py-0 px-1.5 text-zinc-400 border-zinc-700">
-                                {cat === "video" ? "🎬 Video İncele" : "📷 Fotoğraf İncele"}
+                                {cat === "video" ? "🎬 Video Preview" : "📷 Photo Preview"}
                               </Badge>
                             )}
                           </div>
@@ -591,10 +591,10 @@ export default function DashboardPage() {
                             size="sm"
                             onClick={() => setSelectedFileForPreview(file)}
                             className="text-zinc-400 hover:text-sky-400 hover:bg-sky-500/10 h-8 px-2 text-xs gap-1"
-                            title="İncele"
+                            title="Preview"
                           >
                             <Eye className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">İncele</span>
+                            <span className="hidden sm:inline">Preview</span>
                           </Button>
                         )}
 
@@ -613,7 +613,7 @@ export default function DashboardPage() {
                           size="sm"
                           onClick={() => handleDownload(file)}
                           className="text-zinc-400 hover:text-white h-8 w-8 p-0"
-                          title="İndir"
+                          title="Download"
                         >
                           <Download className="h-4 w-4" />
                         </Button>
@@ -623,7 +623,7 @@ export default function DashboardPage() {
                           size="sm"
                           onClick={() => setSelectedFileForRename(file)}
                           className="text-zinc-400 hover:text-white h-8 w-8 p-0"
-                          title="Yeniden Adlandır"
+                          title="Rename"
                         >
                           <Edit2 className="h-3.5 w-3.5" />
                         </Button>
@@ -633,7 +633,7 @@ export default function DashboardPage() {
                           size="sm"
                           onClick={() => setSelectedFileForDelete(file)}
                           className="text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 h-8 w-8 p-0"
-                          title="Sil"
+                          title="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -693,7 +693,7 @@ export default function DashboardPage() {
                                 ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
                                 : "border-zinc-700/60 bg-zinc-800 text-zinc-400 hover:text-white hover:border-sky-500/40"
                             }`}
-                            title="Linki Kopyala"
+                            title="Copy Link"
                           >
                             {isCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                           </button>
@@ -712,7 +712,7 @@ export default function DashboardPage() {
                               </span>
                             )}
                             <Badge variant="success" className="text-[10px]">
-                              {share.downloadCount} indirme
+                              {share.downloadCount} downloads
                             </Badge>
                           </div>
                         </div>
@@ -727,19 +727,19 @@ export default function DashboardPage() {
             <div className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-zinc-900/70 via-zinc-900/30 to-zinc-950 p-5 space-y-3.5 shadow-md">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                <span>NearDrop Güvenlik & Altyapı</span>
+                <span>NearDrop Security & Infrastructure</span>
               </div>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between py-1 border-b border-zinc-800/50">
-                  <span className="text-zinc-400">Şifreleme Standardı</span>
+                  <span className="text-zinc-400">Encryption Standard</span>
                   <span className="font-mono text-zinc-200">AES-256-GCM</span>
                 </div>
                 <div className="flex items-center justify-between py-1 border-b border-zinc-800/50">
                   <span className="text-zinc-400">Global Edge CDN</span>
-                  <span className="text-emerald-400 font-medium">Aktif • 280+ Lokasyon</span>
+                  <span className="text-emerald-400 font-medium">Active • 280+ Locations</span>
                 </div>
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-zinc-400">Gizlilik Modeli</span>
+                  <span className="text-zinc-400">Privacy Architecture</span>
                   <span className="text-zinc-200">Zero-Knowledge</span>
                 </div>
               </div>

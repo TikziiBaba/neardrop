@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth/context";
-import { useLanguage } from "@/lib/i18n/context";
 import { PRICING_PLANS } from "@/lib/subscription/plans";
 import { TIER_LIMITS } from "@/lib/subscription/permissions";
 import { SubscriptionTier } from "@/types";
@@ -32,7 +31,6 @@ import { toast } from "sonner";
 export default function RegisterPage() {
   const router = useRouter();
   const { register, signInWithOAuth } = useAuth();
-  const { t } = useLanguage();
 
   // Wizard Step: 1 = Account Credentials, 2 = Plan Selection
   const [step, setStep] = useState<1 | 2>(1);
@@ -57,17 +55,17 @@ export default function RegisterPage() {
     setError(null);
 
     if (!displayName.trim() || !email.trim() || !password || !confirmPassword) {
-      setError("Lütfen tüm alanları eksiksiz doldurunuz.");
+      setError("Please fill out all required fields.");
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("Şifreler birbiriyle uyuşmuyor.");
+      setError("Passwords do not match.");
       return;
     }
 
     if (password.length < 6) {
-      setError("Şifreniz en az 6 karakter olmalıdır.");
+      setError("Password must be at least 6 characters.");
       return;
     }
 
@@ -82,20 +80,20 @@ export default function RegisterPage() {
     try {
       const res = await register(email.trim(), password, displayName.trim(), tierToRegister);
       if (!res.success) {
-        setError(res.error || "Kayıt işlemi gerçekleştirilemedi.");
+        setError(res.error || "Failed to create account.");
         setIsLoading(false);
         return;
       }
 
       if (tierToRegister === "free") {
-        toast.success("Hesabınız başarıyla oluşturuldu! Hoş geldiniz.");
+        toast.success("Account created successfully! Welcome to NearDrop.");
         router.push("/dashboard");
       } else {
-        toast.success("Hesabınız oluşturuldu! Şimdi ödeme adımına aktarılıyorsunuz...");
+        toast.success("Account created! Redirecting to checkout...");
         router.push(`/checkout?plan=${tierToRegister}&billing=${billingCycle}`);
       }
     } catch (err: any) {
-      setError(err.message || "Kayıt sırasında bir hata oluştu.");
+      setError(err.message || "An error occurred during registration.");
       setIsLoading(false);
     }
   };
@@ -105,10 +103,10 @@ export default function RegisterPage() {
     try {
       const res = await signInWithOAuth(provider);
       if (!res.success) {
-        toast.error(res.error || `${provider} ile kayıt başlatılamadı`);
+        toast.error(res.error || `Failed to sign up with ${provider}`);
       }
     } catch (err: any) {
-      toast.error(err.message || "Sosyal giriş hatası");
+      toast.error(err.message || "Social login error");
     } finally {
       setIsSocialLoading(null);
     }
@@ -130,12 +128,12 @@ export default function RegisterPage() {
           </Link>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            {step === 1 ? "NearDrop Hesabı Oluşturun" : "Abonelik Planınızı Belirleyin"}
+            {step === 1 ? "Create Your NearDrop Account" : "Select Your Storage Plan"}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
             {step === 1
-              ? "Saniyeler içinde kaydolun, 2. adımda size en uygun planı seçerek hemen başlayın."
-              : "İhtiyacınıza en uygun depolama ve transfer planını seçin. İstediğiniz an değiştirebilirsiniz."}
+              ? "Sign up in seconds, then pick the perfect storage plan for your workflow."
+              : "Choose the capacity and features tailored to your needs. You can change plans anytime."}
           </p>
 
           {/* Stepper Indicator */}
@@ -151,7 +149,7 @@ export default function RegisterPage() {
               <span className="flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[10px] font-bold text-black">
                 1
               </span>
-              <span>Hesap Bilgileri</span>
+              <span>Account Details</span>
             </div>
 
             <div className="w-6 h-px bg-zinc-800" />
@@ -168,7 +166,7 @@ export default function RegisterPage() {
               }`}>
                 2
               </span>
-              <span>Plan & Abonelik</span>
+              <span>Plan Selection</span>
             </div>
           </div>
         </div>
@@ -212,7 +210,7 @@ export default function RegisterPage() {
                     d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.2 7.5 23 12 23z"
                   />
                 </svg>
-                <span>{isSocialLoading === "google" ? "Bağlanıyor..." : "Google"}</span>
+                <span>{isSocialLoading === "google" ? "Connecting..." : "Google"}</span>
               </button>
 
               <button
@@ -224,7 +222,7 @@ export default function RegisterPage() {
                 <svg className="h-4 w-4 fill-current text-white" viewBox="0 0 24 24">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                 </svg>
-                <span>{isSocialLoading === "github" ? "Bağlanıyor..." : "GitHub"}</span>
+                <span>{isSocialLoading === "github" ? "Connecting..." : "GitHub"}</span>
               </button>
             </div>
 
@@ -232,21 +230,21 @@ export default function RegisterPage() {
             <div className="relative flex items-center justify-center">
               <div className="w-full border-t border-zinc-800" />
               <span className="absolute bg-zinc-900 px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
-                veya e-posta ile devam edin
+                or continue with email
               </span>
             </div>
 
             {/* Form */}
             <form onSubmit={handleProceedToStep2} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Ad Soyad</label>
+                <label className="text-xs font-semibold text-zinc-300">Full Name</label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <Input
                     type="text"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    placeholder="Adınız Soyadınız"
+                    placeholder="Your Full Name"
                     className="pl-10 text-xs rounded-2xl bg-zinc-950/60"
                     required
                   />
@@ -254,14 +252,14 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">E-posta Adresi</label>
+                <label className="text-xs font-semibold text-zinc-300">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="ornek@domain.com"
+                    placeholder="name@example.com"
                     className="pl-10 text-xs rounded-2xl bg-zinc-950/60"
                     required
                   />
@@ -269,14 +267,14 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Şifre</label>
+                <label className="text-xs font-semibold text-zinc-300">Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="En az 6 karakter"
+                    placeholder="At least 6 characters"
                     className="pl-10 text-xs rounded-2xl bg-zinc-950/60"
                     required
                   />
@@ -284,14 +282,14 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Şifre Tekrar</label>
+                <label className="text-xs font-semibold text-zinc-300">Confirm Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
                   <Input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Şifrenizi doğrulayın"
+                    placeholder="Re-enter password"
                     className="pl-10 text-xs rounded-2xl bg-zinc-950/60"
                     required
                   />
@@ -304,16 +302,16 @@ export default function RegisterPage() {
                 size="lg"
                 className="w-full gap-2 text-xs font-bold rounded-2xl shadow-lg shadow-sky-500/20 mt-2"
               >
-                <span>Devam Et: Planını Seç</span>
+                <span>Continue: Choose Plan</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </form>
 
             <div className="text-center pt-2 border-t border-zinc-800/80">
               <p className="text-xs text-zinc-400">
-                Zaten bir hesabınız var mı?{" "}
+                Already have an account?{" "}
                 <Link href="/login" className="font-semibold text-sky-400 hover:text-sky-300 transition-colors">
-                  Giriş Yapın
+                  Log In
                 </Link>
               </p>
             </div>
@@ -321,7 +319,7 @@ export default function RegisterPage() {
         )}
 
         {/* ========================================================= */}
-        {/* STEP 2: PLAN & SUBSCRIPTION SELECTION (TL / ₺)           */}
+        {/* STEP 2: PLAN & SUBSCRIPTION SELECTION                     */}
         {/* ========================================================= */}
         {step === 2 && (
           <div className="space-y-6 animate-in fade-in">
@@ -337,7 +335,7 @@ export default function RegisterPage() {
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
-                  Aylık Ödeme
+                  Monthly Billing
                 </button>
                 <button
                   type="button"
@@ -348,9 +346,9 @@ export default function RegisterPage() {
                       : "text-zinc-400 hover:text-white"
                   }`}
                 >
-                  <span>Yıllık Ödeme</span>
+                  <span>Annual Billing</span>
                   <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-400 border border-emerald-500/30">
-                    2 Ay Bedava
+                    2 Months Free
                   </span>
                 </button>
               </div>
@@ -362,7 +360,7 @@ export default function RegisterPage() {
                 const isSelected = selectedTier === plan.id;
                 const limits = TIER_LIMITS[plan.id];
                 const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-                const period = billingCycle === "yearly" ? "/yıl" : "/ay";
+                const period = billingCycle === "yearly" ? "/year" : "/mo";
 
                 return (
                   <div
@@ -403,13 +401,13 @@ export default function RegisterPage() {
                       {/* Storage Quota Pill */}
                       <div className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800 px-2.5 py-1 text-xs font-bold text-sky-400">
                         <HardDrive className="h-3.5 w-3.5" />
-                        <span>{plan.quotaLabel} Depolama</span>
+                        <span>{plan.quotaLabel} Storage</span>
                       </div>
 
                       {/* Price in TL */}
                       <div className="flex items-baseline gap-1 pt-1">
                         <span className="text-2xl sm:text-3xl font-extrabold text-white">
-                          {price === 0 ? "Ücretsiz" : `${price} ₺`}
+                          {price === 0 ? "Free" : `${price} ₺`}
                         </span>
                         {price > 0 && (
                           <span className="text-xs font-semibold text-zinc-400 font-mono">{period}</span>
@@ -419,7 +417,7 @@ export default function RegisterPage() {
                       {/* Key features */}
                       <div className="space-y-2 pt-2 border-t border-zinc-800/80">
                         <div className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider">
-                          Paket Özellikleri:
+                          Includes:
                         </div>
                         <ul className="space-y-1.5 text-xs text-zinc-300">
                           {limits.features.slice(0, 4).map((f, i) => (
@@ -454,11 +452,11 @@ export default function RegisterPage() {
                         }`}
                       >
                         {isLoading && selectedTier === plan.id ? (
-                          "Kaydediliyor..."
+                          "Creating Account..."
                         ) : plan.id === "free" ? (
-                          "Ücretsiz Başla"
+                          "Start for Free"
                         ) : (
-                          `${plan.name} ile Başla`
+                          `Select ${plan.name}`
                         )}
                       </Button>
                     </div>
@@ -475,12 +473,12 @@ export default function RegisterPage() {
                 className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span>Geri: Hesap Bilgilerini Düzenle</span>
+                <span>Back: Edit Account Information</span>
               </button>
 
               <div className="flex items-center gap-3">
                 <span className="text-xs text-zinc-400">
-                  Seçilen: <strong className="text-white">{TIER_LIMITS[selectedTier].name}</strong>
+                  Selected Plan: <strong className="text-white">{TIER_LIMITS[selectedTier].name}</strong>
                 </span>
                 <Button
                   type="button"
@@ -491,15 +489,15 @@ export default function RegisterPage() {
                   className="gap-2 text-xs font-bold rounded-xl shadow-lg shadow-sky-500/25 px-6"
                 >
                   {isLoading ? (
-                    "İşleniyor..."
+                    "Processing..."
                   ) : selectedTier === "free" ? (
                     <>
-                      <span>Ücretsiz Hesabı Oluştur</span>
+                      <span>Create Free Account</span>
                       <ArrowRight className="h-4 w-4" />
                     </>
                   ) : (
                     <>
-                      <span>Seçimi Onayla & Ödemeye Geç</span>
+                      <span>Confirm & Proceed to Checkout</span>
                       <ArrowRight className="h-4 w-4" />
                     </>
                   )}

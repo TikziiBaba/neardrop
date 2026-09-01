@@ -34,10 +34,10 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ file, op
     setIsDeleting(true);
     try {
       await deleteFile(file.id);
-      toast.success(`"${file.filename}" başarıyla silindi`);
+      toast.success(`"${file.filename}" was permanently deleted`);
       onOpenChange(false);
     } catch (err: any) {
-      toast.error(err.message || "Dosya silinirken bir hata oluştu");
+      toast.error(err.message || "Failed to delete file");
     } finally {
       setIsDeleting(false);
     }
@@ -52,23 +52,23 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ file, op
           if (!val) setStep(1);
         }
       }}
-      title={step === 1 ? "Dosyayı Sil" : "⚠️ 2. Onay: Gerçekten Emin Misiniz?"}
+      title={step === 1 ? "Delete File" : "Are You Absolutely Sure?"}
       description={
         step === 1
-          ? "Bu dosyayı silmek üzeresiniz. Lütfen işlemi onaylayın."
-          : "Bu işlem geri alınamaz! Dosya buluttan ve veritabanından kalıcı olarak silinecektir."
+          ? "You are about to delete this file. Please verify before proceeding."
+          : "This action is permanent and cannot be undone."
       }
     >
       <div className="space-y-4 pt-2">
         {/* Step Indicator */}
         <div className="flex items-center justify-between px-1 text-xs">
-          <span className="font-semibold text-zinc-400">Güvenlik Onayı</span>
-          <span className="font-bold text-sky-400">Adım {step} / 2</span>
+          <span className="font-semibold text-zinc-400">Security Verification</span>
+          <span className="font-bold text-sky-400">Step {step} of 2</span>
         </div>
         <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${
-              step === 1 ? "w-1/2 bg-sky-500" : "w-full bg-rose-500 animate-pulse"
+              step === 1 ? "w-1/2 bg-sky-500" : "w-full bg-red-500"
             }`}
           />
         </div>
@@ -78,64 +78,64 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ file, op
           <div className="space-y-3">
             <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-zinc-950/60 border border-zinc-800 text-xs text-zinc-300">
               <FileText className="h-5 w-5 text-sky-400 flex-shrink-0 mt-0.5" />
-              <div className="space-y-1">
+              <div className="space-y-1 min-w-0">
                 <p className="font-bold text-white break-all">{file.filename}</p>
                 <p className="text-[11px] text-zinc-400">
-                  Boyut: {formatBytes(file.size)} • Tür: {file.mimeType || "Bilinmeyen"}
+                  Size: {formatBytes(file.size)} • Type: {file.mimeType || "Unknown"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs">
               <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-400" />
-              <span>Bu dosyaya bağlı olan tüm aktif paylaşım linkleri de geçersiz kalacaktır.</span>
+              <span>All active share links pointing to this file will also be invalidated.</span>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2.5 pt-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="text-xs rounded-xl"
+                className="text-xs rounded-xl px-4 py-2 border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 hover:text-white"
               >
-                Vazgeç
+                Cancel
               </Button>
               <Button
                 type="button"
                 variant="destructive"
                 onClick={() => setStep(2)}
-                className="text-xs rounded-xl gap-1.5 bg-rose-600 hover:bg-rose-500"
+                className="text-xs rounded-xl px-4 py-2 gap-1.5 bg-red-600 hover:bg-red-500 text-white font-semibold shadow-sm border border-red-500/40"
               >
-                <span>Silmek İstiyorum</span>
+                <span>Continue to Delete</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
             </div>
           </div>
         ) : (
-          /* STEP 2: Second Confirmation (Emin misin?) */
+          /* STEP 2: Final Confirmation (Emin misin?) */
           <div className="space-y-3">
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs animate-in fade-in zoom-in-95 duration-200">
-              <ShieldAlert className="h-5 w-5 flex-shrink-0 text-rose-400 mt-0.5 animate-bounce-slow" />
-              <div className="space-y-1.5">
+            <div className="flex items-start gap-3 p-4 rounded-2xl bg-red-950/40 border border-red-500/30 text-red-200 text-xs animate-in fade-in zoom-in-95 duration-200">
+              <ShieldAlert className="h-5 w-5 flex-shrink-0 text-red-400 mt-0.5" />
+              <div className="space-y-1.5 min-w-0">
                 <p className="font-bold text-white text-sm">
-                  Son Kararınız mı? Dosya Kalıcı Olarak Yok Edilecek!
+                  Permanent Data Removal
                 </p>
-                <p className="text-[11px] text-rose-300/90 leading-relaxed">
-                  <strong className="text-white font-mono">{file.filename}</strong> dosyası R2 bulut depolama ve veritabanı kayıtlarından tamamen kaldırılacaktır.
+                <p className="text-[11px] text-zinc-300 leading-relaxed">
+                  <strong className="text-white font-mono">{file.filename}</strong> will be immediately and irreversibly deleted from object storage and database records.
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-between items-center gap-2 pt-2">
+            <div className="flex justify-between items-center gap-2.5 pt-2">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setStep(1)}
                 disabled={isDeleting}
-                className="text-xs rounded-xl gap-1"
+                className="text-xs rounded-xl gap-1 px-3.5 py-2 border-zinc-700 bg-zinc-900 text-zinc-200 hover:bg-zinc-800 hover:text-white"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                <span>Geri Dön</span>
+                <span>Back</span>
               </Button>
 
               <Button
@@ -143,10 +143,12 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({ file, op
                 variant="destructive"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="text-xs rounded-xl gap-1.5 bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 font-bold shadow-lg shadow-rose-600/30"
+                className="text-xs rounded-xl px-4 py-2 gap-1.5 bg-red-600 hover:bg-red-500 text-white font-bold tracking-wide shadow-md shadow-red-900/40 border border-red-500/50"
               >
-                <Trash2 className="h-4 w-4" />
-                <span>{isDeleting ? "Kalıcı Olarak Siliniyor..." : "Evet, Kesinlikle Sil (Son Onay)"}</span>
+                <Trash2 className="h-4 w-4 text-white" />
+                <span className="text-white">
+                  {isDeleting ? "Deleting Permanently..." : "Yes, Delete Permanently"}
+                </span>
               </Button>
             </div>
           </div>

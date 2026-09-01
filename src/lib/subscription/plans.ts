@@ -21,7 +21,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     priceMonthly: TIER_LIMITS.pro.priceMonthly,
     priceYearly: TIER_LIMITS.pro.priceYearly,
     popular: true,
-    badge: "En Popüler",
+    badge: "Most Popular",
     features: TIER_LIMITS.pro.features,
   },
   {
@@ -32,7 +32,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     quotaLabel: TIER_LIMITS.ultra.quotaLabel,
     priceMonthly: TIER_LIMITS.ultra.priceMonthly,
     priceYearly: TIER_LIMITS.ultra.priceYearly,
-    badge: "Üreticiler İçin",
+    badge: "For Creators",
     features: TIER_LIMITS.ultra.features,
   },
   {
@@ -43,7 +43,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     quotaLabel: TIER_LIMITS.enterprise.quotaLabel,
     priceMonthly: TIER_LIMITS.enterprise.priceMonthly,
     priceYearly: TIER_LIMITS.enterprise.priceYearly,
-    badge: "Maksimum Güç",
+    badge: "Maximum Power",
     features: TIER_LIMITS.enterprise.features,
   },
 ];

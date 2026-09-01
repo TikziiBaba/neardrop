@@ -55,7 +55,7 @@ export default function AdminLogsPage() {
       }
     } catch (err) {
       console.error("Failed to load logs:", err);
-      toast.error("Denetim logları yüklenemedi");
+      toast.error("Failed to load audit logs");
     } finally {
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export default function AdminLogsPage() {
   const handleCopy = (text: string, id: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
-    toast.success("Kopyalandı!");
+    toast.success("Copied to clipboard!");
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -80,7 +80,7 @@ export default function AdminLogsPage() {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    toast.success("Loglar JSON formatında dışa aktarıldı");
+    toast.success("Logs exported as JSON");
   };
 
   // Helper for action badge colors
@@ -117,54 +117,48 @@ export default function AdminLogsPage() {
         </span>
       );
     }
-    if (action.includes("TRANSFER")) {
-      return (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/15 px-2 py-0.5 text-[11px] font-bold text-indigo-400 border border-indigo-500/25">
-          <Zap className="h-3 w-3" />
-          {action}
-        </span>
-      );
-    }
     return (
       <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-800 px-2 py-0.5 text-[11px] font-bold text-zinc-300 border border-zinc-700">
-        <Info className="h-3 w-3 text-zinc-400" />
+        <Zap className="h-3 w-3" />
         {action}
       </span>
     );
   };
 
+  // Helper for device & platform icon
   const getDeviceIcon = (deviceInfo?: string, platform?: string) => {
-    const text = (deviceInfo || platform || "").toLowerCase();
-    if (text.includes("android") || text.includes("ios") || text.includes("iphone") || text.includes("phone")) {
-      return <Smartphone className="h-3.5 w-3.5 text-sky-400" />;
+    const text = `${deviceInfo || ""} ${platform || ""}`.toLowerCase();
+    if (text.includes("iphone") || text.includes("android") || text.includes("mobile")) {
+      return <Smartphone className="h-3.5 w-3.5 text-amber-400" />;
     }
-    if (text.includes("windows") || text.includes("mac") || text.includes("linux") || text.includes("desktop")) {
-      return <Laptop className="h-3.5 w-3.5 text-purple-400" />;
+    if (text.includes("mac") || text.includes("windows") || text.includes("linux")) {
+      return <Laptop className="h-3.5 w-3.5 text-sky-400" />;
     }
     return <Globe className="h-3.5 w-3.5 text-zinc-400" />;
   };
 
-  const getStatusBadge = (status: string) => {
+  // Helper for status badge
+  const getStatusBadge = (status?: string) => {
     switch (status) {
       case "danger":
         return (
           <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-400 border border-rose-500/20">
             <AlertTriangle className="h-3 w-3" />
-            Kritik
+            Critical
           </span>
         );
       case "warning":
         return (
           <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400 border border-amber-500/20">
             <AlertTriangle className="h-3 w-3" />
-            Uyarı / Silme
+            Warning / Deletion
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
             <CheckCircle2 className="h-3 w-3" />
-            Başarılı
+            Success
           </span>
         );
     }
@@ -204,13 +198,13 @@ export default function AdminLogsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-              <span>Aşırı Detaylı Denetim & Aktivite Logları</span>
+              <span>Security & Audit Trail Logs</span>
               <span className="rounded-md bg-purple-500/15 px-2.5 py-0.5 text-xs font-bold text-purple-300 border border-purple-500/30">
-                {logs.length} Kayıt
+                {logs.length} Records
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Dosya yükleme, 2 onaylı silme, paylaşım, indirme, transfer ve cihaz/IP detaylarının anlık kayıt defteri.
+              Real-time audit log of file uploads, 2-step deletions, share creations, downloads, transfers, IP addresses, and client devices.
             </p>
           </div>
 
@@ -222,7 +216,7 @@ export default function AdminLogsPage() {
               className="gap-1.5 text-xs rounded-xl"
             >
               <Download className="h-3.5 w-3.5 text-sky-400" />
-              <span>Dışa Aktar (JSON)</span>
+              <span>Export JSON</span>
             </Button>
 
             <Button
@@ -233,7 +227,7 @@ export default function AdminLogsPage() {
               className="gap-2 text-xs rounded-xl"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-              <span>Yenile</span>
+              <span>Refresh</span>
             </Button>
           </div>
         </div>
@@ -241,13 +235,13 @@ export default function AdminLogsPage() {
         {/* Category Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs border-b border-zinc-800">
           {[
-            { id: "all", label: "Tüm Loglar", count: logs.length },
-            { id: "upload", label: "Dosya Yüklemeleri", count: logs.filter((l) => l.action.includes("UPLOAD")).length },
-            { id: "delete", label: "Silme & İptaller", count: logs.filter((l) => l.action.includes("DELETE")).length },
-            { id: "share", label: "Paylaşımlar", count: logs.filter((l) => l.resourceType === "share" || l.action.includes("SHARE")).length },
-            { id: "download", label: "İndirmeler", count: logs.filter((l) => l.resourceType === "download" || l.action.includes("DOWNLOAD")).length },
-            { id: "transfer", label: "Transferler", count: logs.filter((l) => l.resourceType === "transfer" || l.action.includes("TRANSFER")).length },
-            { id: "billing", label: "Abonelik & POS", count: logs.filter((l) => l.resourceType === "billing").length },
+            { id: "all", label: "All Logs", count: logs.length },
+            { id: "upload", label: "Uploads", count: logs.filter((l) => l.action.includes("UPLOAD")).length },
+            { id: "delete", label: "Deletions & Revokes", count: logs.filter((l) => l.action.includes("DELETE")).length },
+            { id: "share", label: "Shares", count: logs.filter((l) => l.resourceType === "share" || l.action.includes("SHARE")).length },
+            { id: "download", label: "Downloads", count: logs.filter((l) => l.resourceType === "download" || l.action.includes("DOWNLOAD")).length },
+            { id: "transfer", label: "Transfers", count: logs.filter((l) => l.resourceType === "transfer" || l.action.includes("TRANSFER")).length },
+            { id: "billing", label: "Billing & POS", count: logs.filter((l) => l.resourceType === "billing").length },
           ].map((cat) => (
             <button
               key={cat.id}
@@ -272,7 +266,7 @@ export default function AdminLogsPage() {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
             <Input
-              placeholder="Dosya adı, kullanıcı e-posta, IP, cihaz veya işlem ara..."
+              placeholder="Search filename, user email, IP address, device, or action..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
@@ -281,10 +275,10 @@ export default function AdminLogsPage() {
 
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             {[
-              { id: "all", label: "Tüm Durumlar" },
-              { id: "success", label: "Başarılı" },
-              { id: "warning", label: "Uyarı / Silme" },
-              { id: "danger", label: "Kritik" },
+              { id: "all", label: "All Statuses" },
+              { id: "success", label: "Success" },
+              { id: "warning", label: "Warning / Delete" },
+              { id: "danger", label: "Critical" },
             ].map((st) => (
               <button
                 key={st.id}
@@ -308,13 +302,13 @@ export default function AdminLogsPage() {
             <table className="w-full text-left text-xs">
               <thead className="border-b border-zinc-800 bg-zinc-950/70 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 <tr>
-                  <th className="py-3.5 px-4 sm:px-6">Zaman</th>
-                  <th className="py-3.5 px-4">Kullanıcı</th>
-                  <th className="py-3.5 px-4">İşlem</th>
-                  <th className="py-3.5 px-4">Dosya / Hedef</th>
-                  <th className="py-3.5 px-4">Cihaz & Tarayıcı</th>
-                  <th className="py-3.5 px-4">IP Adresi</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-right">Detay / İncele</th>
+                  <th className="py-3.5 px-4 sm:px-6">Timestamp</th>
+                  <th className="py-3.5 px-4">User</th>
+                  <th className="py-3.5 px-4">Action</th>
+                  <th className="py-3.5 px-4">Target File</th>
+                  <th className="py-3.5 px-4">Device & Browser</th>
+                  <th className="py-3.5 px-4">IP Address</th>
+                  <th className="py-3.5 px-4 sm:px-6 text-right">Details</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
@@ -322,13 +316,13 @@ export default function AdminLogsPage() {
                   <tr>
                     <td colSpan={7} className="py-16 text-center text-zinc-500">
                       <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
-                      Denetim kayıtları yükleniyor...
+                      Loading audit logs...
                     </td>
                   </tr>
                 ) : filteredLogs.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-16 text-center text-zinc-500">
-                      Eşleşen denetim kaydı bulunamadı.
+                      No matching audit records found.
                     </td>
                   </tr>
                 ) : (
@@ -341,7 +335,7 @@ export default function AdminLogsPage() {
                       {/* Timestamp */}
                       <td className="py-4 px-4 sm:px-6 text-zinc-400 whitespace-nowrap font-mono text-[11px]">
                         <div className="font-semibold text-zinc-300">
-                          {new Date(log.timestamp).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                          {new Date(log.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                         </div>
                         <div className="text-[10px] text-zinc-500">
                           {formatRelativeTime(log.timestamp)}
@@ -351,7 +345,7 @@ export default function AdminLogsPage() {
                       {/* User */}
                       <td className="py-4 px-4 whitespace-nowrap">
                         <div className="font-semibold text-white">
-                          {log.userEmail ? log.userEmail.split("@")[0] : "Anonim / Sistem"}
+                          {log.userEmail ? log.userEmail.split("@")[0] : "Anonymous / System"}
                         </div>
                         <div className="text-[10px] text-zinc-500 font-mono">
                           {log.userEmail || log.userId || "-"}
@@ -383,7 +377,7 @@ export default function AdminLogsPage() {
                       <td className="py-4 px-4 whitespace-nowrap text-zinc-300 text-xs">
                         <div className="flex items-center gap-1.5">
                           {getDeviceIcon(log.deviceInfo, log.platform)}
-                          <span className="font-medium">{log.deviceInfo || log.platform || "Web / Masaüstü"}</span>
+                          <span className="font-medium">{log.deviceInfo || log.platform || "Web / Desktop"}</span>
                         </div>
                       </td>
 
@@ -420,7 +414,7 @@ export default function AdminLogsPage() {
           <Dialog
             open={Boolean(selectedLog)}
             onOpenChange={(open) => !open && setSelectedLog(null)}
-            title="Log Kaydı Detayları"
+            title="Audit Record Details"
             description={`Log ID: ${selectedLog.id}`}
           >
             <div className="space-y-4 pt-2 text-xs">
@@ -436,28 +430,28 @@ export default function AdminLogsPage() {
               {/* Grid Properties */}
               <div className="grid grid-cols-2 gap-3 text-[11px]">
                 <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">Kullanıcı / E-Posta</span>
-                  <span className="text-white font-mono break-all">{selectedLog.userEmail || selectedLog.userId || "Sistem"}</span>
+                  <span className="text-zinc-500 font-semibold block">User / Email</span>
+                  <span className="text-white font-mono break-all">{selectedLog.userEmail || selectedLog.userId || "System"}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">Tarih & Saat</span>
-                  <span className="text-white font-mono">{new Date(selectedLog.timestamp).toLocaleString("tr-TR")}</span>
+                  <span className="text-zinc-500 font-semibold block">Timestamp</span>
+                  <span className="text-white font-mono">{new Date(selectedLog.timestamp).toLocaleString("en-US")}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">Cihaz & Platform</span>
+                  <span className="text-zinc-500 font-semibold block">Device & Client</span>
                   <span className="text-sky-400 font-medium">{selectedLog.deviceInfo || selectedLog.platform || "Web"}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">IP Adresi</span>
+                  <span className="text-zinc-500 font-semibold block">IP Address</span>
                   <span className="text-purple-400 font-mono">{selectedLog.ipAddress || "127.0.0.1"}</span>
                 </div>
 
                 {selectedLog.fileName && (
                   <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1 col-span-2">
-                    <span className="text-zinc-500 font-semibold block">Hedef Dosya & Boyut</span>
+                    <span className="text-zinc-500 font-semibold block">Target File & Size</span>
                     <span className="text-emerald-400 font-bold font-mono">
                       {selectedLog.fileName} {selectedLog.fileSize ? `(${formatBytes(selectedLog.fileSize)})` : ""}
                     </span>
@@ -468,7 +462,7 @@ export default function AdminLogsPage() {
               {/* Metadata JSON Viewer */}
               {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-zinc-400">Teknik Metadata (JSON):</span>
+                  <span className="text-[11px] font-semibold text-zinc-400">Technical Metadata (JSON):</span>
                   <pre className="p-3 rounded-xl bg-zinc-950 font-mono text-[11px] text-zinc-300 border border-zinc-800 overflow-x-auto max-h-40">
                     {JSON.stringify(selectedLog.metadata, null, 2)}
                   </pre>
@@ -484,7 +478,7 @@ export default function AdminLogsPage() {
                   className="gap-1.5 text-xs rounded-xl"
                 >
                   {copiedId === selectedLog.id ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>JSON Kopyala</span>
+                  <span>Copy JSON</span>
                 </Button>
 
                 <Button
@@ -494,7 +488,7 @@ export default function AdminLogsPage() {
                   onClick={() => setSelectedLog(null)}
                   className="text-xs rounded-xl"
                 >
-                  Kapat
+                  Close
                 </Button>
               </div>
             </div>

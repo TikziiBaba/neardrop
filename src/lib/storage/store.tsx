@@ -288,10 +288,10 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             });
           } else {
             const errData = await apiRes.json().catch(() => ({}));
-            throw new Error(errData.error || `Yükleme başlatılamadı (${apiRes.status})`);
+            throw new Error(errData.error || `Upload could not be initiated (${apiRes.status})`);
           }
         } catch (presignedErr: any) {
-          if (presignedErr?.message === "Upload cancelled" || presignedErr?.message?.includes("kotanız") || presignedErr?.message?.includes("paketinde")) {
+          if (presignedErr?.message === "Upload cancelled" || presignedErr?.message?.includes("quota") || presignedErr?.message?.includes("plan")) {
             throw presignedErr;
           }
           console.warn("Direct storage upload failed, falling back to secure tunnel upload...", presignedErr);

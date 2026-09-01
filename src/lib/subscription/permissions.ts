@@ -29,19 +29,19 @@ export interface TierLimits {
 export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
   free: {
     id: "free",
-    name: "Ücretsiz Başlangıç",
-    tagline: "Bireysel ve temel bulut depolama için başlangıç paketi.",
+    name: "Free Starter",
+    tagline: "Essential secure cloud storage for personal use.",
     currency: "TRY",
     currencySymbol: "₺",
-    quotaBytes: 2147483648, // 2 GB (kısıtlandı)
+    quotaBytes: 2147483648, // 2 GB
     quotaLabel: "2 GB",
     priceMonthly: 0,
     priceYearly: 0,
     maxUploadSizeBytes: 104857600, // 100 MB
     maxUploadSizeLabel: "100 MB",
-    maxActiveShares: 1, // En fazla 1 aktif link
-    maxLinkLifespanHours: 12, // Maksimum 12 saat
-    allowPasswordProtection: false, // Ücretsiz planda kapalı
+    maxActiveShares: 1, // Max 1 active share link
+    maxLinkLifespanHours: 12, // Max 12 hours
+    allowPasswordProtection: false, // Locked on free tier
     allowCustomDownloadLimit: false,
     allowFolderSharing: false,
     allowPermanentLinks: false,
@@ -50,35 +50,35 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     prioritySupport: false,
     transferSpeed: "standard",
     features: [
-      "2 GB Yüksek Hızlı Güvenli Depolama",
-      "100 MB'a Kadar Tekil Dosya Yükleme",
-      "1 Adet Aktif Paylaşım Linki",
-      "12 Saate Kadar Link Geçerlilik Süresi",
-      "Uçtan Uca AES-256-GCM Şifreleme",
-      "Sınırsız Yerel Ağ (LAN) Transferi",
-      "Fotoğraf & Video Medya İnceleme",
+      "2 GB High-Speed Secure Cloud Storage",
+      "Up to 100 MB Single File Upload",
+      "1 Active Share Link",
+      "Up to 12 Hours Link Lifespan",
+      "End-to-End AES-256-GCM Encryption",
+      "Unlimited Local Network (LAN) Transfers",
+      "Photo & Video Media Preview",
     ],
     limitations: [
-      "Şifre & PIN Korumalı Linkler (Kapalı)",
-      "Klasör Paylaşımı (Kapalı)",
-      "Özel İndirme Limitleri (Kapalı)",
-      "Kalıcı / Süresiz Linkler (Kapalı)",
+      "Password & PIN Protection (Disabled)",
+      "Folder Sharing & Bulk ZIP (Disabled)",
+      "Custom Download Limits (Disabled)",
+      "Permanent Links (Disabled)",
     ],
   },
   pro: {
     id: "pro",
-    name: "Pro Bulut",
-    tagline: "Geniş depolama, şifreli linkler ve yüksek hız isteyenler için.",
+    name: "Pro Cloud",
+    tagline: "Expanded storage, password protection, and high-speed delivery.",
     currency: "TRY",
     currencySymbol: "₺",
     quotaBytes: 107374182400, // 100 GB
     quotaLabel: "100 GB",
     priceMonthly: 99,
-    priceYearly: 990, // 2 ay bedava
+    priceYearly: 990, // 2 months free
     maxUploadSizeBytes: 5368709120, // 5 GB
     maxUploadSizeLabel: "5 GB",
-    maxActiveShares: 9999, // Sınırsız
-    maxLinkLifespanHours: 168, // 7 Gün
+    maxActiveShares: 9999, // Unlimited
+    maxLinkLifespanHours: 168, // 7 Days
     allowPasswordProtection: true,
     allowCustomDownloadLimit: true,
     allowFolderSharing: true,
@@ -88,25 +88,25 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     prioritySupport: true,
     transferSpeed: "high",
     features: [
-      "100 GB Genişletilmiş Güvenli Depolama",
-      "5 GB'a Kadar Tekil Dosya Yükleme",
-      "Sınırsız Aktif Paylaşım Linki",
-      "7 Güne Kadar Özel Link Süresi",
-      "Şifre & PIN Korumalı Paylaşım Linkleri",
-      "Özel İndirme Sayacı & İndirme Sınırı",
-      "Klasör Paylaşımı & Toplu İndirme",
-      "Yüksek Hızlı CDN Aktarımı",
-      "Öncelikli Bilet Desteği (< 12 Saat)",
+      "100 GB Expanded Secure Cloud Storage",
+      "Up to 5 GB Single File Upload",
+      "Unlimited Active Share Links",
+      "Up to 7 Days Custom Link Lifespan",
+      "Password & PIN Protected Share Links",
+      "Custom Download Counters & Limits",
+      "Folder Sharing & Bulk ZIP Downloads",
+      "Accelerated Global CDN Delivery",
+      "Priority Ticket Support (< 12 Hours)",
     ],
     limitations: [
-      "Kalıcı / Süresiz Linkler (Kapalı)",
-      "Özel Alan Adı (Custom Domain) (Kapalı)",
+      "Permanent Links (Disabled)",
+      "Custom Domain Branding (Disabled)",
     ],
   },
   ultra: {
     id: "ultra",
     name: "Ultra Creator",
-    tagline: "İçerik üreticileri ve profesyoneller için yüksek bant genişliği.",
+    tagline: "Massive bandwidth and extended lifespan for creators & professionals.",
     currency: "TRY",
     currencySymbol: "₺",
     quotaBytes: 536870912000, // 500 GB
@@ -115,8 +115,8 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     priceYearly: 2490,
     maxUploadSizeBytes: 26843545600, // 25 GB
     maxUploadSizeLabel: "25 GB",
-    maxActiveShares: 9999, // Sınırsız
-    maxLinkLifespanHours: 720, // 30 Gün
+    maxActiveShares: 9999, // Unlimited
+    maxLinkLifespanHours: 720, // 30 Days
     allowPasswordProtection: true,
     allowCustomDownloadLimit: true,
     allowFolderSharing: true,
@@ -126,23 +126,23 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     prioritySupport: true,
     transferSpeed: "ultra",
     features: [
-      "500 GB Ultra Bulut Depolama Alanı",
-      "25 GB'a Kadar Tekil Dosya Yükleme",
-      "30 Güne Kadar veya Kalıcı Linkler",
-      "Şifre & Kriptografik PIN Koruması",
-      "Özel İndirme Sayfası Markalama & Başlık",
-      "Detaylı Link Analitiği & Coğrafi İstatistikler",
-      "Toplu ZIP Arşivi Olarak İndirme",
-      "Öncelikli VIP Canlı Destek (< 4 Saat)",
+      "500 GB Ultra Cloud Storage Space",
+      "Up to 25 GB Single File Upload",
+      "Up to 30 Days or Permanent Links",
+      "Cryptographic Password Protection",
+      "Custom Download Page Branding",
+      "Detailed Link Analytics & Geo Stats",
+      "Direct Folder Multi-File Streaming",
+      "VIP Fast-Track Live Support (< 4 Hours)",
     ],
     limitations: [
-      "Özel Alan Adı (Enterprise Özelliği)",
+      "Custom Domain (Enterprise Feature)",
     ],
   },
   enterprise: {
     id: "enterprise",
     name: "Enterprise Infinite",
-    tagline: "Ekipler ve şirketler için sınırsız ölçek, kalıcı linkler ve VIP SLA.",
+    tagline: "Unlimited scale, permanent links, custom domains, and 24/7 SLA.",
     currency: "TRY",
     currencySymbol: "₺",
     quotaBytes: 2199023255552, // 2 TB
@@ -151,8 +151,8 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     priceYearly: 5990,
     maxUploadSizeBytes: 53687091200, // 50 GB+
     maxUploadSizeLabel: "50 GB+",
-    maxActiveShares: 9999, // Sınırsız
-    maxLinkLifespanHours: -1, // Süresiz
+    maxActiveShares: 9999, // Unlimited
+    maxLinkLifespanHours: -1, // Permanent
     allowPasswordProtection: true,
     allowCustomDownloadLimit: true,
     allowFolderSharing: true,
@@ -162,13 +162,13 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     prioritySupport: true,
     transferSpeed: "dedicated",
     features: [
-      "2 TB Kurumsal Seviye Bulut Alanı",
-      "Süresiz & Kalıcı Paylaşım Linkleri",
-      "Özel Alan Adı (share.sirketiniz.com)",
-      "Sınırsız İndirme Bant Genişliği & Global CDN",
-      "Ekip Yönetimi & Rol Bazlı Yetkilendirme",
-      "Detaylı Güvenlik & Denetim Günlüğü Dışa Aktarımı",
-      "7/24 Özel Müşteri Temsilcisi & 1 Saat İçinde SLA",
+      "2 TB Enterprise-Grade Cloud Capacity",
+      "Permanent & Indefinite Share Links",
+      "Custom Domain (share.yourcompany.com)",
+      "Unlimited Global CDN Bandwidth",
+      "Team Management & RBAC Permissions",
+      "Complete Security Audit Trail Export",
+      "24/7 Dedicated Account Manager & 1-Hour SLA",
     ],
     limitations: [],
   },
@@ -178,11 +178,10 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
  * Helper to get limits by user subscription tier or role
  */
 export function getTierLimits(tier: SubscriptionTier = "free", role: UserRole = "member"): TierLimits {
-  // Admin and Moderator have enterprise level permissions
   if (role === "admin" || role === "moderator") {
     return {
       ...TIER_LIMITS.enterprise,
-      name: role === "admin" ? "Sistem Yöneticisi (Admin)" : "Moderatör",
+      name: role === "admin" ? "System Administrator" : "Moderator",
     };
   }
 
@@ -205,7 +204,7 @@ export function validateUploadSize(
   if (fileSizeBytes > limits.maxUploadSizeBytes) {
     return {
       allowed: false,
-      error: `${limits.name} paketinde maksimum tekil dosya yükleme boyutu ${limits.maxUploadSizeLabel}'dir. Daha büyük dosyalar yüklemek için Pro veya Ultra plana geçebilirsiniz.`,
+      error: `Single file upload exceeds the ${limits.maxUploadSizeLabel} limit on the ${limits.name} plan. Upgrade to Pro or Ultra for larger uploads.`,
     };
   }
 
@@ -235,7 +234,7 @@ export function validateShareCreation(
   if (options.activeSharesCount >= limits.maxActiveShares) {
     return {
       allowed: false,
-      error: `${limits.name} paketinde aynı anda en fazla ${limits.maxActiveShares} aktif paylaşım linkine izin verilir. Yeni link oluşturmak için mevcut linkinizi sonlandırın veya Pro plana geçin.`,
+      error: `The ${limits.name} plan allows a maximum of ${limits.maxActiveShares} active share link. Please revoke your existing link or upgrade to Pro.`,
     };
   }
 
@@ -243,7 +242,7 @@ export function validateShareCreation(
   if (options.hasPassword && !limits.allowPasswordProtection) {
     return {
       allowed: false,
-      error: "Şifre ve PIN korumalı paylaşım linkleri Pro ve üzeri paketlere özeldir. Lütfen paketinizi yükseltin.",
+      error: "Password-protected share links are exclusive to Pro and Ultra plans. Please upgrade your subscription.",
     };
   }
 
@@ -251,7 +250,7 @@ export function validateShareCreation(
   if (options.isFolder && !limits.allowFolderSharing) {
     return {
       allowed: false,
-      error: "Klasör paylaşımı Pro ve üzeri paketlere özeldir. Lütfen paketinizi yükseltin.",
+      error: "Folder sharing is exclusive to Pro and Ultra plans. Please upgrade your subscription.",
     };
   }
 
@@ -259,7 +258,7 @@ export function validateShareCreation(
   if (limits.maxLinkLifespanHours > 0 && options.expiresInHours && options.expiresInHours > limits.maxLinkLifespanHours) {
     return {
       allowed: false,
-      error: `${limits.name} paketinde maksimum link süresi ${limits.maxLinkLifespanHours} saattir. Daha uzun süreli veya kalıcı linkler için paketinizi yükseltin.`,
+      error: `The maximum link lifespan on the ${limits.name} plan is ${limits.maxLinkLifespanHours} hours. Upgrade for longer or permanent links.`,
     };
   }
 

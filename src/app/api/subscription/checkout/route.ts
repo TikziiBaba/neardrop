@@ -10,15 +10,15 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { userId, userEmail, planId, billingCycle, cardHolder, cardLastFour } = body;
+    const { userId, userEmail, planId, billingCycle, cardLastFour } = body;
 
     if (!userId || !planId) {
-      return NextResponse.json({ success: false, error: "Gerekli sipariş parametreleri eksik." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Missing required checkout parameters" }, { status: 400 });
     }
 
     const plan = PRICING_PLANS.find((p) => p.id === planId);
     if (!plan) {
-      return NextResponse.json({ success: false, error: "Geçersiz abonelik paketi seçildi." }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Invalid subscription plan selected" }, { status: 400 });
     }
 
     const limits = TIER_LIMITS[plan.id];
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     const { data: currentProfile } = await supabase.from("profiles").select("role, email").eq("id", userId).single();
     const currentRole = currentProfile?.role;
 
-    // 1. Free plan downgrade/activation
+    // 1. Free Plan Activation (Instant)
     if (planId === "free") {
       const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "member";
       await supabase
@@ -49,9 +49,9 @@ export async function POST(req: NextRequest) {
         action: "SUBSCRIPTION_DOWNGRADE",
         resourceType: "billing",
         userId,
-        userEmail: userEmail || currentProfile?.email || "Kullanıcı",
+        userEmail: userEmail || currentProfile?.email || "User",
         resourceId: planId,
-        details: `Ücretsiz Başlangıç paketine geçildi (${limits.quotaLabel})`,
+        details: `Switched to Free Starter plan (${limits.quotaLabel})`,
         status: "success",
       });
 
@@ -62,12 +62,45 @@ export async function POST(req: NextRequest) {
         quotaBytes: limits.quotaBytes,
         quotaLabel: limits.quotaLabel,
         role: newRole,
-        message: `Ücretsiz paket aktif edildi. Depolama kotanız: ${limits.quotaLabel}.`,
+        message: `Free Starter plan activated. Storage quota set to ${limits.quotaLabel}.`,
       });
     }
 
-    // 2. Sanal POS Order Reference Generation
+    // 2. Paid Plan Checkout: Inform that Virtual POS integration is currently in progress
     const merchantOid = `ND_${Date.now()}_${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+
+    // Log the user's payment intent
+    logAdminAction({
+      action: "PAYMENT_INTENT_WAITLIST",
+      resourceType: "billing",
+      userId,
+      userEmail: userEmail || currentProfile?.email || "User",
+      resourceId: planId,
+      details: `User attempted checkout for ${plan.name} (${billingCycle || "monthly"} - ${amount} ₺). Virtual POS gateway integration is pending. Order Ref: ${merchantOid}`,
+      status: "warning",
+    });
+
+    // Check if live POS test mode is enabled
+    const enableMockActivation = process.env.ENABLE_MOCK_CHECKOUT === "true";
+
+    if (!enableMockActivation) {
+      return NextResponse.json(
+        {
+          success: false,
+          gatewayStatus: "pos_pending",
+          orderId: merchantOid,
+          amount,
+          currency,
+          planName: plan.name,
+          error: "Virtual POS Gateway is currently being connected. Direct card checkout will be active tomorrow!",
+          message:
+            "Our Virtual POS payment gateway is currently undergoing integration with banking partners. Direct credit card checkout will be live tomorrow. You have been added to our priority activation list!",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Optional Sandbox activation
     const renewsDate = new Date();
     if (billingCycle === "yearly") {
       renewsDate.setFullYear(renewsDate.getFullYear() + 1);
@@ -75,38 +108,9 @@ export async function POST(req: NextRequest) {
       renewsDate.setMonth(renewsDate.getMonth() + 1);
     }
 
-    // Check if Virtual POS live keys or mock simulation is active
-    const isMockCheckoutAllowed = process.env.ENABLE_MOCK_CHECKOUT !== "false"; // Default true for seamless development until tomorrow's live POS keys are added
-
-    if (!isMockCheckoutAllowed) {
-      logAdminAction({
-        action: "PAYMENT_INTENT_WAITLIST",
-        resourceType: "billing",
-        userId,
-        userEmail: userEmail || currentProfile?.email || "Kullanıcı",
-        resourceId: planId,
-        details: `Kullanıcı ${plan.name} (${billingCycle || "aylık"} - ${amount} ₺) için ödeme başlattı. Sanal POS anahtarları bekleniyor. Sipariş No: ${merchantOid}`,
-        status: "warning",
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          merchantOid,
-          amount,
-          currency,
-          gatewayStatus: "pos_pending",
-          message:
-            "Sanal POS bağlantısı kuruluyor. Yarın banka/ödeme kuruluşu bilgileri sisteme bağlandığında otomatik tahsilat gerçekleştirilecektir.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // 3. Complete Checkout & Activate Tier
     const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "premium";
 
-    const { error: updateErr } = await supabase
+    await supabase
       .from("profiles")
       .update({
         quota_bytes: limits.quotaBytes,
@@ -117,21 +121,6 @@ export async function POST(req: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .eq("id", userId);
-
-    if (updateErr) {
-      console.error("Failed to update profile quota in DB:", updateErr);
-      throw updateErr;
-    }
-
-    logAdminAction({
-      action: "SUBSCRIPTION_UPGRADE",
-      resourceType: "billing",
-      userId,
-      userEmail: userEmail || currentProfile?.email || "Kullanıcı",
-      resourceId: planId,
-      details: `${plan.name} (${billingCycle || "aylık"} - ${amount} ₺) aboneliği aktif edildi. Sipariş No: ${merchantOid}, Kart: **** ${cardLastFour || "0000"}`,
-      status: "success",
-    });
 
     return NextResponse.json({
       success: true,
@@ -144,10 +133,10 @@ export async function POST(req: NextRequest) {
       quotaLabel: limits.quotaLabel,
       role: newRole,
       renewsAt: renewsDate.toISOString(),
-      message: `${plan.name} (${limits.quotaLabel}) aboneliğiniz başarıyla aktif edildi!`,
+      message: `${plan.name} (${limits.quotaLabel}) subscription activated in sandbox mode!`,
     });
   } catch (error: any) {
     console.error("Subscription checkout error:", error);
-    return NextResponse.json({ success: false, error: error.message || "Ödeme işlemi gerçekleştirilemedi" }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message || "Checkout failed" }, { status: 500 });
   }
 }

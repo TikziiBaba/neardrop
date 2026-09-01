@@ -35,35 +35,35 @@ export default function PricingPage() {
 
   const faqs = [
     {
-      q: "Abonelik yükseltildiğinde depolama kotası ne zaman aktif olur?",
-      a: "Pro, Ultra veya Enterprise plana geçtiğiniz anda yeni depolama alanınız (100 GB, 500 GB veya 2 TB) anında tanımlanır. Mevcut tüm dosyalarınız korunur.",
+      q: "When does my storage quota update after upgrading?",
+      a: "As soon as you upgrade to Pro, Ultra, or Enterprise, your new storage quota (100 GB, 500 GB, or 2 TB) is provisioned immediately. All existing files remain intact.",
     },
     {
-      q: "Planımı istediğim zaman değiştirebilir veya iptal edebilir miyim?",
-      a: "Evet. Ayarlar panelinizden dilediğiniz an paketinizi yükseltebilir, düşürebilir veya aboneliğinizi sonlandırabilirsiniz.",
+      q: "Can I change or cancel my plan at any time?",
+      a: "Yes. You can upgrade, downgrade, or cancel your subscription at any time directly from your account settings.",
     },
     {
-      q: "Hangi ödeme yöntemleri destekleniyor?",
-      a: "Tüm yerli ve uluslararası kredi/banka kartları (Troy, Visa, MasterCard), Sanal POS altyapısı ve 3D Secure güvenli ödeme desteklenmektedir.",
+      q: "What payment methods are supported?",
+      a: "We support major credit and debit cards (Troy, Visa, MasterCard) with 3D Secure bank encryption. Virtual POS processing will be active tomorrow.",
     },
     {
-      q: "Ücretsiz plandaki kısıtlamalar nelerdir?",
-      a: "Ücretsiz planda 2 GB depolama alanı, maksimum 100 MB tekil dosya yükleme boyutu, aynı anda 1 adet aktif paylaşım linki ve maksimum 12 saat geçerlilik süresi bulunmaktadır.",
+      q: "What are the limitations of the Free Starter plan?",
+      a: "The Free plan includes 2 GB of cloud storage, up to 100 MB single file uploads, 1 active share link at a time, and a maximum link lifespan of 12 hours.",
     },
     {
-      q: "Depolama kotam dolduğunda ne olur?",
-      a: "Mevcut paylaşım linkleriniz ve dosyalarınız çalışmaya devam eder. Ancak yeni dosya yüklemek için bazı dosyaları silmeniz veya paketinizi yükseltmeniz gerekir.",
+      q: "What happens if I reach my storage quota limit?",
+      a: "Your existing files and links will continue to work normally. However, to upload new files, you will need to delete some existing files or upgrade your plan.",
     },
   ];
 
   return (
     <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 space-y-12 max-w-7xl mx-auto">
-      {/* Hero Header with Arc */}
+      {/* Hero Header */}
       <div className="space-y-4">
         <SectionHeader
-          label="Yeni Nesil Güvenli Bulut Depolama & Paylaşım"
-          title="Şeffaf ve Esnek Fiyatlandırma."
-          subtitle="İster bireysel hızlı transferler, ister 2 TB kurumsal güvenli bulut alanı. İhtiyacınıza en uygun paketi seçin."
+          label="Next-Gen Secure Cloud Storage & Sharing"
+          title="Transparent, Flexible Pricing."
+          subtitle="From fast personal transfers to 2 TB enterprise storage, choose the plan that fits your workflow."
           icon={Crown}
         />
 
@@ -79,7 +79,7 @@ export default function PricingPage() {
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              Aylık Ödeme
+              Monthly Billing
             </button>
             <button
               type="button"
@@ -90,9 +90,9 @@ export default function PricingPage() {
                   : "text-zinc-400 hover:text-white"
               }`}
             >
-              <span>Yıllık Ödeme</span>
+              <span>Annual Billing</span>
               <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-400 border border-emerald-500/30">
-                2 Ay Bedava
+                2 Months Free
               </span>
             </button>
           </div>
@@ -105,7 +105,7 @@ export default function PricingPage() {
           const isCurrentPlan = user?.subscriptionTier === plan.id;
           const limits = TIER_LIMITS[plan.id];
           const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-          const period = billingCycle === "yearly" ? "/yıl" : "/ay";
+          const period = billingCycle === "yearly" ? "/year" : "/mo";
 
           return (
             <div
@@ -136,7 +136,7 @@ export default function PricingPage() {
                 {/* Storage Pill */}
                 <div className="inline-flex items-center gap-2 rounded-xl bg-zinc-950/80 border border-zinc-800 px-3 py-1.5 text-xs font-bold text-sky-400">
                   <HardDrive className="h-3.5 w-3.5" />
-                  <span>{plan.quotaLabel} Yüksek Hızlı Depolama</span>
+                  <span>{plan.quotaLabel} High-Speed Storage</span>
                 </div>
 
                 {/* Price in TL */}
@@ -152,7 +152,7 @@ export default function PricingPage() {
                 {/* Features List */}
                 <div className="space-y-3 pt-2 border-t border-zinc-800/80">
                   <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                    Paket Detayları:
+                    Plan Highlights:
                   </span>
                   <ul className="space-y-2.5">
                     {limits.features.map((feat, idx) => (
@@ -179,12 +179,12 @@ export default function PricingPage() {
                     disabled
                     className="w-full text-xs rounded-xl bg-zinc-900 border-zinc-700 text-zinc-400"
                   >
-                    Mevcut Paketiniz
+                    Current Plan
                   </Button>
                 ) : plan.id === "free" ? (
                   <Link href={user ? "/dashboard" : "/register"} className="block w-full">
                     <Button variant="outline" className="w-full text-xs rounded-xl">
-                      Ücretsiz Başla
+                      Get Started Free
                     </Button>
                   </Link>
                 ) : (
@@ -198,7 +198,7 @@ export default function PricingPage() {
                         plan.popular ? "shadow-lg shadow-purple-500/20" : ""
                       }`}
                     >
-                      <span>{plan.name} Paketini Seç</span>
+                      <span>Select {plan.name}</span>
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Button>
                   </Link>
@@ -209,17 +209,17 @@ export default function PricingPage() {
         })}
       </div>
 
-      {/* Feature Comparison Highlights */}
+      {/* Feature Highlights */}
       <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-8 sm:p-10 space-y-6">
         <div className="text-center space-y-2 max-w-xl mx-auto">
           <Badge variant="outline" className="text-[11px] font-mono border-sky-500/30 text-sky-400">
-            TÜM PAKETLERDE STANDART
+            STANDARD ON ALL PLANS
           </Badge>
           <h2 className="text-xl sm:text-2xl font-bold text-white">
-            Güvenlikten ve Hızdan Asla Ödün Vermeyin
+            Uncompromising Speed and Security
           </h2>
           <p className="text-xs text-zinc-400">
-            NearDrop altyapısında tüm verileriniz en yüksek şifreleme ve gizlilik standartlarıyla korunur.
+            NearDrop protects your assets with industry-leading encryption and global edge delivery.
           </p>
         </div>
 
@@ -229,9 +229,9 @@ export default function PricingPage() {
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-xs font-bold text-white">Uçtan Uca Şifreleme</h3>
+              <h3 className="text-xs font-bold text-white">End-to-End Encryption</h3>
               <p className="text-[11px] text-zinc-400">
-                AES-256-GCM ve Zero-Knowledge mimarisi ile dosyalarınızı yalnızca siz ve paylaştığınız kişiler açabilir.
+                AES-256-GCM and zero-knowledge architecture ensure only you and authorized recipients access files.
               </p>
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function PricingPage() {
             <div className="space-y-1">
               <h3 className="text-xs font-bold text-white">Global Cloudflare R2 & CDN</h3>
               <p className="text-[11px] text-zinc-400">
-                280+ küresel uç nokta üzerinden bekleme süresi olmadan ışık hızında yükleme ve doğrudan akış indirme.
+                Over 280+ worldwide edge locations provide ultra-low latency streaming and instant uploads.
               </p>
             </div>
           </div>
@@ -253,20 +253,20 @@ export default function PricingPage() {
               <InfinityIcon className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-xs font-bold text-white">Sınırsız Yerel Ağ Transferi</h3>
+              <h3 className="text-xs font-bold text-white">Unlimited LAN Transfers</h3>
               <p className="text-[11px] text-zinc-400">
-                Aynı Wi-Fi ağındaki cihazlar arasında internet kotası harcamadan 450+ Mbps hızla sınırsız aktarım.
+                Direct peer-to-peer transfers across your local Wi-Fi network at speeds of 450+ Mbps with zero bandwidth costs.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Frequently Asked Questions */}
+      {/* FAQ Section */}
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="text-center space-y-1">
-          <h2 className="text-xl font-bold text-white">Sıkça Sorulan Sorular</h2>
-          <p className="text-xs text-zinc-400">Paketler, faturalandırma ve kullanım hakkında merak edilenler.</p>
+          <h2 className="text-xl font-bold text-white">Frequently Asked Questions</h2>
+          <p className="text-xs text-zinc-400">Everything you need to know about plans, billing, and storage.</p>
         </div>
 
         <div className="space-y-3">
