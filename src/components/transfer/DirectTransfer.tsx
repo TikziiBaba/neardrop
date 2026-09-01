@@ -94,9 +94,7 @@ export const DirectTransfer: React.FC = () => {
 
     engine.onCompleted = (meta) => {
       toast.success(
-        locale === "tr"
-          ? `"${meta.filename}" doğrudan cihaza kaydedildi!`
-          : `"${meta.filename}" received and downloaded!`
+        `"${meta.filename}" received and downloaded!`
       );
     };
 
@@ -172,13 +170,11 @@ export const DirectTransfer: React.FC = () => {
             <div className="flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
               <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                <span>{locale === "tr" ? "Doğrudan P2P Transfer (AirDrop)" : "Direct P2P Transfer (AirDrop)"}</span>
+                <span>Direct P2P Transfer (AirDrop)</span>
               </h2>
             </div>
             <p className="text-xs text-zinc-400 max-w-xl">
-              {locale === "tr"
-                ? "Aynı oda kodundaki cihazlar arasında sınırsız hızda, doğrudan şifreli dosya transferi. Sunucu kotası harcamaz."
-                : "Zero-knowledge direct peer-to-peer file transfer between devices in the same room. No cloud storage quota used."}
+              {"Zero-knowledge direct peer-to-peer file transfer between devices in the same room. No cloud storage quota used."}
             </p>
           </div>
 
@@ -196,7 +192,7 @@ export const DirectTransfer: React.FC = () => {
               className="gap-1.5 text-xs"
             >
               <QrCode className="h-3.5 w-3.5 text-sky-400" />
-              <span>{locale === "tr" ? "Mobil QR" : "Mobile QR"}</span>
+              <span>Mobile QR</span>
             </Button>
 
             <Button
@@ -206,7 +202,7 @@ export const DirectTransfer: React.FC = () => {
               className="gap-1.5 text-xs text-zinc-400 hover:text-white"
             >
               <RotateCw className="h-3.5 w-3.5" />
-              <span>{locale === "tr" ? "Yeni Oda" : "New Code"}</span>
+              <span>New Code</span>
             </Button>
           </div>
         </div>
@@ -215,7 +211,7 @@ export const DirectTransfer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2 border-t border-zinc-800/80">
           <input
             type="text"
-            placeholder={locale === "tr" ? "Özel oda kodu girin (örn. 842109)" : "Enter custom room code (e.g. 842109)"}
+            placeholder="Enter custom room code (e.g. 842109)"
             value={customRoomInput}
             onChange={(e) => setCustomRoomInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleJoinRoom(customRoomInput)}
@@ -228,11 +224,11 @@ export const DirectTransfer: React.FC = () => {
             disabled={!customRoomInput.trim()}
             className="w-full sm:w-auto text-xs"
           >
-            {locale === "tr" ? "Odaya Katıl" : "Join Room"}
+            Join Room
           </Button>
 
           <span className="text-[11px] text-zinc-500 sm:ml-auto">
-            {peers.length} {locale === "tr" ? "cihaz odada aktif" : "device(s) discovered"}
+            {peers.length} device(s) discovered
           </span>
         </div>
       </div>
@@ -242,7 +238,7 @@ export const DirectTransfer: React.FC = () => {
         <div className="flex items-center justify-between px-1">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <Zap className="h-4 w-4 text-sky-400" />
-            <span>{locale === "tr" ? "Çevredeki Cihazlar" : "Nearby Discovered Devices"}</span>
+            <span>Nearby Discovered Devices</span>
           </h3>
           <span className="text-xs text-zinc-500 font-mono">
             {myDevice ? `${myDevice.deviceName} (You)` : ""}
@@ -257,12 +253,10 @@ export const DirectTransfer: React.FC = () => {
             </div>
             <div className="space-y-1 max-w-sm mx-auto">
               <h4 className="text-sm font-semibold text-white">
-                {locale === "tr" ? "Cihazlar Aranıyor..." : "Looking for devices..."}
+                Looking for devices...
               </h4>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                {locale === "tr"
-                  ? `Telefonunuz veya diğer bilgisayarınızla bu odaya ("${roomCode}") katılın veya QR kodu taratın.`
-                  : `Join room "${roomCode}" from your phone or another computer, or scan the QR code.`}
+                  {`Join room "${roomCode}" from your phone or another computer, or scan the QR code.`}
               </p>
             </div>
 
@@ -273,7 +267,7 @@ export const DirectTransfer: React.FC = () => {
               className="gap-2 text-xs"
             >
               <QrCode className="h-3.5 w-3.5 text-sky-400" />
-              <span>{locale === "tr" ? "QR Kodu Göster" : "Show QR Code"}</span>
+              <span>Show QR Code</span>
             </Button>
           </div>
         ) : (
@@ -305,7 +299,7 @@ export const DirectTransfer: React.FC = () => {
                 </div>
 
                 <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-xs text-sky-400 font-medium">
-                  <span>{locale === "tr" ? "Dosya Gönder" : "Send File"}</span>
+                  <span>Send File</span>
                   <Send className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </motion.div>
@@ -382,11 +376,11 @@ export const DirectTransfer: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    {locale === "tr" ? "Gelen Doğrudan Transfer" : "Incoming Direct Transfer"}
+                    Incoming Direct Transfer
                   </h3>
                   <p className="text-xs text-zinc-400">
                     <span className="text-sky-400 font-semibold">{incomingRequest.req.senderName}</span>{" "}
-                    {locale === "tr" ? "size dosya göndermek istiyor" : "wants to send you a file"}
+                    wants to send you a file
                   </p>
                 </div>
               </div>
@@ -409,7 +403,7 @@ export const DirectTransfer: React.FC = () => {
                     setIncomingRequest(null);
                   }}
                 >
-                  {locale === "tr" ? "Reddet" : "Decline"}
+                  Decline
                 </Button>
                 <Button
                   variant="primary"
@@ -419,7 +413,7 @@ export const DirectTransfer: React.FC = () => {
                     setIncomingRequest(null);
                   }}
                 >
-                  {locale === "tr" ? "Kabul Et & İndir" : "Accept & Download"}
+                  Accept & Download
                 </Button>
               </div>
             </motion.div>
@@ -439,7 +433,7 @@ export const DirectTransfer: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white">
-                  {locale === "tr" ? "Telefonla Bağlan" : "Connect with Phone"}
+                  Connect with Phone
                 </h3>
                 <button
                   onClick={() => setShowQrModal(false)}
@@ -455,9 +449,7 @@ export const DirectTransfer: React.FC = () => {
 
               <div className="space-y-2">
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  {locale === "tr"
-                    ? "Telefonunuzun kamerasını okutarak aynı odaya katılın ve anında dosya gönderin."
-                    : "Scan with your phone camera to join room and transfer files directly."}
+                    Scan with your phone camera to join room and transfer files directly.
                 </p>
                 <div className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-sky-400 flex items-center justify-between gap-2">
                   <span className="truncate">{getShareableUrl()}</span>

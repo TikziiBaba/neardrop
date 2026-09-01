@@ -263,7 +263,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         }
       } catch (err: any) {
         if (!cancelled) {
-          setError(err.message || "Önizleme yüklenemedi");
+          setError(err.message || "Failed to load preview");
         }
       } finally {
         if (!cancelled) setIsLoading(false);
@@ -357,7 +357,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           return;
         }
         if (isEditing && hasChanges) {
-          if (!confirm("Kaydedilmemiş değişiklikleriniz var. Kapatmak istediğinize emin misiniz?")) {
+          if (!confirm("You have unsaved changes. Are you sure you want to close?")) {
             return;
           }
         }
@@ -490,7 +490,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20">
             <X className="h-8 w-8 text-rose-400" />
           </div>
-          <p className="text-sm text-rose-300 font-medium">Önizleme yüklenemedi</p>
+          <p className="text-sm text-rose-300 font-medium">Failed to load preview</p>
           <p className="text-xs text-zinc-500 max-w-sm">{error}</p>
           <Button variant="outline" size="sm" onClick={handleDownload} className="mt-2 gap-1.5">
             <Download className="h-3.5 w-3.5" />
@@ -1237,7 +1237,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           </p>
         </div>
         <p className="text-xs text-zinc-500 max-w-sm">
-          Bu ikili dosya türü doğrudan önizlenemez. İndirip cihazınızda açabilirsiniz.
+          This binary file type cannot be previewed directly. You can download and open it on your device.
         </p>
         <Button variant="primary" size="default" onClick={handleDownload} className="gap-2">
           <Download className="h-4 w-4" />
@@ -1254,7 +1254,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
         onClick={() => {
           if (isEditing && hasChanges) {
-            toast.warning("Kaydedilmemiş değişiklikleriniz var. Çıkmadan önce kaydedin veya iptal edin.");
+            toast.warning("You have unsaved changes. Save or discard before leaving.");
             return;
           }
           onClose();
@@ -1321,7 +1321,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             <button
               onClick={() => {
                 if (isEditing && hasChanges) {
-                  toast.warning("Kaydedilmemiş değişiklikler var. Kaydedin veya iptal edin.");
+                  toast.warning("You have unsaved changes. Save or discard them first.");
                   return;
                 }
                 onClose();

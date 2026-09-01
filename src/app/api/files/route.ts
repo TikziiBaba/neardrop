@@ -125,7 +125,7 @@ export async function DELETE(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "Kullanıcı"} "${file.filename}" (${formatBytes(file.size)}) dosyasını sildi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} deleted "${file.filename}" (${formatBytes(file.size)}). [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { fileId, filename: file.filename, size: file.size, r2ObjectKey: file.r2_object_key },
       status: "warning",
     });
@@ -181,7 +181,7 @@ export async function PATCH(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "Kullanıcı"} dosyayı yeniden adlandırdı: "${oldFile?.filename || "eski"}" ➔ "${newFilename}". [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} renamed file: "${oldFile?.filename || "old"}" ➔ "${newFilename}". [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { fileId, oldFilename: oldFile?.filename, newFilename },
       status: "success",
     });

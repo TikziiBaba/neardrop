@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "Kullanıcı"} "${file.filename}" (${formatBytes(file.size)}) dosyasını indirdi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} downloaded "${file.filename}" (${formatBytes(file.size)}). [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { fileId, filename: file.filename, size: file.size },
       status: "success",
     });

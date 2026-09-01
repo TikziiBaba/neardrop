@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       // Security: Validate file size
       if (!isFileSizeValid(size)) {
         return NextResponse.json(
-          { error: `Dosya boyutu 1 bayt ile ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB arasında olmalıdır.` },
+          { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
           { status: 400 }
         );
       }
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         const usedBytes = profile.used_bytes || 0;
         if (usedBytes + size > quotaBytes) {
           return NextResponse.json(
-            { error: "Depolama kotanız doldu. Yeni dosya yüklemek için bazı dosyaları silin veya paketinizi yükseltin." },
+            { error: "Your storage quota is full. Delete some files or upgrade your plan to upload new files." },
             { status: 413 }
           );
         }
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
         deviceInfo: client.deviceInfo,
         platform: client.platform,
         browser: client.browser,
-        details: `${user.email || "Kullanıcı"} "${filename}" (${formatBytes(size)}) dosyasını yükledi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+        details: `${user.email || "User"} uploaded "${filename}" (${formatBytes(size)}). [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
         metadata: { mimeType, r2ObjectKey, fileId, uploadMode: "direct_multipart" },
         status: "success",
       });
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
     // Security: Validate file size
     if (!isFileSizeValid(size)) {
       return NextResponse.json(
-        { error: `Dosya boyutu 1 bayt ile ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB arasında olmalıdır.` },
+        { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
         { status: 400 }
       );
     }
@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
       const usedBytes = profile.used_bytes || 0;
       if (usedBytes + size > quotaBytes) {
         return NextResponse.json(
-          { error: "Depolama kotanız doldu. Yeni dosya yüklemek için bazı dosyaları silin veya paketinizi yükseltin." },
+          { error: "Your storage quota is full. Delete some files or upgrade your plan to upload new files." },
           { status: 413 }
         );
       }
@@ -222,7 +222,7 @@ export async function POST(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "Kullanıcı"} "${filename}" (${formatBytes(size)}) dosyasını doğrudan buluta yükledi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} uploaded "${filename}" (${formatBytes(size)}) via direct presigned upload. [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { mimeType, r2ObjectKey, fileId, uploadMode: "presigned_direct" },
       status: "success",
     });

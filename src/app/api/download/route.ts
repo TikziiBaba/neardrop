@@ -299,7 +299,7 @@ export async function POST(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `Paylaşım linkinden dosya indirildi: "${file.filename}" (${formatBytes(file.size)}) [Link: /s/${token}, Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `File downloaded via share link: "${file.filename}" (${formatBytes(file.size)}) [Link: /s/${token}, Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { token, fileId: file.id, filename: file.filename, size: file.size },
       status: "success",
     });

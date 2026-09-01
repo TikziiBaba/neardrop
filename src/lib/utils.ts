@@ -22,29 +22,25 @@ export function formatSpeed(bytesPerSec: number): string {
   return `${formatBytes(bytesPerSec)}/s`;
 }
 
-export function formatEta(seconds: number | undefined | null, lang: 'tr' | 'en' = 'tr'): string {
+export function formatEta(seconds: number | undefined | null, lang: 'tr' | 'en' = 'en'): string {
   if (seconds === undefined || seconds === null || !isFinite(seconds) || seconds < 0) {
-    return lang === 'tr' ? 'Hesaplanıyor...' : 'Calculating...';
+    return 'Calculating...';
   }
   if (seconds <= 0) {
-    return lang === 'tr' ? 'Tamamlanıyor...' : 'Completing...';
+    return 'Completing...';
   }
   if (seconds < 60) {
     const s = Math.ceil(seconds);
-    return lang === 'tr' ? `~${s} sn kaldı` : `~${s}s left`;
+    return `~${s}s left`;
   }
   const mins = Math.floor(seconds / 60);
   const remSec = Math.floor(seconds % 60);
   if (mins < 60) {
-    return lang === 'tr'
-      ? `~${mins} dk ${remSec > 0 ? `${remSec} sn ` : ''}kaldı`
-      : `~${mins}m ${remSec > 0 ? `${remSec}s ` : ''}left`;
+    return `~${mins}m ${remSec > 0 ? `${remSec}s ` : ''}left`;
   }
   const hours = Math.floor(mins / 60);
   const remMins = mins % 60;
-  return lang === 'tr'
-    ? `~${hours} sa ${remMins > 0 ? `${remMins} dk ` : ''}kaldı`
-    : `~${hours}h ${remMins > 0 ? `${remMins}m ` : ''}left`;
+  return `~${hours}h ${remMins > 0 ? `${remMins}m ` : ''}left`;
 }
 
 export function formatDate(dateString: string | Date | null | undefined): string {

@@ -228,7 +228,7 @@ export async function POST(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "Kullanıcı"} "${targetName}" için paylaşım linki oluşturdu: /s/${share.token} (Süre: ${expiresInHours ? `${expiresInHours} saat` : "Süresiz"}, Şifreli: ${passwordHash ? "Evet" : "Hayır"}). [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} created share link for "${targetName}": /s/${share.token} (Duration: ${expiresInHours ? `${expiresInHours} hours` : "Permanent"}, Password: ${passwordHash ? "Yes" : "No"}). [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { token: share.token, hasPassword: Boolean(passwordHash), expiresInHours, folderPath, maxDownloads },
       status: "success",
     });
@@ -330,7 +330,7 @@ export async function DELETE(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "Kullanıcı"} paylaşım linkini iptal etti (ID: ${shareId}). [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} revoked share link (ID: ${shareId}). [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { shareId },
       status: "warning",
     });

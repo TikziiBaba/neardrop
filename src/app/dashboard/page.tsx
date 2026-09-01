@@ -160,19 +160,19 @@ export default function DashboardPage() {
     try {
       await navigator.clipboard.writeText(url);
       setCopiedShareId(share.id);
-      toast.success("Paylaşım linki panoya kopyalandı!");
+      toast.success("Share link copied to clipboard!");
       setTimeout(() => setCopiedShareId(null), 2500);
     } catch {
-      toast.error("Link kopyalanamadı");
+      toast.error("Failed to copy link");
     }
   };
 
   const handleDownload = async (file: CloudFile) => {
     try {
       await downloadFile(file.id);
-      toast.success("İndirme başladı!");
+      toast.success("Download started!");
     } catch (err: any) {
-      toast.error(err.message || "İndirme başarısız");
+      toast.error(err.message || "Download failed");
     }
   };
 
