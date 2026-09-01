@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 import { validateShareCreation } from "@/lib/subscription/permissions";
+import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
 import crypto from "crypto";
 
 function serverSHA256(text: string): string {
@@ -213,6 +214,25 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
+    // Record audit log for share link creation
+    const client = extractClientInfo(req);
+    const targetName = folderPath ? `[Klasör] ${folderPath}` : (share.title || "Dosya");
+    recordAuditLog({
+      action: "SHARE_CREATE",
+      resourceType: "share",
+      userId: user.id,
+      userEmail: user.email,
+      resourceId: share.id,
+      fileName: targetName,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `${user.email || "Kullanıcı"} "${targetName}" için paylaşım linki oluşturdu: /s/${share.token} (Süre: ${expiresInHours ? `${expiresInHours} saat` : "Süresiz"}, Şifreli: ${passwordHash ? "Evet" : "Hayır"}). [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { token: share.token, hasPassword: Boolean(passwordHash), expiresInHours, folderPath, maxDownloads },
+      status: "success",
+    });
+
     return NextResponse.json({
       id: share.id,
       userId: share.user_id,
@@ -297,6 +317,23 @@ export async function DELETE(req: NextRequest) {
       .eq("user_id", user.id);
 
     if (error) throw error;
+
+    // Record audit log for share link deletion
+    const client = extractClientInfo(req);
+    recordAuditLog({
+      action: "SHARE_DELETE",
+      resourceType: "share",
+      userId: user.id,
+      userEmail: user.email,
+      resourceId: shareId,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `${user.email || "Kullanıcı"} paylaşım linkini iptal etti (ID: ${shareId}). [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { shareId },
+      status: "warning",
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

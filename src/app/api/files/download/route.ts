@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPresignedDownloadUrl, isR2Configured } from "@/lib/r2/s3-client";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
+import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
+import { formatBytes } from "@/lib/utils";
 
 // POST: Generate presigned download URL for authenticated file owner
 export async function POST(req: NextRequest) {
@@ -32,6 +34,25 @@ export async function POST(req: NextRequest) {
     }
 
     const downloadUrl = await createPresignedDownloadUrl(file.r2_object_key, file.filename, 900);
+
+    // Record audit log for file download
+    const client = extractClientInfo(req);
+    recordAuditLog({
+      action: "FILE_DOWNLOAD",
+      resourceType: "download",
+      userId: user.id,
+      userEmail: user.email,
+      resourceId: fileId,
+      fileName: file.filename,
+      fileSize: file.size,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `${user.email || "Kullanıcı"} "${file.filename}" (${formatBytes(file.size)}) dosyasını indirdi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { fileId, filename: file.filename, size: file.size },
+      status: "success",
+    });
 
     return NextResponse.json({
       downloadUrl,

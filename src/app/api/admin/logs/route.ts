@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAuditLogs } from "@/lib/admin/service";
+import { fetchAuditLogs } from "@/lib/admin/service";
 
 export async function GET(req: NextRequest) {
   try {
-    const logs = getAuditLogs();
+    const logs = await fetchAuditLogs();
     return NextResponse.json({ success: true, logs });
   } catch (error: any) {
     console.error("Admin logs error:", error);

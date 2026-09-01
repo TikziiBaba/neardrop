@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AdminAuditLog } from "@/types";
-import { formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime, formatBytes } from "@/lib/utils";
 import {
   ShieldAlert,
   Search,
@@ -13,16 +13,37 @@ import {
   Info,
   Clock,
   Filter,
+  Download,
+  FileText,
+  UploadCloud,
+  Trash2,
+  Share2,
+  HardDrive,
+  Laptop,
+  Smartphone,
+  Globe,
+  Lock,
+  Zap,
+  ArrowUpDown,
+  ExternalLink,
+  ChevronRight,
+  Eye,
+  Check,
+  Copy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 export default function AdminLogsPage() {
   const [logs, setLogs] = useState<AdminAuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedLog, setSelectedLog] = useState<AdminAuditLog | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   const fetchLogs = async () => {
     try {
@@ -34,7 +55,7 @@ export default function AdminLogsPage() {
       }
     } catch (err) {
       console.error("Failed to load logs:", err);
-      toast.error("Failed to fetch audit logs");
+      toast.error("Denetim logları yüklenemedi");
     } finally {
       setLoading(false);
     }
@@ -44,41 +65,137 @@ export default function AdminLogsPage() {
     fetchLogs();
   }, []);
 
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    toast.success("Kopyalandı!");
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const exportLogsAsJSON = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(logs, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `neardrop_audit_logs_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    toast.success("Loglar JSON formatında dışa aktarıldı");
+  };
+
+  // Helper for action badge colors
+  const getActionBadge = (action: string) => {
+    if (action.includes("DELETE")) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-rose-500/15 px-2 py-0.5 text-[11px] font-bold text-rose-400 border border-rose-500/25">
+          <Trash2 className="h-3 w-3" />
+          {action}
+        </span>
+      );
+    }
+    if (action.includes("UPLOAD")) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/25">
+          <UploadCloud className="h-3 w-3" />
+          {action}
+        </span>
+      );
+    }
+    if (action.includes("SHARE")) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-sky-500/15 px-2 py-0.5 text-[11px] font-bold text-sky-400 border border-sky-500/25">
+          <Share2 className="h-3 w-3" />
+          {action}
+        </span>
+      );
+    }
+    if (action.includes("DOWNLOAD")) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-purple-500/15 px-2 py-0.5 text-[11px] font-bold text-purple-400 border border-purple-500/25">
+          <Download className="h-3 w-3" />
+          {action}
+        </span>
+      );
+    }
+    if (action.includes("TRANSFER")) {
+      return (
+        <span className="inline-flex items-center gap-1 rounded-lg bg-indigo-500/15 px-2 py-0.5 text-[11px] font-bold text-indigo-400 border border-indigo-500/25">
+          <Zap className="h-3 w-3" />
+          {action}
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-800 px-2 py-0.5 text-[11px] font-bold text-zinc-300 border border-zinc-700">
+        <Info className="h-3 w-3 text-zinc-400" />
+        {action}
+      </span>
+    );
+  };
+
+  const getDeviceIcon = (deviceInfo?: string, platform?: string) => {
+    const text = (deviceInfo || platform || "").toLowerCase();
+    if (text.includes("android") || text.includes("ios") || text.includes("iphone") || text.includes("phone")) {
+      return <Smartphone className="h-3.5 w-3.5 text-sky-400" />;
+    }
+    if (text.includes("windows") || text.includes("mac") || text.includes("linux") || text.includes("desktop")) {
+      return <Laptop className="h-3.5 w-3.5 text-purple-400" />;
+    }
+    return <Globe className="h-3.5 w-3.5 text-zinc-400" />;
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "danger":
         return (
           <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-400 border border-rose-500/20">
             <AlertTriangle className="h-3 w-3" />
-            High
+            Kritik
           </span>
         );
       case "warning":
         return (
           <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400 border border-amber-500/20">
             <AlertTriangle className="h-3 w-3" />
-            Warning
+            Uyarı / Silme
           </span>
         );
       default:
         return (
           <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
             <CheckCircle2 className="h-3 w-3" />
-            Success
+            Başarılı
           </span>
         );
     }
   };
 
-  const filteredLogs = logs.filter((log) => {
-    const q = searchQuery.toLowerCase();
-    const matchSearch =
-      log.action.toLowerCase().includes(q) ||
-      log.details.toLowerCase().includes(q) ||
-      (log.userEmail && log.userEmail.toLowerCase().includes(q));
-    const matchStatus = statusFilter === "all" || log.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  // Filtering
+  const filteredLogs = useMemo(() => {
+    return logs.filter((log) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        log.action.toLowerCase().includes(q) ||
+        log.details.toLowerCase().includes(q) ||
+        (log.userEmail && log.userEmail.toLowerCase().includes(q)) ||
+        (log.fileName && log.fileName.toLowerCase().includes(q)) ||
+        (log.ipAddress && log.ipAddress.toLowerCase().includes(q)) ||
+        (log.deviceInfo && log.deviceInfo.toLowerCase().includes(q));
+
+      const matchStatus = statusFilter === "all" || log.status === statusFilter;
+
+      let matchCat = true;
+      if (categoryFilter === "upload") matchCat = log.action.includes("UPLOAD") || log.resourceType === "file";
+      else if (categoryFilter === "delete") matchCat = log.action.includes("DELETE") || log.action.includes("REVOKE");
+      else if (categoryFilter === "share") matchCat = log.resourceType === "share" || log.action.includes("SHARE");
+      else if (categoryFilter === "download") matchCat = log.resourceType === "download" || log.action.includes("DOWNLOAD");
+      else if (categoryFilter === "transfer") matchCat = log.resourceType === "transfer" || log.action.includes("TRANSFER");
+      else if (categoryFilter === "billing") matchCat = log.resourceType === "billing" || log.action.includes("SUBSCRIPTION");
+
+      return matchSearch && matchStatus && matchCat;
+    });
+  }, [logs, searchQuery, categoryFilter, statusFilter]);
 
   return (
     <AdminLayout>
@@ -87,108 +204,208 @@ export default function AdminLogsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
-              <span>Security & Audit Logs</span>
-              <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
-                {logs.length} Events
+              <span>Aşırı Detaylı Denetim & Aktivite Logları</span>
+              <span className="rounded-md bg-purple-500/15 px-2.5 py-0.5 text-xs font-bold text-purple-300 border border-purple-500/30">
+                {logs.length} Kayıt
               </span>
             </h1>
             <p className="text-xs sm:text-sm text-zinc-400 mt-1">
-              Immutable activity trail of administrative tasks, quota modifications, and security events.
+              Dosya yükleme, 2 onaylı silme, paylaşım, indirme, transfer ve cihaz/IP detaylarının anlık kayıt defteri.
             </p>
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchLogs}
-            disabled={loading}
-            className="gap-2 text-xs self-start sm:self-auto"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
-            <span>Refresh</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportLogsAsJSON}
+              className="gap-1.5 text-xs rounded-xl"
+            >
+              <Download className="h-3.5 w-3.5 text-sky-400" />
+              <span>Dışa Aktar (JSON)</span>
+            </Button>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={fetchLogs}
+              disabled={loading}
+              className="gap-2 text-xs rounded-xl"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
+              <span>Yenile</span>
+            </Button>
+          </div>
         </div>
 
-        {/* Filters */}
+        {/* Category Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs border-b border-zinc-800">
+          {[
+            { id: "all", label: "Tüm Loglar", count: logs.length },
+            { id: "upload", label: "Dosya Yüklemeleri", count: logs.filter((l) => l.action.includes("UPLOAD")).length },
+            { id: "delete", label: "Silme & İptaller", count: logs.filter((l) => l.action.includes("DELETE")).length },
+            { id: "share", label: "Paylaşımlar", count: logs.filter((l) => l.resourceType === "share" || l.action.includes("SHARE")).length },
+            { id: "download", label: "İndirmeler", count: logs.filter((l) => l.resourceType === "download" || l.action.includes("DOWNLOAD")).length },
+            { id: "transfer", label: "Transferler", count: logs.filter((l) => l.resourceType === "transfer" || l.action.includes("TRANSFER")).length },
+            { id: "billing", label: "Abonelik & POS", count: logs.filter((l) => l.resourceType === "billing").length },
+          ].map((cat) => (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => setCategoryFilter(cat.id)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-xl font-semibold transition-colors whitespace-nowrap ${
+                categoryFilter === cat.id
+                  ? "bg-zinc-800 text-white border-b-2 border-purple-500"
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
+              }`}
+            >
+              <span>{cat.label}</span>
+              <span className="rounded-full bg-zinc-900 px-1.5 py-0.2 text-[10px] text-zinc-400">
+                {cat.count}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Search & Status Filters */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
             <Input
-              placeholder="Search audit logs..."
+              placeholder="Dosya adı, kullanıcı e-posta, IP, cihaz veya işlem ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-zinc-900/60 border-zinc-800"
+              className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
             />
           </div>
 
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {["all", "success", "warning", "danger"].map((st) => (
+            {[
+              { id: "all", label: "Tüm Durumlar" },
+              { id: "success", label: "Başarılı" },
+              { id: "warning", label: "Uyarı / Silme" },
+              { id: "danger", label: "Kritik" },
+            ].map((st) => (
               <button
-                key={st}
+                key={st.id}
                 type="button"
-                onClick={() => setStatusFilter(st)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-medium capitalize transition-colors ${
-                  statusFilter === st
-                    ? "bg-purple-600 text-white font-semibold"
+                onClick={() => setStatusFilter(st.id)}
+                className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
+                  statusFilter === st.id
+                    ? "bg-purple-600 text-white font-semibold shadow-md shadow-purple-600/20"
                     : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
                 }`}
               >
-                {st}
+                {st.label}
               </button>
             ))}
           </div>
         </div>
 
         {/* Logs Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden">
+        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-2xl apple-card">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <thead className="border-b border-zinc-800 bg-zinc-950/70 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                 <tr>
-                  <th className="py-3.5 px-4 sm:px-6">Timestamp</th>
-                  <th className="py-3.5 px-4">Action</th>
-                  <th className="py-3.5 px-4">Resource</th>
-                  <th className="py-3.5 px-4">Details</th>
-                  <th className="py-3.5 px-4">Origin / IP</th>
-                  <th className="py-3.5 px-4 sm:px-6 text-right">Severity</th>
+                  <th className="py-3.5 px-4 sm:px-6">Zaman</th>
+                  <th className="py-3.5 px-4">Kullanıcı</th>
+                  <th className="py-3.5 px-4">İşlem</th>
+                  <th className="py-3.5 px-4">Dosya / Hedef</th>
+                  <th className="py-3.5 px-4">Cihaz & Tarayıcı</th>
+                  <th className="py-3.5 px-4">IP Adresi</th>
+                  <th className="py-3.5 px-4 sm:px-6 text-right">Detay / İncele</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-800/60">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-zinc-500">
+                    <td colSpan={7} className="py-16 text-center text-zinc-500">
                       <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
-                      Loading audit logs...
+                      Denetim kayıtları yükleniyor...
                     </td>
                   </tr>
                 ) : filteredLogs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-zinc-500">
-                      No logs found.
+                    <td colSpan={7} className="py-16 text-center text-zinc-500">
+                      Eşleşen denetim kaydı bulunamadı.
                     </td>
                   </tr>
                 ) : (
                   filteredLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-zinc-800/40 transition-colors">
+                    <tr
+                      key={log.id}
+                      onClick={() => setSelectedLog(log)}
+                      className="hover:bg-zinc-800/40 transition-colors cursor-pointer group"
+                    >
+                      {/* Timestamp */}
                       <td className="py-4 px-4 sm:px-6 text-zinc-400 whitespace-nowrap font-mono text-[11px]">
-                        {new Date(log.timestamp).toLocaleTimeString()} • {formatRelativeTime(log.timestamp)}
+                        <div className="font-semibold text-zinc-300">
+                          {new Date(log.timestamp).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                        </div>
+                        <div className="text-[10px] text-zinc-500">
+                          {formatRelativeTime(log.timestamp)}
+                        </div>
                       </td>
-                      <td className="py-4 px-4 font-mono font-semibold text-white">
-                        {log.action}
+
+                      {/* User */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="font-semibold text-white">
+                          {log.userEmail ? log.userEmail.split("@")[0] : "Anonim / Sistem"}
+                        </div>
+                        <div className="text-[10px] text-zinc-500 font-mono">
+                          {log.userEmail || log.userId || "-"}
+                        </div>
                       </td>
-                      <td className="py-4 px-4">
-                        <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-300 uppercase">
-                          {log.resourceType}
+
+                      {/* Action */}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        {getActionBadge(log.action)}
+                      </td>
+
+                      {/* Target File */}
+                      <td className="py-4 px-4 max-w-xs truncate">
+                        {log.fileName ? (
+                          <div className="space-y-0.5">
+                            <div className="font-medium text-white truncate">{log.fileName}</div>
+                            {log.fileSize ? (
+                              <div className="text-[10px] text-zinc-400 font-mono">
+                                {formatBytes(log.fileSize)}
+                              </div>
+                            ) : null}
+                          </div>
+                        ) : (
+                          <span className="text-zinc-500 text-[11px]">-</span>
+                        )}
+                      </td>
+
+                      {/* Device & Platform */}
+                      <td className="py-4 px-4 whitespace-nowrap text-zinc-300 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          {getDeviceIcon(log.deviceInfo, log.platform)}
+                          <span className="font-medium">{log.deviceInfo || log.platform || "Web / Masaüstü"}</span>
+                        </div>
+                      </td>
+
+                      {/* IP */}
+                      <td className="py-4 px-4 whitespace-nowrap font-mono text-[11px] text-zinc-400">
+                        <span className="bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
+                          {log.ipAddress || "127.0.0.1"}
                         </span>
                       </td>
-                      <td className="py-4 px-4 text-zinc-300 max-w-sm font-medium">
-                        {log.details}
-                      </td>
-                      <td className="py-4 px-4 text-zinc-500 font-mono text-[10px]">
-                        {log.ipAddress || "127.0.0.1"}
-                      </td>
-                      <td className="py-4 px-4 sm:px-6 text-right">
-                        {getStatusBadge(log.status)}
+
+                      {/* Status & Inspector Button */}
+                      <td className="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          {getStatusBadge(log.status)}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 w-7 p-0 rounded-lg text-zinc-400 group-hover:text-white"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -197,6 +414,92 @@ export default function AdminLogsPage() {
             </table>
           </div>
         </div>
+
+        {/* Selected Log Inspector Modal */}
+        {selectedLog && (
+          <Dialog
+            open={Boolean(selectedLog)}
+            onOpenChange={(open) => !open && setSelectedLog(null)}
+            title="Log Kaydı Detayları"
+            description={`Log ID: ${selectedLog.id}`}
+          >
+            <div className="space-y-4 pt-2 text-xs">
+              {/* Summary Card */}
+              <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sm text-white">{selectedLog.action}</span>
+                  {getStatusBadge(selectedLog.status)}
+                </div>
+                <p className="text-zinc-300 leading-relaxed">{selectedLog.details}</p>
+              </div>
+
+              {/* Grid Properties */}
+              <div className="grid grid-cols-2 gap-3 text-[11px]">
+                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
+                  <span className="text-zinc-500 font-semibold block">Kullanıcı / E-Posta</span>
+                  <span className="text-white font-mono break-all">{selectedLog.userEmail || selectedLog.userId || "Sistem"}</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
+                  <span className="text-zinc-500 font-semibold block">Tarih & Saat</span>
+                  <span className="text-white font-mono">{new Date(selectedLog.timestamp).toLocaleString("tr-TR")}</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
+                  <span className="text-zinc-500 font-semibold block">Cihaz & Platform</span>
+                  <span className="text-sky-400 font-medium">{selectedLog.deviceInfo || selectedLog.platform || "Web"}</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
+                  <span className="text-zinc-500 font-semibold block">IP Adresi</span>
+                  <span className="text-purple-400 font-mono">{selectedLog.ipAddress || "127.0.0.1"}</span>
+                </div>
+
+                {selectedLog.fileName && (
+                  <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1 col-span-2">
+                    <span className="text-zinc-500 font-semibold block">Hedef Dosya & Boyut</span>
+                    <span className="text-emerald-400 font-bold font-mono">
+                      {selectedLog.fileName} {selectedLog.fileSize ? `(${formatBytes(selectedLog.fileSize)})` : ""}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Metadata JSON Viewer */}
+              {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
+                <div className="space-y-1.5">
+                  <span className="text-[11px] font-semibold text-zinc-400">Teknik Metadata (JSON):</span>
+                  <pre className="p-3 rounded-xl bg-zinc-950 font-mono text-[11px] text-zinc-300 border border-zinc-800 overflow-x-auto max-h-40">
+                    {JSON.stringify(selectedLog.metadata, null, 2)}
+                  </pre>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCopy(JSON.stringify(selectedLog, null, 2), selectedLog.id)}
+                  className="gap-1.5 text-xs rounded-xl"
+                >
+                  {copiedId === selectedLog.id ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>JSON Kopyala</span>
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setSelectedLog(null)}
+                  className="text-xs rounded-xl"
+                >
+                  Kapat
+                </Button>
+              </div>
+            </div>
+          </Dialog>
+        )}
       </div>
     </AdminLayout>
   );

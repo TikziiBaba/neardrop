@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteR2Object, isR2Configured } from "@/lib/r2/s3-client";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
+import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
+import { formatBytes } from "@/lib/utils";
 
 // GET: List files for the authenticated user
 export async function GET(req: NextRequest) {
@@ -109,6 +111,25 @@ export async function DELETE(req: NextRequest) {
 
     if (delErr) throw delErr;
 
+    // Record audit log for deletion
+    const client = extractClientInfo(req);
+    recordAuditLog({
+      action: "FILE_DELETE",
+      resourceType: "file",
+      userId: user.id,
+      userEmail: user.email,
+      resourceId: fileId,
+      fileName: file.filename,
+      fileSize: file.size,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `${user.email || "Kullanıcı"} "${file.filename}" (${formatBytes(file.size)}) dosyasını sildi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { fileId, filename: file.filename, size: file.size, r2ObjectKey: file.r2_object_key },
+      status: "warning",
+    });
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Delete file error:", error);
@@ -124,19 +145,46 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { fileId, filename } = await req.json();
-    if (!fileId || !filename) {
+    const { fileId, filename: newFilename } = await req.json();
+    if (!fileId || !newFilename) {
       return NextResponse.json({ error: "fileId and filename are required" }, { status: 400 });
     }
 
     const serviceClient = getServiceClient();
+
+    // Get old filename for logging
+    const { data: oldFile } = await serviceClient
+      .from("cloud_files")
+      .select("filename, size")
+      .eq("id", fileId)
+      .eq("user_id", user.id)
+      .single();
+
     const { error } = await serviceClient
       .from("cloud_files")
-      .update({ filename })
+      .update({ filename: newFilename })
       .eq("id", fileId)
       .eq("user_id", user.id);
 
     if (error) throw error;
+
+    // Record audit log for rename
+    const client = extractClientInfo(req);
+    recordAuditLog({
+      action: "FILE_RENAME",
+      resourceType: "file",
+      userId: user.id,
+      userEmail: user.email,
+      resourceId: fileId,
+      fileName: newFilename,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `${user.email || "Kullanıcı"} dosyayı yeniden adlandırdı: "${oldFile?.filename || "eski"}" ➔ "${newFilename}". [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { fileId, oldFilename: oldFile?.filename, newFilename },
+      status: "success",
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

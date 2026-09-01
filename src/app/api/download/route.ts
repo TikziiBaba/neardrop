@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPresignedDownloadUrl, isR2Configured } from "@/lib/r2/s3-client";
 import { createClient } from "@supabase/supabase-js";
+import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
+import { formatBytes } from "@/lib/utils";
 import crypto from "crypto";
 
 function serverSHA256(text: string): string {
@@ -283,6 +285,24 @@ export async function POST(req: NextRequest) {
 
     const downloadUrl = await createPresignedDownloadUrl(file.r2_object_key, file.filename, 900);
     await incrementDownloadCount();
+
+    // Record audit log for public share download
+    const client = extractClientInfo(req);
+    recordAuditLog({
+      action: "SHARE_DOWNLOAD",
+      resourceType: "download",
+      userId: share.user_id,
+      resourceId: share.id,
+      fileName: file.filename,
+      fileSize: file.size,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `Paylaşım linkinden dosya indirildi: "${file.filename}" (${formatBytes(file.size)}) [Link: /s/${token}, Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { token, fileId: file.id, filename: file.filename, size: file.size },
+      status: "success",
+    });
 
     return NextResponse.json({
       downloadUrl,

@@ -42,8 +42,87 @@ export function logAdminAction(log: Omit<AdminAuditLog, "id" | "timestamp">) {
     ...log,
   };
   recentAuditLogs.unshift(newLog);
-  if (recentAuditLogs.length > 200) recentAuditLogs.pop();
+  if (recentAuditLogs.length > 500) recentAuditLogs.pop();
+
+  // Asynchronously persist to Supabase audit_logs table
+  try {
+    const supabase = getServiceClient();
+    (async () => {
+      try {
+        const { error } = await supabase.from("audit_logs").insert({
+          id: newLog.id,
+          user_id: newLog.userId || null,
+          user_email: newLog.userEmail || null,
+          action: newLog.action,
+          resource_type: newLog.resourceType,
+          resource_id: newLog.resourceId || null,
+          file_name: newLog.fileName || null,
+          file_size: newLog.fileSize || null,
+          ip_address: newLog.ipAddress || null,
+          device_info: newLog.deviceInfo || null,
+          platform: newLog.platform || null,
+          browser: newLog.browser || null,
+          details: newLog.details,
+          metadata: newLog.metadata || {},
+          status: newLog.status || "success",
+          created_at: newLog.timestamp,
+        });
+        if (error) console.warn("Could not persist audit log to DB (table may not exist yet):", error.message);
+      } catch (e: any) {
+        console.warn("Audit log DB insert error:", e?.message);
+      }
+    })();
+  } catch (err) {
+    // Non-blocking fallback
+  }
+
   return newLog;
+}
+
+export async function fetchAuditLogs(): Promise<AdminAuditLog[]> {
+  try {
+    const supabase = getServiceClient();
+    const { data, error } = await supabase
+      .from("audit_logs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(300);
+
+    if (!error && data && data.length > 0) {
+      const mappedDbLogs: AdminAuditLog[] = data.map((d: any) => ({
+        id: d.id,
+        timestamp: d.created_at,
+        userId: d.user_id,
+        userEmail: d.user_email,
+        action: d.action,
+        resourceType: d.resource_type,
+        resourceId: d.resource_id,
+        fileName: d.file_name,
+        fileSize: d.file_size ? Number(d.file_size) : undefined,
+        ipAddress: d.ip_address,
+        deviceInfo: d.device_info,
+        platform: d.platform,
+        browser: d.browser,
+        details: d.details,
+        metadata: d.metadata || {},
+        status: d.status,
+      }));
+
+      // Merge with memory buffer for unique logs
+      const seen = new Set(mappedDbLogs.map((l) => l.id));
+      const combined = [...mappedDbLogs];
+      recentAuditLogs.forEach((ml) => {
+        if (!seen.has(ml.id)) {
+          combined.push(ml);
+        }
+      });
+      return combined.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    }
+  } catch (e) {
+    console.warn("Falling back to in-memory audit logs:", e);
+  }
+
+  return recentAuditLogs;
 }
 
 export async function fetchAdminStats(): Promise<AdminStats> {

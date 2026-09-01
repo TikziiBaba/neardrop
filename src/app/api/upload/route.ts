@@ -3,6 +3,8 @@ import { createPresignedUploadUrl, getR2Client, isR2Configured } from "@/lib/r2/
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 import { sanitizeFilename, isDangerousExtension, isFileSizeValid, MAX_UPLOAD_SIZE } from "@/lib/utils/sanitize";
 import { validateUploadSize } from "@/lib/subscription/permissions";
+import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
+import { formatBytes } from "@/lib/utils";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(req: NextRequest) {
@@ -108,6 +110,25 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Failed to save file record." }, { status: 500 });
       }
 
+      // Record detailed audit log
+      const client = extractClientInfo(req);
+      recordAuditLog({
+        action: "FILE_UPLOAD",
+        resourceType: "file",
+        userId: user.id,
+        userEmail: user.email,
+        resourceId: fileId,
+        fileName: filename,
+        fileSize: size,
+        ipAddress: client.ipAddress,
+        deviceInfo: client.deviceInfo,
+        platform: client.platform,
+        browser: client.browser,
+        details: `${user.email || "Kullanıcı"} "${filename}" (${formatBytes(size)}) dosyasını yükledi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+        metadata: { mimeType, r2ObjectKey, fileId, uploadMode: "direct_multipart" },
+        status: "success",
+      });
+
       return NextResponse.json({
         success: true,
         fileId,
@@ -186,6 +207,25 @@ export async function POST(req: NextRequest) {
       console.error("DB insert error:", dbError);
       return NextResponse.json({ error: "Failed to save file record." }, { status: 500 });
     }
+
+    // Record detailed audit log for presigned direct upload
+    const client = extractClientInfo(req);
+    recordAuditLog({
+      action: "FILE_UPLOAD",
+      resourceType: "file",
+      userId: user.id,
+      userEmail: user.email,
+      resourceId: fileId,
+      fileName: filename,
+      fileSize: size,
+      ipAddress: client.ipAddress,
+      deviceInfo: client.deviceInfo,
+      platform: client.platform,
+      browser: client.browser,
+      details: `${user.email || "Kullanıcı"} "${filename}" (${formatBytes(size)}) dosyasını doğrudan buluta yükledi. [Cihaz: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      metadata: { mimeType, r2ObjectKey, fileId, uploadMode: "presigned_direct" },
+      status: "success",
+    });
 
     return NextResponse.json({
       uploadUrl,

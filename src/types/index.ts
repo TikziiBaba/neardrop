@@ -210,10 +210,16 @@ export interface AdminAuditLog {
   userId?: string;
   userEmail?: string;
   action: string;
-  resourceType: 'user' | 'file' | 'share' | 'system' | 'auth' | 'ticket' | 'billing';
+  resourceType: 'user' | 'file' | 'share' | 'transfer' | 'download' | 'system' | 'auth' | 'ticket' | 'billing';
   resourceId?: string;
-  details: string;
+  fileName?: string;
+  fileSize?: number;
   ipAddress?: string;
+  deviceInfo?: string;
+  platform?: string;
+  browser?: string;
+  details: string;
+  metadata?: Record<string, any>;
   status: 'success' | 'warning' | 'danger';
 }
 
