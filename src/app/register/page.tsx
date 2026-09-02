@@ -614,12 +614,14 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <Link href={`/login?email=${encodeURIComponent(email)}`} className="block w-full">
-                <Button variant="outline" className="w-full text-xs rounded-xl py-2.5 border-zinc-700 hover:bg-zinc-800">
-                  <span>Onayladım, Giriş Yap</span>
-                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
-                </Button>
-              </Link>
+              <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5 text-center space-y-1">
+                <p className="text-xs font-bold text-amber-300">
+                  E-posta onayı zorunludur
+                </p>
+                <p className="text-[11px] text-zinc-300 leading-relaxed">
+                  Güvenliğiniz için hesabınızı onaylamadan sisteme giriş yapılamaz. Gelen kutunuzdaki bağlantıya tıkladığınızda oturumunuz otomatik açılacaktır.
+                </p>
+              </div>
 
               <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-xs">
                 <span className="text-zinc-400">E-posta ulaşmadı mı?</span>

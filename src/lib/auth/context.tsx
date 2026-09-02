@@ -194,6 +194,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: { session },
         } = await supabase.auth.getSession();
         if (session?.user) {
+          const isEmailConfirmed = Boolean(session.user.email_confirmed_at || session.user.confirmed_at);
+          const isOAuth = session.user.app_metadata?.provider && session.user.app_metadata.provider !== "email";
+
+          if (!isEmailConfirmed && !isOAuth) {
+            await supabase.auth.signOut();
+            setUser(null);
+            setIsLoading(false);
+            return;
+          }
+
           const profile = await fetchProfile(
             session.user.id,
             session.user.email || "",
@@ -215,6 +225,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
+        const isEmailConfirmed = Boolean(session.user.email_confirmed_at || session.user.confirmed_at);
+        const isOAuth = session.user.app_metadata?.provider && session.user.app_metadata.provider !== "email";
+
+        if (!isEmailConfirmed && !isOAuth) {
+          await supabase.auth.signOut();
+          setUser(null);
+          return;
+        }
+
         const profile = await fetchProfile(
           session.user.id,
           session.user.email || "",
@@ -225,6 +244,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (event === "SIGNED_OUT") {
         setUser(null);
       } else if (event === "TOKEN_REFRESHED" && session?.user) {
+        const isEmailConfirmed = Boolean(session.user.email_confirmed_at || session.user.confirmed_at);
+        const isOAuth = session.user.app_metadata?.provider && session.user.app_metadata.provider !== "email";
+
+        if (!isEmailConfirmed && !isOAuth) {
+          await supabase.auth.signOut();
+          setUser(null);
+          return;
+        }
+
         const profile = await fetchProfile(
           session.user.id,
           session.user.email || "",
@@ -255,13 +283,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error.message.toLowerCase().includes("email not confirmed")) {
           return {
             success: false,
-            error: "Email not confirmed. Please check your inbox for the verification link.",
+            error: "E-posta adresiniz henüz onaylanmamış. Lütfen gelen kutunuzdaki onay bağlantısına tıklayın.",
             requiresVerification: true,
           };
         }
         throw error;
       }
       if (data.user) {
+        const isEmailConfirmed = Boolean(data.user.email_confirmed_at || data.user.confirmed_at);
+        const isOAuth = data.user.app_metadata?.provider && data.user.app_metadata.provider !== "email";
+
+        if (!isEmailConfirmed && !isOAuth) {
+          await supabase.auth.signOut();
+          setUser(null);
+          return {
+            success: false,
+            error: "E-posta adresiniz henüz onaylanmamış. Giriş yapabilmek için lütfen gelen kutunuzdaki onay linkine tıklayarak hesabınızı aktifleştirin.",
+            requiresVerification: true,
+          };
+        }
+
         const profile = await fetchProfile(
           data.user.id,
           data.user.email || email,

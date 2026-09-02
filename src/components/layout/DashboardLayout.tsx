@@ -25,8 +25,12 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+    if (!isLoading) {
+      if (!user) {
+        router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+      } else if (!user.isEmailVerified) {
+        router.replace(`/verify-email?email=${encodeURIComponent(user.email)}`);
+      }
     }
   }, [user, isLoading, router, pathname]);
 
@@ -41,7 +45,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
     );
   }
 
-  if (!user) {
+  if (!user || !user.isEmailVerified) {
     return null;
   }
 
