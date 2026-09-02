@@ -67,8 +67,19 @@ export default function PricingPage() {
           icon={Crown}
         />
 
+        {/* Virtual POS Notice Pill */}
+        <div className="flex justify-center -mt-2 mb-2">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-xs text-amber-300 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+            </span>
+            <span>Banka Sanal POS entegrasyonu sürüyor. Ücretli paket alımları çok yakında aktif olacaktır.</span>
+          </div>
+        </div>
+
         {/* Monthly / Yearly Billing Toggle */}
-        <div className="flex justify-center -mt-4">
+        <div className="flex justify-center -mt-2">
           <div className="inline-flex items-center p-1 rounded-2xl bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl shadow-xl">
             <button
               type="button"

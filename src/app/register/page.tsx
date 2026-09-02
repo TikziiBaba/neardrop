@@ -580,23 +580,23 @@ export default function RegisterPage() {
         )}
 
         {/* ========================================================= */}
-        {/* STEP 3: EMAIL VERIFICATION (OTP)                          */}
+        {/* STEP 3: EMAIL VERIFICATION (LINK CONFIRMATION)            */}
         {/* ========================================================= */}
         {step === 3 && (
-          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5 animate-in fade-in max-w-md mx-auto">
-            <div className="text-center space-y-1">
-              <div className="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mx-auto mb-2">
-                <Mail className="h-6 w-6" />
+          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6 animate-in fade-in max-w-md mx-auto">
+            <div className="text-center space-y-2">
+              <div className="w-14 h-14 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-sky-500/10 animate-bounce">
+                <Mail className="h-7 w-7" />
               </div>
-              <h3 className="text-base font-bold text-white">Confirmation Email Sent</h3>
-              <p className="text-xs text-zinc-400">
-                Click the link in the email or enter the 6-digit code below to activate your account.
+              <h3 className="text-lg font-bold text-white">Doğrulama Bağlantısı Gönderildi</h3>
+              <p className="text-xs text-zinc-300 leading-relaxed">
+                Hesabınızı aktifleştirmek için lütfen gelen kutunuzdaki Supabase onay bağlantısına tıklayın. Onayladıktan sonra doğrudan kullanmaya başlayabilirsiniz.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-zinc-400">Sent to:</span>
+                <span className="text-zinc-400">Gönderilen Adres:</span>
                 <span className="font-semibold text-white font-mono truncate max-w-[200px]">{email}</span>
               </div>
 
@@ -605,55 +605,34 @@ export default function RegisterPage() {
                   href={emailProviderUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-zinc-900 border border-zinc-700/60 text-xs font-semibold text-sky-400 hover:text-white hover:bg-zinc-800 transition-all group"
+                  className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-sky-500/25 transition-all group"
                 >
-                  <span>Open Email Inbox</span>
-                  <ExternalLink className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  <span>Gelen Kutusunu Aç</span>
+                  <ExternalLink className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </a>
               )}
             </div>
 
-            {/* 6-Digit OTP Form */}
-            <form onSubmit={handleVerifyOtp} className="space-y-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-300">Enter 6-Digit Verification Code</label>
-                  <span className="text-[10px] text-zinc-500">From email</span>
-                </div>
-                <Input
-                  type="text"
-                  placeholder="123456"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\s+/g, ""))}
-                  className="text-center font-mono text-base tracking-widest rounded-xl bg-zinc-950/60"
-                  maxLength={12}
-                  required
-                />
+            <div className="space-y-3 pt-2">
+              <Link href={`/login?email=${encodeURIComponent(email)}`} className="block w-full">
+                <Button variant="outline" className="w-full text-xs rounded-xl py-2.5 border-zinc-700 hover:bg-zinc-800">
+                  <span>Onayladım, Giriş Yap</span>
+                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Button>
+              </Link>
+
+              <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-xs">
+                <span className="text-zinc-400">E-posta ulaşmadı mı?</span>
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isResending || cooldown > 0}
+                  className="inline-flex items-center gap-1.5 font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
+                  <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Bağlantıyı Tekrar Gönder"}</span>
+                </button>
               </div>
-
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                disabled={isVerifyingOtp}
-                className="w-full gap-2 text-xs font-bold rounded-2xl shadow-lg shadow-sky-500/25"
-              >
-                <span>{isVerifyingOtp ? "Verifying..." : "Verify & Complete Registration"}</span>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </form>
-
-            <div className="pt-2 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <span className="text-zinc-400">Didn&apos;t get the code?</span>
-              <button
-                type="button"
-                onClick={handleResend}
-                disabled={isResending || cooldown > 0}
-                className="inline-flex items-center gap-1.5 font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
-                <span>{cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend Email"}</span>
-              </button>
             </div>
           </div>
         )}

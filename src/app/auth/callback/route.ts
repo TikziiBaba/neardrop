@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
           const finalAvatar = sameEmailProfile?.avatar_url || avatarUrl;
           const finalRole = sameEmailProfile?.role || "member";
           const finalTier = sameEmailProfile?.subscription_tier || "free";
-          const finalQuota = sameEmailProfile?.quota_bytes || 10737418240;
+          const finalQuota = sameEmailProfile?.quota_bytes || 2147483648; // 2 GB Free Starter
 
           await supabase.from("profiles").insert({
             id: user.id,

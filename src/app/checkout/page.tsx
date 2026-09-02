@@ -246,51 +246,14 @@ function CheckoutContent() {
 
               <div className="pt-2 space-y-2.5">
                 <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={isProcessing}
-                  className="w-full text-xs rounded-xl py-3.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-xl shadow-sky-500/25 gap-2 font-bold"
-                >
-                  <Zap className="h-4 w-4" />
-                  <span>
-                    {isProcessing ? "Processing..." : `Simulate Direct Card Payment (${price} ₺)`}
-                  </span>
-                </Button>
-
-                <button
                   type="button"
-                  onClick={async () => {
-                    setIsProcessing(true);
-                    try {
-                      const res = await fetch("/api/payment/checkout", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ planId: plan.id, billingCycle }),
-                      });
-                      const data = await res.json();
-                      if (data.checkoutUrl) {
-                        window.location.href = data.checkoutUrl;
-                      } else {
-                        toast.info("LemonSqueezy test simulation: activating plan directly.");
-                        await updateProfile({
-                          quotaBytes: plan.quotaBytes,
-                          subscriptionTier: plan.id,
-                          subscriptionStatus: "active",
-                        });
-                        router.push("/dashboard");
-                      }
-                    } catch (err: any) {
-                      toast.error(err.message || "Payment service unavailable");
-                    } finally {
-                      setIsProcessing(false);
-                    }
-                  }}
-                  disabled={isProcessing}
-                  className="w-full py-2.5 px-4 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                  onClick={() => setShowPosNoticeModal(true)}
+                  variant="outline"
+                  className="w-full text-xs rounded-xl py-3.5 border-amber-500/30 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 gap-2 font-bold cursor-pointer"
                 >
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Pay via LemonSqueezy (Hosted Checkout)</span>
-                </button>
+                  <Clock className="h-4 w-4 text-amber-400" />
+                  <span>Sanal POS Entegrasyonu Sürüyor (Satın Alım Yakında)</span>
+                </Button>
               </div>
 
               <p className="text-[11px] text-center text-zinc-500">

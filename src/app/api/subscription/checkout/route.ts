@@ -80,61 +80,21 @@ export async function POST(req: NextRequest) {
       status: "warning",
     });
 
-    // Check if live POS test mode is enabled
-    const enableMockActivation = process.env.ENABLE_MOCK_CHECKOUT === "true";
-
-    if (!enableMockActivation) {
-      return NextResponse.json(
-        {
-          success: false,
-          gatewayStatus: "pos_pending",
-          orderId: merchantOid,
-          amount,
-          currency,
-          planName: plan.name,
-          error: "Virtual POS Gateway is currently being connected. Direct card checkout will be active tomorrow!",
-          message:
-            "Our Virtual POS payment gateway is currently undergoing integration with banking partners. Direct credit card checkout will be live tomorrow. You have been added to our priority activation list!",
-        },
-        { status: 400 }
-      );
-    }
-
-    // Optional Sandbox activation
-    const renewsDate = new Date();
-    if (billingCycle === "yearly") {
-      renewsDate.setFullYear(renewsDate.getFullYear() + 1);
-    } else {
-      renewsDate.setMonth(renewsDate.getMonth() + 1);
-    }
-
-    const newRole = (currentRole === "admin" || currentRole === "moderator") ? currentRole : "premium";
-
-    await supabase
-      .from("profiles")
-      .update({
-        quota_bytes: limits.quotaBytes,
-        role: newRole,
-        subscription_tier: plan.id,
-        subscription_status: "active",
-        subscription_renews_at: renewsDate.toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", userId);
-
-    return NextResponse.json({
-      success: true,
-      orderId: merchantOid,
-      amount,
-      currency,
-      planId: plan.id,
-      planName: plan.name,
-      quotaBytes: limits.quotaBytes,
-      quotaLabel: limits.quotaLabel,
-      role: newRole,
-      renewsAt: renewsDate.toISOString(),
-      message: `${plan.name} (${limits.quotaLabel}) subscription activated in sandbox mode!`,
-    });
+    // Plan purchasing is strictly paused until Virtual POS is connected
+    return NextResponse.json(
+      {
+        success: false,
+        gatewayStatus: "pos_pending",
+        orderId: merchantOid,
+        amount,
+        currency,
+        planName: plan.name,
+        error: "Sanal POS entegrasyonu devam etmektedir. Satın alımlar şu an için kapalıdır.",
+        message:
+          "Banka Sanal POS ve 3D Secure entegrasyon çalışmaları sürmektedir. Bu süreçte test veya canlı paket satın alımları kapalıdır. Talebiniz öncelikli bildirim listesine kaydedildi!",
+      },
+      { status: 400 }
+    );
   } catch (error: any) {
     console.error("Subscription checkout error:", error);
     return NextResponse.json({ success: false, error: error.message || "Checkout failed" }, { status: 500 });

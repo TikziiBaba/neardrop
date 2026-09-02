@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, Mail, Lock, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
+import { Sparkles, Mail, Lock, ArrowRight, AlertCircle, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
@@ -24,6 +24,17 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [showResend, setShowResend] = useState(false);
   const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+
+  const getEmailProviderUrl = (emailAddress: string) => {
+    const domain = emailAddress.split("@")[1]?.toLowerCase() || "";
+    if (domain.includes("gmail.com")) return "https://mail.google.com";
+    if (domain.includes("outlook.com") || domain.includes("hotmail.com")) return "https://outlook.live.com";
+    if (domain.includes("yahoo.com")) return "https://mail.yahoo.com";
+    if (domain.includes("icloud.com")) return "https://www.icloud.com/mail";
+    if (domain.includes("proton") || domain.includes("protonmail.com")) return "https://mail.proton.me";
+    return null;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,12 +66,22 @@ function LoginForm() {
   };
 
   const handleResendEmail = async () => {
-    if (!email.trim() || isResending) return;
+    if (!email.trim() || isResending || cooldown > 0) return;
     setIsResending(true);
     try {
       const res = await resendVerificationEmail(email.trim());
       if (res.success) {
-        toast.success(`Verification email sent to ${email}!`);
+        toast.success(`Doğrulama bağlantısı ${email} adresine tekrar gönderildi!`);
+        setCooldown(60);
+        const timer = setInterval(() => {
+          setCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
       } else {
         toast.error(res.error || "Failed to resend confirmation email.");
       }
@@ -112,13 +133,33 @@ function LoginForm() {
                 <span>{error}</span>
               </div>
               {showResend && (
-                <div className="pt-1 flex items-center justify-between border-t border-rose-500/20">
-                  <Link
-                    href={`/verify-email?email=${encodeURIComponent(email)}`}
-                    className="text-xs font-semibold text-sky-400 hover:underline"
-                  >
-                    Enter verification code →
-                  </Link>
+                <div className="pt-2 border-t border-rose-500/20 space-y-2">
+                  <p className="text-[11px] text-zinc-300 leading-relaxed">
+                    E-posta adresiniz henüz onaylanmamış. Giriş yapabilmek için lütfen gelen kutunuzdaki Supabase onay bağlantısına tıklayın.
+                  </p>
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleResendEmail}
+                      disabled={isResending || cooldown > 0}
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 transition-colors"
+                    >
+                      {isResending ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+                      <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Doğrulama Linkini Tekrar Gönder"}</span>
+                    </button>
+
+                    {getEmailProviderUrl(email) && (
+                      <a
+                        href={getEmailProviderUrl(email)!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1"
+                      >
+                        <span>Gelen Kutusu</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>

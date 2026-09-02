@@ -772,7 +772,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Compute statistics
   const usedBytes = files.reduce((acc, f) => acc + (f.size || 0), 0);
-  const quotaBytes = user?.quotaBytes || 10 * 1024 * 1024 * 1024; // 10 GB
+  const quotaBytes = user?.quotaBytes || 2 * 1024 * 1024 * 1024; // 2 GB (Free starter)
   const totalDownloads = files.reduce((acc, f) => acc + (f.downloadsCount || 0), 0);
   const sharedCount = shares.filter((s) => s.isActive).length;
 

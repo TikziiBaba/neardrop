@@ -164,7 +164,7 @@ export const translations = {
       q5: "Paylaşılan bir dosyayı istediğim zaman iptal edebilir veya silebilir miyim?",
       a5: "Evet. Panelinizden veya Paylaşılanlar sekmesinden aktif herhangi bir linki anında devre dışı bırakabilir veya temel dosyayı silebilirsiniz; bu, dosyayı güvenli depolama yerimizden temizler ve ilişkili tüm linkleri geçersiz kılar.",
       q6: "Hangi depolama kotası dahildir?",
-      a6: "Her yeni hesap varsayılan olarak 10 GB yüksek hızlı bulut depolama alır. Gerçek zamanlı kullanım ve kategori dağılımlarını Depolama sayfanızdan istediğiniz zaman takip edebilirsiniz.",
+      a6: "Her yeni hesap varsayılan olarak 2 GB yüksek hızlı bulut depolama alır. Gerçek zamanlı kullanım ve kategori dağılımlarını Depolama sayfanızdan istediğiniz zaman takip edebilirsiniz.",
     },
 
     // ===== CTA =====
@@ -172,10 +172,10 @@ export const translations = {
       badge: "Saniyeler İçinde Başlayın",
       title: "Dosyaları karmaşıklık olmadan paylaşmaya hazır mısınız?",
       subtitle:
-        "Hesabınızı bugün oluşturun ve 10 GB ücretsiz bulut depolama ile ultra hızlı, güvenli dosya transferlerini deneyimleyin.",
+        "Hesabınızı bugün oluşturun ve 2 GB ücretsiz bulut depolama ile ultra hızlı, güvenli dosya transferlerini deneyimleyin.",
       ctaPrimary: "Ücretsiz Hesap Oluştur",
-      ctaSecondary: "Panel Demosunu Keşfet",
-      trust: "Kredi kartı gerekmez • Anında aktivasyon • 10 GB ücretsiz kota",
+      ctaSecondary: "Nasıl Çalışır?",
+      trust: "Kredi kartı gerekmez • Anında aktivasyon • 2 GB ücretsiz kota",
     },
 
     // ===== FOOTER =====
@@ -225,7 +225,7 @@ export const translations = {
     register: {
       createAccount: "Hesabınızı oluşturun",
       subtitle:
-        "10 GB ücretsiz bulut depolama ile güvenli dosya paylaşımına başlayın.",
+        "2 GB ücretsiz bulut depolama ile güvenli dosya paylaşımına başlayın.",
       displayNameLabel: "Görünen Ad",
       displayNamePlaceholder: "Adınız",
       emailLabel: "E-posta Adresi",
@@ -528,7 +528,7 @@ export const translations = {
       q5: "Can I revoke or delete a shared file at any time?",
       a5: "Yes. From your dashboard or Shared tab, you can disable any active link instantly or delete the underlying file, which purges the file from secure cloud storage and invalidates all associated links.",
       q6: "What storage quota is included?",
-      a6: "Every new account receives 10 GB of high-speed cloud storage by default. You can track real-time usage and category breakdowns anytime on your Storage page.",
+      a6: "Every new account receives 2 GB of high-speed cloud storage by default. You can track real-time usage and category breakdowns anytime on your Storage page.",
     },
 
     // ===== CTA =====
@@ -536,10 +536,10 @@ export const translations = {
       badge: "Get Started in Seconds",
       title: "Ready to share files without the clutter?",
       subtitle:
-        "Create your account today and experience ultra-fast, secure file transfers with 10 GB free cloud storage.",
+        "Create your account today and experience ultra-fast, secure file transfers with 2 GB free cloud storage.",
       ctaPrimary: "Create Free Account",
-      ctaSecondary: "Explore Dashboard Demo",
-      trust: "No credit card required • Instant activation • 10 GB free quota",
+      ctaSecondary: "How It Works",
+      trust: "No credit card required • Instant activation • 2 GB free quota",
     },
 
     // ===== FOOTER =====
@@ -589,7 +589,7 @@ export const translations = {
     register: {
       createAccount: "Create your account",
       subtitle:
-        "Start sharing files securely with 10 GB free cloud storage.",
+        "Start sharing files securely with 2 GB free cloud storage.",
       displayNameLabel: "Display Name",
       displayNamePlaceholder: "Your Name",
       emailLabel: "Email Address",

@@ -145,7 +145,7 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     activeUsers = profiles.length;
     profiles.forEach((p) => {
       totalStorageBytes += Number(p.used_bytes || 0);
-      totalQuotaBytes += Number(p.quota_bytes || 10737418240);
+      totalQuotaBytes += Number(p.quota_bytes || 2147483648);
     });
   }
 
@@ -232,7 +232,7 @@ export async function fetchAdminStats(): Promise<AdminStats> {
     activeUsers: Math.max(activeUsers, 1),
     totalFiles,
     totalStorageBytes,
-    totalQuotaBytes: Math.max(totalQuotaBytes, 10737418240),
+    totalQuotaBytes: Math.max(totalQuotaBytes, 2147483648),
     totalShares,
     activeShares,
     totalDownloads,
@@ -285,7 +285,7 @@ export async function fetchAdminUsers(): Promise<AdminUser[]> {
 
   return profiles.map((p, idx) => {
     const devInfo = userLatestDeviceMap[p.id];
-    const quota = Number(p.quota_bytes || 10737418240);
+    const quota = Number(p.quota_bytes || 2147483648);
     const tier =
       (p.subscription_tier as SubscriptionTier) ||
       (quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free");
@@ -597,7 +597,7 @@ export async function fetchUserFullDetail(userId: string) {
   const devices = dRes.data || [];
 
   const actualUsedBytes = files.reduce((acc, f) => acc + f.size, 0);
-  const quota = Number(profile.quota_bytes || 10737418240);
+  const quota = Number(profile.quota_bytes || 2147483648);
   const tier = quota >= 2199023255552 ? "enterprise" : quota >= 536870912000 ? "ultra" : quota >= 107374182400 ? "pro" : "free";
   const envAdmins = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
     .toLowerCase()

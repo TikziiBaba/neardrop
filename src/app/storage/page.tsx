@@ -64,11 +64,13 @@ export default function StoragePage() {
     });
 
     const total = Math.max(stats.usedBytes, 1);
-    return Object.entries(map).map(([key, val]) => ({
-      key,
-      ...val,
-      percent: Math.round((val.bytes / total) * 100),
-    }));
+    return Object.entries(map)
+      .map(([key, val]) => ({
+        key,
+        ...val,
+        percent: Math.round((val.bytes / total) * 100),
+      }))
+      .sort((a, b) => b.bytes - a.bytes);
   }, [files, stats.usedBytes]);
 
   // Sorted largest files

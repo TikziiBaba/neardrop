@@ -99,8 +99,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const meta = userMetadata || {};
       const displayName = profile?.display_name || meta.full_name || meta.user_name || meta.name || email.split("@")[0] || "User";
       const avatarUrl = existingAvatar || meta.avatar_url || meta.picture || "";
-      const quotaBytes = profile?.quota_bytes || 2147483648; // 2 GB default for free starter
+      let quotaBytes = profile?.quota_bytes || 2147483648; // 2 GB default for free starter
       const role = determineRole(email, profile?.role);
+      const isPaidTier =
+        profile?.subscription_tier === "pro" ||
+        profile?.subscription_tier === "ultra" ||
+        profile?.subscription_tier === "enterprise";
+
+      // Auto-downscale free plan accounts with legacy 10 GB or 1 TB down to 2 GB
+      if (!isPaidTier && quotaBytes > 2147483648) {
+        quotaBytes = 2147483648;
+        if (profile?.id) {
+          supabase
+            .from("profiles")
+            .update({ quota_bytes: 2147483648, subscription_tier: "free" })
+            .eq("id", profile.id)
+            .then();
+        }
+      }
+
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
 
       // Check email verification status from Supabase user object or OAuth provider

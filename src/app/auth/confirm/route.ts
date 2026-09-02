@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
             email,
             display_name: displayName,
             avatar_url: meta.avatar_url || meta.picture || "",
-            quota_bytes: 1099511627776, // 1 TB Free
+            quota_bytes: 2147483648, // 2 GB Free Starter
             used_bytes: 0,
             role: "member",
             subscription_tier: "free",

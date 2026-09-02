@@ -12,32 +12,33 @@ import {
   RefreshCw,
   ExternalLink,
   ShieldCheck,
-  KeyRound,
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, verifyOtp, resendVerificationEmail } = useAuth();
+  const { user, resendVerificationEmail } = useAuth();
+  const supabase = createClient();
 
   const queryEmail = searchParams.get("email") || user?.email || "";
   const queryError = searchParams.get("error");
   const queryVerified = searchParams.get("verified");
 
   const [email, setEmail] = useState(queryEmail);
-  const [otpCode, setOtpCode] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [isSuccess, setIsSuccess] = useState(Boolean(queryVerified) || user?.isEmailVerified === true);
   const [errorMessage, setErrorMessage] = useState<string | null>(
-    queryError === "invalid_token" ? "The confirmation link has expired or is invalid. Please request a new link below." : null
+    queryError === "invalid_token"
+      ? "Doğrulama bağlantısının süresi dolmuş veya geçersiz. Lütfen aşağıdan yeni bir bağlantı isteyin."
+      : null
   );
 
   useEffect(() => {
@@ -55,34 +56,27 @@ function VerifyEmailContent() {
     }
   }, [queryVerified, user?.isEmailVerified]);
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !otpCode.trim()) {
-      setErrorMessage("Please enter both your email address and 6-digit verification code.");
-      return;
-    }
-
-    setIsLoading(true);
-    setErrorMessage(null);
-
+  const handleCheckStatus = async () => {
+    if (!supabase) return;
+    setIsChecking(true);
     try {
-      const res = await verifyOtp(email.trim(), otpCode.trim(), "signup");
-      if (!res.success) {
-        setErrorMessage(res.error || "Verification failed. Please check the code and try again.");
-      } else {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user?.email_confirmed_at) {
         setIsSuccess(true);
-        toast.success("Email verified successfully! Welcome to NearDrop.");
+        toast.success("E-posta adresiniz doğrulandı!");
         try {
           confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
         } catch (e) {}
         setTimeout(() => {
           router.push("/dashboard");
-        }, 2000);
+        }, 1200);
+      } else {
+        toast.info("E-posta henüz doğrulanmamış görünüyor. Lütfen gelen kutunuzdaki bağlantıya tıklayın.");
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "An unexpected error occurred during verification.");
+      toast.error("Durum kontrol edilirken bir hata oluştu.");
     } finally {
-      setIsLoading(false);
+      setIsChecking(false);
     }
   };
 
@@ -94,7 +88,7 @@ function VerifyEmailContent() {
     try {
       const res = await resendVerificationEmail(email.trim());
       if (res.success) {
-        toast.success(`New verification link and code sent to ${email}!`);
+        toast.success(`Yeni doğrulama bağlantısı ${email} adresine gönderildi!`);
         setCooldown(60);
         const timer = setInterval(() => {
           setCooldown((prev) => {
@@ -106,10 +100,10 @@ function VerifyEmailContent() {
           });
         }, 1000);
       } else {
-        setErrorMessage(res.error || "Failed to resend confirmation email.");
+        setErrorMessage(res.error || "Doğrulama e-postası gönderilemedi.");
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Could not resend email.");
+      setErrorMessage(err.message || "E-posta gönderilirken hata oluştu.");
     } finally {
       setIsResending(false);
     }
@@ -142,12 +136,12 @@ function VerifyEmailContent() {
           </Link>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            {isSuccess ? "Email Verified Successfully" : "Verify Your Email Address"}
+            {isSuccess ? "E-posta Başarıyla Doğrulandı" : "E-posta Doğrulaması Gerekiyor"}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">
             {isSuccess
-              ? "Your NearDrop account is fully authenticated with 1 TB free unlimited storage."
-              : "Click the link in your email or enter the 6-digit confirmation code below."}
+              ? "NearDrop hesabınız başarıyla aktifleştirildi. Paneliniz hazır!"
+              : "Hesabınızı aktifleştirmek için gelen kutunuzdaki Supabase onay linkine tıklayın."}
           </p>
         </div>
 
@@ -161,33 +155,28 @@ function VerifyEmailContent() {
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white">Account Confirmed</h3>
+                <h3 className="text-base font-bold text-white">Hesabınız Doğrulandı</h3>
                 <p className="text-xs text-zinc-400">
-                  All Pro and Enterprise capabilities are unlocked and ready to use.
+                  Dosyalarınızı güvenle yükleyebilir ve dilediğiniz gibi paylaşabilirsiniz.
                 </p>
               </div>
 
               <div className="pt-2">
                 <Link href="/dashboard">
                   <Button variant="primary" size="lg" className="w-full gap-2 rounded-2xl font-bold shadow-lg shadow-sky-500/25">
-                    <span>Go to Dashboard</span>
+                    <span>Panele Git</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               </div>
             </div>
           ) : (
-            /* Pending / Input State */
+            /* Pending Link Confirmation State */
             <div className="space-y-5 animate-in fade-in duration-200">
               {/* Top illustration envelope */}
               <div className="flex items-center justify-center">
-                <div className="relative">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 shadow-md">
-                    <Mail className="h-7 w-7" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-black">
-                    <KeyRound className="h-3 w-3" />
-                  </div>
+                <div className="w-16 h-16 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center shadow-lg shadow-sky-500/10 animate-bounce">
+                  <Mail className="h-8 w-8" />
                 </div>
               </div>
 
@@ -202,9 +191,9 @@ function VerifyEmailContent() {
               {/* Email badge & Quick Webmail Shortcut */}
               <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Confirmation Sent To:</span>
+                  <span className="text-zinc-400">Onay Linki Gönderilen E-posta:</span>
                   <span className="font-semibold text-white font-mono truncate max-w-[200px]">
-                    {email || "your email"}
+                    {email || "Belirtilen e-posta"}
                   </span>
                 </div>
 
@@ -213,74 +202,38 @@ function VerifyEmailContent() {
                     href={emailProviderUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-zinc-900 border border-zinc-700/60 text-xs font-semibold text-sky-400 hover:text-white hover:bg-zinc-800 transition-all group"
+                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-sky-500/25 transition-all group"
                   >
-                    <span>Open Email Inbox</span>
-                    <ExternalLink className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    <span>Gelen Kutusunu Aç</span>
+                    <ExternalLink className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                   </a>
                 )}
               </div>
 
-              {/* 6-Digit OTP Form */}
-              <form onSubmit={handleVerifyOtp} className="space-y-4 pt-1">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">Email Address</label>
-                  <Input
-                    type="email"
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="text-xs rounded-xl bg-zinc-950/60"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-zinc-300">6-Digit Code / Token</label>
-                    <span className="text-[10px] text-zinc-500">From confirmation email</span>
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder="123456"
-                    value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\s+/g, ""))}
-                    className="text-center font-mono text-base tracking-widest rounded-xl bg-zinc-950/60"
-                    maxLength={12}
-                    required
-                  />
-                </div>
-
+              <div className="space-y-3 pt-2">
                 <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  disabled={isLoading}
-                  className="w-full gap-2 text-xs font-bold rounded-2xl shadow-lg shadow-sky-500/25"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <span>Confirm & Activate Account</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </form>
-
-              {/* Resend Action */}
-              <div className="pt-2 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <span className="text-zinc-400">Didn&apos;t receive the email?</span>
-                <button
                   type="button"
-                  onClick={handleResend}
-                  disabled={isResending || cooldown > 0 || !email}
-                  className="inline-flex items-center gap-1.5 font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  variant="outline"
+                  onClick={handleCheckStatus}
+                  disabled={isChecking}
+                  className="w-full text-xs rounded-xl py-2.5 border-zinc-700 hover:bg-zinc-800 gap-2"
                 >
-                  <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
-                  <span>{cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend Verification Email"}</span>
-                </button>
+                  {isChecking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />}
+                  <span>{isChecking ? "Kontrol ediliyor..." : "Bağlantıya Tıkladım, Kontrol Et"}</span>
+                </Button>
+
+                <div className="pt-2 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <span className="text-zinc-400">E-posta ulaşmadı mı?</span>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={isResending || cooldown > 0 || !email}
+                    className="inline-flex items-center gap-1.5 font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
+                    <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Doğrulama Linkini Tekrar Gönder"}</span>
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -289,7 +242,7 @@ function VerifyEmailContent() {
         {/* Footer info */}
         <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-          <span>NearDrop 100% Free VIP Cloud Security</span>
+          <span>NearDrop Güvenli Bulut Mimarisi</span>
         </div>
       </div>
     </div>

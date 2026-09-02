@@ -141,10 +141,10 @@ export const Sidebar: React.FC = () => {
             <span className="font-semibold text-zinc-200">Cloud Storage</span>
             <span className="text-[11px] text-sky-400 font-mono font-medium">%{quotaPercent}</span>
           </div>
-          <Progress value={stats.usedBytes} max={stats.quotaBytes || 10737418240} />
+          <Progress value={stats.usedBytes} max={stats.quotaBytes || 2147483648} />
           <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
             <span>{formatBytes(stats.usedBytes)}</span>
-            <span>{formatBytes(stats.quotaBytes || 10737418240)}</span>
+            <span>{formatBytes(stats.quotaBytes || 2147483648)}</span>
           </div>
         </div>
 

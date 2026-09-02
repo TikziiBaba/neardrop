@@ -639,7 +639,7 @@ export default function AdminUsersPage() {
                   }}
                   className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
                 >
-                  <option value="free">Free Starter (10 GB)</option>
+                  <option value="free">Free Starter (2 GB)</option>
                   <option value="pro">Pro Plan (100 GB)</option>
                   <option value="ultra">Ultra Plan (500 GB)</option>
                   <option value="enterprise">Enterprise (2 TB)</option>
