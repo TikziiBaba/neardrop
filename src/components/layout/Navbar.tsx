@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button variant="primary" size="sm" className="gap-1.5">
+                <Button variant="primary" size="pill" className="gap-2 shadow-lg shadow-sky-500/25">
                   <span>{t.navbar.getStarted}</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
