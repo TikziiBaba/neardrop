@@ -8,6 +8,7 @@ import { extractFilesFromDataTransfer } from "@/lib/utils/folder-upload";
 import { formatBytes, formatSpeed, formatEta } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { SoundManager } from "@/lib/utils/sound-effects";
 import { toast } from "sonner";
 
 interface DropZoneProps {
@@ -92,23 +93,26 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        className={`relative overflow-hidden rounded-3xl border-2 border-dashed transition-all duration-300 ${
+        className={`group relative overflow-hidden rounded-3xl border transition-all duration-300 ${
           isDragging
-            ? "border-sky-400 bg-sky-500/10 scale-[1.01] shadow-2xl shadow-sky-500/20"
-            : "border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/60"
+            ? "border-sky-400/80 bg-sky-500/15 scale-[1.01] shadow-2xl shadow-sky-500/25 ring-2 ring-sky-400/30"
+            : "border-zinc-800/80 bg-zinc-900/40 hover:border-zinc-700/80 hover:bg-zinc-900/60 backdrop-blur-xl shadow-xl"
         } ${compact ? "p-6" : "p-8 sm:p-12 text-center"}`}
       >
-        {/* Glow ambient decoration */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-96 rounded-full bg-sky-500/10 blur-3xl" />
+        {/* Ambient liquid glow background */}
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[28rem] rounded-full bg-gradient-to-b from-sky-500/15 via-blue-500/10 to-transparent blur-3xl group-hover:from-sky-500/25 transition-all duration-500" />
 
-        <div className="relative z-10 flex flex-col items-center justify-center space-y-4">
-          {/* Animated Icon Circle */}
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800/80 text-sky-400 border border-zinc-700/60 shadow-lg shadow-sky-500/5 transition-transform duration-300 group-hover:scale-110">
-            <UploadCloud className="h-8 w-8 animate-bounce-slow" />
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-5">
+          {/* Multi-layered Apple Squircle Icon Container */}
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 rounded-2xl bg-sky-500/20 blur-xl group-hover:blur-2xl transition-all duration-300" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-b from-zinc-800/90 to-zinc-900/90 text-sky-400 border border-zinc-700/70 shadow-2xl shadow-sky-500/10 transition-transform duration-300 group-hover:scale-105 group-hover:border-sky-500/40">
+              <UploadCloud className="h-9 w-9 text-sky-400 group-hover:-translate-y-0.5 transition-transform duration-300" />
+            </div>
           </div>
 
           <div className="space-y-1.5 max-w-md mx-auto">
-            <h3 className="text-base sm:text-lg font-semibold tracking-tight text-white">
+            <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
               {isDragging ? t.dropzone.dropHere : t.dropzone.dragDropHint}
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
@@ -116,35 +120,52 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
             </p>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
-            <Button
+          {/* Premium Apple-Grade Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            {/* Primary Choose Files Hero Button */}
+            <button
               type="button"
-              variant="primary"
-              size="default"
-              onClick={() => fileInputRef.current?.click()}
-              className="gap-2 shadow-lg shadow-sky-500/25"
+              onClick={() => {
+                SoundManager.play("click");
+                fileInputRef.current?.click();
+              }}
+              className="group/btn relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-xl shadow-sky-500/30 hover:shadow-sky-500/40 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
             >
-              <UploadCloud className="h-4 w-4" />
-              <span>{t.dropzone.chooseFiles}</span>
-            </Button>
+              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-white/20 text-white">
+                <UploadCloud className="h-3.5 w-3.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+              </div>
+              <span className="tracking-wide">{t.dropzone.chooseFiles}</span>
+              <span className="text-[10px] opacity-70 font-mono font-normal pl-0.5 border-l border-white/25">⌘O</span>
+            </button>
 
-            <Button
+            {/* Secondary Upload Folder Frosted Glass Button */}
+            <button
               type="button"
-              variant="outline"
-              size="default"
-              onClick={() => folderInputRef.current?.click()}
-              className="gap-2"
+              onClick={() => {
+                SoundManager.play("click");
+                folderInputRef.current?.click();
+              }}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
             >
               <FolderUp className="h-4 w-4 text-sky-400" />
               <span>{t.dropzone.uploadFolder}</span>
-            </Button>
+            </button>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-zinc-500 pt-1">
-            <span className="flex items-center gap-1">✓ {t.dropzone.encrypted}</span>
-            <span className="flex items-center gap-1">✓ {t.dropzone.directStreaming}</span>
-            <span className="flex items-center gap-1">✓ {t.dropzone.unlimitedSpeed}</span>
+          {/* Feature Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-zinc-400 pt-2 font-medium">
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span>{t.dropzone.encrypted}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+              <span>{t.dropzone.directStreaming}</span>
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+              <span>{t.dropzone.unlimitedSpeed}</span>
+            </span>
           </div>
         </div>
       </div>

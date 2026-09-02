@@ -239,17 +239,18 @@ export default function SettingsPage() {
                   />
 
                   <div className="flex items-center gap-2">
-                    <Button
+                    <button
                       type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={() => {
+                        SoundManager.play("click");
+                        fileInputRef.current?.click();
+                      }}
                       disabled={isUploadingAvatar}
-                      className="text-xs gap-1.5 rounded-xl"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none disabled:opacity-50"
                     >
-                      <Upload className="h-3.5 w-3.5" />
+                      <Upload className="h-3.5 w-3.5 text-sky-400" />
                       <span>{isUploadingAvatar ? "Uploading..." : "Upload New Photo"}</span>
-                    </Button>
+                    </button>
                   </div>
                 </div>
               </div>

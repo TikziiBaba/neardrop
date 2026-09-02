@@ -469,26 +469,30 @@ export default function FilesPage() {
             <p className="text-xs text-zinc-400 mt-0.5">{t.filesPage.subtitle}</p>
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <Button
-              variant="outline"
-              size="default"
-              onClick={() => folderInputRef.current?.click()}
-              className="gap-2 border-zinc-700/80 hover:bg-zinc-800 text-zinc-200"
+          <div className="flex items-center gap-2.5 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => {
+                SoundManager.play("click");
+                folderInputRef.current?.click();
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
             >
               <FolderUp className="h-4 w-4 text-sky-400" />
               <span>{t.filesPage.uploadFolder}</span>
-            </Button>
+            </button>
 
-            <Button
-              variant="primary"
-              size="default"
-              onClick={() => fileInputRef.current?.click()}
-              className="gap-2 shadow-lg shadow-sky-500/20"
+            <button
+              type="button"
+              onClick={() => {
+                SoundManager.play("click");
+                fileInputRef.current?.click();
+              }}
+              className="group/btn relative inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-lg shadow-sky-500/25 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
             >
-              <UploadCloud className="h-4 w-4" />
+              <UploadCloud className="h-4 w-4 group-hover/btn:-translate-y-0.5 transition-transform" />
               <span>{t.filesPage.uploadFiles}</span>
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -663,24 +667,28 @@ export default function FilesPage() {
               </p>
             </div>
             <div className="flex items-center justify-center gap-3 pt-2">
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="gap-2"
+              <button
+                type="button"
+                onClick={() => {
+                  SoundManager.play("click");
+                  fileInputRef.current?.click();
+                }}
+                className="group/btn relative inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-lg shadow-sky-500/25 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
               >
-                <UploadCloud className="h-4 w-4" />
+                <UploadCloud className="h-4 w-4 group-hover/btn:-translate-y-0.5 transition-transform" />
                 <span>{t.filesPage.uploadFiles}</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => folderInputRef.current?.click()}
-                className="gap-2"
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  SoundManager.play("click");
+                  folderInputRef.current?.click();
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
               >
                 <FolderUp className="h-4 w-4 text-sky-400" />
                 <span>{t.filesPage.uploadFolder}</span>
-              </Button>
+              </button>
             </div>
           </div>
         ) : viewMode === "list" ? (
