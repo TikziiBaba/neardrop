@@ -28,6 +28,8 @@ export interface UserProfile {
   subscriptionStatus?: SubscriptionStatus;
   subscriptionRenewsAt?: string;
   status?: 'active' | 'suspended' | 'banned';
+  isEmailVerified?: boolean;
+  emailConfirmedAt?: string | null;
   lastIpAddress?: string;
   lastDevice?: string;
   lastBrowser?: string;

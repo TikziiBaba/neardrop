@@ -7,9 +7,11 @@ import { createClient } from "@/lib/supabase/client";
 interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  register: (email: string, password: string, displayName: string, selectedTier?: SubscriptionTier) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string; requiresVerification?: boolean }>;
+  register: (email: string, password: string, displayName: string, selectedTier?: SubscriptionTier) => Promise<{ success: boolean; error?: string; requiresVerification?: boolean }>;
   signInWithOAuth: (provider: "google" | "github") => Promise<{ success: boolean; error?: string }>;
+  resendVerificationEmail: (email?: string) => Promise<{ success: boolean; error?: string }>;
+  verifyOtp: (email: string, token: string, type?: "signup" | "email" | "magiclink" | "recovery") => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
 }
@@ -40,20 +42,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return "member";
   };
 
-  // Helper: Determine subscription tier from quota
+  // Helper: Determine subscription tier
   const determineTier = (quotaBytes: number, dbTier?: string): SubscriptionTier => {
     if (dbTier === "pro" || dbTier === "ultra" || dbTier === "enterprise") {
       return dbTier as SubscriptionTier;
     }
-    if (quotaBytes >= 2199023255552) return "enterprise"; // 2 TB
-    if (quotaBytes >= 536870912000) return "ultra"; // 500 GB
-    if (quotaBytes >= 107374182400) return "pro"; // 100 GB
     return "free";
   };
 
   // Helper: fetch profile from Supabase and build UserProfile
   const fetchProfile = useCallback(
-    async (userId: string, email: string, userMetadata?: any): Promise<UserProfile | null> => {
+    async (userId: string, email: string, userMetadata?: any, rawUser?: any): Promise<UserProfile | null> => {
       if (!supabase) return null;
 
       // 1. Check profile by user ID
@@ -97,9 +96,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const meta = userMetadata || {};
       const displayName = profile?.display_name || meta.full_name || meta.user_name || meta.name || email.split("@")[0] || "User";
       const avatarUrl = existingAvatar || meta.avatar_url || meta.picture || "";
-      const quotaBytes = profile?.quota_bytes || 2147483648; // 2 GB default for free starter
+      const quotaBytes = profile?.quota_bytes || 1099511627776; // 1 TB default free quota
       const role = determineRole(email, profile?.role);
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
+
+      // Check email verification status from Supabase user object or OAuth provider
+      const emailConfirmedAt = rawUser?.email_confirmed_at || rawUser?.confirmed_at || null;
+      const isOAuth = rawUser?.app_metadata?.provider && rawUser.app_metadata.provider !== "email";
+      const isEmailVerified = Boolean(emailConfirmedAt || isOAuth);
 
       if (profile) {
         return {
@@ -114,6 +118,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           subscriptionStatus: profile.subscription_status || "active",
           subscriptionRenewsAt: profile.subscription_renews_at,
           status: "active",
+          isEmailVerified,
+          emailConfirmedAt,
           createdAt: profile.created_at,
           updatedAt: profile.updated_at,
         };
@@ -129,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           quota_bytes: quotaBytes,
           used_bytes: 0,
           role: role || "member",
-          subscription_tier: subscriptionTier || "free",
+          subscription_tier: "free",
           subscription_status: "active",
         });
       } catch (e) {
@@ -144,9 +150,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         quotaBytes,
         usedBytes: 0,
         role,
-        subscriptionTier,
+        subscriptionTier: "free",
         subscriptionStatus: "active",
         status: "active",
+        isEmailVerified,
+        emailConfirmedAt,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -166,7 +174,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: { session },
         } = await supabase.auth.getSession();
         if (session?.user) {
-          const profile = await fetchProfile(session.user.id, session.user.email || "", session.user.user_metadata);
+          const profile = await fetchProfile(
+            session.user.id,
+            session.user.email || "",
+            session.user.user_metadata,
+            session.user
+          );
           setUser(profile);
         }
       } catch (err) {
@@ -182,12 +195,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session?.user) {
-        const profile = await fetchProfile(session.user.id, session.user.email || "", session.user.user_metadata);
+        const profile = await fetchProfile(
+          session.user.id,
+          session.user.email || "",
+          session.user.user_metadata,
+          session.user
+        );
         setUser(profile);
       } else if (event === "SIGNED_OUT") {
         setUser(null);
       } else if (event === "TOKEN_REFRESHED" && session?.user) {
-        const profile = await fetchProfile(session.user.id, session.user.email || "", session.user.user_metadata);
+        const profile = await fetchProfile(
+          session.user.id,
+          session.user.email || "",
+          session.user.user_metadata,
+          session.user
+        );
         setUser(profile);
       }
     });
@@ -197,7 +220,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [supabase, fetchProfile]);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: string; requiresVerification?: boolean }> => {
     if (!supabase) {
       return { success: false, error: "Supabase is not configured." };
     }
@@ -205,9 +231,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      if (error) {
+        if (error.message.toLowerCase().includes("email not confirmed")) {
+          return {
+            success: false,
+            error: "Email not confirmed. Please check your inbox for the verification link.",
+            requiresVerification: true,
+          };
+        }
+        throw error;
+      }
       if (data.user) {
-        const profile = await fetchProfile(data.user.id, data.user.email || email);
+        const profile = await fetchProfile(
+          data.user.id,
+          data.user.email || email,
+          data.user.user_metadata,
+          data.user
+        );
         setUser(profile);
         return { success: true };
       }
@@ -224,41 +264,100 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     password: string,
     displayName: string,
     selectedTier: SubscriptionTier = "free"
-  ): Promise<{ success: boolean; error?: string }> => {
+  ): Promise<{ success: boolean; error?: string; requiresVerification?: boolean }> => {
     if (!supabase) {
       return { success: false, error: "Supabase is not configured." };
     }
 
     setIsLoading(true);
     try {
-      const initialQuota = selectedTier === "free" ? 2147483648 : 2147483648; // initialize with free quota until checkout
+      const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             display_name: displayName,
-            subscription_tier: selectedTier,
+            subscription_tier: "free",
           },
+          emailRedirectTo: `${origin}/auth/confirm`,
         },
       });
       if (error) throw error;
       if (data.user) {
-        const profile = await fetchProfile(data.user.id, data.user.email || email);
-        if (profile) {
-          // If a specific tier was picked on signup, ensure profile reflects it
-          if (selectedTier && selectedTier !== "free") {
-            profile.subscriptionTier = selectedTier;
-          }
+        // If session is null or email is not confirmed, verification is needed
+        const requiresVerification = !data.session || !data.user.email_confirmed_at;
+
+        if (data.session) {
+          const profile = await fetchProfile(
+            data.user.id,
+            data.user.email || email,
+            data.user.user_metadata,
+            data.user
+          );
           setUser(profile);
         }
-        return { success: true };
+
+        return {
+          success: true,
+          requiresVerification,
+        };
       }
       return { success: false, error: "Registration failed." };
     } catch (err: any) {
       return { success: false, error: err.message || "Failed to register" };
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const resendVerificationEmail = async (targetEmail?: string): Promise<{ success: boolean; error?: string }> => {
+    if (!supabase) return { success: false, error: "Supabase is not configured." };
+    const emailToSend = targetEmail || user?.email;
+    if (!emailToSend) return { success: false, error: "No email address specified." };
+
+    try {
+      const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: emailToSend,
+        options: {
+          emailRedirectTo: `${origin}/auth/confirm`,
+        },
+      });
+      if (error) throw error;
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Failed to resend confirmation email." };
+    }
+  };
+
+  const verifyOtp = async (
+    email: string,
+    token: string,
+    type: "signup" | "email" | "magiclink" | "recovery" = "signup"
+  ): Promise<{ success: boolean; error?: string }> => {
+    if (!supabase) return { success: false, error: "Supabase is not configured." };
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email: email.trim(),
+        token: token.trim(),
+        type: type as any,
+      });
+      if (error) throw error;
+      if (data?.session?.user) {
+        const profile = await fetchProfile(
+          data.session.user.id,
+          data.session.user.email || email,
+          data.session.user.user_metadata,
+          data.session.user
+        );
+        setUser(profile);
+        return { success: true };
+      }
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.message || "Invalid or expired confirmation code." };
     }
   };
 
@@ -330,6 +429,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         signInWithOAuth,
+        resendVerificationEmail,
+        verifyOtp,
         logout,
         updateProfile,
       }}

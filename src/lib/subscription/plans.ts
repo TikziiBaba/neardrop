@@ -10,6 +10,8 @@ export const PRICING_PLANS: PricingPlan[] = [
     quotaLabel: TIER_LIMITS.free.quotaLabel,
     priceMonthly: TIER_LIMITS.free.priceMonthly,
     priceYearly: TIER_LIMITS.free.priceYearly,
+    popular: true,
+    badge: "100% Free Forever",
     features: TIER_LIMITS.free.features,
   },
   {
@@ -20,8 +22,7 @@ export const PRICING_PLANS: PricingPlan[] = [
     quotaLabel: TIER_LIMITS.pro.quotaLabel,
     priceMonthly: TIER_LIMITS.pro.priceMonthly,
     priceYearly: TIER_LIMITS.pro.priceYearly,
-    popular: true,
-    badge: "Most Popular",
+    badge: "Included Free",
     features: TIER_LIMITS.pro.features,
   },
   {

@@ -32,6 +32,8 @@ import {
   Zap,
   ArrowRight,
   Volume2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import { SoundManager } from "@/lib/utils/sound-effects";
 import { toast } from "sonner";
@@ -267,7 +269,23 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">Email Address</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-zinc-300">Email Address</label>
+                    {user?.isEmailVerified ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Verified
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/verify-email?email=${encodeURIComponent(user?.email || "")}`}
+                        className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
+                      >
+                        <AlertCircle className="h-3 w-3" />
+                        Unverified • Verify Now
+                      </Link>
+                    )}
+                  </div>
                   <Input
                     value={email}
                     disabled
@@ -278,8 +296,9 @@ export default function SettingsPage() {
                 <Button
                   type="submit"
                   variant="primary"
+                  size="default"
                   disabled={isSaving}
-                  className="gap-2 text-xs rounded-xl bg-purple-600 hover:bg-purple-500"
+                  className="rounded-xl text-xs gap-2 shadow-md shadow-sky-500/20"
                 >
                   <Save className="h-3.5 w-3.5" />
                   <span>{isSaving ? "Saving..." : "Save Profile"}</span>
@@ -291,16 +310,16 @@ export default function SettingsPage() {
           {/* 2. Subscription & Plans Tab */}
           <TabsContent value="subscription" className="space-y-6">
             <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-zinc-800/80 pb-5">
-                <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
                   <h3 className="text-sm font-bold text-white">Current Subscription Tier</h3>
                   <p className="text-xs text-zinc-400">
-                    Manage storage quota, billing intervals, and upgrades.
+                    All Pro and Enterprise capabilities are 100% free and unlocked for your account.
                   </p>
                 </div>
 
-                <span className="rounded-full bg-purple-500/15 px-3 py-1 text-xs font-bold text-purple-400 border border-purple-500/30 uppercase tracking-wider">
-                  {user?.subscriptionTier ? `${user.subscriptionTier.toUpperCase()} PLAN` : "FREE STARTER"}
+                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
+                  FREE UNLIMITED (1 TB)
                 </span>
               </div>
 
@@ -308,32 +327,32 @@ export default function SettingsPage() {
               <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/50 p-5 space-y-3">
                 <div className="flex justify-between items-center text-xs">
                   <div className="flex items-center gap-2">
-                    <HardDrive className="h-4 w-4 text-purple-400" />
+                    <HardDrive className="h-4 w-4 text-sky-400" />
                     <span className="font-bold text-white">Total Quota</span>
                     <span className="text-zinc-400 font-mono">
-                      ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 2147483648)})
+                      ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 1099511627776)})
                     </span>
                   </div>
-                  <span className="font-bold text-purple-400">{usagePercent}% Used</span>
+                  <span className="font-bold text-sky-400">{usagePercent}% Used</span>
                 </div>
 
                 <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
                   <div
                     style={{ width: `${usagePercent}%` }}
-                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-purple-500 transition-all"
+                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-emerald-400 transition-all"
                   />
                 </div>
               </div>
 
-              {/* Upgrade CTA banner */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-purple-950/40 via-zinc-900 to-zinc-950 border border-purple-500/30">
+              {/* Free Unlimited Banner */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-zinc-900 to-zinc-950 border border-sky-500/30">
                 <div className="space-y-1">
                   <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-purple-400" />
-                    <span>Expand to 100 GB, 500 GB, or 2 TB Storage</span>
+                    <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>100% Free Community Platform</span>
                   </h4>
                   <p className="text-[11px] text-zinc-400">
-                    Unlock permanent link lifetimes, cryptographic passwords, and 24/7 dedicated support.
+                    Permanent links, cryptographic passwords, folder downloads, and priority CDN bandwidth are included free of charge.
                   </p>
                 </div>
 
@@ -341,9 +360,9 @@ export default function SettingsPage() {
                   <Button
                     variant="primary"
                     size="sm"
-                    className="text-xs rounded-xl bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/20 gap-1.5"
+                    className="text-xs rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-bold shadow-md shadow-sky-500/20 gap-1.5"
                   >
-                    <span>View Pricing Plans</span>
+                    <span>View Plan Details</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </Link>

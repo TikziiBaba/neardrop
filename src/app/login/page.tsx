@@ -14,7 +14,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
-  const { login, signInWithOAuth } = useAuth();
+  const { login, signInWithOAuth, resendVerificationEmail } = useAuth();
   const { t } = useLanguage();
 
   const [email, setEmail] = useState("");
@@ -22,10 +22,13 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showResend, setShowResend] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setShowResend(false);
 
     if (!email || !password) {
       setError(t.login.fillAllFields);
@@ -37,6 +40,9 @@ function LoginForm() {
       const res = await login(email, password);
       if (!res.success) {
         setError(res.error || t.login.invalidCredentials);
+        if (res.requiresVerification) {
+          setShowResend(true);
+        }
       } else {
         toast.success(t.login.welcomeToast);
         router.push(redirectUrl);
@@ -45,6 +51,23 @@ function LoginForm() {
       setError(err.message || t.login.unexpectedError);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendEmail = async () => {
+    if (!email.trim() || isResending) return;
+    setIsResending(true);
+    try {
+      const res = await resendVerificationEmail(email.trim());
+      if (res.success) {
+        toast.success(`Verification email sent to ${email}!`);
+      } else {
+        toast.error(res.error || "Failed to resend confirmation email.");
+      }
+    } catch (e: any) {
+      toast.error(e.message || "Error resending email");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -83,9 +106,21 @@ function LoginForm() {
         {/* Login Form Box */}
         <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5">
           {error && (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
-              <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
-              <span>{error}</span>
+            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 space-y-2">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
+                <span>{error}</span>
+              </div>
+              {showResend && (
+                <div className="pt-1 flex items-center justify-between border-t border-rose-500/20">
+                  <Link
+                    href={`/verify-email?email=${encodeURIComponent(email)}`}
+                    className="text-xs font-semibold text-sky-400 hover:underline"
+                  >
+                    Enter verification code →
+                  </Link>
+                </div>
+              )}
             </div>
           )}
 

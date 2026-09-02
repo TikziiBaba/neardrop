@@ -35,24 +35,24 @@ export default function PricingPage() {
 
   const faqs = [
     {
-      q: "When does my storage quota update after upgrading?",
-      a: "As soon as you upgrade to Pro, Ultra, or Enterprise, your new storage quota (100 GB, 500 GB, or 2 TB) is provisioned immediately. All existing files remain intact.",
+      q: "Is NearDrop really 100% free to use?",
+      a: "Yes! All users receive 1 TB of high-speed secure cloud storage, up to 50 GB single file uploads, permanent link capabilities, and encrypted password protection with zero cost.",
     },
     {
-      q: "Can I change or cancel my plan at any time?",
-      a: "Yes. You can upgrade, downgrade, or cancel your subscription at any time directly from your account settings.",
+      q: "Do I need to enter a credit card?",
+      a: "No credit card or payment information is required. You can sign up with your email or social login and start sharing files immediately.",
     },
     {
-      q: "What payment methods are supported?",
-      a: "We support major credit and debit cards (Troy, Visa, MasterCard) with 3D Secure bank encryption. Virtual POS processing will be active tomorrow.",
+      q: "Are password protection and folder transfers included?",
+      a: "Yes! Cryptographic SHA-256 password protection, ZIP bulk downloading, and folder streaming are completely free and available to all registered users.",
     },
     {
-      q: "What are the limitations of the Free Starter plan?",
-      a: "The Free plan includes 2 GB of cloud storage, up to 100 MB single file uploads, 1 active share link at a time, and a maximum link lifespan of 12 hours.",
+      q: "How long do my shared links remain active?",
+      a: "You can set custom expiration periods (1 hour, 12 hours, 24 hours, 7 days, 30 days) or choose 'Permanent' for links that never expire.",
     },
     {
-      q: "What happens if I reach my storage quota limit?",
-      a: "Your existing files and links will continue to work normally. However, to upload new files, you will need to delete some existing files or upgrade your plan.",
+      q: "How secure is my data on NearDrop?",
+      a: "All transfers utilize client-side end-to-end AES-256-GCM encryption and temporary presigned storage links isolated from the public internet.",
     },
   ];
 
@@ -61,40 +61,17 @@ export default function PricingPage() {
       {/* Hero Header */}
       <div className="space-y-4">
         <SectionHeader
-          label="Next-Gen Secure Cloud Storage & Sharing"
-          title="Transparent, Flexible Pricing."
-          subtitle="From fast personal transfers to 2 TB enterprise storage, choose the plan that fits your workflow."
+          label="100% Free • Open • Unlimited Community Access"
+          title="All Features Included. 0 ₺ Forever."
+          subtitle="From 1 TB ultra-fast cloud storage to password protection and permanent links, enjoy complete freedom without subscriptions or paywalls."
           icon={Crown}
         />
 
-        {/* Monthly / Yearly Billing Toggle */}
-        <div className="flex justify-center -mt-4">
-          <div className="inline-flex items-center p-1 rounded-2xl bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl shadow-xl">
-            <button
-              type="button"
-              onClick={() => setBillingCycle("monthly")}
-              className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${
-                billingCycle === "monthly"
-                  ? "bg-sky-500 text-white shadow-md shadow-sky-500/30"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              Monthly Billing
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingCycle("yearly")}
-              className={`flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-bold transition-all ${
-                billingCycle === "yearly"
-                  ? "bg-sky-500 text-white shadow-md shadow-sky-500/30"
-                  : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              <span>Annual Billing</span>
-              <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-400 border border-emerald-500/30">
-                2 Months Free
-              </span>
-            </button>
+        {/* Free Banner Pill */}
+        <div className="flex justify-center -mt-2">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-semibold text-emerald-400 backdrop-blur-xl shadow-lg">
+            <Sparkles className="h-4 w-4 text-emerald-400" />
+            <span>No credit card required. All enterprise features are completely unlocked.</span>
           </div>
         </div>
       </div>
@@ -104,21 +81,19 @@ export default function PricingPage() {
         {PRICING_PLANS.map((plan) => {
           const isCurrentPlan = user?.subscriptionTier === plan.id;
           const limits = TIER_LIMITS[plan.id];
-          const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-          const period = billingCycle === "yearly" ? "/year" : "/mo";
 
           return (
             <div
               key={plan.id}
               className={`relative rounded-3xl border p-6 sm:p-7 flex flex-col justify-between transition-all apple-card ${
                 plan.popular
-                  ? "border-purple-500/60 bg-gradient-to-b from-purple-950/40 via-zinc-900/70 to-zinc-950 shadow-2xl shadow-purple-500/10 ring-1 ring-purple-500/30"
+                  ? "border-sky-500/60 bg-gradient-to-b from-sky-950/40 via-zinc-900/70 to-zinc-950 shadow-2xl shadow-sky-500/10 ring-1 ring-sky-500/30"
                   : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700"
               }`}
             >
               {plan.badge && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="rounded-full bg-gradient-to-r from-sky-400 to-purple-500 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md">
+                  <span className="rounded-full bg-gradient-to-r from-sky-400 to-emerald-400 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-black shadow-md">
                     {plan.badge}
                   </span>
                 </div>
@@ -141,18 +116,16 @@ export default function PricingPage() {
 
                 {/* Price in TL */}
                 <div className="flex items-baseline gap-1 pt-1">
-                  <span className="text-3xl sm:text-4xl font-extrabold text-white">
-                    {price === 0 ? "0 ₺" : `${price} ₺`}
+                  <span className="text-3xl sm:text-4xl font-extrabold text-emerald-400">
+                    0 ₺
                   </span>
-                  {price > 0 && (
-                    <span className="text-xs font-semibold text-zinc-400 font-mono">{period}</span>
-                  )}
+                  <span className="text-xs font-semibold text-zinc-400 font-mono">/forever free</span>
                 </div>
 
                 {/* Features List */}
                 <div className="space-y-3 pt-2 border-t border-zinc-800/80">
                   <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                    Plan Highlights:
+                    Included Features:
                   </span>
                   <ul className="space-y-2.5">
                     {limits.features.map((feat, idx) => (
@@ -161,48 +134,21 @@ export default function PricingPage() {
                         <span className="leading-relaxed">{feat}</span>
                       </li>
                     ))}
-                    {limits.limitations.map((lim, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs text-zinc-500">
-                        <XCircle className="h-4 w-4 text-zinc-600 flex-shrink-0 mt-0.5" />
-                        <span className="leading-relaxed">{lim}</span>
-                      </li>
-                    ))}
                   </ul>
                 </div>
               </div>
 
               {/* Action Button */}
               <div className="pt-6 mt-6 border-t border-zinc-800/80">
-                {isCurrentPlan ? (
+                <Link href={user ? "/dashboard" : "/register"} className="block w-full">
                   <Button
-                    variant="outline"
-                    disabled
-                    className="w-full text-xs rounded-xl bg-zinc-900 border-zinc-700 text-zinc-400"
+                    variant="primary"
+                    className="w-full text-xs rounded-xl gap-1.5 font-bold shadow-lg shadow-sky-500/20"
                   >
-                    Current Plan
+                    <span>{user ? "Open Dashboard" : "Start Free Now"}</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
-                ) : plan.id === "free" ? (
-                  <Link href={user ? "/dashboard" : "/register"} className="block w-full">
-                    <Button variant="outline" className="w-full text-xs rounded-xl">
-                      Get Started Free
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/checkout?plan=${plan.id}&billing=${billingCycle}`}
-                    className="block w-full"
-                  >
-                    <Button
-                      variant="primary"
-                      className={`w-full text-xs rounded-xl gap-1.5 ${
-                        plan.popular ? "shadow-lg shadow-purple-500/20" : ""
-                      }`}
-                    >
-                      <span>Select {plan.name}</span>
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </Link>
-                )}
+                </Link>
               </div>
             </div>
           );

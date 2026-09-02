@@ -9,48 +9,46 @@ import {
   Mail,
   Lock,
   ArrowRight,
-  ArrowLeft,
   AlertCircle,
-  Check,
+  CheckCircle2,
   HardDrive,
   ShieldCheck,
   Zap,
-  Crown,
-  CheckCircle2,
-  XCircle,
+  RefreshCw,
+  ExternalLink,
+  KeyRound,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth/context";
-import { PRICING_PLANS } from "@/lib/subscription/plans";
-import { TIER_LIMITS } from "@/lib/subscription/permissions";
-import { SubscriptionTier } from "@/types";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, signInWithOAuth } = useAuth();
+  const { register, signInWithOAuth, resendVerificationEmail, verifyOtp } = useAuth();
 
-  // Wizard Step: 1 = Account Credentials, 2 = Plan Selection
-  const [step, setStep] = useState<1 | 2>(1);
+  // State: "form" | "verify"
+  const [viewState, setViewState] = useState<"form" | "verify">("form");
 
-  // Step 1 Form fields
+  // Form fields
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Step 2 Selection
-  const [selectedTier, setSelectedTier] = useState<SubscriptionTier>("free");
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  // Verification state (if email confirmation required)
+  const [otpCode, setOtpCode] = useState("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Validate step 1 and proceed to step 2
-  const handleProceedToStep2 = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -69,32 +67,86 @@ export default function RegisterPage() {
       return;
     }
 
-    setStep(2);
-  };
-
-  // Final submission on Step 2
-  const handleFinalSubmit = async (tierToRegister: SubscriptionTier = selectedTier) => {
     setIsLoading(true);
-    setError(null);
-
     try {
-      const res = await register(email.trim(), password, displayName.trim(), tierToRegister);
+      const res = await register(email.trim(), password, displayName.trim(), "free");
       if (!res.success) {
         setError(res.error || "Failed to create account.");
         setIsLoading(false);
         return;
       }
 
-      if (tierToRegister === "free") {
-        toast.success("Account created successfully! Welcome to NearDrop.");
-        router.push("/dashboard");
+      if (res.requiresVerification) {
+        setViewState("verify");
+        toast.info("Account created! Please check your email for the verification link or code.");
       } else {
-        toast.success("Account created! Redirecting to checkout...");
-        router.push(`/checkout?plan=${tierToRegister}&billing=${billingCycle}`);
+        toast.success("Account created successfully! Welcome to NearDrop.");
+        try {
+          confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+        router.push("/dashboard");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred during registration.");
+    } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!otpCode.trim()) {
+      setError("Please enter the 6-digit confirmation code.");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    setError(null);
+    try {
+      const res = await verifyOtp(email.trim(), otpCode.trim(), "signup");
+      if (!res.success) {
+        setError(res.error || "Invalid code. Please try again or click the email link.");
+      } else {
+        toast.success("Email verified! Redirecting to your dashboard...");
+        try {
+          confetti({ particleCount: 80, spread: 80, origin: { y: 0.6 } });
+        } catch (e) {}
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1500);
+      }
+    } catch (err: any) {
+      setError(err.message || "Verification failed.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleResend = async () => {
+    if (cooldown > 0 || isResending || !email) return;
+    setIsResending(true);
+    setError(null);
+    try {
+      const res = await resendVerificationEmail(email.trim());
+      if (res.success) {
+        toast.success(`Verification email sent to ${email}!`);
+        setCooldown(60);
+        const timer = setInterval(() => {
+          setCooldown((prev) => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      } else {
+        setError(res.error || "Failed to resend confirmation email.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Error resending email.");
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -112,12 +164,23 @@ export default function RegisterPage() {
     }
   };
 
+  const getEmailProviderUrl = (emailAddress: string) => {
+    const domain = emailAddress.split("@")[1]?.toLowerCase() || "";
+    if (domain.includes("gmail.com")) return "https://mail.google.com";
+    if (domain.includes("outlook.com") || domain.includes("hotmail.com")) return "https://outlook.live.com";
+    if (domain.includes("yahoo.com")) return "https://mail.yahoo.com";
+    if (domain.includes("icloud.com")) return "https://www.icloud.com/mail";
+    if (domain.includes("proton") || domain.includes("protonmail.com")) return "https://mail.proton.me";
+    return null;
+  };
+
+  const emailProviderUrl = getEmailProviderUrl(email);
+
   return (
     <div className="min-h-[calc(100vh-4rem)] py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center relative">
-      {/* Background ambient glow */}
       <div className="pointer-events-none absolute inset-0 hero-glow" />
 
-      <div className="relative w-full max-w-5xl space-y-6">
+      <div className="relative w-full max-w-lg space-y-6">
         {/* Header Branding */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-1 group">
@@ -128,62 +191,42 @@ export default function RegisterPage() {
           </Link>
 
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            {step === 1 ? "Create Your NearDrop Account" : "Select Your Storage Plan"}
+            {viewState === "form" ? "Create Free Account" : "Check Your Email"}
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-lg mx-auto">
-            {step === 1
-              ? "Sign up in seconds, then pick the perfect storage plan for your workflow."
-              : "Choose the capacity and features tailored to your needs. You can change plans anytime."}
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">
+            {viewState === "form"
+              ? "Get 1 TB free cloud storage, password protection & unlimited transfer speeds."
+              : `We sent a confirmation link and code to ${email}.`}
           </p>
-
-          {/* Stepper Indicator */}
-          <div className="flex items-center justify-center gap-3 pt-2">
-            <div
-              className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                step === 1
-                  ? "bg-sky-500/20 border border-sky-500/40 text-sky-400"
-                  : "bg-zinc-900 border border-zinc-800 text-zinc-400 cursor-pointer"
-              }`}
-              onClick={() => setStep(1)}
-            >
-              <span className="flex h-4 w-4 items-center justify-center rounded-full bg-sky-500 text-[10px] font-bold text-black">
-                1
-              </span>
-              <span>Account Details</span>
-            </div>
-
-            <div className="w-6 h-px bg-zinc-800" />
-
-            <div
-              className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                step === 2
-                  ? "bg-sky-500/20 border border-sky-500/40 text-sky-400"
-                  : "bg-zinc-900 border border-zinc-800 text-zinc-500"
-              }`}
-            >
-              <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold ${
-                step === 2 ? "bg-sky-500 text-black" : "bg-zinc-800 text-zinc-400"
-              }`}>
-                2
-              </span>
-              <span>Plan Selection</span>
-            </div>
-          </div>
         </div>
 
-        {/* Global Error Banner */}
+        {/* Global Error Alert */}
         {error && (
-          <div className="max-w-md mx-auto flex items-center gap-2 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 animate-in fade-in">
+          <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 animate-in fade-in">
             <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
             <span>{error}</span>
           </div>
         )}
 
-        {/* ========================================================= */}
-        {/* STEP 1: CREDENTIALS & ACCOUNT CREATION                   */}
-        {/* ========================================================= */}
-        {step === 1 && (
-          <div className="max-w-md mx-auto rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5 animate-in fade-in">
+        {/* Form View */}
+        {viewState === "form" ? (
+          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5 animate-in fade-in">
+            {/* Free Perks Callout */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-zinc-900 to-purple-500/10 border border-sky-500/30 text-xs">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/20 text-sky-400 border border-sky-500/30">
+                  <HardDrive className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="font-bold text-white block">1 TB Free VIP Storage</span>
+                  <span className="text-[10px] text-zinc-400">All features 100% unlocked forever</span>
+                </div>
+              </div>
+              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-extrabold text-emerald-400 border border-emerald-500/30">
+                0 ₺ Free
+              </span>
+            </div>
+
             {/* Social Logins */}
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -230,12 +273,12 @@ export default function RegisterPage() {
             <div className="relative flex items-center justify-center">
               <div className="w-full border-t border-zinc-800" />
               <span className="absolute bg-zinc-900 px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
-                or continue with email
+                or sign up with email
               </span>
             </div>
 
             {/* Form */}
-            <form onSubmit={handleProceedToStep2} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-zinc-300">Full Name</label>
                 <div className="relative">
@@ -300,9 +343,10 @@ export default function RegisterPage() {
                 type="submit"
                 variant="primary"
                 size="lg"
-                className="w-full gap-2 text-xs font-bold rounded-2xl shadow-lg shadow-sky-500/20 mt-2"
+                disabled={isLoading}
+                className="w-full gap-2 text-xs font-bold rounded-2xl shadow-lg shadow-sky-500/25 mt-2"
               >
-                <span>Continue: Choose Plan</span>
+                <span>{isLoading ? "Creating Account..." : "Create Free Account"}</span>
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </form>
@@ -316,193 +360,80 @@ export default function RegisterPage() {
               </p>
             </div>
           </div>
-        )}
-
-        {/* ========================================================= */}
-        {/* STEP 2: PLAN & SUBSCRIPTION SELECTION                     */}
-        {/* ========================================================= */}
-        {step === 2 && (
-          <div className="space-y-6 animate-in fade-in">
-            {/* Billing Cycle Toggle */}
-            <div className="flex justify-center">
-              <div className="inline-flex items-center p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800 backdrop-blur-xl shadow-xl">
-                <button
-                  type="button"
-                  onClick={() => setBillingCycle("monthly")}
-                  className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${
-                    billingCycle === "monthly"
-                      ? "bg-sky-500 text-white shadow-md shadow-sky-500/30"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  Monthly Billing
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setBillingCycle("yearly")}
-                  className={`flex items-center gap-1.5 px-5 py-2 rounded-xl text-xs font-bold transition-all ${
-                    billingCycle === "yearly"
-                      ? "bg-sky-500 text-white shadow-md shadow-sky-500/30"
-                      : "text-zinc-400 hover:text-white"
-                  }`}
-                >
-                  <span>Annual Billing</span>
-                  <span className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-400 border border-emerald-500/30">
-                    2 Months Free
-                  </span>
-                </button>
+        ) : (
+          /* Email Verification Step */
+          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/80 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6 animate-in fade-in">
+            <div className="flex items-center justify-center">
+              <div className="relative">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-500/10 border border-sky-500/30 text-sky-400 shadow-md">
+                  <Mail className="h-7 w-7" />
+                </div>
+                <div className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-black">
+                  <KeyRound className="h-3 w-3" />
+                </div>
               </div>
             </div>
 
-            {/* 4 Plans Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {PRICING_PLANS.map((plan) => {
-                const isSelected = selectedTier === plan.id;
-                const limits = TIER_LIMITS[plan.id];
-                const price = billingCycle === "yearly" ? plan.priceYearly : plan.priceMonthly;
-                const period = billingCycle === "yearly" ? "/year" : "/mo";
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-400">Sent to:</span>
+                <span className="font-semibold text-white font-mono truncate max-w-[220px]">{email}</span>
+              </div>
 
-                return (
-                  <div
-                    key={plan.id}
-                    onClick={() => setSelectedTier(plan.id)}
-                    className={`relative rounded-3xl border p-5 sm:p-6 flex flex-col justify-between transition-all cursor-pointer ${
-                      isSelected
-                        ? "border-sky-500 bg-gradient-to-b from-sky-950/40 via-zinc-900/90 to-zinc-950 ring-2 ring-sky-500 shadow-2xl shadow-sky-500/10 scale-[1.02]"
-                        : plan.popular
-                        ? "border-purple-500/50 bg-zinc-900/80 hover:border-purple-400/80"
-                        : "border-zinc-800 bg-zinc-900/60 hover:border-zinc-700"
-                    }`}
-                  >
-                    {plan.badge && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="rounded-full bg-gradient-to-r from-sky-400 to-purple-500 px-3 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white shadow-md">
-                          {plan.badge}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="space-y-4">
-                      {/* Plan Header */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h3 className="text-base font-bold text-white">{plan.name}</h3>
-                          <p className="text-[11px] text-zinc-400 mt-0.5 line-clamp-2">
-                            {plan.tagline}
-                          </p>
-                        </div>
-                        <div className={`flex h-5 w-5 rounded-full border items-center justify-center transition-colors ${
-                          isSelected ? "border-sky-400 bg-sky-500 text-black" : "border-zinc-700 bg-zinc-800"
-                        }`}>
-                          {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
-                        </div>
-                      </div>
-
-                      {/* Storage Quota Pill */}
-                      <div className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-950/80 border border-zinc-800 px-2.5 py-1 text-xs font-bold text-sky-400">
-                        <HardDrive className="h-3.5 w-3.5" />
-                        <span>{plan.quotaLabel} Storage</span>
-                      </div>
-
-                      {/* Price in TL */}
-                      <div className="flex items-baseline gap-1 pt-1">
-                        <span className="text-2xl sm:text-3xl font-extrabold text-white">
-                          {price === 0 ? "Free" : `${price} ₺`}
-                        </span>
-                        {price > 0 && (
-                          <span className="text-xs font-semibold text-zinc-400 font-mono">{period}</span>
-                        )}
-                      </div>
-
-                      {/* Key features */}
-                      <div className="space-y-2 pt-2 border-t border-zinc-800/80">
-                        <div className="text-[11px] font-bold text-zinc-300 uppercase tracking-wider">
-                          Includes:
-                        </div>
-                        <ul className="space-y-1.5 text-xs text-zinc-300">
-                          {limits.features.slice(0, 4).map((f, i) => (
-                            <li key={i} className="flex items-start gap-2">
-                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                              <span className="leading-tight">{f}</span>
-                            </li>
-                          ))}
-                          {limits.limitations.length > 0 && limits.limitations.slice(0, 2).map((l, i) => (
-                            <li key={i} className="flex items-start gap-2 text-zinc-500">
-                              <XCircle className="h-3.5 w-3.5 text-zinc-600 flex-shrink-0 mt-0.5" />
-                              <span className="leading-tight">{l}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-
-                    {/* Card Action Button */}
-                    <div className="pt-5 mt-4 border-t border-zinc-800/60">
-                      <Button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedTier(plan.id);
-                          handleFinalSubmit(plan.id);
-                        }}
-                        disabled={isLoading}
-                        variant={isSelected ? "primary" : plan.popular ? "outline" : "ghost"}
-                        className={`w-full text-xs h-9 font-bold rounded-xl ${
-                          isSelected ? "shadow-md shadow-sky-500/20" : "border-zinc-700 text-zinc-200"
-                        }`}
-                      >
-                        {isLoading && selectedTier === plan.id ? (
-                          "Creating Account..."
-                        ) : plan.id === "free" ? (
-                          "Start for Free"
-                        ) : (
-                          `Select ${plan.name}`
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
+              {emailProviderUrl && (
+                <a
+                  href={emailProviderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-zinc-900 border border-zinc-700/60 text-xs font-semibold text-sky-400 hover:text-white hover:bg-zinc-800 transition-all group"
+                >
+                  <span>Open Email Inbox</span>
+                  <ExternalLink className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </a>
+              )}
             </div>
 
-            {/* Bottom Actions Bar */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 max-w-5xl mx-auto pt-4 border-t border-zinc-800">
+            {/* 6-Digit OTP Form */}
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-zinc-300">Enter 6-Digit Verification Code</label>
+                  <span className="text-[10px] text-zinc-500">From confirmation email</span>
+                </div>
+                <Input
+                  type="text"
+                  placeholder="123456"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\s+/g, ""))}
+                  className="text-center font-mono text-base tracking-widest rounded-xl bg-zinc-950/60"
+                  maxLength={12}
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                disabled={isVerifyingOtp}
+                className="w-full gap-2 text-xs font-bold rounded-2xl shadow-lg shadow-sky-500/25"
+              >
+                <span>{isVerifyingOtp ? "Verifying..." : "Verify & Complete Registration"}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </form>
+
+            <div className="pt-2 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <span className="text-zinc-400">Didn&apos;t get the code?</span>
               <button
                 type="button"
-                onClick={() => setStep(1)}
-                className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+                onClick={handleResend}
+                disabled={isResending || cooldown > 0}
+                className="inline-flex items-center gap-1.5 font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back: Edit Account Information</span>
+                <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
+                <span>{cooldown > 0 ? `Resend code in ${cooldown}s` : "Resend Email"}</span>
               </button>
-
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-zinc-400">
-                  Selected Plan: <strong className="text-white">{TIER_LIMITS[selectedTier].name}</strong>
-                </span>
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="default"
-                  onClick={() => handleFinalSubmit(selectedTier)}
-                  disabled={isLoading}
-                  className="gap-2 text-xs font-bold rounded-xl shadow-lg shadow-sky-500/25 px-6"
-                >
-                  {isLoading ? (
-                    "Processing..."
-                  ) : selectedTier === "free" ? (
-                    <>
-                      <span>Create Free Account</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  ) : (
-                    <>
-                      <span>Confirm & Proceed to Checkout</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  )}
-                </Button>
-              </div>
             </div>
           </div>
         )}

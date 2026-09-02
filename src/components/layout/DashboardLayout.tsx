@@ -16,6 +16,7 @@ import {
   Sparkles,
   Loader2,
 } from "lucide-react";
+import { EmailVerificationBanner } from "@/components/auth/EmailVerificationBanner";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -113,7 +114,10 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
         {/* Scrollable Page Body */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8">
-          <div className="mx-auto max-w-6xl">{children}</div>
+          <div className="mx-auto max-w-6xl">
+            <EmailVerificationBanner />
+            {children}
+          </div>
         </main>
 
         {/* Mobile Bottom Navigation Bar (Apple 44pt touch-target standard) */}
