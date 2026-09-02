@@ -143,8 +143,8 @@ export default function StoragePage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
               <span>Storage & Analytics</span>
-              <Badge variant="sky" className="text-xs font-mono">
-                FREE UNLIMITED (1 TB)
+              <Badge variant="sky" className="text-xs">
+                {user?.subscriptionTier ? user.subscriptionTier.toUpperCase() : "FREE"}
               </Badge>
             </h1>
             <p className="text-xs text-zinc-400 mt-0.5">
@@ -155,8 +155,8 @@ export default function StoragePage() {
           <div className="flex items-center gap-2.5">
             <Link href="/pricing">
               <Button variant="outline" size="default" className="gap-2.5">
-                <Sparkles className="h-4 w-4 text-emerald-400" />
-                <span>All Features Unlocked</span>
+                <Zap className="h-4 w-4 text-amber-400" />
+                <span>Upgrade Plan</span>
               </Button>
             </Link>
             <Link href="/files">

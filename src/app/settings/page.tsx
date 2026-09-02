@@ -314,12 +314,12 @@ export default function SettingsPage() {
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-white">Current Subscription Tier</h3>
                   <p className="text-xs text-zinc-400">
-                    All Pro and Enterprise capabilities are 100% free and unlocked for your account.
+                    Manage your storage quota, active plan entitlements, and upgrades.
                   </p>
                 </div>
 
-                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30 uppercase tracking-wider">
-                  FREE UNLIMITED (1 TB)
+                <span className="rounded-full bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-400 border border-sky-500/30 uppercase tracking-wider">
+                  {user?.subscriptionTier ? `${user.subscriptionTier.toUpperCase()} PLAN` : "FREE STARTER"}
                 </span>
               </div>
 
@@ -330,7 +330,7 @@ export default function SettingsPage() {
                     <HardDrive className="h-4 w-4 text-sky-400" />
                     <span className="font-bold text-white">Total Quota</span>
                     <span className="text-zinc-400 font-mono">
-                      ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 1099511627776)})
+                      ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 2147483648)})
                     </span>
                   </div>
                   <span className="font-bold text-sky-400">{usagePercent}% Used</span>
@@ -339,20 +339,20 @@ export default function SettingsPage() {
                 <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
                   <div
                     style={{ width: `${usagePercent}%` }}
-                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-emerald-400 transition-all"
+                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500 transition-all"
                   />
                 </div>
               </div>
 
-              {/* Free Unlimited Banner */}
+              {/* Upgrade CTA banner */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-zinc-900 to-zinc-950 border border-sky-500/30">
                 <div className="space-y-1">
                   <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-                    <span>100% Free Community Platform</span>
+                    <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+                    <span>Expand to 100 GB, 500 GB, or 2 TB Storage</span>
                   </h4>
                   <p className="text-[11px] text-zinc-400">
-                    Permanent links, cryptographic passwords, folder downloads, and priority CDN bandwidth are included free of charge.
+                    Unlock permanent link lifetimes, cryptographic passwords, and 24/7 dedicated support.
                   </p>
                 </div>
 
@@ -362,7 +362,7 @@ export default function SettingsPage() {
                     size="sm"
                     className="text-xs rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-bold shadow-md shadow-sky-500/20 gap-1.5"
                   >
-                    <span>View Plan Details</span>
+                    <span>View Pricing Plans</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Button>
                 </Link>

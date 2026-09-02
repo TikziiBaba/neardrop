@@ -42,11 +42,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return "member";
   };
 
-  // Helper: Determine subscription tier
+  // Helper: Determine subscription tier from quota
   const determineTier = (quotaBytes: number, dbTier?: string): SubscriptionTier => {
     if (dbTier === "pro" || dbTier === "ultra" || dbTier === "enterprise") {
       return dbTier as SubscriptionTier;
     }
+    if (quotaBytes >= 2199023255552) return "enterprise"; // 2 TB
+    if (quotaBytes >= 536870912000) return "ultra"; // 500 GB
+    if (quotaBytes >= 107374182400) return "pro"; // 100 GB
     return "free";
   };
 
@@ -96,7 +99,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const meta = userMetadata || {};
       const displayName = profile?.display_name || meta.full_name || meta.user_name || meta.name || email.split("@")[0] || "User";
       const avatarUrl = existingAvatar || meta.avatar_url || meta.picture || "";
-      const quotaBytes = profile?.quota_bytes || 1099511627776; // 1 TB default free quota
+      const quotaBytes = profile?.quota_bytes || 2147483648; // 2 GB default for free starter
       const role = determineRole(email, profile?.role);
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
 
@@ -135,7 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           quota_bytes: quotaBytes,
           used_bytes: 0,
           role: role || "member",
-          subscription_tier: "free",
+          subscription_tier: subscriptionTier || "free",
           subscription_status: "active",
         });
       } catch (e) {
@@ -150,7 +153,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         quotaBytes,
         usedBytes: 0,
         role,
-        subscriptionTier: "free",
+        subscriptionTier,
         subscriptionStatus: "active",
         status: "active",
         isEmailVerified,
