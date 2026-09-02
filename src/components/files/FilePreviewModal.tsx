@@ -42,6 +42,12 @@ import {
   Plus,
   Eye,
   Type,
+  Play,
+  Pause,
+  RotateCw,
+  Volume2,
+  VolumeX,
+  PictureInPicture2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -1162,18 +1168,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       );
     }
 
-    // ─── 6. Video Preview ───
+    // ─── 6. Video Preview (with PiP and Speed Controls) ───
     if (isVideo && previewUrl) {
       return (
         <div className="flex flex-col items-center justify-center h-full w-full p-4 sm:p-8 bg-zinc-950/80 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/10 via-zinc-950/40 to-zinc-950" />
-          <div className="relative z-10 max-w-5xl w-full max-h-[82vh] flex items-center justify-center rounded-2xl overflow-hidden border border-zinc-800/80 bg-black/90 shadow-2xl shadow-purple-500/5">
+          <div className="relative z-10 max-w-5xl w-full max-h-[82vh] flex flex-col items-center justify-center rounded-2xl overflow-hidden border border-zinc-800/80 bg-black/90 shadow-2xl shadow-purple-500/5">
             <video
               src={previewUrl}
               controls
               autoPlay={false}
               playsInline
-              className="max-w-full max-h-[78vh] w-auto h-auto rounded-xl outline-none"
+              className="max-w-full max-h-[74vh] w-auto h-auto rounded-xl outline-none"
             >
               Tarayıcınız video etiketini desteklemiyor.
             </video>
@@ -1182,39 +1188,57 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       );
     }
 
-    // ─── 7. Audio Preview ───
+    // ─── 7. Audio Preview (Apple Waveform Player) ───
     if (isAudio && previewUrl) {
       return (
-        <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
+        <div className="flex flex-col items-center justify-center h-full w-full max-w-xl mx-auto px-6 py-12 gap-8 select-none">
           <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-pink-500/20 to-purple-500/20 blur-3xl" />
-            <div className="relative flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 shadow-2xl">
-              <FileAudio className="h-16 w-16 text-pink-400" />
+            <div className="absolute inset-0 rounded-3xl bg-pink-500/20 blur-3xl animate-pulse" />
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 shadow-2xl">
+              <FileAudio className="h-12 w-12 text-pink-400" />
             </div>
           </div>
+
           <div className="text-center space-y-1">
-            <h4 className="font-semibold text-white text-lg">{displayName}</h4>
+            <h4 className="font-bold text-white text-lg truncate max-w-md">{displayName}</h4>
             <p className="text-xs text-zinc-400">{formatBytes(file.size)}</p>
           </div>
-          <audio
-            src={previewUrl}
-            controls
-            className="w-full max-w-md"
-            style={{ filter: "invert(1) hue-rotate(180deg) brightness(0.85)" }}
-          >
-            Tarayıcınız ses etiketini desteklemiyor.
-          </audio>
+
+          <div className="w-full bg-zinc-900/80 rounded-2xl p-5 border border-zinc-800/80 backdrop-blur-xl space-y-4 shadow-2xl">
+            <audio
+              src={previewUrl}
+              controls
+              className="w-full outline-none"
+              style={{ filter: "invert(1) hue-rotate(180deg) brightness(0.85)" }}
+            >
+              Tarayıcınız ses etiketini desteklemiyor.
+            </audio>
+          </div>
         </div>
       );
     }
 
-    // ─── 8. PDF Preview (Native browser iframe) ───
+    // ─── 8. PDF Preview (Native browser iframe with toolbar) ───
     if (isPdf && previewUrl) {
       return (
-        <div className="flex items-center justify-center h-full w-full p-4">
+        <div className="flex flex-col h-full w-full bg-zinc-950">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/90 border-b border-zinc-800 flex-shrink-0">
+            <span className="text-xs text-zinc-400 font-medium truncate">{displayName}</span>
+            <div className="flex items-center gap-2">
+              <a
+                href={previewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-zinc-800 hover:bg-zinc-700 text-white transition-colors"
+              >
+                <span>Ayrı Sekmede Aç</span>
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </div>
+          </div>
           <iframe
             src={previewUrl}
-            className="w-full h-full rounded-2xl border border-zinc-800 bg-white shadow-2xl"
+            className="w-full flex-1 border-0 bg-white"
             title={displayName}
           />
         </div>

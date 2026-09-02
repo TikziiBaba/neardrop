@@ -38,6 +38,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { SoundManager } from "@/lib/utils/sound-effects";
+import { extractKeyFromFragment, decryptBlob } from "@/lib/crypto/e2e-encrypt";
 import JSZip from "jszip";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -236,12 +238,18 @@ export default function PublicSharePage() {
       a.click();
       document.body.removeChild(a);
 
+      SoundManager.play("chime");
+
       if (!targetFileId) {
         setDownloadUrl(res.downloadUrl);
         setDownloadStarted(true);
       }
 
-      toast.success(`Download started: ${res.filename}`);
+      if (share?.burnAfterRead) {
+        toast.info("Burn After Read: This link has been permanently burned and can no longer be downloaded.");
+      } else {
+        toast.success(`Download started: ${res.filename}`);
+      }
     } catch (err: any) {
       setError(err.message || "Failed to download file");
       toast.error(err.message || "Failed to download file");

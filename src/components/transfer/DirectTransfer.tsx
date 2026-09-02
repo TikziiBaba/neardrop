@@ -33,6 +33,8 @@ import { Progress } from "@/components/ui/progress";
 import { formatBytes, formatSpeed, formatEta } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { getClientDeviceInfo, ClientDeviceInfo } from "@/lib/utils/device";
+import { SoundManager } from "@/lib/utils/sound-effects";
+import { PeerRadar } from "@/components/transfer/PeerRadar";
 import {
   DirectTransferEngine,
   PeerInfo,
@@ -49,6 +51,7 @@ export const DirectTransfer: React.FC = () => {
   const [customRoomInput, setCustomRoomInput] = useState<string>("");
   const [showQrModal, setShowQrModal] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<"radar" | "grid">("radar");
 
   const [myDevice, setMyDevice] = useState<ClientDeviceInfo | null>(null);
   const [peers, setPeers] = useState<PeerInfo[]>([]);
@@ -134,10 +137,23 @@ export const DirectTransfer: React.FC = () => {
     fileInputRef.current?.click();
   };
 
+  const handlePeerDrop = async (peer: PeerInfo, files: FileList) => {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    try {
+      SoundManager.play("swoosh");
+      toast.info(`Sending "${file.name}" to ${peer.deviceName}...`);
+      await engineRef.current?.sendFileToPeer(peer, file);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send file directly");
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedPeerForUpload || !e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
     try {
+      SoundManager.play("swoosh");
       await engineRef.current?.sendFileToPeer(selectedPeerForUpload, file);
     } catch (err: any) {
       toast.error(err.message || "Failed to send file directly");
@@ -240,12 +256,49 @@ export const DirectTransfer: React.FC = () => {
             <Zap className="h-4 w-4 text-sky-400" />
             <span>Nearby Discovered Devices</span>
           </h3>
-          <span className="text-xs text-zinc-500 font-mono">
-            {myDevice ? `${myDevice.deviceName} (You)` : ""}
-          </span>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center rounded-xl bg-zinc-900 border border-zinc-800 p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode("radar")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  viewMode === "radar"
+                    ? "bg-sky-500/20 text-sky-400 font-semibold"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Radar View
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  viewMode === "grid"
+                    ? "bg-sky-500/20 text-sky-400 font-semibold"
+                    : "text-zinc-400 hover:text-white"
+                }`}
+              >
+                Grid View
+              </button>
+            </div>
+            <span className="text-xs text-zinc-500 font-mono hidden sm:inline">
+              {myDevice ? `${myDevice.deviceName} (You)` : ""}
+            </span>
+          </div>
         </div>
 
-        {peers.length === 0 ? (
+        {viewMode === "radar" ? (
+          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/60 p-6 backdrop-blur-xl shadow-2xl flex flex-col items-center justify-center">
+            <PeerRadar
+              peers={peers}
+              myDeviceName={myDevice?.deviceName || "You"}
+              onPeerClick={handlePeerSelect}
+              onPeerDrop={handlePeerDrop}
+              isScanning={true}
+            />
+          </div>
+        ) : peers.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center space-y-4">
             <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-20" />

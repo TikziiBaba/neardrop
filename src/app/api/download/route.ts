@@ -3,6 +3,7 @@ import { createPresignedDownloadUrl, isR2Configured } from "@/lib/r2/s3-client";
 import { createClient } from "@supabase/supabase-js";
 import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
 import { formatBytes } from "@/lib/utils";
+import { checkRateLimit, tooManyRequestsResponse } from "@/lib/utils/rate-limiter";
 import crypto from "crypto";
 
 function serverSHA256(text: string): string {
@@ -17,6 +18,10 @@ function getServiceClient() {
 
 // GET: Fetch share metadata for public share landing page
 export async function GET(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = checkRateLimit(ip, "/s/");
+  if (!rl.allowed) return tooManyRequestsResponse(rl);
+
   try {
     const { searchParams } = new URL(req.url);
     const token = searchParams.get("token");
@@ -131,6 +136,10 @@ export async function GET(req: NextRequest) {
 
 // POST: Validate password, increment download count, return presigned R2 download URL(s)
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = checkRateLimit(ip, "/api/download");
+  if (!rl.allowed) return tooManyRequestsResponse(rl);
+
   try {
     const body = await req.json();
     const { token, password, fileId, batch } = body;
@@ -185,20 +194,41 @@ export async function POST(req: NextRequest) {
     }
 
     const isFolder = Boolean(share.folder_path);
+    const client = extractClientInfo(req);
 
-    // Atomically increment download count helper
+    // Atomically increment download count helper & burn-after-read
     const incrementDownloadCount = async () => {
-      if (share.max_downloads) {
-        await serviceClient
-          .from("share_links")
-          .update({ download_count: share.download_count + 1 })
-          .eq("id", share.id)
-          .lt("download_count", share.max_downloads);
-      } else {
-        await serviceClient
-          .from("share_links")
-          .update({ download_count: share.download_count + 1 })
-          .eq("id", share.id);
+      const newCount = (share.download_count || 0) + 1;
+      const shouldDeactivate = share.burn_after_read || (share.max_downloads && newCount >= share.max_downloads);
+
+      await serviceClient
+        .from("share_links")
+        .update({
+          download_count: newCount,
+          is_active: !shouldDeactivate,
+        })
+        .eq("id", share.id);
+    };
+
+    // Helper: record download event for analytics
+    const recordDownloadEvent = async (targetFileId?: string, downloadedBytes?: number) => {
+      try {
+        await serviceClient.from("download_events").insert({
+          share_link_id: share.id,
+          cloud_file_id: targetFileId || share.cloud_file_id || null,
+          user_id: share.user_id,
+          downloader_ip: client.ipAddress,
+          country: req.headers.get("cf-ipcountry") || "TR",
+          city: req.headers.get("cf-ipcity") || "Istanbul",
+          browser: client.browser,
+          os: client.platform,
+          device_type: client.deviceInfo.toLowerCase().includes("mobile") ? "mobile" : "desktop",
+          referrer: req.headers.get("referer") || "Direct",
+          user_agent: req.headers.get("user-agent") || "",
+          bytes_downloaded: downloadedBytes || 0,
+        });
+      } catch (err) {
+        console.error("Failed to record download analytics event:", err);
       }
     };
 
@@ -216,11 +246,12 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "No files found in this shared folder." }, { status: 404 });
       }
 
+      let totalFolderBytes = 0;
       // Generate presigned URLs for all files
       const items = await Promise.all(
         folderFiles.map(async (f: any) => {
+          totalFolderBytes += f.size || 0;
           const downloadUrl = await createPresignedDownloadUrl(f.r2_object_key, f.filename, 1800);
-          // Calculate relative path inside the folder
           let relativePath = f.filename;
           if (f.filename.startsWith(prefix)) {
             relativePath = f.filename.slice(prefix.length);
@@ -240,6 +271,7 @@ export async function POST(req: NextRequest) {
       );
 
       await incrementDownloadCount();
+      await recordDownloadEvent(undefined, totalFolderBytes);
 
       return NextResponse.json({
         isFolder: true,
@@ -269,6 +301,7 @@ export async function POST(req: NextRequest) {
       );
 
       await incrementDownloadCount();
+      await recordDownloadEvent(specificFile.id, specificFile.size);
 
       return NextResponse.json({
         downloadUrl,
@@ -285,9 +318,9 @@ export async function POST(req: NextRequest) {
 
     const downloadUrl = await createPresignedDownloadUrl(file.r2_object_key, file.filename, 900);
     await incrementDownloadCount();
+    await recordDownloadEvent(file.id, file.size);
 
     // Record audit log for public share download
-    const client = extractClientInfo(req);
     recordAuditLog({
       action: "SHARE_DOWNLOAD",
       resourceType: "download",
@@ -308,6 +341,9 @@ export async function POST(req: NextRequest) {
       downloadUrl,
       filename: file.filename.split("/").pop() || file.filename,
       size: file.size,
+      isEncrypted: file.is_encrypted || false,
+      encryptionIv: file.encryption_iv || undefined,
+      burnAfterRead: share.burn_after_read || false,
     });
   } catch (error: any) {
     console.error("Download error:", error);

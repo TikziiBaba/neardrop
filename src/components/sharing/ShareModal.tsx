@@ -63,6 +63,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const [expirationHours, setExpirationHours] = useState<number>(isFreeTier ? 12 : 24);
   const [downloadLimit, setDownloadLimit] = useState<number | undefined>(undefined);
   const [password, setPassword] = useState<string>("");
+  const [burnAfterRead, setBurnAfterRead] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [createdShare, setCreatedShare] = useState<ShareLink | null>(null);
   const [copied, setCopied] = useState<boolean>(false);
@@ -81,6 +82,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         expiresInHours: expirationHours,
         maxDownloads: downloadLimit,
         password: password.trim() || undefined,
+        burnAfterRead,
       };
 
       if (isFolder && folder) {
@@ -404,6 +406,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Burn After Read option */}
+          <div className="flex items-center justify-between p-3 rounded-2xl border border-zinc-800 bg-zinc-950/60">
+            <div className="space-y-0.5">
+              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                <span>Burn After Read</span>
+              </label>
+              <p className="text-[11px] text-zinc-500">
+                Link and file will be automatically destroyed after first download.
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              checked={burnAfterRead}
+              onChange={(e) => setBurnAfterRead(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-500/20"
+            />
           </div>
 
           {/* Password Protection */}

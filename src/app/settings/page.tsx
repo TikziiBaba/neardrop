@@ -31,7 +31,9 @@ import {
   ShieldCheck,
   Zap,
   ArrowRight,
+  Volume2,
 } from "lucide-react";
+import { SoundManager } from "@/lib/utils/sound-effects";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -58,6 +60,7 @@ export default function SettingsPage() {
   const [defaultMaxDl, setDefaultMaxDl] = useState<number>(settings.defaultMaxDownloads || 10);
   const [emailOnDl, setEmailOnDl] = useState<boolean>(settings.emailOnDownload);
   const [emailOnExp, setEmailOnExp] = useState<boolean>(settings.emailOnExpire);
+  const [soundEffects, setSoundEffects] = useState<boolean>(SoundManager.isEnabled());
   const [themePreference, setThemePreference] = useState<"dark" | "light" | "system">(settings.theme || "dark");
 
   const [isSaving, setIsSaving] = useState(false);
@@ -387,7 +390,34 @@ export default function SettingsPage() {
                   </p>
                 </div>
 
-                <Button variant="primary" onClick={handleSavePreferences} className="gap-2 text-xs rounded-xl">
+                <div className="flex items-center justify-between pt-3 border-t border-zinc-800/80">
+                  <div className="space-y-0.5">
+                    <p className="text-xs font-semibold text-white flex items-center gap-1.5">
+                      <Volume2 className="h-3.5 w-3.5 text-pink-400" />
+                      <span>Audio & Haptic Feedback</span>
+                    </p>
+                    <p className="text-[11px] text-zinc-400">
+                      Play subtle Apple-style sound effects on file upload, completion, and interactions.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={soundEffects}
+                    onCheckedChange={(checked) => {
+                      setSoundEffects(checked);
+                      SoundManager.setEnabled(checked);
+                      if (checked) SoundManager.play("chime");
+                    }}
+                  />
+                </div>
+
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    handleSavePreferences();
+                    SoundManager.setEnabled(soundEffects);
+                  }}
+                  className="gap-2 text-xs rounded-xl"
+                >
                   <Save className="h-3.5 w-3.5" />
                   <span>Save Defaults</span>
                 </Button>

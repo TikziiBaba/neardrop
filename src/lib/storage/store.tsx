@@ -5,6 +5,7 @@ import { CloudFile, ShareLink, TransferItem, StorageStats, UserSettings } from "
 import { getFileCategory } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/client";
+import { SoundManager } from "@/lib/utils/sound-effects";
 
 interface FilePreviewData {
   previewUrl: string;
@@ -31,6 +32,7 @@ interface StorageContextType {
     expiresInHours?: number;
     maxDownloads?: number;
     password?: string;
+    burnAfterRead?: boolean;
   }) => Promise<ShareLink>;
   deleteFile: (fileId: string) => Promise<void>;
   renameFile: (fileId: string, newName: string) => Promise<void>;
@@ -394,6 +396,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     expiresInHours?: number;
     maxDownloads?: number;
     password?: string;
+    burnAfterRead?: boolean;
   }): Promise<ShareLink> => {
     const authHeaders = await getAuthHeaders();
     const res = await fetch("/api/shares", {
@@ -411,6 +414,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
 
     const newShare = await res.json();
+    SoundManager.play("success");
     await fetchShares();
     await fetchFiles();
     return newShare;
@@ -432,6 +436,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       throw new Error(errData.error || "Failed to delete file");
     }
 
+    SoundManager.play("error");
     // Optimistic update
     setFiles((prev) => prev.filter((f) => f.id !== fileId));
     setShares((prev) => prev.filter((s) => s.cloudFileId !== fileId));

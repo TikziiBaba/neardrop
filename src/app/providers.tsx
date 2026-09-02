@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 
 import { DeviceTracker } from "@/components/auth/DeviceTracker";
 import { GlobalTransferProgress } from "@/components/upload/GlobalTransferProgress";
+import { CommandPalette } from "@/components/ui/CommandPalette";
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -16,6 +17,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
         <DeviceTracker />
         <StorageProvider>
           {children}
+          <CommandPalette />
           <GlobalTransferProgress />
           <Toaster
             position="bottom-right"

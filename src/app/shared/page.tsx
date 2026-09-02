@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Plus,
   Folder,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -205,6 +206,17 @@ export default function SharedPage() {
                     >
                       <QrCode className="h-3.5 w-3.5" />
                     </Button>
+
+                    <Link href={`/shared/${share.id}/analytics`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-zinc-400 hover:text-sky-400"
+                        title="View Download Analytics"
+                      >
+                        <BarChart3 className="h-3.5 w-3.5" />
+                      </Button>
+                    </Link>
 
                     <Button
                       variant="outline"

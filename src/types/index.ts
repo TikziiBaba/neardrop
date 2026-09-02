@@ -48,6 +48,8 @@ export interface CloudFile {
   mimeType: string;
   checksum?: string;
   isDeleted: boolean;
+  isEncrypted?: boolean;
+  encryptionIv?: string;
   createdAt: string;
   expiresAt?: string | null;
   downloadsCount?: number;
@@ -70,12 +72,31 @@ export interface ShareLink {
   downloadCount: number;
   maxDownloads?: number | null;
   isActive: boolean;
+  burnAfterRead?: boolean;
+  isEncrypted?: boolean;
   createdAt: string;
   cloudFile?: CloudFile;
   userEmail?: string;
   folderFilesCount?: number;
   folderTotalBytes?: number;
   isFolder?: boolean;
+}
+
+export interface DownloadEvent {
+  id: string;
+  shareLinkId?: string;
+  cloudFileId?: string;
+  userId?: string;
+  downloaderIp?: string;
+  country?: string;
+  city?: string;
+  browser?: string;
+  os?: string;
+  deviceType?: 'desktop' | 'mobile' | 'tablet';
+  referrer?: string;
+  userAgent?: string;
+  bytesDownloaded?: number;
+  createdAt: string;
 }
 
 export interface TransferItem {
@@ -115,6 +136,7 @@ export interface UserSettings {
   defaultExpirationHours?: number;
   defaultMaxDownloads?: number;
   theme: 'dark' | 'light' | 'system';
+  soundEnabled?: boolean;
   emailOnDownload: boolean;
   emailOnExpire: boolean;
   twoFactorEnabled?: boolean;

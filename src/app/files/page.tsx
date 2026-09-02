@@ -41,6 +41,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
+import { BatchActionBar } from "@/components/files/BatchActionBar";
+import { SoundManager } from "@/lib/utils/sound-effects";
+import JSZip from "jszip";
 import { toast } from "sonner";
 
 interface FolderItem {
@@ -52,7 +55,7 @@ interface FolderItem {
 }
 
 export default function FilesPage() {
-  const { files, uploadFiles, downloadFile, deleteFile, downloadFolder } = useStorage();
+  const { files, uploadFiles, downloadFile, deleteFile, downloadFolder, previewFile } = useStorage();
   const { t } = useLanguage();
 
   const [currentFolderPath, setCurrentFolderPath] = useState<string>("");
@@ -61,6 +64,8 @@ export default function FilesPage() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [sortBy, setSortBy] = useState<"date" | "size" | "name">("name");
   const [isDragging, setIsDragging] = useState(false);
+  const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(new Set());
+  const [isBatchProcessing, setIsBatchProcessing] = useState(false);
 
   // Modals state
   const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null);
@@ -73,6 +78,78 @@ export default function FilesPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
+
+  const toggleSelectFile = (fileId: string) => {
+    setSelectedFileIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(fileId)) next.delete(fileId);
+      else next.add(fileId);
+      return next;
+    });
+  };
+
+  const selectedFilesList = useMemo(() => {
+    return files.filter((f) => selectedFileIds.has(f.id));
+  }, [files, selectedFileIds]);
+
+  const selectedTotalBytes = useMemo(() => {
+    return selectedFilesList.reduce((acc, f) => acc + (f.size || 0), 0);
+  }, [selectedFilesList]);
+
+  const handleBatchDownloadZip = async () => {
+    if (selectedFilesList.length === 0) return;
+    setIsBatchProcessing(true);
+    const toastId = toast.loading(`Preparing ZIP archive for ${selectedFilesList.length} files...`);
+
+    try {
+      const zip = new JSZip();
+      for (const file of selectedFilesList) {
+        const preview = await previewFile(file.id);
+        if (preview?.previewUrl) {
+          const res = await fetch(preview.previewUrl);
+          const blob = await res.blob();
+          const cleanName = file.filename.split("/").pop() || file.filename;
+          zip.file(cleanName, blob);
+        }
+      }
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(zipBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `NearDrop_Batch_${new Date().toISOString().slice(0, 10)}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      SoundManager.play("chime");
+      toast.success("ZIP archive downloaded successfully!", { id: toastId });
+      setSelectedFileIds(new Set());
+    } catch (err: any) {
+      toast.error(err.message || "Failed to create ZIP", { id: toastId });
+    } finally {
+      setIsBatchProcessing(false);
+    }
+  };
+
+  const handleBatchDelete = async () => {
+    if (selectedFilesList.length === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedFilesList.length} selected files?`)) return;
+
+    setIsBatchProcessing(true);
+    try {
+      for (const file of selectedFilesList) {
+        await deleteFile(file.id);
+      }
+      toast.success(`${selectedFilesList.length} files deleted.`);
+      setSelectedFileIds(new Set());
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete files");
+    } finally {
+      setIsBatchProcessing(false);
+    }
+  };
 
   const categories = [
     { id: "all", label: "All Files" },
@@ -700,11 +777,23 @@ export default function FilesPage() {
               const { dir, name } = formatFilenameDisplay(file.filename);
               const cat = getFileCategory(file.mimeType, file.filename);
               const isMedia = cat === "image" || cat === "video";
+              const isSelected = selectedFileIds.has(file.id);
               return (
                 <div
                   key={file.id}
-                  className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-zinc-800/40 transition-colors group"
+                  className={`flex items-center justify-between p-3.5 sm:p-4 transition-colors group ${
+                    isSelected ? "bg-sky-500/10 border-l-2 border-sky-400" : "hover:bg-zinc-800/40"
+                  }`}
                 >
+                  <div className="flex items-center gap-3 mr-2">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleSelectFile(file.id)}
+                      className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-500/20 cursor-pointer"
+                    />
+                  </div>
+
                   <div
                     className={`flex items-center gap-3.5 min-w-0 flex-1 ${isMedia ? "cursor-pointer" : "cursor-default"}`}
                     onClick={() => {
@@ -1024,6 +1113,21 @@ export default function FilesPage() {
         file={selectedFileForDelete}
         open={Boolean(selectedFileForDelete)}
         onOpenChange={(open) => !open && setSelectedFileForDelete(null)}
+      />
+
+      {/* Floating Batch Action Toolbar */}
+      <BatchActionBar
+        selectedCount={selectedFilesList.length}
+        totalBytes={selectedTotalBytes}
+        onDownloadZip={handleBatchDownloadZip}
+        onDelete={handleBatchDelete}
+        onShare={() => {
+          if (selectedFilesList.length > 0) {
+            setSelectedFileForShare(selectedFilesList[0]);
+          }
+        }}
+        onClearSelection={() => setSelectedFileIds(new Set())}
+        isProcessing={isBatchProcessing}
       />
     </DashboardLayout>
   );

@@ -244,7 +244,7 @@ function CheckoutContent() {
                 />
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 space-y-2.5">
                 <Button
                   type="submit"
                   variant="primary"
@@ -253,9 +253,44 @@ function CheckoutContent() {
                 >
                   <Zap className="h-4 w-4" />
                   <span>
-                    {isProcessing ? "Processing..." : `Complete Order (${price} ₺)`}
+                    {isProcessing ? "Processing..." : `Simulate Direct Card Payment (${price} ₺)`}
                   </span>
                 </Button>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsProcessing(true);
+                    try {
+                      const res = await fetch("/api/payment/checkout", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ planId: plan.id, billingCycle }),
+                      });
+                      const data = await res.json();
+                      if (data.checkoutUrl) {
+                        window.location.href = data.checkoutUrl;
+                      } else {
+                        toast.info("LemonSqueezy test simulation: activating plan directly.");
+                        await updateProfile({
+                          quotaBytes: plan.quotaBytes,
+                          subscriptionTier: plan.id,
+                          subscriptionStatus: "active",
+                        });
+                        router.push("/dashboard");
+                      }
+                    } catch (err: any) {
+                      toast.error(err.message || "Payment service unavailable");
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}
+                  disabled={isProcessing}
+                  className="w-full py-2.5 px-4 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold transition-colors flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+                  <span>Pay via LemonSqueezy (Hosted Checkout)</span>
+                </button>
               </div>
 
               <p className="text-[11px] text-center text-zinc-500">

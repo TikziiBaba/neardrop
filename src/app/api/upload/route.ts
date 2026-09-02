@@ -5,9 +5,14 @@ import { sanitizeFilename, isDangerousExtension, isFileSizeValid, MAX_UPLOAD_SIZ
 import { validateUploadSize } from "@/lib/subscription/permissions";
 import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
 import { formatBytes } from "@/lib/utils";
+import { checkRateLimit, tooManyRequestsResponse } from "@/lib/utils/rate-limiter";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = checkRateLimit(ip, "/api/upload");
+  if (!rl.allowed) return tooManyRequestsResponse(rl);
+
   try {
     const user = await getAuthUser(req);
     if (!user) {
@@ -138,7 +143,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Presigned Upload URL generation (JSON request)
     const body = await req.json();
-    const { filename: rawFilename, size, mimeType } = body;
+    const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv } = body;
 
     if (!rawFilename || !size) {
       return NextResponse.json({ error: "Filename and size are required" }, { status: 400 });
@@ -201,6 +206,8 @@ export async function POST(req: NextRequest) {
         size,
         mime_type: mimeType || "application/octet-stream",
         is_deleted: false,
+        is_encrypted: Boolean(isEncrypted),
+        encryption_iv: encryptionIv || null,
       });
 
     if (dbError) {

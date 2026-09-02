@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 import { validateShareCreation } from "@/lib/subscription/permissions";
 import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
+import { checkRateLimit, tooManyRequestsResponse } from "@/lib/utils/rate-limiter";
 import crypto from "crypto";
 
 function serverSHA256(text: string): string {
@@ -93,6 +94,10 @@ export async function GET(req: NextRequest) {
 
 // POST: Create a new share link (supports both single file and folder)
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const rl = checkRateLimit(ip, "/api/shares");
+  if (!rl.allowed) return tooManyRequestsResponse(rl);
+
   try {
     const user = await getAuthUser(req);
     if (!user) {
@@ -100,7 +105,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { cloudFileId, folderPath, title, description, expiresInHours, maxDownloads, password } = body;
+    const { cloudFileId, folderPath, title, description, expiresInHours, maxDownloads, password, burnAfterRead } = body;
 
     if (!cloudFileId && !folderPath) {
       return NextResponse.json({ error: "Either cloudFileId or folderPath is required" }, { status: 400 });
@@ -171,6 +176,7 @@ export async function POST(req: NextRequest) {
       expires_at: expiresAt,
       max_downloads: maxDownloads || null,
       is_active: true,
+      burn_after_read: Boolean(burnAfterRead),
     };
 
     if (folderPath) {
