@@ -66,7 +66,7 @@ export default function SharedPage() {
           </div>
 
           <Link href="/files">
-            <Button variant="primary" size="sm" className="gap-1.5 shadow-lg shadow-sky-500/20">
+            <Button variant="primary" size="default" className="gap-2 shadow-lg shadow-sky-500/25">
               <Plus className="h-4 w-4" />
               <span>Create New Share</span>
             </Button>

@@ -217,21 +217,33 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Action Navigation Buttons */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <div className="flex flex-wrap items-center gap-3">
               <Link href="/files">
-                <Button variant="primary" size="sm" className="gap-2 shadow-lg shadow-sky-500/20 text-xs sm:text-sm h-9">
+                <Button
+                  variant="primary"
+                  size="default"
+                  className="px-5 py-2.5 rounded-2xl shadow-lg shadow-sky-500/25 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
+                >
                   <FolderOpen className="h-4 w-4" />
                   <span>My Files</span>
                 </Button>
               </Link>
               <Link href="/shared">
-                <Button variant="outline" size="sm" className="gap-2 border-zinc-700 bg-zinc-800/60 hover:bg-zinc-800 text-xs sm:text-sm h-9">
+                <Button
+                  variant="outline"
+                  size="default"
+                  className="px-5 py-2.5 rounded-2xl border-zinc-700/80 bg-zinc-900/80 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-medium whitespace-nowrap"
+                >
                   <Share2 className="h-4 w-4 text-emerald-400" />
                   <span>Shared ({shares.length})</span>
                 </Button>
               </Link>
               <Link href="/transfers">
-                <Button variant="outline" size="sm" className="gap-2 border-zinc-700 bg-zinc-800/60 hover:bg-zinc-800 text-xs sm:text-sm h-9">
+                <Button
+                  variant="outline"
+                  size="default"
+                  className="px-5 py-2.5 rounded-2xl border-zinc-700/80 bg-zinc-900/80 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-medium whitespace-nowrap"
+                >
                   <Activity className="h-4 w-4 text-purple-400" />
                   <span>Transfers</span>
                 </Button>

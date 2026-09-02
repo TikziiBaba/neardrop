@@ -152,16 +152,16 @@ export default function StoragePage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <Link href="/pricing">
-              <Button variant="outline" size="sm" className="gap-2 text-xs">
-                <Zap className="h-3.5 w-3.5 text-amber-400" />
+              <Button variant="outline" size="default" className="gap-2.5">
+                <Zap className="h-4 w-4 text-amber-400" />
                 <span>Upgrade Plan</span>
               </Button>
             </Link>
             <Link href="/files">
-              <Button variant="primary" size="sm" className="gap-2 text-xs">
-                <FolderOpen className="h-3.5 w-3.5" />
+              <Button variant="primary" size="default" className="gap-2.5 shadow-lg shadow-sky-500/25">
+                <FolderOpen className="h-4 w-4" />
                 <span>Browse Files</span>
               </Button>
             </Link>
