@@ -41,6 +41,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { BatchActionBar } from "@/components/files/BatchActionBar";
 import { SoundManager } from "@/lib/utils/sound-effects";
 import JSZip from "jszip";
@@ -794,11 +795,10 @@ export default function FilesPage() {
                   }`}
                 >
                   <div className="flex items-center gap-3 mr-2">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={isSelected}
-                      onChange={() => toggleSelectFile(file.id)}
-                      className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-500/20 cursor-pointer"
+                      onCheckedChange={() => toggleSelectFile(file.id)}
+                      ariaLabel={`Select ${file.filename}`}
                     />
                   </div>
 
@@ -1003,8 +1003,16 @@ export default function FilesPage() {
                           }}
                         >
                           <div className="flex items-center justify-between">
-                            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60">
-                              {renderFileIcon(file, true)}
+                            <div className="flex items-center gap-2.5">
+                              <Checkbox
+                                checked={selectedFileIds.has(file.id)}
+                                onCheckedChange={() => toggleSelectFile(file.id)}
+                                size="sm"
+                                ariaLabel={`Select ${file.filename}`}
+                              />
+                              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60">
+                                {renderFileIcon(file, true)}
+                              </div>
                             </div>
                             {(file.activeSharesCount || 0) > 0 && (
                               <Badge variant="success" className="text-[10px]">

@@ -5,6 +5,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CloudFile, ShareLink } from "@/types";
 import { useStorage } from "@/lib/storage/store";
 import { formatBytes } from "@/lib/utils";
@@ -419,11 +420,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                 Link and file will be automatically destroyed after first download.
               </p>
             </div>
-            <input
-              type="checkbox"
+            <Checkbox
               checked={burnAfterRead}
-              onChange={(e) => setBurnAfterRead(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-sky-500/20"
+              onCheckedChange={setBurnAfterRead}
+              ariaLabel="Burn After Read"
             />
           </div>
 
