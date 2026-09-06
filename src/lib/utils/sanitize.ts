@@ -67,9 +67,9 @@ export function isDangerousExtension(filename: string): boolean {
 }
 
 /**
- * Maximum upload file size: 5 GB
+ * Maximum upload file size: 50 GB (matches Enterprise limit)
  */
-export const MAX_UPLOAD_SIZE = 5 * 1024 * 1024 * 1024; // 5 GB
+export const MAX_UPLOAD_SIZE = 50 * 1024 * 1024 * 1024; // 50 GB
 
 /**
  * Validates file size against maximum allowed.

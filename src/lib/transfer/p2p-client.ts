@@ -393,14 +393,28 @@ export class DirectTransferEngine {
       const buffer = await slice.arrayBuffer();
       const isLast = offset + buffer.byteLength >= totalSize;
 
-      // Try sending via WebRTC DataChannel first
-      if (dc && dc.readyState === "open" && dc.bufferedAmount < 8 * 1024 * 1024) {
-        // Prepend header to buffer [16 bytes header: transferId, isLast]
+      // WebRTC DataChannel streaming with flow control
+      if (dc && dc.readyState === "open") {
+        // Flow control: wait if buffer exceeds 4MB threshold
+        if (dc.bufferedAmount > 4 * 1024 * 1024) {
+          await new Promise<void>((resolve) => {
+            dc.bufferedAmountLowThreshold = 1024 * 1024;
+            const onLow = () => {
+              dc.removeEventListener("bufferedamountlow", onLow);
+              resolve();
+            };
+            dc.addEventListener("bufferedamountlow", onLow);
+            setTimeout(() => {
+              dc.removeEventListener("bufferedamountlow", onLow);
+              resolve();
+            }, 200);
+          });
+        }
         dc.send(buffer);
       } else {
         // Fallback: Realtime broadcast chunk (base64)
         const base64Chunk = this.arrayBufferToBase64(buffer);
-        this.channel.send({
+        await this.channel.send({
           type: "broadcast",
           event: "transfer_chunk",
           payload: {
@@ -411,6 +425,8 @@ export class DirectTransferEngine {
             isLast,
           },
         });
+        // Throttle broadcast slightly to avoid flooding Realtime websocket
+        await new Promise((r) => setTimeout(r, 10));
       }
 
       offset += buffer.byteLength;

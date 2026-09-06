@@ -28,17 +28,19 @@ export const getR2Client = () => {
 export async function createPresignedUploadUrl(
   r2ObjectKey: string,
   contentType: string,
-  contentLength: number,
-  expiresInSeconds = 1800
+  _contentLength?: number,
+  expiresInSeconds = 10800
 ) {
   const s3 = getR2Client();
-  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
 
+  // Note: We omit ContentLength from PutObjectCommand so AWS SDK does not sign
+  // content-length in X-Amz-SignedHeaders, preventing SignatureDoesNotMatch errors
+  // during direct browser uploads.
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: r2ObjectKey,
     ContentType: contentType || "application/octet-stream",
-    ContentLength: contentLength,
   });
 
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
@@ -50,7 +52,7 @@ export async function createPresignedDownloadUrl(
   expiresInSeconds = 900
 ) {
   const s3 = getR2Client();
-  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
   const downloadName = filename.split("/").pop() || filename;
 
   const command = new GetObjectCommand({
@@ -69,7 +71,7 @@ export async function createPresignedPreviewUrl(
   expiresInSeconds = 900
 ) {
   const s3 = getR2Client();
-  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
   const displayName = filename.split("/").pop() || filename;
 
   const command = new GetObjectCommand({
@@ -88,7 +90,7 @@ export async function uploadR2Buffer(
   contentType: string
 ) {
   const s3 = getR2Client();
-  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
 
   const command = new PutObjectCommand({
     Bucket: bucketName,
@@ -102,7 +104,7 @@ export async function uploadR2Buffer(
 
 export async function deleteR2Object(r2ObjectKey: string) {
   const s3 = getR2Client();
-  const bucketName = process.env.R2_BUCKET_NAME || "neardrop-files";
+  const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
 
   const command = new DeleteObjectCommand({
     Bucket: bucketName,

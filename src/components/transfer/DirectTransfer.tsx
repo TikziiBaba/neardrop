@@ -139,11 +139,13 @@ export const DirectTransfer: React.FC = () => {
 
   const handlePeerDrop = async (peer: PeerInfo, files: FileList) => {
     if (!files || files.length === 0) return;
-    const file = files[0];
+    const fileArray = Array.from(files);
     try {
       SoundManager.play("swoosh");
-      toast.info(`Sending "${file.name}" to ${peer.deviceName}...`);
-      await engineRef.current?.sendFileToPeer(peer, file);
+      toast.info(`Sending ${fileArray.length} file(s) to ${peer.deviceName}...`);
+      for (const file of fileArray) {
+        await engineRef.current?.sendFileToPeer(peer, file);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to send file directly");
     }
@@ -151,10 +153,13 @@ export const DirectTransfer: React.FC = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selectedPeerForUpload || !e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
+    const fileArray = Array.from(e.target.files);
     try {
       SoundManager.play("swoosh");
-      await engineRef.current?.sendFileToPeer(selectedPeerForUpload, file);
+      toast.info(`Sending ${fileArray.length} file(s) to ${selectedPeerForUpload.deviceName}...`);
+      for (const file of fileArray) {
+        await engineRef.current?.sendFileToPeer(selectedPeerForUpload, file);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to send file directly");
     } finally {
@@ -174,6 +179,7 @@ export const DirectTransfer: React.FC = () => {
       {/* Hidden File Input */}
       <input
         type="file"
+        multiple
         ref={fileInputRef}
         onChange={handleFileChange}
         className="hidden"

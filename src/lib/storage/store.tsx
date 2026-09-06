@@ -191,19 +191,20 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [user, refreshFiles]);
 
   const activeXHRsRef = useRef<Record<string, XMLHttpRequest>>({});
+  const activeFileIdsRef = useRef<Record<string, string>>({});
 
-  // Upload handler with presigned URL and auto fallback to direct upload (both with full XHR progress)
+  // Upload handler with presigned URL, concurrent queue (3 at a time), and automatic quota cleanup
   const uploadFiles = useCallback(async (fileList: File[] | FileList) => {
     const rawFiles = Array.from(fileList);
     if (!rawFiles.length || !user) return;
 
     const authHeaders = await getAuthHeaders();
 
-    for (const file of rawFiles) {
+    // 1. Instantly register all files into transfers state as "pending"
+    const initialTransfers: TransferItem[] = rawFiles.map((file, idx) => {
       const fullFilename = (file as any).relativePath || file.webkitRelativePath || file.name;
-      const transferId = `tr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
-      const startedAt = Date.now();
-      const newTransfer: TransferItem = {
+      const transferId = `tr_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 7)}`;
+      return {
         id: transferId,
         filename: fullFilename,
         size: file.size,
@@ -211,13 +212,26 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         transferredBytes: 0,
         speed: 0,
         eta: undefined,
-        status: "uploading",
+        status: "pending",
         direction: "upload",
-        startedAt,
+        startedAt: Date.now(),
         file,
       };
+    });
 
-      setTransfers((prev) => [newTransfer, ...prev]);
+    setTransfers((prev) => [...initialTransfers, ...prev]);
+
+    // 2. Upload single item function
+    const uploadSingleItem = async (transferItem: TransferItem) => {
+      const { id: transferId, file, filename: fullFilename } = transferItem;
+      if (!file) return;
+
+      const startedAt = Date.now();
+
+      // Mark status as uploading
+      setTransfers((prev) =>
+        prev.map((t) => (t.id === transferId ? { ...t, status: "uploading", startedAt } : t))
+      );
 
       const handleProgressEvent = (e: ProgressEvent) => {
         if (e.lengthComputable && e.total > 0) {
@@ -237,10 +251,12 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       };
 
+      let currentFileId: string | null = null;
+
       try {
         let uploadSucceeded = false;
 
-        // Step 1: Try Presigned URL first
+        // Step 1: Request Presigned URL for direct upload
         try {
           const apiRes = await fetch("/api/upload", {
             method: "POST",
@@ -256,9 +272,14 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
           });
 
           if (apiRes.ok) {
-            const { uploadUrl } = await apiRes.json();
+            const data = await apiRes.json();
+            const { uploadUrl, fileId } = data;
+            currentFileId = fileId;
+            if (fileId) {
+              activeFileIdsRef.current[transferId] = fileId;
+            }
 
-            // Direct XHR PUT to presigned URL
+            // Direct XHR PUT to presigned R2 URL
             await new Promise<void>((resolve, reject) => {
               const xhr = new XMLHttpRequest();
               activeXHRsRef.current[transferId] = xhr;
@@ -293,13 +314,18 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             throw new Error(errData.error || `Upload could not be initiated (${apiRes.status})`);
           }
         } catch (presignedErr: any) {
-          if (presignedErr?.message === "Upload cancelled" || presignedErr?.message?.includes("quota") || presignedErr?.message?.includes("plan")) {
+          if (
+            presignedErr?.message === "Upload cancelled" ||
+            presignedErr?.message?.includes("quota") ||
+            presignedErr?.message?.includes("plan") ||
+            file.size > 25 * 1024 * 1024
+          ) {
             throw presignedErr;
           }
           console.warn("Direct storage upload failed, falling back to secure tunnel upload...", presignedErr);
         }
 
-        // Step 2: Fallback to server proxy upload with full progress tracking
+        // Step 2: Fallback to server proxy upload for small files (<= 25 MB)
         if (!uploadSucceeded) {
           const formData = new FormData();
           formData.append("file", file);
@@ -343,8 +369,10 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
           });
         }
 
-        // Mark transfer completed
+        // Successful completion
         delete activeXHRsRef.current[transferId];
+        delete activeFileIdsRef.current[transferId];
+
         setTransfers((prev) =>
           prev.map((t) =>
             t.id === transferId
@@ -360,14 +388,21 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
               : t
           )
         );
-
-        // Refresh file list from DB
-        await fetchFiles();
-
       } catch (err: any) {
         delete activeXHRsRef.current[transferId];
         const isCancelled = err?.message === "Upload cancelled";
-        console.error("Upload error:", err);
+        console.error(`Upload error for ${fullFilename}:`, err);
+
+        // If fileId was generated but upload failed, clean up DB record to restore quota
+        const fileIdToClean = currentFileId || activeFileIdsRef.current[transferId];
+        if (fileIdToClean) {
+          delete activeFileIdsRef.current[transferId];
+          fetch(`/api/upload?fileId=${fileIdToClean}`, {
+            method: "DELETE",
+            headers: authHeaders,
+          }).catch((e) => console.warn("Failed to cleanup aborted file record:", e));
+        }
+
         setTransfers((prev) =>
           prev.map((t) =>
             t.id === transferId
@@ -376,16 +411,31 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
                   status: isCancelled ? "cancelled" : "failed",
                   speed: 0,
                   eta: undefined,
-                  errorMessage: err.message,
+                  errorMessage: err?.message || "Upload failed",
                 }
               : t
           )
         );
-        if (!isCancelled) {
-          throw err;
-        }
       }
-    }
+    };
+
+    // 3. Concurrency pool runner (processes up to 3 files simultaneously)
+    const queue = [...initialTransfers];
+    const CONCURRENCY_LIMIT = 3;
+    const workerCount = Math.min(CONCURRENCY_LIMIT, queue.length);
+
+    const worker = async () => {
+      while (queue.length > 0) {
+        const item = queue.shift();
+        if (!item) break;
+        await uploadSingleItem(item);
+      }
+    };
+
+    await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+    // Refresh file list from DB after batch completes
+    await fetchFiles();
   }, [user, fetchFiles, getAuthHeaders]);
 
   const createShareLink = async (params: {
@@ -741,6 +791,16 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.warn("Error aborting XHR:", e);
       }
       delete activeXHRsRef.current[transferId];
+    }
+    const fileId = activeFileIdsRef.current[transferId];
+    if (fileId) {
+      delete activeFileIdsRef.current[transferId];
+      getAuthHeaders().then((headers) => {
+        fetch(`/api/upload?fileId=${fileId}`, {
+          method: "DELETE",
+          headers,
+        }).catch((e) => console.warn("Error cleaning up aborted file:", e));
+      });
     }
     setTransfers((prev) =>
       prev.map((t) =>
