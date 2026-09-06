@@ -37,8 +37,8 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     quotaLabel: "2 GB",
     priceMonthly: 0,
     priceYearly: 0,
-    maxUploadSizeBytes: 104857600, // 100 MB
-    maxUploadSizeLabel: "100 MB",
+    maxUploadSizeBytes: 2147483648, // 2 GB (matches total quota)
+    maxUploadSizeLabel: "2 GB",
     maxActiveShares: 1, // Max 1 active share link
     maxLinkLifespanHours: 12, // Max 12 hours
     allowPasswordProtection: false, // Locked on free tier
@@ -51,7 +51,7 @@ export const TIER_LIMITS: Record<SubscriptionTier, TierLimits> = {
     transferSpeed: "standard",
     features: [
       "2 GB High-Speed Secure Cloud Storage",
-      "Up to 100 MB Single File Upload",
+      "Up to 2 GB Single File Upload",
       "1 Active Share Link",
       "Up to 12 Hours Link Lifespan",
       "End-to-End AES-256-GCM Encryption",

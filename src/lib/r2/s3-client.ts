@@ -22,6 +22,10 @@ export const getR2Client = () => {
       accessKeyId,
       secretAccessKey,
     },
+    // Prevent AWS SDK v3 from automatically calculating empty checksums (CRC32)
+    // for presigned PUT URLs, which causes Cloudflare R2 to reject browser uploads.
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   });
 };
 
