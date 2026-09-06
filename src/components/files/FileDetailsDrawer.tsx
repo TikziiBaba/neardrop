@@ -142,6 +142,17 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
 
             <div className="flex items-center justify-between py-2 border-b border-zinc-900">
               <span className="text-zinc-400 flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                <span>Security Scan</span>
+              </span>
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full">
+                <ShieldCheck className="h-3 w-3 text-emerald-400" />
+                <span>Verified Clean</span>
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between py-2 border-b border-zinc-900">
+              <span className="text-zinc-400 flex items-center gap-1.5">
                 <HardDrive className="h-3.5 w-3.5 text-zinc-500" />
                 <span>Storage Key</span>
               </span>

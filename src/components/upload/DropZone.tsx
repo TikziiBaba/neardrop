@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { UploadCloud, FolderUp, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, ArrowRight, X } from "lucide-react";
+import { UploadCloud, FolderUp, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, ArrowRight, X, ShieldCheck } from "lucide-react";
 import { useStorage } from "@/lib/storage/store";
 import { useLanguage } from "@/lib/i18n/context";
 import { extractFilesFromDataTransfer } from "@/lib/utils/folder-upload";
@@ -152,8 +152,16 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
             </button>
           </div>
 
+          {/* Security & All Formats Supported Banner */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[11px] font-medium backdrop-blur-md shadow-sm">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
+            <span>{t.dropzone.allFormatsSupported}</span>
+            <span className="opacity-40">•</span>
+            <span className="text-emerald-300">{t.dropzone.securityScanActive}</span>
+          </div>
+
           {/* Feature Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-zinc-400 pt-2 font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-zinc-400 pt-1 font-medium">
             <span className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
               <span>{t.dropzone.encrypted}</span>

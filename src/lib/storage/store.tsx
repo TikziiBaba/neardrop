@@ -6,6 +6,7 @@ import { getFileCategory } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/context";
 import { createClient } from "@/lib/supabase/client";
 import { SoundManager } from "@/lib/utils/sound-effects";
+import { toast } from "sonner";
 
 interface FilePreviewData {
   previewUrl: string;
@@ -256,6 +257,31 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         let uploadSucceeded = false;
 
+        // Step 1: Extract header sample and compute SHA-256 for real-time security scan
+        let sha256 = "";
+        let headerSample = "";
+        try {
+          const sampleSlice = file.slice(0, 65536);
+          const sampleBuf = await sampleSlice.arrayBuffer();
+          const sampleBytes = new Uint8Array(sampleBuf);
+          let binary = "";
+          for (let i = 0; i < sampleBytes.byteLength; i++) {
+            binary += String.fromCharCode(sampleBytes[i]);
+          }
+          headerSample = btoa(binary);
+
+          if (window.crypto?.subtle) {
+            const hashBuf = await window.crypto.subtle.digest(
+              "SHA-256",
+              file.size <= 50 * 1024 * 1024 ? await file.arrayBuffer() : sampleBuf
+            );
+            const hashArray = Array.from(new Uint8Array(hashBuf));
+            sha256 = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+          }
+        } catch (hashErr) {
+          console.warn("Client hash calculation skipped:", hashErr);
+        }
+
         // Step 1: Request Presigned URL for direct upload
         try {
           const apiRes = await fetch("/api/upload", {
@@ -268,6 +294,8 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
               filename: fullFilename,
               size: file.size,
               mimeType: file.type || "application/octet-stream",
+              sha256,
+              headerSample,
             }),
           });
 
@@ -318,6 +346,8 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             presignedErr?.message === "Upload cancelled" ||
             presignedErr?.message?.includes("quota") ||
             presignedErr?.message?.includes("plan") ||
+            presignedErr?.message?.includes("Zararlı") ||
+            presignedErr?.message?.includes("Malware") ||
             file.size > 25 * 1024 * 1024
           ) {
             throw presignedErr;
@@ -392,6 +422,12 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         delete activeXHRsRef.current[transferId];
         const isCancelled = err?.message === "Upload cancelled";
         console.error(`Upload error for ${fullFilename}:`, err);
+
+        const isMalware = err?.message?.includes("Zararlı") || err?.message?.includes("Malware") || err?.message?.includes("threat");
+        if (isMalware) {
+          SoundManager.play("error");
+          toast.error(err.message || "Zararlı dosya tespit edildi. Yükleme engellendi.", { duration: 6000 });
+        }
 
         // If fileId was generated but upload failed, clean up DB record to restore quota
         const fileIdToClean = currentFileId || activeFileIdsRef.current[transferId];

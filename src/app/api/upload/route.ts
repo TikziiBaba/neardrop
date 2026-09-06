@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPresignedUploadUrl, getR2Client, isR2Configured } from "@/lib/r2/s3-client";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
-import { sanitizeFilename, isDangerousExtension, isFileSizeValid, MAX_UPLOAD_SIZE } from "@/lib/utils/sanitize";
+import { sanitizeFilename, isFileSizeValid, MAX_UPLOAD_SIZE } from "@/lib/utils/sanitize";
 import { validateUploadSize } from "@/lib/subscription/permissions";
 import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
 import { formatBytes } from "@/lib/utils";
 import { checkRateLimit, tooManyRequestsResponse } from "@/lib/utils/rate-limiter";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { scanFileBuffer } from "@/lib/security/malware-scanner";
 
 export const dynamic = "force-dynamic";
 
@@ -57,9 +58,47 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Security: Block dangerous file extensions
-      if (isDangerousExtension(filename)) {
-        return NextResponse.json({ error: "This file type is not allowed for security reasons." }, { status: 400 });
+      // Security: Read buffer for security scan and upload
+      const buffer = Buffer.from(await file.arrayBuffer());
+
+      // Security: Multi-layer malware, webshell & threat scan
+      const scanResult = await scanFileBuffer({
+        buffer,
+        filename,
+        mimeType,
+      });
+
+      if (scanResult.isMalicious) {
+        const client = extractClientInfo(req);
+        recordAuditLog({
+          action: "MALWARE_BLOCKED",
+          resourceType: "file",
+          userId: user.id,
+          userEmail: user.email,
+          fileName: filename,
+          fileSize: size,
+          ipAddress: client.ipAddress,
+          deviceInfo: client.deviceInfo,
+          platform: client.platform,
+          browser: client.browser,
+          details: `Threat detected in "${filename}". Threat: ${scanResult.threatName}. Upload blocked.`,
+          metadata: {
+            threatName: scanResult.threatName,
+            threatCategory: scanResult.threatCategory,
+            sha256: scanResult.sha256,
+            scanEngine: scanResult.scanEngine,
+          },
+          status: "danger",
+        });
+
+        return NextResponse.json(
+          {
+            error: `Zararlı dosya tespit edildi (${scanResult.threatName}). Güvenliğiniz için bu dosya yüklenemez.`,
+            threat: scanResult.threatName,
+            details: scanResult.details,
+          },
+          { status: 422 }
+        );
       }
 
       // Security: Validate file size
@@ -93,7 +132,6 @@ export async function POST(req: NextRequest) {
 
       // Upload directly from server to R2
       const s3 = getR2Client();
-      const buffer = Buffer.from(await file.arrayBuffer());
       const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
 
       await s3.send(
@@ -115,6 +153,7 @@ export async function POST(req: NextRequest) {
           r2_object_key: r2ObjectKey,
           size,
           mime_type: mimeType,
+          checksum: scanResult.sha256,
           is_deleted: false,
         });
 
@@ -169,7 +208,7 @@ export async function POST(req: NextRequest) {
       }> = [];
 
       for (const item of batchItems) {
-        const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv } = item;
+        const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv, sha256, headerSample } = item;
         if (!rawFilename || !size) {
           results.push({ filename: rawFilename || "unknown", size: size || 0, error: "Filename and size are required" });
           continue;
@@ -177,8 +216,38 @@ export async function POST(req: NextRequest) {
 
         const filename = sanitizeFilename(rawFilename);
 
-        if (isDangerousExtension(filename)) {
-          results.push({ filename, size, error: "This file type is not allowed for security reasons." });
+        // Security: Multi-layer malware and header inspection
+        const sampleBuf = headerSample ? Buffer.from(headerSample, "base64") : Buffer.alloc(0);
+        const scanResult = await scanFileBuffer({
+          buffer: sampleBuf,
+          filename,
+          mimeType,
+          sha256,
+        });
+
+        if (scanResult.isMalicious) {
+          const client = extractClientInfo(req);
+          recordAuditLog({
+            action: "MALWARE_BLOCKED",
+            resourceType: "file",
+            userId: user.id,
+            userEmail: user.email,
+            fileName: filename,
+            fileSize: size,
+            ipAddress: client.ipAddress,
+            deviceInfo: client.deviceInfo,
+            platform: client.platform,
+            browser: client.browser,
+            details: `Malware detected in batch item "${filename}". Threat: ${scanResult.threatName}. Upload rejected.`,
+            metadata: { threatName: scanResult.threatName, threatCategory: scanResult.threatCategory, sha256: scanResult.sha256 },
+            status: "danger",
+          });
+
+          results.push({
+            filename,
+            size,
+            error: `Zararlı dosya tespit edildi: ${scanResult.threatName}`,
+          });
           continue;
         }
 
@@ -219,6 +288,7 @@ export async function POST(req: NextRequest) {
             r2_object_key: r2ObjectKey,
             size,
             mime_type: mimeType || "application/octet-stream",
+            checksum: scanResult.sha256,
             is_deleted: false,
             is_encrypted: Boolean(isEncrypted),
             encryption_iv: encryptionIv || null,
@@ -242,7 +312,7 @@ export async function POST(req: NextRequest) {
     }
 
     // SINGLE FILE MODE
-    const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv } = body;
+    const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv, sha256, headerSample } = body;
 
     if (!rawFilename || !size) {
       return NextResponse.json({ error: "Filename and size are required" }, { status: 400 });
@@ -250,9 +320,46 @@ export async function POST(req: NextRequest) {
 
     const filename = sanitizeFilename(rawFilename);
 
-    // Security: Block dangerous file extensions
-    if (isDangerousExtension(filename)) {
-      return NextResponse.json({ error: "This file type is not allowed for security reasons." }, { status: 400 });
+    // Security: Multi-layer malware, webshell & header inspection
+    const sampleBuf = headerSample ? Buffer.from(headerSample, "base64") : Buffer.alloc(0);
+    const scanResult = await scanFileBuffer({
+      buffer: sampleBuf,
+      filename,
+      mimeType,
+      sha256,
+    });
+
+    if (scanResult.isMalicious) {
+      const client = extractClientInfo(req);
+      recordAuditLog({
+        action: "MALWARE_BLOCKED",
+        resourceType: "file",
+        userId: user.id,
+        userEmail: user.email,
+        fileName: filename,
+        fileSize: size,
+        ipAddress: client.ipAddress,
+        deviceInfo: client.deviceInfo,
+        platform: client.platform,
+        browser: client.browser,
+        details: `Malware detected in presigned upload "${filename}". Threat: ${scanResult.threatName}. Upload rejected.`,
+        metadata: {
+          threatName: scanResult.threatName,
+          threatCategory: scanResult.threatCategory,
+          sha256: scanResult.sha256,
+          scanEngine: scanResult.scanEngine,
+        },
+        status: "danger",
+      });
+
+      return NextResponse.json(
+        {
+          error: `Zararlı dosya tespit edildi (${scanResult.threatName}). Güvenliğiniz için bu dosya yüklenemez.`,
+          threat: scanResult.threatName,
+          details: scanResult.details,
+        },
+        { status: 422 }
+      );
     }
 
     // Security: Validate file size
@@ -296,6 +403,7 @@ export async function POST(req: NextRequest) {
         r2_object_key: r2ObjectKey,
         size,
         mime_type: mimeType || "application/octet-stream",
+        checksum: scanResult.sha256,
         is_deleted: false,
         is_encrypted: Boolean(isEncrypted),
         encryption_iv: encryptionIv || null,

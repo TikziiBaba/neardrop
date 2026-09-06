@@ -285,6 +285,11 @@ export const translations = {
       uploading: "Yükleniyor",
       streamingToR2: "Güvenli depolamaya aktarılıyor",
       cancel: "İptal",
+      allFormatsSupported: "Her dosya formatı desteklenir (.exe, .bat, .zip, .apk vb.)",
+      malwareProtection: "Gerçek Zamanlı Antivirüs Koruması",
+      securityScanActive: "Zararlı Yazılım Taraması Aktif",
+      verifiedClean: "Doğrulandı & Temiz",
+      malwareBlocked: "Zararlı Dosya Engellendi",
     },
 
     // ===== FILES PAGE =====
@@ -649,6 +654,11 @@ export const translations = {
       uploading: "Uploading",
       streamingToR2: "Streaming to secure storage",
       cancel: "Cancel",
+      allFormatsSupported: "All file formats supported (.exe, .bat, .zip, .apk, etc.)",
+      malwareProtection: "Real-time Antivirus Protection",
+      securityScanActive: "Malware Scanning Active",
+      verifiedClean: "Verified & Clean",
+      malwareBlocked: "Malware Blocked",
     },
 
     // ===== FILES PAGE =====

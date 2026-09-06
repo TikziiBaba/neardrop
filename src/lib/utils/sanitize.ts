@@ -46,24 +46,33 @@ export function sanitizeFilename(filename: string): string {
 }
 
 /**
- * List of dangerous file extensions that should be blocked
- * from being uploaded to prevent execution of malicious files.
+ * File extensions that are executable or scripts.
+ * Note: NearDrop allows uploading ALL file formats (.exe, .bat, .sh, .apk, .zip, etc.).
+ * Safety is verified via multi-layer content scanning, magic-byte analysis, and antivirus engines.
  */
-const BLOCKED_EXTENSIONS = new Set([
+export const EXECUTABLE_EXTENSIONS = new Set([
   "exe", "bat", "cmd", "com", "msi", "scr", "pif",
   "vbs", "vbe", "js", "jse", "ws", "wsf", "wsc", "wsh",
   "ps1", "ps2", "psc1", "psc2", "msh", "msh1", "msh2",
   "inf", "reg", "rgs", "sct", "shb", "shs",
-  "cpl", "hta", "lnk",
+  "cpl", "hta", "lnk", "sh", "bin", "apk", "app",
 ]);
 
 /**
- * Checks if a file extension is in the blocked list.
- * Returns true if the extension is dangerous.
+ * Checks if a file is an executable or script type.
+ * Used for informational categorization and deep heuristic scanning.
  */
-export function isDangerousExtension(filename: string): boolean {
+export function isExecutableExtension(filename: string): boolean {
   const ext = filename.split(".").pop()?.toLowerCase() || "";
-  return BLOCKED_EXTENSIONS.has(ext);
+  return EXECUTABLE_EXTENSIONS.has(ext);
+}
+
+/**
+ * Legacy compatibility check: All file formats are now permitted on NearDrop.
+ * Security verification is enforced dynamically by the Malware & Security Scanner.
+ */
+export function isDangerousExtension(_filename: string): boolean {
+  return false;
 }
 
 /**
