@@ -56,8 +56,8 @@ export async function createPaytrIframeToken(
   }
 
   try {
-    // Unique order ID: ND_<timestamp>_<randomHex>
-    const merchantOid = `ND_${Date.now()}_${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
+    // Unique order ID (Strictly alphanumeric: no underscores, no hyphens)
+    const merchantOid = `ND${Date.now()}${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
     
     // Amount in cents (e.g. 99 TL -> 9900)
     const paymentAmount = Math.round(params.amount * 100).toString();
@@ -84,13 +84,21 @@ export async function createPaytrIframeToken(
     if (userIp.includes("::ffff:")) {
       userIp = userIp.replace("::ffff:", "");
     }
-    if (userIp === "::1" || userIp === "localhost") {
+    if (userIp === "::1" || userIp === "localhost" || userIp.startsWith("127.")) {
       userIp = "176.234.0.1"; // Default fallback for local testing so PayTR doesn't reject loopback
     }
 
-    const userName = params.userName?.trim() || "NearDrop Müşterisi";
-    const userAddress = params.userAddress?.trim() || "Türkiye";
-    const userPhone = params.userPhone?.trim() || "05555555555";
+    const userName = params.userName?.trim() || "NearDrop Musterisi";
+    const userAddress = params.userAddress?.trim() || "Turkiye";
+
+    // Clean Phone: only digits, ensure 10-11 chars starting with 0
+    let userPhone = (params.userPhone || "05555555555").replace(/\D/g, "");
+    if (!userPhone.startsWith("0")) {
+      userPhone = "0" + userPhone;
+    }
+    if (userPhone.length < 10) {
+      userPhone = "05555555555";
+    }
 
     const merchantOkUrl = `${config.appUrl}/checkout?status=success&plan=${params.planId}&oid=${merchantOid}`;
     const merchantFailUrl = `${config.appUrl}/checkout?status=failed&plan=${params.planId}&oid=${merchantOid}`;
