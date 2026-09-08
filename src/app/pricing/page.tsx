@@ -69,12 +69,9 @@ export default function PricingPage() {
 
         {/* Virtual POS Notice Pill */}
         <div className="flex justify-center -mt-2 mb-2">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-xs text-amber-300 backdrop-blur-md">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
-            </span>
-            <span>Banka Sanal POS entegrasyonu sürüyor. Ücretli paket alımları çok yakında aktif olacaktır.</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-300 backdrop-blur-md">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <span>PayTR 256-Bit SSL & 3D Secure Sanal POS Güvencesiyle Anında Yükseltin</span>
           </div>
         </div>
 
