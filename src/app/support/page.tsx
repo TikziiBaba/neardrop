@@ -20,6 +20,10 @@ import {
   RefreshCw,
   Search,
   ExternalLink,
+  Building,
+  MapPin,
+  Phone,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -133,6 +137,63 @@ export default function SupportPage() {
               <span>Create New Ticket</span>
             </Button>
           </Link>
+        </div>
+
+        {/* Official Headquarters & Direct Contact Card */}
+        <div className="rounded-3xl border border-white/10 bg-zinc-900/80 p-6 sm:p-7 shadow-xl backdrop-blur-2xl space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400">
+                <Building className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-white">Genel Merkez &amp; Doğrudan İletişim Bilgileri</h3>
+                <p className="text-xs text-zinc-400">Fatura, Sanal POS ve Müşteri Destek Masası</p>
+              </div>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 self-start sm:self-auto">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> 7/24 Kesintisiz Hizmet
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+              <div className="flex items-center gap-2 text-zinc-400 font-semibold">
+                <MapPin className="h-4 w-4 text-sky-400" />
+                <span>Açık Adres</span>
+              </div>
+              <p className="font-medium text-zinc-200 leading-relaxed">
+                Sivas Diriliş Mah. 21. Sok.
+                <span className="block text-[11px] text-zinc-400">Sivas / Türkiye</span>
+              </p>
+            </div>
+
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+              <div className="flex items-center gap-2 text-zinc-400 font-semibold">
+                <Phone className="h-4 w-4 text-emerald-400" />
+                <span>Müşteri Destek Hattı</span>
+              </div>
+              <p className="font-medium text-zinc-200">
+                <a href="tel:05456458416" className="text-emerald-400 hover:text-emerald-300 font-mono font-bold text-sm block">
+                  0545 645 84 16
+                </a>
+                <span className="block text-[11px] text-zinc-400">Haftanın 7 Günü Destek</span>
+              </p>
+            </div>
+
+            <div className="space-y-1.5 p-4 rounded-2xl bg-white/[0.03] border border-white/5">
+              <div className="flex items-center gap-2 text-zinc-400 font-semibold">
+                <Mail className="h-4 w-4 text-purple-400" />
+                <span>E-Posta Masası</span>
+              </div>
+              <p className="font-medium text-zinc-200">
+                <a href="mailto:destek@neardrop.bekirr.dev" className="text-purple-300 hover:text-purple-200 block truncate">
+                  destek@neardrop.bekirr.dev
+                </a>
+                <span className="block text-[11px] text-zinc-400">Hızlı Yanıt Garantisi</span>
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Quick Contact & Resource Cards */}

@@ -24,6 +24,25 @@ export const Footer: React.FC = () => {
                 <span>{t.footer.systemsOperational}</span>
               </div>
             </div>
+
+            {/* Official Headquarters & Contact */}
+            <div className="pt-3 text-[11px] text-zinc-400 space-y-1.5 border-t border-zinc-900">
+              <p className="text-zinc-300 font-medium leading-relaxed">
+                <span className="text-zinc-500 font-normal">Adres:</span> Sivas Diriliş Mah. 21. Sok., Sivas / Türkiye
+              </p>
+              <p className="flex items-center gap-1.5">
+                <span className="text-zinc-500">Destek Hattı:</span>
+                <a href="tel:05456458416" className="text-emerald-400 hover:underline font-mono font-bold">
+                  0545 645 84 16
+                </a>
+              </p>
+              <p className="flex items-center gap-1.5">
+                <span className="text-zinc-500">E-Posta:</span>
+                <a href="mailto:destek@neardrop.bekirr.dev" className="text-sky-400 hover:underline">
+                  destek@neardrop.bekirr.dev
+                </a>
+              </p>
+            </div>
           </div>
 
           {/* Product links */}
@@ -102,6 +121,11 @@ export const Footer: React.FC = () => {
               <li>
                 <Link href="/privacy#security" className="hover:text-white transition-colors">
                   {t.footer.securityDisclosures}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-sky-400 hover:text-sky-300 font-semibold transition-colors">
+                  İletişim &amp; Bize Ulaşın
                 </Link>
               </li>
             </ul>
