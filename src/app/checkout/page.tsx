@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import { useRouter, useSearchParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import { PRICING_PLANS } from "@/lib/subscription/plans";
 import { TIER_LIMITS } from "@/lib/subscription/permissions";
 import { useAuth } from "@/lib/auth/context";
@@ -11,24 +13,31 @@ import {
   Sparkles,
   ShieldCheck,
   CreditCard,
-  Check,
   ArrowLeft,
   HardDrive,
   Lock,
   ArrowRight,
-  Zap,
   CheckCircle2,
   AlertCircle,
-  Clock,
-  Info,
   Phone,
   User,
   MapPin,
   RefreshCw,
+  ChevronRight,
+  Zap,
+  Check,
+  Building,
+  RotateCcw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+
+declare global {
+  interface Window {
+    iFrameResize?: any;
+  }
+}
 
 function CheckoutContent() {
   const router = useRouter();
@@ -58,9 +67,10 @@ function CheckoutContent() {
   useEffect(() => {
     if (paymentStatus === "success" && user) {
       confetti({
-        particleCount: 80,
-        spread: 70,
+        particleCount: 100,
+        spread: 80,
         origin: { y: 0.6 },
+        colors: ["#38bdf8", "#818cf8", "#34d399", "#f472b6"],
       });
       // Update local profile state
       updateProfile({
@@ -72,57 +82,84 @@ function CheckoutContent() {
     }
   }, [paymentStatus, plan.id, plan.quotaBytes, updateProfile, user]);
 
-  // If not logged in, ask to log in
+  // Hook PayTR iframe resize once loaded
+  useEffect(() => {
+    if (paytrToken && typeof window !== "undefined" && window.iFrameResize) {
+      try {
+        window.iFrameResize({ checkOrigin: false }, "#paytriframe");
+      } catch (err) {
+        console.warn("PayTR iframe resizer notice:", err);
+      }
+    }
+  }, [paytrToken]);
+
+  // If not logged in, show Apple-grade login prompt
   if (!user) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center p-4">
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 text-center max-w-md space-y-4 shadow-2xl backdrop-blur-xl">
-          <Lock className="h-8 w-8 text-sky-400 mx-auto" />
-          <h2 className="text-lg font-bold text-white">Giriş Yapmanız Gerekiyor</h2>
-          <p className="text-xs text-zinc-400">
-            {plan.name} aboneliğinizi başlatmak için lütfen önce hesabınıza giriş yapın veya ücretsiz kayıt olun.
-          </p>
-          <div className="flex flex-col gap-2 pt-2">
+      <div className="min-h-[75vh] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-[28px] border border-white/10 bg-zinc-950/70 p-8 sm:p-10 text-center max-w-md space-y-6 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-3xl"
+        >
+          <div className="h-14 w-14 rounded-2xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center mx-auto text-sky-400">
+            <Lock className="h-7 w-7" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-xl font-bold text-white tracking-tight">Giriş Yapmanız Gerekiyor</h2>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              <strong className="text-zinc-200">{plan.name}</strong> aboneliğinizi başlatmak ve kotanızı yükseltmek için lütfen hesabınıza giriş yapın.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2.5 pt-2">
             <Link href={`/login?redirect=/checkout?plan=${plan.id}&billing=${billingCycle}`}>
-              <Button variant="primary" className="w-full text-xs rounded-xl">
+              <Button variant="primary" className="w-full text-xs rounded-xl py-3 font-semibold">
                 Giriş Yap
               </Button>
             </Link>
             <Link href="/register">
-              <Button variant="outline" className="w-full text-xs rounded-xl">
+              <Button variant="outline" className="w-full text-xs rounded-xl py-3 border-white/10 text-zinc-300">
                 Ücretsiz Hesap Oluştur
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  // SUCCESS STATE
+  // SUCCESS STATE (Apple Celebration Card)
   if (paymentStatus === "success") {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <div className="rounded-3xl border border-emerald-500/30 bg-zinc-900/90 p-8 sm:p-10 text-center max-w-lg space-y-6 shadow-2xl backdrop-blur-2xl">
-          <div className="h-16 w-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400">
-            <CheckCircle2 className="h-9 w-9" />
+      <div className="min-h-[80vh] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-[32px] border border-emerald-500/30 bg-zinc-950/80 p-8 sm:p-12 text-center max-w-lg space-y-6 shadow-[0_30px_90px_rgba(16,185,129,0.15)] backdrop-blur-3xl relative overflow-hidden"
+        >
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="h-20 w-20 rounded-3xl bg-gradient-to-b from-emerald-400/20 to-emerald-600/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 shadow-lg shadow-emerald-500/20">
+            <CheckCircle2 className="h-11 w-11 stroke-[2.2]" />
           </div>
 
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-              <Sparkles className="h-3 w-3" /> Ödeme Başarıyla Tamamlandı
+          <div className="space-y-2.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 tracking-wide">
+              <Sparkles className="h-3.5 w-3.5" /> 3D SECURE İLE DOĞRULANDI
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Tebrikler, {plan.name} Aktif Edildi!
+              Tebrikler, {plan.name} Aktif!
             </h1>
             <p className="text-xs text-zinc-300 max-w-sm mx-auto leading-relaxed">
-              Depolama kotanız anında <strong className="text-sky-400">{plan.quotaLabel}</strong> seviyesine yükseltildi ve tüm premium özellikler hesabınıza tanımlandı.
+              Bulut depolama alanınız anında <strong className="text-sky-400 font-semibold">{plan.quotaLabel}</strong> seviyesine yükseltildi. Tüm ayrıcalıklar hesabınıza tanımlandı.
             </p>
           </div>
 
           {orderId && (
-            <div className="py-2 px-3 rounded-xl bg-zinc-950/60 border border-zinc-800 text-[11px] text-zinc-400 font-mono">
-              Sipariş Referansı: <span className="text-zinc-200">{orderId}</span>
+            <div className="py-2.5 px-4 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-zinc-400 font-mono tracking-wider">
+              Sipariş Kodu: <span className="text-zinc-100 font-bold">{orderId}</span>
             </div>
           )}
 
@@ -130,19 +167,19 @@ function CheckoutContent() {
             <Button
               variant="primary"
               onClick={() => router.push("/dashboard")}
-              className="flex-1 text-xs rounded-xl py-3 font-bold"
+              className="flex-1 text-xs rounded-xl py-3.5 font-bold shadow-lg shadow-sky-500/20"
             >
               Dashboard&apos;a Git
             </Button>
             <Button
               variant="outline"
               onClick={() => router.push("/settings")}
-              className="text-xs rounded-xl py-3"
+              className="text-xs rounded-xl py-3.5 border-white/10 text-zinc-300 hover:text-white"
             >
-              Abonelik Ayarları
+              Abonelik Detayları
             </Button>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
@@ -150,10 +187,15 @@ function CheckoutContent() {
   // FAILED STATE
   if (paymentStatus === "failed") {
     return (
-      <div className="min-h-[75vh] flex items-center justify-center p-4">
-        <div className="rounded-3xl border border-rose-500/30 bg-zinc-900/90 p-8 sm:p-10 text-center max-w-md space-y-6 shadow-2xl backdrop-blur-2xl">
-          <div className="h-16 w-16 rounded-full bg-rose-500/20 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400">
-            <AlertCircle className="h-9 w-9" />
+      <div className="min-h-[80vh] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-[32px] border border-rose-500/30 bg-zinc-950/80 p-8 sm:p-12 text-center max-w-md space-y-6 shadow-[0_30px_90px_rgba(244,63,94,0.15)] backdrop-blur-3xl"
+        >
+          <div className="h-18 w-18 rounded-3xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
+            <AlertCircle className="h-10 w-10 stroke-[2.2]" />
           </div>
 
           <div className="space-y-2">
@@ -161,43 +203,44 @@ function CheckoutContent() {
               Ödeme Tamamlanamadı
             </h1>
             <p className="text-xs text-zinc-300 leading-relaxed">
-              İşlem bankanız tarafından reddedildi veya 3D Secure doğrulaması iptal edildi. Kartınızdan herhangi bir ücret tahsil edilmemiştir.
+              İşlem bankanız tarafından onaylanmadı veya SMS doğrulaması tamamlanamadı. Kartınızdan herhangi bir ücret tahsil edilmemiştir.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 pt-2">
+          <div className="flex flex-col gap-2.5 pt-2">
             <Button
               variant="primary"
               onClick={() => {
                 setPaytrToken(null);
                 router.push(`/checkout?plan=${plan.id}&billing=${billingCycle}`);
               }}
-              className="w-full text-xs rounded-xl py-3 font-bold"
+              className="w-full text-xs rounded-xl py-3.5 font-bold"
             >
               Tekrar Dene
             </Button>
             <Link href="/pricing">
-              <Button variant="outline" className="w-full text-xs rounded-xl py-3">
+              <Button variant="outline" className="w-full text-xs rounded-xl py-3.5 border-white/10 text-zinc-300">
                 Paketlere Dön
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
   }
 
-  // Request PayTR Token & show iframe
+  // Request PayTR Token & start payment
   const handleStartPayment = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!phone || phone.length < 10) {
-      toast.error("Lütfen 3D Secure SMS onayı için geçerli bir telefon numarası girin.");
+    const cleanDigits = phone.replace(/\D/g, "");
+    if (cleanDigits.length < 10) {
+      toast.error("Lütfen 3D Secure SMS onayı için geçerli bir cep telefonu numarası girin.");
       return;
     }
 
     if (!isAgreed) {
-      toast.error("Lütfen Mesafeli Satış ve Ön Bilgilendirme şartlarını kabul edin.");
+      toast.error("Lütfen Mesafeli Satış ve Ön Bilgilendirme şartlarını onaylayın.");
       return;
     }
 
@@ -211,7 +254,7 @@ function CheckoutContent() {
           userId: user.id,
           userEmail: user.email,
           userName: fullName.trim() || user.email?.split("@")[0],
-          userPhone: phone.trim(),
+          userPhone: cleanDigits,
           userAddress: `${city}, Türkiye`,
           planId: plan.id,
           billingCycle,
@@ -222,9 +265,9 @@ function CheckoutContent() {
 
       if (data.success && data.token) {
         setPaytrToken(data.token);
-        toast.success("PayTR güvenli ödeme ekranı hazırlanıyor...");
+        toast.success("PayTR 3D Secure güvenli ödeme terminali açılıyor...");
       } else {
-        toast.error(data.error || "Ödeme oturumu açılamadı. Lütfen tekrar deneyin.");
+        toast.error(data.error || "Ödeme oturumu açılamadı. Lütfen bilgilerinizi kontrol edin.");
       }
     } catch (err: any) {
       toast.error(err.message || "Bağlantı hatası oluştu.");
@@ -234,259 +277,352 @@ function CheckoutContent() {
   };
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto space-y-8">
-      {/* Back button */}
-      <Link
-        href="/pricing"
-        className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        <span>Fiyatlandırmaya Dön</span>
-      </Link>
+    <>
+      {/* PayTR official iframe auto-resizer script */}
+      <Script
+        src="https://www.paytr.com/js/iframeResizer.min.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          if (typeof window !== "undefined" && window.iFrameResize) {
+            try {
+              window.iFrameResize({ checkOrigin: false }, "#paytriframe");
+            } catch (e) {
+              console.warn("PayTR iframeResizer load notice:", e);
+            }
+          }
+        }}
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Checkout or PayTR iFrame */}
-        <div className="lg:col-span-7 space-y-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Aboneliğinizi Başlatın
-            </h1>
-            <p className="text-xs text-zinc-400 mt-1">
-              Bulut depolama alanınız anında <strong className="text-sky-400">{plan.quotaLabel}</strong> seviyesine yükseltilecektir.
-            </p>
+      <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-8">
+        {/* Navigation Breadcrumb */}
+        <div className="flex items-center justify-between">
+          <Link
+            href="/pricing"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-white/20 transition-all backdrop-blur-xl group"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+            <span>Paket Seçimine Dön</span>
+          </Link>
+
+          {/* Micro trust indicators */}
+          <div className="hidden sm:flex items-center gap-3 text-[11px] font-medium text-zinc-400">
+            <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+              <ShieldCheck className="h-3.5 w-3.5" /> 256-Bit SSL
+            </span>
+            <span className="text-zinc-600">•</span>
+            <span>3D Secure Onayı</span>
+            <span className="text-zinc-600">•</span>
+            <span>BDDK Lisanslı Altyapı</span>
           </div>
+        </div>
 
-          {/* If PayTR token exists, render the PayTR iFrame */}
-          {paytrToken ? (
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-4 sm:p-6 space-y-4 shadow-2xl backdrop-blur-xl">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <div className="flex items-center gap-2 text-xs font-bold text-white">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <span>PayTR 256-Bit SSL & 3D Secure Güvenli Ödeme</span>
-                </div>
+        {/* PAYTR IFRAME STAGE (Full-Width Focused Apple Stage) */}
+        {paytrToken ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="max-w-3xl mx-auto space-y-5"
+          >
+            {/* Top Bar for iFrame */}
+            <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+              <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => setPaytrToken(null)}
-                  className="text-xs text-zinc-400 hover:text-white underline"
+                  className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
                 >
-                  Bilgileri Değiştir
+                  <RotateCcw className="h-3 w-3" />
+                  <span>Bilgileri Değiştir</span>
                 </button>
               </div>
 
-              {/* Secure iFrame Container */}
-              <div className="w-full min-h-[580px] rounded-2xl overflow-hidden bg-white/5 relative">
+              <div className="flex items-center gap-2">
+                <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-sky-500/10 border border-sky-500/25 text-sky-300 flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {plan.name} • {price} ₺ ({billingCycle === "yearly" ? "Yıllık" : "Aylık"})
+                </span>
+              </div>
+            </div>
+
+            {/* Glass Container with FULL SCROLL FREEDOM */}
+            <div className="rounded-[32px] border border-white/10 bg-zinc-950/85 p-2 sm:p-5 shadow-[0_30px_90px_rgba(0,0,0,0.85)] backdrop-blur-3xl relative">
+              {/* Inner wrapper with smooth vertical scrolling */}
+              <div
+                className="w-full rounded-[24px] bg-white/[0.02] border border-white/5 overflow-y-auto overflow-x-hidden"
+                style={{
+                  maxHeight: "calc(88vh - 120px)",
+                  WebkitOverflowScrolling: "touch",
+                }}
+              >
+                {/* 
+                  scrolling="yes" allows internal PayTR scrolling.
+                  min-height 760px ensures ample space for card form + 3D secure SMS button.
+                */}
                 <iframe
                   src={`https://www.paytr.com/odeme/guvenli/${paytrToken}`}
                   id="paytriframe"
                   frameBorder="0"
-                  scrolling="no"
-                  className="w-full min-h-[580px] rounded-2xl"
-                  title="PayTR Güvenli Sanal POS"
+                  scrolling="yes"
+                  className="w-full min-h-[760px] sm:min-h-[800px] border-0 rounded-2xl block"
+                  title="PayTR Güvenli Ödeme Terminali"
                 />
               </div>
 
-              <div className="flex items-center justify-center gap-4 text-[11px] text-zinc-400 pt-2 border-t border-zinc-800/80">
+              {/* Bottom security strip */}
+              <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-zinc-400 pt-4 pb-2">
                 <span className="flex items-center gap-1 text-emerald-400 font-semibold">
-                  <ShieldCheck className="h-3.5 w-3.5" /> 3D Secure Doğrulama
+                  <ShieldCheck className="h-3.5 w-3.5" /> 3D Secure Koruması
                 </span>
-                <span>•</span>
-                <span>Troy, Visa, MasterCard Destekli</span>
-                <span>•</span>
-                <span>BDDK Lisanslı PayTR Altyapısı</span>
+                <span className="text-zinc-600">•</span>
+                <span className="font-mono text-zinc-300">Troy • Visa • MasterCard</span>
+                <span className="text-zinc-600">•</span>
+                <span>PayTR Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
               </div>
             </div>
-          ) : (
-            /* Billing Details Form */
-            <form onSubmit={handleStartPayment} className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-5 apple-card shadow-2xl">
-              <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
-                <div className="flex items-center gap-2 text-xs font-bold text-white">
-                  <CreditCard className="h-4 w-4 text-sky-400" />
-                  <span>Fatura & Müşteri Bilgileri</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-zinc-400 font-mono">Troy • Visa • Mastercard</span>
-                  <span className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1 ml-2">
-                    <ShieldCheck className="h-3.5 w-3.5" />
-                    3D Secure
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                    <User className="h-3.5 w-3.5 text-zinc-400" />
-                    <span>Ad Soyad</span>
-                  </label>
-                  <Input
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Adınız Soyadınız"
-                    className="rounded-xl text-xs bg-zinc-950/60 font-medium"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                      <Phone className="h-3.5 w-3.5 text-zinc-400" />
-                      <span>Telefon No (3D Secure SMS)</span>
-                    </label>
-                    <Input
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="05XXXXXXXXX"
-                      maxLength={14}
-                      className="rounded-xl text-xs bg-zinc-950/60 font-mono"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-zinc-400" />
-                      <span>Şehir</span>
-                    </label>
-                    <Input
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      placeholder="İstanbul"
-                      className="rounded-xl text-xs bg-zinc-950/60"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">E-Posta Adresi (Fatura ve Dekont)</label>
-                  <Input
-                    value={user.email}
-                    disabled
-                    className="rounded-xl text-xs bg-zinc-950/40 text-zinc-400 font-mono"
-                  />
-                </div>
-
-                {/* Agreement checkbox */}
-                <div className="pt-2">
-                  <label className="flex items-start gap-2.5 cursor-pointer text-[11px] text-zinc-400 leading-snug">
-                    <input
-                      type="checkbox"
-                      checked={isAgreed}
-                      onChange={(e) => setIsAgreed(e.target.checked)}
-                      className="mt-0.5 rounded border-zinc-700 bg-zinc-900 text-sky-500 focus:ring-0"
-                    />
-                    <span>
-                      <Link href="/terms" target="_blank" className="text-sky-400 hover:underline">
-                        Mesafeli Satış Sözleşmesi
-                      </Link>
-                      &apos;ni ve{" "}
-                      <Link href="/privacy" target="_blank" className="text-sky-400 hover:underline">
-                        Ön Bilgilendirme Formu
-                      </Link>
-                      &apos;nu okudum, onaylıyorum.
-                    </span>
-                  </label>
-                </div>
-
-                <div className="pt-2">
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    disabled={isLoadingToken}
-                    className="w-full text-xs rounded-xl py-3.5 font-bold gap-2 shadow-lg shadow-sky-500/20"
-                  >
-                    {isLoadingToken ? (
-                      <>
-                        <RefreshCw className="h-4 w-4 animate-spin" />
-                        <span>PayTR Güvenli Ödeme Ekranı Hazırlanıyor...</span>
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="h-4 w-4 text-emerald-300" />
-                        <span>PayTR ile Güvenli Ödemeye Geç ({price} ₺)</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                <p className="text-[11px] text-center text-zinc-500 pt-1">
-                  Ödemeniz BDDK lisanslı PayTR Sanal POS altyapısı ve 3D Secure SMS onayı ile güvenle gerçekleştirilir.
+          </motion.div>
+        ) : (
+          /* PRE-PAYMENT: Grouped Apple Details & Bento Order Summary */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Column: Form */}
+            <div className="lg:col-span-7 space-y-6">
+              <div className="space-y-1.5">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                  Aboneliğinizi Başlatın
+                </h1>
+                <p className="text-xs text-zinc-400">
+                  Depolama alanınız anında <strong className="text-sky-400 font-semibold">{plan.quotaLabel}</strong> seviyesine yükseltilecektir.
                 </p>
               </div>
-            </form>
-          )}
-        </div>
 
-        {/* Right Column: Order Summary */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-7 space-y-5 apple-card shadow-2xl">
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider text-zinc-400">
-              Sipariş Özeti
-            </h3>
+              <form
+                onSubmit={handleStartPayment}
+                className="rounded-[30px] border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-9 w-9 rounded-xl bg-sky-500/15 border border-sky-500/25 flex items-center justify-center text-sky-400">
+                      <CreditCard className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                        Fatura & İletişim Bilgileri
+                      </h3>
+                      <p className="text-[11px] text-zinc-400">3D Secure SMS doğrulaması için gereklidir</p>
+                    </div>
+                  </div>
 
-            {/* Selected Plan card */}
-            <div className="rounded-2xl border border-sky-500/30 bg-sky-950/20 p-4 space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-white">{plan.name}</h4>
-                <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[10px] font-bold text-sky-300 border border-sky-500/30">
-                  {billingCycle === "yearly" ? "Yıllık" : "Aylık"}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 text-xs text-sky-400 font-semibold">
-                <HardDrive className="h-3.5 w-3.5" />
-                <span>{plan.quotaLabel} Yüksek Hızlı Güvenli Bulut Depolama</span>
-              </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                    <ShieldCheck className="h-3 w-3" />
+                    <span>3D Secure</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Full Name */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                      <User className="h-3.5 w-3.5 text-zinc-400" />
+                      <span>Ad Soyad</span>
+                    </label>
+                    <Input
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Kart üzerindeki isim"
+                      className="rounded-xl text-xs bg-white/[0.03] border-white/10 font-medium focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-zinc-600 py-3"
+                      required
+                    />
+                  </div>
+
+                  {/* Phone and City */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-zinc-400" />
+                        <span>Cep Telefonu (SMS için)</span>
+                      </label>
+                      <Input
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="05XXXXXXXXX"
+                        maxLength={15}
+                        className="rounded-xl text-xs bg-white/[0.03] border-white/10 font-mono focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-zinc-600 py-3"
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-zinc-400" />
+                        <span>Şehir</span>
+                      </label>
+                      <Input
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        placeholder="İstanbul"
+                        className="rounded-xl text-xs bg-white/[0.03] border-white/10 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-zinc-600 py-3"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-zinc-300">E-Posta Adresi (Hesap & Fatura)</label>
+                      <span className="text-[10px] font-semibold text-sky-400">Doğrulanmış</span>
+                    </div>
+                    <Input
+                      value={user.email}
+                      disabled
+                      className="rounded-xl text-xs bg-white/[0.02] border-white/5 text-zinc-400 font-mono py-3"
+                    />
+                  </div>
+
+                  {/* Legal acceptance checkbox */}
+                  <div className="pt-2">
+                    <label className="flex items-start gap-3 cursor-pointer text-[11px] text-zinc-400 leading-relaxed select-none group">
+                      <input
+                        type="checkbox"
+                        checked={isAgreed}
+                        onChange={(e) => setIsAgreed(e.target.checked)}
+                        className="mt-0.5 rounded-md border-white/20 bg-zinc-900 text-sky-500 focus:ring-0 h-4 w-4 transition-colors"
+                      />
+                      <span>
+                        <Link href="/terms" target="_blank" className="text-sky-400 hover:underline">
+                          Mesafeli Satış Sözleşmesi
+                        </Link>
+                        &apos;ni ve{" "}
+                        <Link href="/privacy" target="_blank" className="text-sky-400 hover:underline">
+                          Ön Bilgilendirme Formu
+                        </Link>
+                        &apos;nu okudum, kabul ediyorum.
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Submit CTA Button */}
+                  <div className="pt-2">
+                    <Button
+                      type="submit"
+                      disabled={isLoadingToken}
+                      className="w-full text-xs sm:text-sm rounded-2xl py-4 font-bold gap-2 text-white bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-[0_10px_35px_-10px_rgba(14,165,233,0.5)] transition-all active:scale-[0.99] cursor-pointer"
+                    >
+                      {isLoadingToken ? (
+                        <>
+                          <RefreshCw className="h-4 w-4 animate-spin" />
+                          <span>PayTR Güvenli Ödeme Ekranı Hazırlanıyor...</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                          <span>PayTR ile Güvenli Ödemeye Geç • {price} ₺</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  <p className="text-[11px] text-center text-zinc-500 leading-snug">
+                    Ödemeniz PayTR 256-Bit SSL altyapısı ve banka 3D Secure SMS onayı ile güvence altındadır. Kart bilgileriniz sunucularımızda asla saklanmaz.
+                  </p>
+                </div>
+              </form>
             </div>
 
-            {/* Features check */}
-            <div className="space-y-2 pt-2 border-t border-zinc-800/80">
-              <span className="text-[11px] font-semibold text-zinc-400">Paket Ayrıcalıkları:</span>
-              <ul className="space-y-2">
-                {limits.features.slice(0, 5).map((f, i) => (
-                  <li key={i} className="flex items-start gap-2 text-xs text-zinc-300">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                    <span className="leading-tight">{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {/* Right Column: Order Summary */}
+            <div className="lg:col-span-5 space-y-5">
+              <div className="rounded-[30px] border border-white/10 bg-zinc-950/70 p-6 sm:p-7 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider text-zinc-300">
+                    Sipariş Özeti
+                  </h3>
+                  <span className="text-[10px] font-semibold text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                    Anında Aktivasyon
+                  </span>
+                </div>
 
-            {/* Total calculation in TL */}
-            <div className="space-y-2.5 pt-4 border-t border-zinc-800/80 text-xs">
-              <div className="flex justify-between text-zinc-400">
-                <span>Ara Toplam</span>
-                <span className="font-mono text-zinc-200">{price} ₺</span>
+                {/* Selected Plan Bento */}
+                <div className="rounded-2xl border border-sky-500/30 bg-gradient-to-b from-sky-500/10 to-sky-950/20 p-4 space-y-2 relative overflow-hidden">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-extrabold text-base text-white">{plan.name}</h4>
+                    <span className="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-[10px] font-bold text-sky-300 border border-sky-500/30">
+                      {billingCycle === "yearly" ? "Yıllık Plan" : "Aylık Plan"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-xs text-sky-300 font-medium">
+                    <HardDrive className="h-3.5 w-3.5 text-sky-400" />
+                    <span>{plan.quotaLabel} Yüksek Hızlı Güvenli Bulut Alanı</span>
+                  </div>
+                </div>
+
+                {/* Features Highlights */}
+                <div className="space-y-2.5 pt-1">
+                  <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                    Dahil Olan Özellikler:
+                  </span>
+                  <ul className="space-y-2">
+                    {limits.features.slice(0, 5).map((f, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-300">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="leading-snug">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Price Breakdown */}
+                <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs">
+                  <div className="flex justify-between text-zinc-400">
+                    <span>Abonelik Ücreti</span>
+                    <span className="font-mono text-zinc-200 font-semibold">{price} ₺</span>
+                  </div>
+                  <div className="flex justify-between text-zinc-400">
+                    <span>KDV (%20)</span>
+                    <span className="font-mono text-emerald-400 font-medium">Fiyata Dahil</span>
+                  </div>
+                  <div className="flex justify-between text-sm font-bold text-white pt-3 border-t border-white/10">
+                    <span>Toplam Tutar</span>
+                    <div className="text-right">
+                      <span className="text-xl text-sky-400 font-extrabold font-mono">{price} ₺</span>
+                      <span className="text-[11px] text-zinc-400 block font-normal">
+                        /{billingCycle === "yearly" ? "yıl" : "ay"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between text-zinc-400">
-                <span>KDV (%20)</span>
-                <span className="font-mono text-emerald-400">Dahil</span>
-              </div>
-              <div className="flex justify-between text-sm font-bold text-white pt-2.5 border-t border-zinc-800">
-                <span>Ödenecek Tutar</span>
-                <span className="text-lg text-sky-400 font-extrabold font-mono">{price} ₺</span>
+
+              {/* Apple Security Pill Box */}
+              <div className="rounded-2xl border border-white/5 bg-zinc-950/40 p-4 space-y-2 text-xs text-zinc-400 backdrop-blur-xl">
+                <div className="flex items-center gap-2 text-zinc-200 font-semibold">
+                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                  <span>Güvenli Alışveriş Teminatı</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-zinc-400">
+                  Ödemeniz doğrudan bankanızın 3D Secure SMS doğrulama sayfası üzerinden gerçekleşir. İstediğiniz zaman ayarlarınızdan aboneliğinizi iptal edebilirsiniz.
+                </p>
               </div>
             </div>
           </div>
-
-          {/* Security Guarantee Box */}
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 space-y-2 text-xs text-zinc-400">
-            <div className="flex items-center gap-2 text-zinc-200 font-semibold">
-              <ShieldCheck className="h-4 w-4 text-emerald-400" />
-              <span>Güvenli Ödeme Garantisi</span>
-            </div>
-            <p className="text-[11px] leading-relaxed">
-              Kart bilgileriniz sunucularımızda asla tutulmaz. Tüm işlemler 256-Bit SSL şifreleme ve banka 3D Secure SMS onayı ile PayTR güvencesinde tamamlanır.
-            </p>
-          </div>
-        </div>
+        )}
       </div>
-    </div>
+    </>
   );
 }
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="py-24 text-center text-zinc-400">Ödeme sayfası yükleniyor...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-[70vh] flex items-center justify-center">
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <RefreshCw className="h-4 w-4 animate-spin text-sky-400" />
+            <span>Ödeme sayfası hazırlanıyor...</span>
+          </div>
+        </div>
+      }
+    >
       <CheckoutContent />
     </Suspense>
   );
