@@ -10,26 +10,31 @@ import { useLanguage } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/Logo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register") || pathname.startsWith("/forgot-password");
-  const isPublicSharePage = pathname.startsWith("/s/");
+  // Normalize pathname by stripping /tr or /en prefix if present
+  const cleanPath = pathname.replace(/^\/(tr|en)/, "") || "/";
+
+  const isAuthPage =
+    cleanPath.startsWith("/login") ||
+    cleanPath.startsWith("/register") ||
+    cleanPath.startsWith("/forgot-password");
+  const isPublicSharePage = cleanPath.startsWith("/s/");
   const isDashboardOrAppPage =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/files") ||
-    pathname.startsWith("/shared") ||
-    pathname.startsWith("/transfers") ||
-    pathname.startsWith("/storage") ||
-    pathname.startsWith("/settings") ||
-    pathname.startsWith("/support") ||
-    pathname.startsWith("/admin");
+    cleanPath.startsWith("/dashboard") ||
+    cleanPath.startsWith("/files") ||
+    cleanPath.startsWith("/shared") ||
+    cleanPath.startsWith("/transfers") ||
+    cleanPath.startsWith("/storage") ||
+    cleanPath.startsWith("/settings") ||
+    cleanPath.startsWith("/support") ||
+    cleanPath.startsWith("/admin");
 
   if (isAuthPage || isPublicSharePage || isDashboardOrAppPage) return null;
 
@@ -37,25 +42,40 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-colors">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Logo size="md" badge="v1.0" />
+        <Logo size="md" badge="v1.0" href={`/${locale}`} />
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-zinc-400">
           {!user ? (
             <>
-              <Link href="/#product" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+              <Link
+                href={`/${locale}#product`}
+                className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
+              >
                 {t.navbar.product}
               </Link>
-              <Link href="/#how-it-works" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+              <Link
+                href={`/${locale}#how-it-works`}
+                className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
+              >
                 {t.navbar.howItWorks}
               </Link>
-              <Link href="/#security" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+              <Link
+                href={`/${locale}#security`}
+                className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
+              >
                 {t.navbar.security}
               </Link>
-              <Link href="/pricing" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+              <Link
+                href={`/${locale}/pricing`}
+                className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
+              >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
-              <Link href="/support" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
+              <Link
+                href={`/${locale}/support`}
+                className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
+              >
                 {t.navbar.support || "Destek"}
               </Link>
             </>
@@ -64,7 +84,9 @@ export const Navbar: React.FC = () => {
               <Link
                 href="/dashboard"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname === "/dashboard" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  cleanPath === "/dashboard"
+                    ? "text-white bg-zinc-800/80 font-semibold"
+                    : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
                 {t.navbar.dashboard}
@@ -72,7 +94,9 @@ export const Navbar: React.FC = () => {
               <Link
                 href="/files"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname === "/files" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  cleanPath === "/files"
+                    ? "text-white bg-zinc-800/80 font-semibold"
+                    : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
                 {t.navbar.files}
@@ -80,7 +104,9 @@ export const Navbar: React.FC = () => {
               <Link
                 href="/shared"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname === "/shared" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  cleanPath === "/shared"
+                    ? "text-white bg-zinc-800/80 font-semibold"
+                    : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
                 {t.navbar.shared}
@@ -88,23 +114,29 @@ export const Navbar: React.FC = () => {
               <Link
                 href="/transfers"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname === "/transfers" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  cleanPath === "/transfers"
+                    ? "text-white bg-zinc-800/80 font-semibold"
+                    : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
                 {t.navbar.transfers}
               </Link>
               <Link
-                href="/pricing"
+                href={`/${locale}/pricing`}
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname === "/pricing" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  cleanPath === "/pricing"
+                    ? "text-white bg-zinc-800/80 font-semibold"
+                    : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link
-                href="/support"
+                href={`/${locale}/support`}
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
-                  pathname.startsWith("/support") ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
+                  cleanPath.startsWith("/support")
+                    ? "text-white bg-zinc-800/80 font-semibold"
+                    : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
                 {t.navbar.support || "Destek"}
@@ -115,15 +147,14 @@ export const Navbar: React.FC = () => {
 
         {/* Right CTA / Auth controls */}
         <div className="hidden md:flex items-center gap-3">
-          <LanguageToggle size="sm" />
           {!user ? (
             <div className="flex items-center gap-2">
-              <Link href="/login">
+              <Link href={`/${locale}/login`}>
                 <Button variant="ghost" size="sm">
                   {t.navbar.login}
                 </Button>
               </Link>
-              <Link href="/register">
+              <Link href={`/${locale}/register`}>
                 <Button variant="primary" size="pill" className="gap-2 shadow-lg shadow-sky-500/25">
                   <span>{t.navbar.getStarted}</span>
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -185,12 +216,12 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Mobile Hamburger Button & Language Toggle */}
+        {/* Mobile Hamburger Button */}
         <div className="flex items-center gap-2 md:hidden">
-          <LanguageToggle size="sm" />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
+            aria-label="Menü"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -202,31 +233,55 @@ export const Navbar: React.FC = () => {
         <div className="md:hidden border-b border-zinc-800 bg-zinc-950/95 px-4 py-4 space-y-3 backdrop-blur-xl">
           {!user ? (
             <div className="flex flex-col gap-2 text-sm font-medium text-zinc-300">
-              <Link href="/#product" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}#product`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.product}
               </Link>
-              <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}#how-it-works`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.howItWorks}
               </Link>
-              <Link href="/#security" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}#security`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.security}
               </Link>
-              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}/pricing`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
-              <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}/support`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.support || "Destek"}
               </Link>
-              <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}#faq`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.faq}
               </Link>
               <div className="pt-2 flex flex-col gap-2">
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Link href={`/${locale}/login`} onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">
                     {t.navbar.login}
                   </Button>
                 </Link>
-                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                <Link href={`/${locale}/register`} onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="primary" className="w-full">
                     {t.navbar.getStarted}
                   </Button>
@@ -242,22 +297,46 @@ export const Navbar: React.FC = () => {
                   <p className="text-[10px] text-zinc-400 truncate">{user.email}</p>
                 </div>
               </div>
-              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.dashboard}
               </Link>
-              <Link href="/files" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href="/files"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.files}
               </Link>
-              <Link href="/shared" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href="/shared"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.sharedLinks}
               </Link>
-              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}/pricing`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
-              <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href={`/${locale}/support`}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.support || "Destek"}
               </Link>
-              <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+              <Link
+                href="/settings"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2 rounded-lg hover:bg-zinc-900"
+              >
                 {t.navbar.settings}
               </Link>
               <button

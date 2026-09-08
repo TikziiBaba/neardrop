@@ -24,7 +24,6 @@ import { formatBytes } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Logo } from "@/components/ui/Logo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
@@ -151,13 +150,6 @@ export const Sidebar: React.FC = () => {
           </div>
         </div>
 
-        {/* Language selector in sidebar */}
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] text-zinc-400 font-medium">
-            {locale === "tr" ? "Dil" : "Language"}
-          </span>
-          <LanguageToggle size="sm" />
-        </div>
 
         {/* User profile & logout */}
         {user && (

@@ -4,10 +4,9 @@ import React from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/context";
 import { Logo } from "@/components/ui/Logo";
-import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export const Footer: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   return (
     <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 py-16 text-zinc-400 select-none">
@@ -140,7 +139,23 @@ export const Footer: React.FC = () => {
             <span className="flex items-center gap-1 text-zinc-500">
               {t.footer.builtFor}
             </span>
-            <LanguageToggle size="sm" />
+            <div className="flex items-center gap-2 pl-3 border-l border-zinc-800 text-xs">
+              <Link
+                href="/tr"
+                className={`transition-colors ${locale === 'tr' ? 'text-sky-400 font-semibold' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="Türkçe (neardrop.bekirr.dev/tr)"
+              >
+                TR
+              </Link>
+              <span className="text-zinc-700">/</span>
+              <Link
+                href="/en"
+                className={`transition-colors ${locale === 'en' ? 'text-sky-400 font-semibold' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="English (neardrop.bekirr.dev/en)"
+              >
+                EN
+              </Link>
+            </div>
           </div>
         </div>
       </div>
