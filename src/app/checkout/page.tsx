@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PRICING_PLANS } from "@/lib/subscription/plans";
 import { TIER_LIMITS } from "@/lib/subscription/permissions";
 import { useAuth } from "@/lib/auth/context";
-import confetti from "canvas-confetti";
 import {
   Sparkles,
   ShieldCheck,
@@ -63,15 +62,9 @@ function CheckoutContent() {
   const [isLoadingToken, setIsLoadingToken] = useState(false);
   const [paytrToken, setPaytrToken] = useState<string | null>(null);
 
-  // Fire confetti on successful return
+  // Update profile on successful return
   useEffect(() => {
     if (paymentStatus === "success" && user) {
-      confetti({
-        particleCount: 100,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ["#38bdf8", "#818cf8", "#34d399", "#f472b6"],
-      });
       // Update local profile state
       updateProfile({
         subscriptionTier: plan.id,
@@ -129,7 +122,7 @@ function CheckoutContent() {
     );
   }
 
-  // SUCCESS STATE (Apple Celebration Card)
+  // SUCCESS STATE (Apple Pay-Inspired Elegant Success Card)
   if (paymentStatus === "success") {
     return (
       <div className="min-h-[80vh] flex items-center justify-center p-4">
@@ -137,13 +130,42 @@ function CheckoutContent() {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-[32px] border border-emerald-500/30 bg-zinc-950/80 p-8 sm:p-12 text-center max-w-lg space-y-6 shadow-[0_30px_90px_rgba(16,185,129,0.15)] backdrop-blur-3xl relative overflow-hidden"
+          className="rounded-[32px] border border-emerald-500/30 bg-zinc-950/85 p-8 sm:p-12 text-center max-w-lg space-y-6 shadow-[0_30px_90px_rgba(16,185,129,0.18)] backdrop-blur-3xl relative overflow-hidden"
         >
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="h-20 w-20 rounded-3xl bg-gradient-to-b from-emerald-400/20 to-emerald-600/10 border border-emerald-500/30 flex items-center justify-center mx-auto text-emerald-400 shadow-lg shadow-emerald-500/20">
-            <CheckCircle2 className="h-11 w-11 stroke-[2.2]" />
-          </div>
+          {/* Sleek Apple-Grade Animated Glowing Green Checkmark Button */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 320, damping: 22 }}
+            className="relative flex items-center justify-center mx-auto my-2"
+          >
+            {/* Ambient emerald radial aura */}
+            <div className="absolute -inset-4 rounded-full bg-emerald-500/25 blur-2xl animate-pulse pointer-events-none" />
+
+            {/* Frosted concentric glass ring */}
+            <div className="relative h-24 w-24 rounded-full bg-emerald-950/40 border border-emerald-500/30 backdrop-blur-2xl flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.25)] ring-1 ring-white/10">
+              {/* Inner glowing emerald checkmark circle */}
+              <div className="h-16 w-16 rounded-full bg-gradient-to-b from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_10px_25px_rgba(16,185,129,0.45)] border border-emerald-200/40">
+                <motion.svg
+                  viewBox="0 0 24 24"
+                  className="w-8 h-8 text-white stroke-[3.2]"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <motion.path
+                    d="M5 13l4 4L19 7"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  />
+                </motion.svg>
+              </div>
+            </div>
+          </motion.div>
 
           <div className="space-y-2.5">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 tracking-wide">
