@@ -249,9 +249,9 @@ export default function PricingPage() {
               <Zap className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="text-xs font-bold text-white">Global Cloudflare R2 & CDN</h3>
+              <h3 className="text-xs font-bold text-white">Global Edge Cloud & CDN</h3>
               <p className="text-[11px] text-zinc-400">
-                Over 280+ worldwide edge locations provide ultra-low latency streaming and instant uploads.
+                Küresel edge lokasyonları ile ultra düşük gecikme süreli doğrudan aktarım ve anında yükleme.
               </p>
             </div>
           </div>

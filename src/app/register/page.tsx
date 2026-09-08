@@ -590,7 +590,7 @@ export default function RegisterPage() {
               </div>
               <h3 className="text-lg font-bold text-white">Doğrulama Bağlantısı Gönderildi</h3>
               <p className="text-xs text-zinc-300 leading-relaxed">
-                Hesabınızı aktifleştirmek için lütfen gelen kutunuzdaki Supabase onay bağlantısına tıklayın. Onayladıktan sonra doğrudan kullanmaya başlayabilirsiniz.
+                Hesabınızı aktifleştirmek için lütfen gelen kutunuzdaki onay bağlantısına tıklayın. Onayladıktan sonra doğrudan kullanmaya başlayabilirsiniz.
               </p>
             </div>
 

@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/context";
 import { Logo } from "@/components/ui/Logo";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export const Footer: React.FC = () => {
   const { t } = useLanguage();
@@ -139,6 +140,7 @@ export const Footer: React.FC = () => {
             <span className="flex items-center gap-1 text-zinc-500">
               {t.footer.builtFor}
             </span>
+            <LanguageToggle size="sm" />
           </div>
         </div>
       </div>

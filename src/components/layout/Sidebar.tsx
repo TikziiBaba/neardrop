@@ -19,15 +19,18 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { useStorage } from "@/lib/storage/store";
+import { useLanguage } from "@/lib/i18n/context";
 import { formatBytes } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import { Logo } from "@/components/ui/Logo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { stats } = useStorage();
+  const { t, locale } = useLanguage();
 
   const navItems: Array<{
     label: string;
@@ -35,12 +38,12 @@ export const Sidebar: React.FC = () => {
     icon: React.ComponentType<{ className?: string }>;
     badge?: number;
   }> = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Files", href: "/files", icon: FolderOpen, badge: stats.filesCount },
-    { label: "Direct Transfers", href: "/transfers", icon: ArrowLeftRight },
-    { label: "Shared Links", href: "/shared", icon: Share2, badge: stats.sharedCount },
-    { label: "Pricing & Plans", href: "/pricing", icon: CreditCard },
-    { label: "Support", href: "/support", icon: LifeBuoy },
+    { label: t.navbar.dashboard, href: "/dashboard", icon: LayoutDashboard },
+    { label: t.navbar.files, href: "/files", icon: FolderOpen, badge: stats.filesCount },
+    { label: t.navbar.transfers, href: "/transfers", icon: ArrowLeftRight },
+    { label: t.navbar.sharedLinks, href: "/shared", icon: Share2, badge: stats.sharedCount },
+    { label: t.navbar.pricing || "Fiyatlandırma", href: "/pricing", icon: CreditCard },
+    { label: t.navbar.support || "Destek", href: "/support", icon: LifeBuoy },
   ];
 
   const quotaPercent = Math.round((stats.usedBytes / (stats.quotaBytes || 1)) * 100) || 0;
@@ -138,7 +141,7 @@ export const Sidebar: React.FC = () => {
         {/* Storage quota card */}
         <div className="rounded-2xl border border-zinc-800/90 bg-zinc-900/40 p-3.5 space-y-2.5 backdrop-blur-md">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-zinc-200">Cloud Storage</span>
+            <span className="font-semibold text-zinc-200">{t.dashboard.cloudStorage || "Bulut Depolama"}</span>
             <span className="text-[11px] text-sky-400 font-mono font-medium">%{quotaPercent}</span>
           </div>
           <Progress value={stats.usedBytes} max={stats.quotaBytes || 2147483648} />
@@ -146,6 +149,14 @@ export const Sidebar: React.FC = () => {
             <span>{formatBytes(stats.usedBytes)}</span>
             <span>{formatBytes(stats.quotaBytes || 2147483648)}</span>
           </div>
+        </div>
+
+        {/* Language selector in sidebar */}
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[11px] text-zinc-400 font-medium">
+            {locale === "tr" ? "Dil" : "Language"}
+          </span>
+          <LanguageToggle size="sm" />
         </div>
 
         {/* User profile & logout */}

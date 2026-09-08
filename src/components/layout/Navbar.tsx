@@ -10,6 +10,7 @@ import { useLanguage } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/Logo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -52,10 +53,10 @@ export const Navbar: React.FC = () => {
                 {t.navbar.security}
               </Link>
               <Link href="/pricing" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                Pricing
+                {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link href="/support" className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors">
-                Support
+                {t.navbar.support || "Destek"}
               </Link>
             </>
           ) : (
@@ -98,7 +99,7 @@ export const Navbar: React.FC = () => {
                   pathname === "/pricing" ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Pricing
+                {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link
                 href="/support"
@@ -106,7 +107,7 @@ export const Navbar: React.FC = () => {
                   pathname.startsWith("/support") ? "text-white bg-zinc-800/80 font-semibold" : "hover:text-white hover:bg-zinc-900/60"
                 }`}
               >
-                Support
+                {t.navbar.support || "Destek"}
               </Link>
             </>
           )}
@@ -114,6 +115,7 @@ export const Navbar: React.FC = () => {
 
         {/* Right CTA / Auth controls */}
         <div className="hidden md:flex items-center gap-3">
+          <LanguageToggle size="sm" />
           {!user ? (
             <div className="flex items-center gap-2">
               <Link href="/login">
@@ -183,8 +185,9 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Mobile Hamburger Button */}
+        {/* Mobile Hamburger Button & Language Toggle */}
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageToggle size="sm" />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
@@ -207,6 +210,12 @@ export const Navbar: React.FC = () => {
               </Link>
               <Link href="/#security" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
                 {t.navbar.security}
+              </Link>
+              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                {t.navbar.pricing || "Fiyatlandırma"}
+              </Link>
+              <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
+                {t.navbar.support || "Destek"}
               </Link>
               <Link href="/#faq" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
                 {t.navbar.faq}
@@ -243,10 +252,10 @@ export const Navbar: React.FC = () => {
                 {t.navbar.sharedLinks}
               </Link>
               <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Pricing
+                {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
-                Support
+                {t.navbar.support || "Destek"}
               </Link>
               <Link href="/settings" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 rounded-lg hover:bg-zinc-900">
                 {t.navbar.settings}

@@ -14,9 +14,9 @@ const STORAGE_KEY = "neardrop-locale";
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [locale, setLocaleState] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>("tr");
 
-  // Load saved locale from localStorage on mount (default: English)
+  // Load saved locale from localStorage on mount (default: Turkish)
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY) as Locale | null;
@@ -24,11 +24,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setLocaleState(saved);
         document.documentElement.lang = saved;
       } else {
-        setLocaleState("en");
-        document.documentElement.lang = "en";
+        setLocaleState("tr");
+        document.documentElement.lang = "tr";
       }
     } catch {
-      document.documentElement.lang = "en";
+      document.documentElement.lang = "tr";
     }
   }, []);
 

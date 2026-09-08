@@ -50,7 +50,7 @@ import { toast } from "sonner";
 export default function DashboardPage() {
   const { user } = useAuth();
   const { files, shares, stats, downloadFile } = useStorage();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
 
   // Modals state
   const [selectedFileForShare, setSelectedFileForShare] = useState<CloudFile | null>(null);
@@ -62,14 +62,20 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedShareId, setCopiedShareId] = useState<string | null>(null);
 
-  // Dynamic Greeting based on current local hour
+  // Dynamic Greeting based on current local hour and language
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
+    if (locale === "tr") {
+      if (hour >= 5 && hour < 12) return "Günaydın";
+      if (hour >= 12 && hour < 18) return "Tünaydın";
+      if (hour >= 18 && hour < 22) return "İyi akşamlar";
+      return "İyi geceler";
+    }
     if (hour >= 5 && hour < 12) return "Good morning";
     if (hour >= 12 && hour < 18) return "Good afternoon";
     if (hour >= 18 && hour < 22) return "Good evening";
     return "Good night";
-  }, []);
+  }, [locale]);
 
   // Category statistics breakdown
   const categoryStats = useMemo(() => {
@@ -197,10 +203,10 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="text-[11px] font-mono border-sky-500/30 text-sky-400 bg-sky-500/10 py-0.5 px-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5 inline-block" />
-                  Cloud Online • R2 Object Storage
+                  {locale === "tr" ? "Bulut Çevrimiçi • Güvenli Depolama" : "Cloud Online • Secure Storage"}
                 </Badge>
                 <span className="text-xs text-zinc-500">
-                  {new Date().toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" })}
+                  {new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", { weekday: "long", day: "numeric", month: "long" })}
                 </span>
               </div>
 
@@ -424,7 +430,7 @@ export default function DashboardPage() {
             </h2>
             <div className="flex items-center gap-2 text-xs text-zinc-400">
               <ShieldCheck className="h-4 w-4 text-emerald-400 inline" />
-              <span>End-to-End Encrypted R2 Storage</span>
+              <span>{t.dashboard.encryptedR2Storage}</span>
             </div>
           </div>
           <DropZone />

@@ -114,7 +114,7 @@ function VerifyEmailContent() {
           <p className="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">
             {isSuccess
               ? "NearDrop hesabınız başarıyla aktifleştirildi. Paneliniz hazır!"
-              : "Hesabınızı aktifleştirmek için gelen kutunuzdaki Supabase onay linkine tıklayın."}
+              : "Hesabınızı aktifleştirmek için gelen kutunuzdaki onay linkine tıklayın."}
           </p>
         </div>
 

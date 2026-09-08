@@ -217,7 +217,7 @@ export const FeaturesSection: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Bento Card 5: Cloudflare R2 Global Edge */}
+          {/* Bento Card 5: High-Speed Global Cloud */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -230,7 +230,9 @@ export const FeaturesSection: React.FC = () => {
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                   <CloudLightning className="h-6 w-6" />
                 </div>
-                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full border border-indigo-500/20">300+ Edge POPs</span>
+                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+                  {t.features.globalEdgeBadge || "Global Edge"}
+                </span>
               </div>
               <div className="space-y-1.5">
                 <h3 className="text-base font-bold text-white tracking-tight">{t.features.r2StorageTitle}</h3>
@@ -241,9 +243,9 @@ export const FeaturesSection: React.FC = () => {
             <div className="p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 flex items-center justify-between text-xs text-zinc-400 font-mono">
               <span className="flex items-center gap-1.5 text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Zero Egress Fees</span>
+                <span>{t.features.unlimitedBandwidth || "Sınırsız Bant Genişliği"}</span>
               </span>
-              <span>100% S3 Compatible</span>
+              <span>{t.features.highDurability || "Yüksek Dayanıklılık & Güven"}</span>
             </div>
           </motion.div>
         </div>

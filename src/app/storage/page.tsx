@@ -277,7 +277,7 @@ export default function StoragePage() {
             </div>
 
             <p className="text-[11px] text-zinc-500 text-center max-w-xs">
-              Cloudflare R2 S3-compatible resilient global storage.
+              Yüksek dayanıklılığa ve hıza sahip küresel güvenli bulut depolama.
             </p>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function StoragePage() {
               <div className="flex items-center justify-between text-xs text-zinc-300">
                 <span className="flex items-center gap-1.5 text-zinc-400">
                   <ShieldCheck className="h-3.5 w-3.5 text-sky-400" />
-                  R2 Multi-Region Redundancy
+                  Multi-Region Cloud Redundancy
                 </span>
                 <span className="text-sky-400 font-semibold font-mono">Active</span>
               </div>

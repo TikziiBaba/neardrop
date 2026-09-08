@@ -181,7 +181,7 @@ export default function ShareAnalyticsPage() {
                   {formatBytes(analytics.totalBandwidth)}
                 </p>
                 <p className="text-[10px] text-zinc-500">
-                  Direct presigned R2 egress
+                  Direct encrypted cloud egress
                 </p>
               </div>
 

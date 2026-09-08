@@ -18,6 +18,9 @@ export const translations = {
       settings: "Ayarlar",
       logout: "Çıkış Yap",
       sharedLinks: "Paylaşılan Linkler",
+      pricing: "Fiyatlandırma",
+      support: "Destek",
+      contact: "İletişim",
     },
 
     // ===== HERO SECTION =====
@@ -73,12 +76,15 @@ export const translations = {
       autoExpiryTitle: "Otomatik Link Süresi Dolumu",
       autoExpiryDesc:
         "Linkleri 1 saat, 24 saat veya özel süre sonrasında geçersiz olacak şekilde ayarlayın. Zamanlanmış temizlik, dosyaların sonsuza kadar kalmamasını garanti eder.",
-      sha256Title: "SHA-256 Şifre Kilidi",
+      sha256Title: "Gelişmiş Şifre Koruması",
       sha256Desc:
-        "Hassas transferleri isteğe bağlı şifrelerle koruyun. İstemci taraflı SHA-256 hash'leri ile doğrulanır — hiçbir zaman düz metin kullanılmaz.",
+        "Hassas transferleri şifre ile koruyun. İstemci taraflı güvenli özetleme algoritmaları ile doğrulanır — şifreniz hiçbir zaman açık olarak saklanmaz.",
       r2StorageTitle: "Güvenilir & Yüksek Hızlı Bulut Depolama",
       r2StorageDesc:
-        "Küresel yedekli, sıfır bant kısıtlamalı ve %99.999999999 dayanıklılığa sahip kurumsal düzeyde özel ve güvenli depolama yerimiz.",
+        "Küresel yedekli, sıfır bant kısıtlamalı ve %99.999999999 dayanıklılığa sahip kurumsal düzeyde özel ve güvenli bulut altyapımız.",
+      globalEdgeBadge: "Küresel Dağıtım Ağı",
+      unlimitedBandwidth: "Sınırsız Bant Genişliği",
+      highDurability: "Yüksek Dayanıklılık & Güven",
       fileManagementTitle: "Eksiksiz Dosya Yönetimi",
       fileManagementDesc:
         "Checksum hash'lerini inceleyin, dosyaları yeniden adlandırın, gerçek zamanlı indirme sayaçlarını görüntüleyin, aktif linkleri tek tıkla iptal edin ve transfer geçmişini takip edin.",
@@ -90,18 +96,18 @@ export const translations = {
       title: "Derinlemesine Savunma Üzerine Kuruldu",
       subtitle:
         "NearDrop güvenliği basit, denetlenebilir ve güvenilir tutar — tarayıcıdan güvenilir depolama alanımıza kadar.",
-      rlsTitle: "Satır Düzeyinde Güvenlik (RLS)",
+      rlsTitle: "Bireysel Veri İzolasyonu",
       rlsDesc:
-        "Veritabanı katmanında ayrıntılı kiracı izolasyonu uygulanır. Hiçbir kullanıcı başka bir kullanıcının dosya kayıtlarını görüntüleyemez, sorgulayamaz veya silemez.",
+        "Kullanıcı verileri kurumsal düzeyde katı izolasyon kurallarıyla korunur. Hiçbir kullanıcı başka bir kullanıcının dosyalarına veya meta verilerine erişemez.",
       signedUrlTitle: "Geçici İmzalı Bağlantılar",
       signedUrlDesc:
         "Özel depolama alanımız tamamen genel internetten izole edilmiştir. Dosya indirmeleri dakikalar içinde süresi dolan güvenli imzalı bağlantılar aracılığıyla sağlanır.",
       highEntropyTitle: "Yüksek Entropili Token URL'leri",
       highEntropyDesc:
         "Paylaşım linkleri 12 karakterlik kriptografik rastgele token'lar kullanır, brute-force tahmini pratikte imkansız kılar.",
-      zeroKnowledgeTitle: "Sıfır Bilgi Şifre Hash'leme",
+      zeroKnowledgeTitle: "Sıfır Bilgi Güvenlik Doğrulaması",
       zeroKnowledgeDesc:
-        "Korunan paylaşımlar, istemci tarafından oluşturulan SHA-256 özetleri ile doğrulanır. Ham şifreler hiçbir zaman iletilmez veya veritabanında saklanmaz.",
+        "Korunan paylaşımlar, istemci tarafında üretilen şifreli özetler ile doğrulanır. Şifreniz asla sunucularımıza düz metin olarak iletilmez veya saklanmaz.",
       lifespanTitle: "Otomatik Yaşam Süresi Temizliği",
       lifespanDesc:
         "Zamanlanmış arka plan temizlik rutinleri, süresi dolmuş token'ları geçersiz kılar ve eski depolama nesnelerini otomatik olarak temizler.",
@@ -285,7 +291,7 @@ export const translations = {
       uploading: "Yükleniyor",
       streamingToR2: "Güvenli depolamaya aktarılıyor",
       cancel: "İptal",
-      allFormatsSupported: "Her dosya formatı desteklenir (.exe, .bat, .zip, .apk vb.)",
+      allFormatsSupported: "Tüm dosya formatları güvenle desteklenir (Belgeler, Arşivler, Medya vb.)",
       malwareProtection: "Gerçek Zamanlı Antivirüs Koruması",
       securityScanActive: "Zararlı Yazılım Taraması Aktif",
       verifiedClean: "Doğrulandı & Temiz",
@@ -387,6 +393,9 @@ export const translations = {
       settings: "Settings",
       logout: "Log out",
       sharedLinks: "Shared Links",
+      pricing: "Pricing",
+      support: "Support",
+      contact: "Contact",
     },
 
     // ===== HERO SECTION =====
@@ -442,12 +451,15 @@ export const translations = {
       autoExpiryTitle: "Automatic Link Expiration",
       autoExpiryDesc:
         "Set links to vanish after 1 hour, 24 hours, or custom duration. Scheduled cleanup guarantees files do not linger forever.",
-      sha256Title: "SHA-256 Password Lock",
+      sha256Title: "Advanced Password Protection",
       sha256Desc:
-        "Protect sensitive transfers with optional passwords. Stored using client-verified SHA-256 hashes—never plaintext.",
+        "Protect sensitive transfers with custom passwords. Verified client-side using secure cryptographic hashing—never stored in plaintext.",
       r2StorageTitle: "High-Speed Secure Cloud Storage",
       r2StorageDesc:
         "Built on enterprise-grade isolated cloud storage with global edge replication, zero egress bottlenecks, and 99.999999999% durability.",
+      globalEdgeBadge: "Global Edge Network",
+      unlimitedBandwidth: "Uncapped Bandwidth",
+      highDurability: "High Durability & Trust",
       fileManagementTitle: "Complete File Management",
       fileManagementDesc:
         "Inspect checksum hashes, rename files, view real-time download counters, revoke active links in 1-click, and track transfer history.",
@@ -459,18 +471,18 @@ export const translations = {
       title: "Built on Defense in Depth",
       subtitle:
         "NearDrop keeps security straightforward, auditable, and reliable from browser to our dedicated cloud storage vault.",
-      rlsTitle: "Row Level Security (RLS)",
+      rlsTitle: "Granular Data Isolation",
       rlsDesc:
-        "Granular tenant isolation is enforced at the database layer. No user can view, query, or delete another user's file records.",
+        "User data is strictly isolated with enterprise-grade access boundaries. No user can view, query, or delete another user's file records.",
       signedUrlTitle: "Temporary Signed URLs",
       signedUrlDesc:
         "Our private storage vault is completely isolated from public internet. File downloads are granted through signed URLs that expire within minutes.",
       highEntropyTitle: "High-Entropy Token URLs",
       highEntropyDesc:
         "Share links use 12-character cryptographically random tokens, making brute-force enumeration practically impossible.",
-      zeroKnowledgeTitle: "Zero-Knowledge Password Hashing",
+      zeroKnowledgeTitle: "Zero-Knowledge Access Verification",
       zeroKnowledgeDesc:
-        "Protected shares verify access using client-generated SHA-256 digests. Raw passwords are never transmitted or stored in the database.",
+        "Protected shares verify access using client-generated cryptographic digests. Passwords are never transmitted or stored in plaintext.",
       lifespanTitle: "Automated Lifespan Cleanup",
       lifespanDesc:
         "Scheduled backend cleanup routines invalidate expired tokens and purge stale storage objects automatically.",
@@ -654,7 +666,7 @@ export const translations = {
       uploading: "Uploading",
       streamingToR2: "Streaming to secure storage",
       cancel: "Cancel",
-      allFormatsSupported: "All file formats supported (.exe, .bat, .zip, .apk, etc.)",
+      allFormatsSupported: "All file formats securely supported (Documents, Archives, Media, etc.)",
       malwareProtection: "Real-time Antivirus Protection",
       securityScanActive: "Malware Scanning Active",
       verifiedClean: "Verified & Clean",

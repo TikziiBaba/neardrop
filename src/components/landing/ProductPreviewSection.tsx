@@ -325,7 +325,7 @@ export const ProductPreviewSection: React.FC = () => {
                         </div>
                         <div>
                           <span className="font-semibold text-white block">project-render-4k.mov</span>
-                          <span className="text-[10px] text-zinc-500">Streaming to R2 Storage</span>
+                          <span className="text-[10px] text-zinc-500">{t.dropzone.streamingToR2}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-1.5 bg-sky-500/10 border border-sky-500/20 px-2.5 py-1 rounded-lg">

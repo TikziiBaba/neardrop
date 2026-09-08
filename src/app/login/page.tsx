@@ -135,7 +135,7 @@ function LoginForm() {
               {showResend && (
                 <div className="pt-2 border-t border-rose-500/20 space-y-2">
                   <p className="text-[11px] text-zinc-300 leading-relaxed">
-                    E-posta adresiniz henüz onaylanmamış. Giriş yapabilmek için lütfen gelen kutunuzdaki Supabase onay bağlantısına tıklayın.
+                    E-posta adresiniz henüz onaylanmamış. Giriş yapabilmek için lütfen gelen kutunuzdaki onay bağlantısına tıklayın.
                   </p>
                   <div className="flex items-center justify-between gap-2 pt-1">
                     <button
