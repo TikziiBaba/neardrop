@@ -75,6 +75,19 @@ function CheckoutContent() {
     }
   }, [paymentStatus, plan.id, plan.quotaBytes, updateProfile, user]);
 
+  // Break out of PayTR iframe if payment succeeded
+  useEffect(() => {
+    if (paymentStatus === "success" && typeof window !== "undefined") {
+      try {
+        if (window.self !== window.top && window.top) {
+          window.top.location.href = window.location.href;
+        }
+      } catch (e) {
+        console.warn("Iframe breakout notice:", e);
+      }
+    }
+  }, [paymentStatus]);
+
   // Hook PayTR iframe resize once loaded
   useEffect(() => {
     if (paytrToken && typeof window !== "undefined" && window.iFrameResize) {
@@ -122,35 +135,66 @@ function CheckoutContent() {
     );
   }
 
-  // SUCCESS STATE (Apple Pay-Inspired Elegant Success Card)
+  // SUCCESS STATE (Apple Pay-Inspired Elegant Full-Screen Radial Waves)
   if (paymentStatus === "success") {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-[32px] border border-emerald-500/30 bg-zinc-950/85 p-8 sm:p-12 text-center max-w-lg space-y-6 shadow-[0_30px_90px_rgba(16,185,129,0.18)] backdrop-blur-3xl relative overflow-hidden"
-        >
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="min-h-[85vh] flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Full-Screen Radiating Emerald Waves */}
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
+          {/* Ambient full-bleed emerald radial backdrop glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.22)_0%,rgba(6,78,59,0.08)_45%,transparent_75%)]" />
 
-          {/* Sleek Apple-Grade Animated Glowing Green Checkmark Button */}
+          {/* Wave Ring 1 */}
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 320, damping: 22 }}
-            className="relative flex items-center justify-center mx-auto my-2"
-          >
+            initial={{ scale: 0.15, opacity: 0.9 }}
+            animate={{ scale: [0.15, 2.2, 4.5], opacity: [0.9, 0.45, 0] }}
+            transition={{ duration: 3.6, repeat: Infinity, ease: [0.16, 1, 0.3, 1], repeatDelay: 0.2 }}
+            className="absolute w-[500px] h-[500px] rounded-full border-2 border-emerald-400/50 bg-gradient-to-tr from-emerald-500/15 via-teal-500/10 to-transparent blur-sm"
+          />
+
+          {/* Wave Ring 2 */}
+          <motion.div
+            initial={{ scale: 0.15, opacity: 0.9 }}
+            animate={{ scale: [0.15, 2.2, 4.5], opacity: [0.9, 0.45, 0] }}
+            transition={{ duration: 3.6, delay: 1.2, repeat: Infinity, ease: [0.16, 1, 0.3, 1], repeatDelay: 0.2 }}
+            className="absolute w-[500px] h-[500px] rounded-full border border-emerald-300/40 bg-emerald-500/10 blur-md"
+          />
+
+          {/* Wave Ring 3 */}
+          <motion.div
+            initial={{ scale: 0.15, opacity: 0.9 }}
+            animate={{ scale: [0.15, 2.2, 5], opacity: [0.9, 0.35, 0] }}
+            transition={{ duration: 3.6, delay: 2.4, repeat: Infinity, ease: [0.16, 1, 0.3, 1], repeatDelay: 0.2 }}
+            className="absolute w-[500px] h-[500px] rounded-full border border-teal-400/30 bg-teal-400/5 blur-lg"
+          />
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92, y: 25 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-[36px] border border-emerald-500/35 bg-zinc-950/90 p-8 sm:p-12 text-center max-w-lg w-full space-y-7 shadow-[0_30px_100px_rgba(16,185,129,0.25)] backdrop-blur-3xl relative z-10 overflow-hidden"
+        >
+          {/* Subtle top specular sheen */}
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+
+          {/* Centerpiece: Glowing Checkmark with Spring Entry and Draw */}
+          <div className="relative flex items-center justify-center mx-auto my-2">
             {/* Ambient emerald radial aura */}
-            <div className="absolute -inset-4 rounded-full bg-emerald-500/25 blur-2xl animate-pulse pointer-events-none" />
+            <div className="absolute -inset-6 rounded-full bg-emerald-500/35 blur-2xl animate-pulse pointer-events-none" />
 
             {/* Frosted concentric glass ring */}
-            <div className="relative h-24 w-24 rounded-full bg-emerald-950/40 border border-emerald-500/30 backdrop-blur-2xl flex items-center justify-center shadow-[0_0_50px_rgba(16,185,129,0.25)] ring-1 ring-white/10">
-              {/* Inner glowing emerald checkmark circle */}
-              <div className="h-16 w-16 rounded-full bg-gradient-to-b from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_10px_25px_rgba(16,185,129,0.45)] border border-emerald-200/40">
+            <motion.div
+              initial={{ scale: 0, rotate: -30 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 20 }}
+              className="relative h-28 w-28 rounded-full bg-emerald-950/50 border border-emerald-500/40 backdrop-blur-2xl flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/20"
+            >
+              {/* Inner glowing emerald checkmark sphere */}
+              <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.6)] border border-emerald-200/50">
                 <motion.svg
                   viewBox="0 0 24 24"
-                  className="w-8 h-8 text-white stroke-[3.2]"
+                  className="w-10 h-10 text-white stroke-[3.5]"
                   fill="none"
                   stroke="currentColor"
                   strokeLinecap="round"
@@ -160,22 +204,22 @@ function CheckoutContent() {
                     d="M5 13l4 4L19 7"
                     initial={{ pathLength: 0, opacity: 0 }}
                     animate={{ pathLength: 1, opacity: 1 }}
-                    transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
                   />
                 </motion.svg>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
 
           <div className="space-y-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 tracking-wide">
-              <Sparkles className="h-3.5 w-3.5" /> 3D SECURE İLE DOĞRULANDI
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 tracking-wider uppercase">
+              <Sparkles className="h-3.5 w-3.5" /> 3D Secure İle Onaylandı
             </span>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Tebrikler, {plan.name} Aktif!
             </h1>
-            <p className="text-xs text-zinc-300 max-w-sm mx-auto leading-relaxed">
-              Bulut depolama alanınız anında <strong className="text-sky-400 font-semibold">{plan.quotaLabel}</strong> seviyesine yükseltildi. Tüm ayrıcalıklar hesabınıza tanımlandı.
+            <p className="text-xs sm:text-sm text-zinc-300 max-w-sm mx-auto leading-relaxed">
+              Bulut depolama alanınız anında <strong className="text-emerald-400 font-bold">{plan.quotaLabel}</strong> seviyesine yükseltildi. Tüm ayrıcalıklar hesabınıza tanımlandı.
             </p>
           </div>
 
@@ -185,21 +229,38 @@ function CheckoutContent() {
             </div>
           )}
 
+          {/* Action Buttons: Guaranteed Top-Level Navigation */}
           <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button
-              variant="primary"
-              onClick={() => router.push("/dashboard")}
-              className="flex-1 text-xs rounded-xl py-3.5 font-bold shadow-lg shadow-sky-500/20"
+            <a
+              href="/dashboard"
+              target="_top"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof window !== "undefined") {
+                  if (window.top) window.top.location.href = "/dashboard";
+                  else window.location.href = "/dashboard";
+                }
+              }}
+              className="flex-1 inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-bold rounded-2xl py-4 px-6 text-white bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-400 hover:to-teal-500 shadow-[0_10px_35px_-10px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all cursor-pointer z-20"
             >
-              Dashboard&apos;a Git
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push("/settings")}
-              className="text-xs rounded-xl py-3.5 border-white/10 text-zinc-300 hover:text-white"
+              <Sparkles className="h-4 w-4" />
+              <span>Dashboard&apos;a Git</span>
+              <ArrowRight className="h-4 w-4" />
+            </a>
+            <a
+              href="/settings"
+              target="_top"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof window !== "undefined") {
+                  if (window.top) window.top.location.href = "/settings";
+                  else window.location.href = "/settings";
+                }
+              }}
+              className="flex-1 inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold rounded-2xl py-4 px-6 text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 active:scale-[0.98] transition-all cursor-pointer z-20"
             >
-              Abonelik Detayları
-            </Button>
+              <span>Abonelik Detayları</span>
+            </a>
           </div>
         </motion.div>
       </div>
@@ -234,17 +295,29 @@ function CheckoutContent() {
               variant="primary"
               onClick={() => {
                 setPaytrToken(null);
-                router.push(`/checkout?plan=${plan.id}&billing=${billingCycle}`);
+                if (typeof window !== "undefined") {
+                  if (window.top) window.top.location.href = `/checkout?plan=${plan.id}&billing=${billingCycle}`;
+                  else router.push(`/checkout?plan=${plan.id}&billing=${billingCycle}`);
+                }
               }}
               className="w-full text-xs rounded-xl py-3.5 font-bold"
             >
               Tekrar Dene
             </Button>
-            <Link href="/pricing">
-              <Button variant="outline" className="w-full text-xs rounded-xl py-3.5 border-white/10 text-zinc-300">
-                Paketlere Dön
-              </Button>
-            </Link>
+            <a
+              href="/pricing"
+              target="_top"
+              onClick={(e) => {
+                e.preventDefault();
+                if (typeof window !== "undefined") {
+                  if (window.top) window.top.location.href = "/pricing";
+                  else window.location.href = "/pricing";
+                }
+              }}
+              className="w-full inline-flex items-center justify-center text-xs rounded-xl py-3.5 border border-white/10 text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] transition-colors cursor-pointer"
+            >
+              Paketlere Dön
+            </a>
           </div>
         </motion.div>
       </div>
