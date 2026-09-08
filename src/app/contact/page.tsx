@@ -30,15 +30,35 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          subject: subject.trim(),
+          message: message.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setIsSubmitted(true);
+        toast.success("Mesajınız başarıyla iletildi! En kısa sürede sizinle iletişime geçeceğiz.");
+      } else {
+        toast.error(data.error || "Mesaj iletilemedi. Lütfen tekrar deneyin.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Bağlantı hatası oluştu.");
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      toast.success("Mesajınız başarıyla iletildi! En kısa sürede sizinle iletişime geçeceğiz.");
-    }, 800);
+    }
   };
 
   return (
