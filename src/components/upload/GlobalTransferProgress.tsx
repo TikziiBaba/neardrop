@@ -41,7 +41,7 @@ interface FolderGroupData {
 }
 
 export const GlobalTransferProgress: React.FC = () => {
-  const { transfers, cancelTransfer, retryTransfer, clearCompletedTransfers } = useStorage();
+  const { transfers, cancelTransfer, retryTransfer, retryAllFailed, clearCompletedTransfers } = useStorage();
   const { t, locale } = useLanguage();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -108,7 +108,7 @@ export const GlobalTransferProgress: React.FC = () => {
                 activeCount === 0 && completedCount === items.length ? 100 : 99,
                 Math.round((transferredBytes / totalBytes) * 100)
               )
-            : 0;
+            : (activeCount === 0 && completedCount === items.length && items.length > 0 ? 100 : 0);
         const remainingBytes = Math.max(0, totalBytes - transferredBytes);
         const eta = totalSpeed > 0 ? Math.round(remainingBytes / totalSpeed) : undefined;
 
@@ -328,9 +328,18 @@ export const GlobalTransferProgress: React.FC = () => {
             )}
 
             {hasFailed && !hasActive && !allCompleted && (
-              <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20">
-                {group.failedCount} başarısız
-              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  retryAllFailed(group.folderName);
+                }}
+                className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
+                title="Bu klasördeki başarısız dosyaları yeniden dene"
+              >
+                <RotateCw className="h-2.5 w-2.5" />
+                <span>{group.failedCount} başarısız • Yeniden Dene</span>
+              </button>
             )}
 
             <ChevronRight
@@ -422,15 +431,26 @@ export const GlobalTransferProgress: React.FC = () => {
                         )}
 
                         {isFailed && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              retryTransfer(item.id);
-                            }}
-                            className="flex items-center gap-1 text-amber-400 hover:text-amber-300 transition-colors"
-                          >
-                            <RotateCw className="h-3 w-3" />
-                          </button>
+                          <div className="flex items-center gap-1.5">
+                            {item.errorMessage && (
+                              <span
+                                className="text-[10px] text-rose-400/80 truncate max-w-[100px] sm:max-w-[140px]"
+                                title={item.errorMessage}
+                              >
+                                {item.errorMessage}
+                              </span>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                retryTransfer(item.id);
+                              }}
+                              className="flex items-center gap-1 text-amber-400 hover:text-amber-300 transition-colors p-1 hover:bg-amber-500/10 rounded"
+                              title={item.errorMessage ? `${item.errorMessage} — Yeniden Dene` : "Yeniden Dene"}
+                            >
+                              <RotateCw className="h-3 w-3" />
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -537,6 +557,17 @@ export const GlobalTransferProgress: React.FC = () => {
 
               {/* Controls */}
               <div className="flex items-center gap-1">
+                {failedTransfers.length > 0 && !isCurrentlyUploading && (
+                  <button
+                    onClick={() => retryAllFailed()}
+                    title="Tüm başarısız yüklemeleri yeniden dene"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-amber-400 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition-colors"
+                  >
+                    <RotateCw className="h-3 w-3" />
+                    <span className="hidden sm:inline">Tümünü Yeniden Dene</span>
+                    <span className="sm:hidden">Dene</span>
+                  </button>
+                )}
                 {completedTransfers.length > 0 && !isCurrentlyUploading && (
                   <button
                     onClick={clearCompletedTransfers}

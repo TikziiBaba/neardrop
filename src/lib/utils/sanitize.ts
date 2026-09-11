@@ -15,11 +15,11 @@ export function sanitizeFilename(filename: string): string {
     .split("/")
     .map((segment) => {
       // Remove null bytes
-      let clean = segment.replace(/\0/g, "");
-      // Remove leading dots (prevent hidden files / dotfile attacks / relative ..)
-      clean = clean.replace(/^\.+/, "");
-      // Remove leading/trailing whitespace
-      clean = clean.trim();
+      let clean = segment.replace(/\0/g, "").trim();
+      // Block directory traversal (.. or .)
+      if (clean === "." || clean === ".." || clean.replace(/^\.+/, "") === "") {
+        return "";
+      }
       // Truncate segment to 255 chars
       if (clean.length > 255) {
         const extIdx = clean.lastIndexOf(".");
@@ -84,5 +84,5 @@ export const MAX_UPLOAD_SIZE = 50 * 1024 * 1024 * 1024; // 50 GB
  * Validates file size against maximum allowed.
  */
 export function isFileSizeValid(size: number): boolean {
-  return size > 0 && size <= MAX_UPLOAD_SIZE;
+  return typeof size === "number" && size >= 0 && size <= MAX_UPLOAD_SIZE;
 }

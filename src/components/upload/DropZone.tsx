@@ -236,7 +236,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                 const completedFiles = totals?.completed || 0;
                 const totalBytes = totals?.totalBytes || 0;
                 const transferredBytes = totals?.transferredBytes || 0;
-                const folderProgress = totalBytes > 0 ? Math.min(99, Math.round((transferredBytes / totalBytes) * 100)) : 0;
+                const folderProgress = totalBytes > 0 ? Math.min(99, Math.round((transferredBytes / totalBytes) * 100)) : (completedFiles === totalFiles && totalFiles > 0 ? 100 : 0);
                 const folderSpeed = items.reduce((acc, t) => acc + (t.status === "uploading" ? t.speed || 0 : 0), 0);
 
                 return (

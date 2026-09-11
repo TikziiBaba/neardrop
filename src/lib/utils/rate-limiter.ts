@@ -18,7 +18,7 @@ interface RateLimitConfig {
 // Default endpoint configs
 const ENDPOINT_LIMITS: Record<string, RateLimitConfig> = {
   "/api/download": { maxRequests: 30, windowMs: 15 * 60 * 1000, blockDurationMs: 60_000 },
-  "/api/upload": { maxRequests: 150, windowMs: 5 * 60 * 1000, blockDurationMs: 15_000 },
+  "/api/upload": { maxRequests: 50000, windowMs: 5 * 60 * 1000, blockDurationMs: 2_000 },
   "/s/": { maxRequests: 20, windowMs: 10 * 60 * 1000, blockDurationMs: 60_000 },
   "/api/shares": { maxRequests: 50, windowMs: 5 * 60 * 1000 },
   "/api/files": { maxRequests: 60, windowMs: 5 * 60 * 1000 },

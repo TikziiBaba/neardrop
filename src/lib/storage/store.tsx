@@ -78,7 +78,8 @@ interface StorageContextType {
   saveFileContent: (fileId: string, content: string) => Promise<void>;
   downloadFolder: (folderPath: string) => Promise<void>;
   cancelTransfer: (transferId: string) => void;
-  retryTransfer: (transferId: string) => void;
+  retryTransfer: (transferId: string) => void | Promise<void>;
+  retryAllFailed: (folderGroup?: string) => Promise<void>;
   clearCompletedTransfers: () => void;
   updateSettings: (newSettings: Partial<UserSettings>) => void;
   refreshFiles: () => Promise<void>;
@@ -193,46 +194,15 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const activeXHRsRef = useRef<Record<string, XMLHttpRequest>>({});
   const activeFileIdsRef = useRef<Record<string, string>>({});
+  const transfersRef = useRef<TransferItem[]>([]);
 
-  // Upload handler with presigned URL, concurrent queue (3 at a time), and automatic quota cleanup
-  const uploadFiles = useCallback(async (fileList: File[] | FileList) => {
-    const rawFiles = Array.from(fileList);
-    if (!rawFiles.length || !user) return;
+  useEffect(() => {
+    transfersRef.current = transfers;
+  }, [transfers]);
 
-    const authHeaders = await getAuthHeaders();
-
-    // 1. Instantly register all files into transfers state as "pending"
-    const initialTransfers: TransferItem[] = rawFiles.map((file, idx) => {
-      const fullFilename = (file as any).relativePath || file.webkitRelativePath || file.name;
-      const transferId = `tr_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 7)}`;
-
-      // Detect folder group: if the filename has path separators, the root segment is the folder name
-      let folderGroup: string | undefined;
-      const pathParts = fullFilename.split("/").filter(Boolean);
-      if (pathParts.length > 1) {
-        folderGroup = pathParts[0];
-      }
-
-      return {
-        id: transferId,
-        filename: fullFilename,
-        size: file.size,
-        progress: 0,
-        transferredBytes: 0,
-        speed: 0,
-        eta: undefined,
-        status: "pending",
-        direction: "upload",
-        startedAt: Date.now(),
-        file,
-        folderGroup,
-      };
-    });
-
-    setTransfers((prev) => [...initialTransfers, ...prev]);
-
-    // 2. Upload single item function
-    const uploadSingleItem = async (transferItem: TransferItem) => {
+  // Core single item upload executor with retry, dynamic JWT, and quota cleanup
+  const uploadSingleItem = useCallback(
+    async (transferItem: TransferItem) => {
       const { id: transferId, file, filename: fullFilename } = transferItem;
       if (!file) return;
 
@@ -240,7 +210,11 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       // Mark status as uploading
       setTransfers((prev) =>
-        prev.map((t) => (t.id === transferId ? { ...t, status: "uploading", startedAt } : t))
+        prev.map((t) =>
+          t.id === transferId
+            ? { ...t, status: "uploading", startedAt, errorMessage: undefined }
+            : t
+        )
       );
 
       const handleProgressEvent = (e: ProgressEvent) => {
@@ -258,18 +232,28 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 : t
             )
           );
+        } else if (file.size === 0) {
+          setTransfers((prev) =>
+            prev.map((t) =>
+              t.id === transferId
+                ? { ...t, progress: 99, transferredBytes: 0, speed: 0, eta: 0 }
+                : t
+            )
+          );
         }
       };
 
       let currentFileId: string | null = null;
+      let uploadUrl: string | null = null;
+      let uploadSucceeded = false;
+      let lastError: any = null;
+      const MAX_RETRIES = 3;
 
+      // Calculate sample & hash once
+      let sha256 = "";
+      let headerSample = "";
       try {
-        let uploadSucceeded = false;
-
-        // Step 1: Extract header sample and compute SHA-256 for real-time security scan
-        let sha256 = "";
-        let headerSample = "";
-        try {
+        if (file.size > 0) {
           const sampleSlice = file.slice(0, 65536);
           const sampleBuf = await sampleSlice.arrayBuffer();
           const sampleBytes = new Uint8Array(sampleBuf);
@@ -287,12 +271,17 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             const hashArray = Array.from(new Uint8Array(hashBuf));
             sha256 = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
           }
-        } catch (hashErr) {
-          console.warn("Client hash calculation skipped:", hashErr);
+        } else {
+          sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         }
+      } catch (hashErr) {
+        console.warn("Client hash calculation skipped:", hashErr);
+      }
 
-        // Step 1: Request Presigned URL for direct upload
+      // Step 1: Request Presigned URL (with retry on 429 or transient error)
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
         try {
+          const authHeaders = await getAuthHeaders();
           const apiRes = await fetch("/api/upload", {
             method: "POST",
             headers: {
@@ -308,15 +297,57 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             }),
           });
 
+          if (apiRes.status === 429) {
+            const errJson = await apiRes.json().catch(() => ({}));
+            const delay = errJson.retryAfterMs || Math.min(1000 * Math.pow(2, attempt), 8000);
+            console.warn(`Rate limit on presigned URL attempt ${attempt}, waiting ${delay}ms...`);
+            await new Promise((r) => setTimeout(r, delay));
+            continue;
+          }
+
           if (apiRes.ok) {
             const data = await apiRes.json();
-            const { uploadUrl, fileId } = data;
-            currentFileId = fileId;
-            if (fileId) {
-              activeFileIdsRef.current[transferId] = fileId;
+            uploadUrl = data.uploadUrl;
+            currentFileId = data.fileId;
+            if (data.fileId) {
+              activeFileIdsRef.current[transferId] = data.fileId;
             }
+            break; // Presigned URL successfully acquired!
+          } else {
+            const errData = await apiRes.json().catch(() => ({}));
+            const errMsg = errData.error || `Upload initiation failed (${apiRes.status})`;
+            if (
+              errMsg.includes("quota") ||
+              errMsg.includes("plan") ||
+              errMsg.includes("Zararlı") ||
+              errMsg.includes("Malware")
+            ) {
+              throw new Error(errMsg);
+            }
+            if (attempt < MAX_RETRIES) {
+              await new Promise((r) => setTimeout(r, 1000 * attempt));
+              continue;
+            }
+            throw new Error(errMsg);
+          }
+        } catch (presignedErr: any) {
+          lastError = presignedErr;
+          if (
+            presignedErr?.message === "Upload cancelled" ||
+            presignedErr?.message?.includes("quota") ||
+            presignedErr?.message?.includes("plan") ||
+            presignedErr?.message?.includes("Zararlı") ||
+            presignedErr?.message?.includes("Malware")
+          ) {
+            break;
+          }
+        }
+      }
 
-            // Direct XHR PUT to presigned R2 URL
+      // Step 2: Direct XHR PUT to presigned R2 URL (with retry if network drops)
+      if (uploadUrl && !uploadSucceeded && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
+        for (let putAttempt = 1; putAttempt <= MAX_RETRIES; putAttempt++) {
+          try {
             await new Promise<void>((resolve, reject) => {
               const xhr = new XMLHttpRequest();
               activeXHRsRef.current[transferId] = xhr;
@@ -342,30 +373,30 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
                 reject(new Error("Upload cancelled"));
               });
 
-              xhr.open("PUT", uploadUrl);
+              xhr.open("PUT", uploadUrl!);
               xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
               xhr.send(file);
             });
-          } else {
-            const errData = await apiRes.json().catch(() => ({}));
-            throw new Error(errData.error || `Upload could not be initiated (${apiRes.status})`);
-          }
-        } catch (presignedErr: any) {
-          if (
-            presignedErr?.message === "Upload cancelled" ||
-            presignedErr?.message?.includes("quota") ||
-            presignedErr?.message?.includes("plan") ||
-            presignedErr?.message?.includes("Zararlı") ||
-            presignedErr?.message?.includes("Malware") ||
-            file.size > 25 * 1024 * 1024
-          ) {
-            throw presignedErr;
-          }
-          console.warn("Direct storage upload failed, falling back to secure tunnel upload...", presignedErr);
-        }
 
-        // Step 2: Fallback to server proxy upload for small files (<= 25 MB)
-        if (!uploadSucceeded) {
+            if (uploadSucceeded) {
+              lastError = null;
+              break;
+            }
+          } catch (putErr: any) {
+            lastError = putErr;
+            if (putErr?.message === "Upload cancelled") break;
+            if (putAttempt < MAX_RETRIES) {
+              console.warn(`XHR direct upload retry ${putAttempt}/${MAX_RETRIES} for ${fullFilename}...`);
+              await new Promise((r) => setTimeout(r, 1000 * putAttempt));
+            }
+          }
+        }
+      }
+
+      // Step 3: Fallback to server proxy upload for small files (<= 25 MB) if direct upload failed
+      if (!uploadSucceeded && file.size <= 25 * 1024 * 1024 && lastError?.message !== "Upload cancelled" && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
+        try {
+          const authHeaders = await getAuthHeaders();
           const formData = new FormData();
           formData.append("file", file);
           formData.append("filename", fullFilename);
@@ -406,12 +437,19 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             }
             xhr.send(formData);
           });
+
+          if (uploadSucceeded) {
+            lastError = null;
+          }
+        } catch (fallbackErr: any) {
+          lastError = fallbackErr;
         }
+      }
 
-        // Successful completion
-        delete activeXHRsRef.current[transferId];
+      delete activeXHRsRef.current[transferId];
+
+      if (uploadSucceeded) {
         delete activeFileIdsRef.current[transferId];
-
         setTransfers((prev) =>
           prev.map((t) =>
             t.id === transferId
@@ -423,14 +461,15 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
                   eta: 0,
                   status: "completed",
                   completedAt: Date.now(),
+                  errorMessage: undefined,
                 }
               : t
           )
         );
-      } catch (err: any) {
-        delete activeXHRsRef.current[transferId];
+      } else {
+        const err = lastError;
         const isCancelled = err?.message === "Upload cancelled";
-        console.error(`Upload error for ${fullFilename}:`, err);
+        console.error(`Upload permanently failed for ${fullFilename}:`, err);
 
         const isMalware = err?.message?.includes("Zararlı") || err?.message?.includes("Malware") || err?.message?.includes("threat");
         if (isMalware) {
@@ -438,14 +477,16 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
           toast.error(err.message || "Zararlı dosya tespit edildi. Yükleme engellendi.", { duration: 6000 });
         }
 
-        // If fileId was generated but upload failed, clean up DB record to restore quota
+        // Clean up aborted file DB record if exists
         const fileIdToClean = currentFileId || activeFileIdsRef.current[transferId];
         if (fileIdToClean) {
           delete activeFileIdsRef.current[transferId];
-          fetch(`/api/upload?fileId=${fileIdToClean}`, {
-            method: "DELETE",
-            headers: authHeaders,
-          }).catch((e) => console.warn("Failed to cleanup aborted file record:", e));
+          getAuthHeaders().then((headers) => {
+            fetch(`/api/upload?fileId=${fileIdToClean}`, {
+              method: "DELETE",
+              headers,
+            }).catch((e) => console.warn("Failed to cleanup aborted file record:", e));
+          });
         }
 
         setTransfers((prev) =>
@@ -462,26 +503,71 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
           )
         );
       }
-    };
+    },
+    [getAuthHeaders]
+  );
 
-    // 3. Concurrency pool runner (processes up to 3 files simultaneously)
-    const queue = [...initialTransfers];
-    const CONCURRENCY_LIMIT = 3;
-    const workerCount = Math.min(CONCURRENCY_LIMIT, queue.length);
+  // Concurrency pool runner (processes up to 3 files simultaneously)
+  const runUploadQueue = useCallback(
+    async (items: TransferItem[]) => {
+      const queue = [...items];
+      const CONCURRENCY_LIMIT = 3;
+      const workerCount = Math.min(CONCURRENCY_LIMIT, queue.length);
 
-    const worker = async () => {
-      while (queue.length > 0) {
-        const item = queue.shift();
-        if (!item) break;
-        await uploadSingleItem(item);
-      }
-    };
+      const worker = async () => {
+        while (queue.length > 0) {
+          const item = queue.shift();
+          if (!item) break;
+          await uploadSingleItem(item);
+        }
+      };
 
-    await Promise.all(Array.from({ length: workerCount }, () => worker()));
+      await Promise.all(Array.from({ length: workerCount }, () => worker()));
+      await fetchFiles();
+    },
+    [uploadSingleItem, fetchFiles]
+  );
 
-    // Refresh file list from DB after batch completes
-    await fetchFiles();
-  }, [user, fetchFiles, getAuthHeaders]);
+  // Upload handler for new files
+  const uploadFiles = useCallback(
+    async (fileList: File[] | FileList) => {
+      const rawFiles = Array.from(fileList);
+      if (!rawFiles.length || !user) return;
+
+      // 1. Register all files into transfers state as "pending"
+      const initialTransfers: TransferItem[] = rawFiles.map((file, idx) => {
+        const fullFilename = (file as any).relativePath || file.webkitRelativePath || file.name;
+        const transferId = `tr_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 7)}`;
+
+        let folderGroup: string | undefined;
+        const pathParts = fullFilename.split("/").filter(Boolean);
+        if (pathParts.length > 1) {
+          folderGroup = pathParts[0];
+        }
+
+        return {
+          id: transferId,
+          filename: fullFilename,
+          size: file.size,
+          progress: 0,
+          transferredBytes: 0,
+          speed: 0,
+          eta: undefined,
+          status: "pending",
+          direction: "upload",
+          startedAt: Date.now(),
+          file,
+          folderGroup,
+        };
+      });
+
+      setTransfers((prev) => [...initialTransfers, ...prev]);
+
+      // 2. Execute upload queue
+      await runUploadQueue(initialTransfers);
+    },
+    [user, runUploadQueue]
+  );
 
   const createShareLink = async (params: {
     cloudFileId?: string;
@@ -856,12 +942,66 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     );
   };
 
-  const retryTransfer = (transferId: string) => {
-    const item = transfers.find((t) => t.id === transferId);
-    if (item && item.file) {
-      uploadFiles([item.file]);
-    }
-  };
+  const retryTransfer = useCallback(
+    async (transferId: string) => {
+      const item = transfersRef.current.find((t) => t.id === transferId);
+      if (!item || !item.file) return;
+
+      setTransfers((prev) =>
+        prev.map((t) =>
+          t.id === transferId
+            ? {
+                ...t,
+                status: "pending",
+                progress: 0,
+                transferredBytes: 0,
+                speed: 0,
+                eta: undefined,
+                errorMessage: undefined,
+              }
+            : t
+        )
+      );
+
+      await uploadSingleItem(item);
+      await fetchFiles();
+    },
+    [uploadSingleItem, fetchFiles]
+  );
+
+  const retryAllFailed = useCallback(
+    async (folderGroup?: string) => {
+      const failedItems = transfersRef.current.filter(
+        (t) =>
+          (t.status === "failed" || t.status === "cancelled") &&
+          Boolean(t.file) &&
+          (!folderGroup || t.folderGroup === folderGroup)
+      );
+
+      if (failedItems.length === 0) return;
+
+      setTransfers((prev) =>
+        prev.map((t) => {
+          const isTarget = failedItems.some((f) => f.id === t.id);
+          if (isTarget) {
+            return {
+              ...t,
+              status: "pending",
+              progress: 0,
+              transferredBytes: 0,
+              speed: 0,
+              eta: undefined,
+              errorMessage: undefined,
+            };
+          }
+          return t;
+        })
+      );
+
+      await runUploadQueue(failedItems);
+    },
+    [runUploadQueue]
+  );
 
   const clearCompletedTransfers = () => {
     setTransfers((prev) =>
@@ -946,6 +1086,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         downloadFolder,
         cancelTransfer,
         retryTransfer,
+        retryAllFailed,
         clearCompletedTransfers,
         updateSettings,
         refreshFiles,

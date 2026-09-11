@@ -12,15 +12,15 @@ import { scanFileBuffer } from "@/lib/security/malware-scanner";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const rl = checkRateLimit(ip, "/api/upload");
-  if (!rl.allowed) return tooManyRequestsResponse(rl);
-
   try {
     const user = await getAuthUser(req);
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Rate limit per authenticated user (generous sliding window for bulk uploads)
+    const rl = checkRateLimit(user.id, "/api/upload");
+    if (!rl.allowed) return tooManyRequestsResponse(rl);
 
     const serviceClient = getServiceClient();
     const { data: profile } = await serviceClient
@@ -209,8 +209,8 @@ export async function POST(req: NextRequest) {
 
       for (const item of batchItems) {
         const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv, sha256, headerSample } = item;
-        if (!rawFilename || !size) {
-          results.push({ filename: rawFilename || "unknown", size: size || 0, error: "Filename and size are required" });
+        if (!rawFilename || typeof size !== "number" || size < 0) {
+          results.push({ filename: rawFilename || "unknown", size: size ?? 0, error: "Filename and valid size are required" });
           continue;
         }
 
@@ -314,8 +314,8 @@ export async function POST(req: NextRequest) {
     // SINGLE FILE MODE
     const { filename: rawFilename, size, mimeType, isEncrypted, encryptionIv, sha256, headerSample } = body;
 
-    if (!rawFilename || !size) {
-      return NextResponse.json({ error: "Filename and size are required" }, { status: 400 });
+    if (!rawFilename || typeof size !== "number" || size < 0) {
+      return NextResponse.json({ error: "Filename and valid size are required" }, { status: 400 });
     }
 
     const filename = sanitizeFilename(rawFilename);
