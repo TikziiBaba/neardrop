@@ -255,7 +255,7 @@ export async function POST(req: NextRequest) {
           results.push({
             filename,
             size,
-            error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.`,
+            error: `Dosya boyutu 0 ile ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB arasında olmalıdır.`,
           });
           continue;
         }
@@ -365,7 +365,7 @@ export async function POST(req: NextRequest) {
     // Security: Validate file size
     if (!isFileSizeValid(size)) {
       return NextResponse.json(
-        { error: `File size must be between 1 byte and ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB.` },
+        { error: `Dosya boyutu 0 ile ${Math.round(MAX_UPLOAD_SIZE / (1024 * 1024 * 1024))} GB arasında olmalıdır.` },
         { status: 400 }
       );
     }
