@@ -178,68 +178,162 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
         </div>
       </div>
 
-      {/* Active Uploads Live Cards */}
-      {activeTransfers.length > 0 && (
-        <div className="space-y-2.5 animate-in fade-in duration-200">
-          <div className="flex items-center justify-between text-xs font-semibold text-zinc-300 px-1">
-            <span className="flex items-center gap-2">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-400" />
-              <span>{t.dropzone.uploading} ({activeTransfers.length})</span>
-            </span>
-            <span className="text-zinc-400 text-[11px] font-normal">{t.dropzone.streamingToR2}</span>
-          </div>
+      {/* Active Uploads Live Cards — Grouped by Folder */}
+      {activeTransfers.length > 0 && (() => {
+        // Group active transfers by folder
+        const folderMap = new Map<string, typeof activeTransfers>();
+        const standaloneActive: typeof activeTransfers = [];
+        
+        for (const item of activeTransfers) {
+          if (item.folderGroup) {
+            const existing = folderMap.get(item.folderGroup);
+            if (existing) {
+              existing.push(item);
+            } else {
+              folderMap.set(item.folderGroup, [item]);
+            }
+          } else {
+            standaloneActive.push(item);
+          }
+        }
 
-          <div className="space-y-2">
-            {activeTransfers.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3.5 shadow-md space-y-2.5"
-              >
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <FileText className="h-4 w-4 text-sky-400 flex-shrink-0" />
-                    <span className="font-semibold text-white truncate max-w-xs">{item.filename}</span>
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="rounded-md bg-sky-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-sky-400">
-                      %{item.progress}
-                    </span>
-                    <button
-                      onClick={() => cancelTransfer(item.id)}
-                      className="p-1 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-md transition-colors"
-                      title={t.dropzone.cancel}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
+        // Also count total items per folder (including completed) from all transfers
+        const folderTotalMap = new Map<string, { total: number; completed: number; totalBytes: number; transferredBytes: number }>();
+        for (const item of transfers) {
+          if (item.folderGroup) {
+            const existing = folderTotalMap.get(item.folderGroup);
+            if (existing) {
+              existing.total += 1;
+              if (item.status === "completed") existing.completed += 1;
+              existing.totalBytes += item.size || 0;
+              existing.transferredBytes += item.transferredBytes || 0;
+            } else {
+              folderTotalMap.set(item.folderGroup, {
+                total: 1,
+                completed: item.status === "completed" ? 1 : 0,
+                totalBytes: item.size || 0,
+                transferredBytes: item.transferredBytes || 0,
+              });
+            }
+          }
+        }
 
-                <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+        return (
+          <div className="space-y-2.5 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between text-xs font-semibold text-zinc-300 px-1">
+              <span className="flex items-center gap-2">
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-400" />
+                <span>{t.dropzone.uploading} ({activeTransfers.length})</span>
+              </span>
+              <span className="text-zinc-400 text-[11px] font-normal">{t.dropzone.streamingToR2}</span>
+            </div>
+
+            <div className="space-y-2">
+              {/* Folder groups */}
+              {Array.from(folderMap.entries()).map(([folderName, items]) => {
+                const totals = folderTotalMap.get(folderName);
+                const totalFiles = totals?.total || items.length;
+                const completedFiles = totals?.completed || 0;
+                const totalBytes = totals?.totalBytes || 0;
+                const transferredBytes = totals?.transferredBytes || 0;
+                const folderProgress = totalBytes > 0 ? Math.min(99, Math.round((transferredBytes / totalBytes) * 100)) : 0;
+                const folderSpeed = items.reduce((acc, t) => acc + (t.status === "uploading" ? t.speed || 0 : 0), 0);
+
+                return (
                   <div
-                    className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 transition-all duration-200"
-                    style={{ width: `${item.progress}%` }}
-                  />
-                </div>
+                    key={`folder-${folderName}`}
+                    className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3.5 shadow-md space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 flex-shrink-0">
+                          <FolderUp className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="font-semibold text-white truncate block max-w-xs">{folderName}</span>
+                          <span className="text-[10px] text-zinc-400 font-mono">
+                            {completedFiles}/{totalFiles} dosya tamamlandı
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <span className="rounded-md bg-sky-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-sky-400">
+                          %{folderProgress}
+                        </span>
+                      </div>
+                    </div>
 
-                <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
-                  <span>
-                    {formatBytes(item.transferredBytes)} / {formatBytes(item.size)}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sky-400 font-medium">{formatSpeed(item.speed)}</span>
-                    {item.eta !== undefined && (
-                      <>
-                        <span>•</span>
-                        <span>{formatEta(item.eta, locale)}</span>
-                      </>
-                    )}
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                      <div
+                        className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 transition-all duration-200"
+                        style={{ width: `${folderProgress}%` }}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                      <span>
+                        {formatBytes(transferredBytes)} / {formatBytes(totalBytes)}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sky-400 font-medium">{formatSpeed(folderSpeed)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Standalone files */}
+              {standaloneActive.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3.5 shadow-md space-y-2.5"
+                >
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <FileText className="h-4 w-4 text-sky-400 flex-shrink-0" />
+                      <span className="font-semibold text-white truncate max-w-xs">{item.filename}</span>
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <span className="rounded-md bg-sky-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-sky-400">
+                        %{item.progress}
+                      </span>
+                      <button
+                        onClick={() => cancelTransfer(item.id)}
+                        className="p-1 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-md transition-colors"
+                        title={t.dropzone.cancel}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div
+                      className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 transition-all duration-200"
+                      style={{ width: `${item.progress}%` }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                    <span>
+                      {formatBytes(item.transferredBytes)} / {formatBytes(item.size)}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sky-400 font-medium">{formatSpeed(item.speed)}</span>
+                      {item.eta !== undefined && (
+                        <>
+                          <span>•</span>
+                          <span>{formatEta(item.eta, locale)}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 };

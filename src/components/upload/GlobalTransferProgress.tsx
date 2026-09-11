@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useStorage } from "@/lib/storage/store";
 import { useLanguage } from "@/lib/i18n/context";
@@ -21,14 +21,31 @@ import {
   FileArchive,
   Loader2,
   Trash2,
+  Folder,
+  ChevronRight,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { TransferItem } from "@/types";
+
+interface FolderGroupData {
+  folderName: string;
+  items: TransferItem[];
+  totalBytes: number;
+  transferredBytes: number;
+  totalSpeed: number;
+  completedCount: number;
+  failedCount: number;
+  activeCount: number;
+  overallProgress: number;
+  eta?: number;
+}
 
 export const GlobalTransferProgress: React.FC = () => {
   const { transfers, cancelTransfer, retryTransfer, clearCompletedTransfers } = useStorage();
   const { t, locale } = useLanguage();
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
 
   const activeTransfers = transfers.filter(
     (t) => t.status === "uploading" || t.status === "pending"
@@ -47,6 +64,83 @@ export const GlobalTransferProgress: React.FC = () => {
       setIsVisible(true);
     }
   }, [hasTransfers, activeTransfers.length]);
+
+  // Group transfers by folderGroup
+  const { folderGroups, standaloneTransfers } = useMemo(() => {
+    const groupMap = new Map<string, TransferItem[]>();
+    const standalone: TransferItem[] = [];
+
+    for (const item of transfers) {
+      if (item.folderGroup) {
+        const existing = groupMap.get(item.folderGroup);
+        if (existing) {
+          existing.push(item);
+        } else {
+          groupMap.set(item.folderGroup, [item]);
+        }
+      } else {
+        standalone.push(item);
+      }
+    }
+
+    const folderGroups: FolderGroupData[] = Array.from(groupMap.entries()).map(
+      ([folderName, items]) => {
+        const totalBytes = items.reduce((acc, t) => acc + (t.size || 0), 0);
+        const transferredBytes = items.reduce(
+          (acc, t) => acc + (t.transferredBytes || 0),
+          0
+        );
+        const totalSpeed = items.reduce(
+          (acc, t) =>
+            acc + (t.status === "uploading" ? t.speed || 0 : 0),
+          0
+        );
+        const completedCount = items.filter((t) => t.status === "completed").length;
+        const failedCount = items.filter(
+          (t) => t.status === "failed" || t.status === "cancelled"
+        ).length;
+        const activeCount = items.filter(
+          (t) => t.status === "uploading" || t.status === "pending"
+        ).length;
+        const overallProgress =
+          totalBytes > 0
+            ? Math.min(
+                activeCount === 0 && completedCount === items.length ? 100 : 99,
+                Math.round((transferredBytes / totalBytes) * 100)
+              )
+            : 0;
+        const remainingBytes = Math.max(0, totalBytes - transferredBytes);
+        const eta = totalSpeed > 0 ? Math.round(remainingBytes / totalSpeed) : undefined;
+
+        return {
+          folderName,
+          items,
+          totalBytes,
+          transferredBytes,
+          totalSpeed,
+          completedCount,
+          failedCount,
+          activeCount,
+          overallProgress,
+          eta,
+        };
+      }
+    );
+
+    return { folderGroups, standaloneTransfers: standalone };
+  }, [transfers]);
+
+  const toggleFolderExpand = (folderName: string) => {
+    setExpandedFolders((prev) => {
+      const next = new Set(prev);
+      if (next.has(folderName)) {
+        next.delete(folderName);
+      } else {
+        next.add(folderName);
+      }
+      return next;
+    });
+  };
 
   if (!isVisible || !hasTransfers) {
     return null;
@@ -84,6 +178,270 @@ export const GlobalTransferProgress: React.FC = () => {
       default:
         return <FileText className="h-4 w-4 text-zinc-400 flex-shrink-0" />;
     }
+  };
+
+  /** Renders a single standalone transfer item row */
+  const renderTransferItem = (item: TransferItem) => {
+    const isUploading = item.status === "uploading" || item.status === "pending";
+    const isCompleted = item.status === "completed";
+    const isFailed = item.status === "failed" || item.status === "cancelled";
+    const displayName = item.filename.split("/").pop() || item.filename;
+
+    return (
+      <div
+        key={item.id}
+        className="rounded-2xl border border-zinc-800/70 bg-zinc-900/50 p-2.5 space-y-1.5 hover:border-zinc-700 transition-colors"
+      >
+        <div className="flex items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 min-w-0">
+            {getFileIcon(item.file?.type || "", item.filename)}
+            <span
+              className="font-medium text-white truncate max-w-[180px] sm:max-w-[220px]"
+              title={item.filename}
+            >
+              {displayName}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isUploading && (
+              <span className="font-mono font-bold text-[11px] text-sky-400">
+                %{item.progress}
+              </span>
+            )}
+
+            {isCompleted && (
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400 border border-emerald-500/20">
+                ✓ {t.transferWidget.completed}
+              </span>
+            )}
+
+            {isFailed && (
+              <button
+                onClick={() => retryTransfer(item.id)}
+                className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
+              >
+                <RotateCw className="h-2.5 w-2.5" />
+                <span>{t.transferWidget.retry}</span>
+              </button>
+            )}
+
+            {isUploading && (
+              <button
+                onClick={() => cancelTransfer(item.id)}
+                title={t.transferWidget.cancelUpload}
+                className="p-1 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Progress Bar for Active Upload */}
+        {isUploading && (
+          <div className="space-y-1">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+              <motion.div
+                className="h-full bg-sky-400"
+                animate={{ width: `${item.progress}%` }}
+                transition={{ ease: "easeOut", duration: 0.2 }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
+              <span>
+                {formatBytes(item.transferredBytes)} / {formatBytes(item.size)}
+              </span>
+              <div className="flex items-center gap-1.5">
+                <span>{formatSpeed(item.speed)}</span>
+                {item.eta !== undefined && (
+                  <>
+                    <span>•</span>
+                    <span>{formatEta(item.eta, locale)}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  /** Renders a folder group row with expandable accordion */
+  const renderFolderGroup = (group: FolderGroupData) => {
+    const isFolderExpanded = expandedFolders.has(group.folderName);
+    const allCompleted = group.completedCount === group.items.length;
+    const hasActive = group.activeCount > 0;
+    const hasFailed = group.failedCount > 0;
+
+    return (
+      <div
+        key={`folder-${group.folderName}`}
+        className="rounded-2xl border border-zinc-800/70 bg-zinc-900/50 overflow-hidden hover:border-zinc-700 transition-colors"
+      >
+        {/* Folder Header — clickable to expand/collapse */}
+        <button
+          onClick={() => toggleFolderExpand(group.folderName)}
+          className="w-full flex items-center justify-between gap-2 p-2.5 text-xs hover:bg-zinc-800/30 transition-colors"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/25 text-sky-400 flex-shrink-0">
+              <Folder className="h-3.5 w-3.5" />
+            </div>
+            <div className="text-left min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white truncate max-w-[160px] sm:max-w-[200px]">
+                  {group.folderName}
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono flex-shrink-0">
+                  {group.items.length} dosya
+                </span>
+              </div>
+              {hasActive && (
+                <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 font-mono mt-0.5">
+                  <span>{formatBytes(group.transferredBytes)} / {formatBytes(group.totalBytes)}</span>
+                  <span>•</span>
+                  <span>{formatSpeed(group.totalSpeed)}</span>
+                  {group.eta !== undefined && (
+                    <>
+                      <span>•</span>
+                      <span>{formatEta(group.eta, locale)}</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {allCompleted && (
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400 border border-emerald-500/20">
+                ✓ {t.transferWidget.completed}
+              </span>
+            )}
+
+            {hasActive && (
+              <span className="font-mono font-bold text-[11px] text-sky-400">
+                %{group.overallProgress}
+              </span>
+            )}
+
+            {hasFailed && !hasActive && !allCompleted && (
+              <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20">
+                {group.failedCount} başarısız
+              </span>
+            )}
+
+            <ChevronRight
+              className={`h-3.5 w-3.5 text-zinc-500 transition-transform duration-200 ${
+                isFolderExpanded ? "rotate-90" : ""
+              }`}
+            />
+          </div>
+        </button>
+
+        {/* Folder Progress Bar */}
+        {hasActive && (
+          <div className="px-2.5 pb-2">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
+              <motion.div
+                className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500"
+                animate={{ width: `${group.overallProgress}%` }}
+                transition={{ ease: "easeOut", duration: 0.3 }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-zinc-500 font-mono mt-1">
+              <span>{group.completedCount}/{group.items.length} tamamlandı</span>
+            </div>
+          </div>
+        )}
+
+        {/* Expanded file list inside folder */}
+        <AnimatePresence>
+          {isFolderExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+              <div className="border-t border-zinc-800/60 px-2.5 py-2 space-y-1.5 max-h-48 overflow-y-auto custom-scrollbar">
+                {group.items.map((item) => {
+                  const isUploading = item.status === "uploading" || item.status === "pending";
+                  const isCompleted = item.status === "completed";
+                  const isFailed = item.status === "failed" || item.status === "cancelled";
+                  const displayName = item.filename.split("/").pop() || item.filename;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between gap-2 px-2 py-1.5 rounded-lg hover:bg-zinc-800/30 transition-colors text-[11px]"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        {getFileIcon(item.file?.type || "", item.filename)}
+                        <span
+                          className="text-zinc-300 truncate max-w-[140px] sm:max-w-[180px]"
+                          title={item.filename}
+                        >
+                          {displayName}
+                        </span>
+                        <span className="text-zinc-600 font-mono flex-shrink-0">
+                          {formatBytes(item.size)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        {isUploading && (
+                          <>
+                            <div className="w-16 h-1 rounded-full bg-zinc-800 overflow-hidden">
+                              <div
+                                className="h-full bg-sky-400 transition-all duration-200"
+                                style={{ width: `${item.progress}%` }}
+                              />
+                            </div>
+                            <span className="font-mono text-[10px] text-sky-400 w-7 text-right">
+                              %{item.progress}
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                cancelTransfer(item.id);
+                              }}
+                              className="p-0.5 text-zinc-500 hover:text-rose-400 transition-colors"
+                              title={t.transferWidget.cancelUpload}
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </>
+                        )}
+
+                        {isCompleted && (
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        )}
+
+                        {isFailed && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              retryTransfer(item.id);
+                            }}
+                            className="flex items-center gap-1 text-amber-400 hover:text-amber-300 transition-colors"
+                          >
+                            <RotateCw className="h-3 w-3" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
   };
 
   return (
@@ -234,93 +592,13 @@ export const GlobalTransferProgress: React.FC = () => {
               </div>
             )}
 
-            {/* Transfer Items Scrollable List */}
-            <div className="max-h-60 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-              {transfers.slice(0, 10).map((item) => {
-                const isUploading = item.status === "uploading" || item.status === "pending";
-                const isCompleted = item.status === "completed";
-                const isFailed = item.status === "failed" || item.status === "cancelled";
+            {/* Transfer Items Scrollable List — Grouped by folder */}
+            <div className="max-h-72 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+              {/* Folder groups first */}
+              {folderGroups.map((group) => renderFolderGroup(group))}
 
-                return (
-                  <div
-                    key={item.id}
-                    className="rounded-2xl border border-zinc-800/70 bg-zinc-900/50 p-2.5 space-y-1.5 hover:border-zinc-700 transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2 min-w-0">
-                        {getFileIcon(item.file?.type || "", item.filename)}
-                        <span
-                          className="font-medium text-white truncate max-w-[180px] sm:max-w-[220px]"
-                          title={item.filename}
-                        >
-                          {item.filename}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {isUploading && (
-                          <span className="font-mono font-bold text-[11px] text-sky-400">
-                            %{item.progress}
-                          </span>
-                        )}
-
-                        {isCompleted && (
-                          <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400 border border-emerald-500/20">
-                            ✓ {t.transferWidget.completed}
-                          </span>
-                        )}
-
-                        {isFailed && (
-                          <button
-                            onClick={() => retryTransfer(item.id)}
-                            className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
-                          >
-                            <RotateCw className="h-2.5 w-2.5" />
-                            <span>{t.transferWidget.retry}</span>
-                          </button>
-                        )}
-
-                        {isUploading && (
-                          <button
-                            onClick={() => cancelTransfer(item.id)}
-                            title={t.transferWidget.cancelUpload}
-                            className="p-1 rounded-lg text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Progress Bar for Active Upload */}
-                    {isUploading && (
-                      <div className="space-y-1">
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-zinc-800">
-                          <motion.div
-                            className="h-full bg-sky-400"
-                            animate={{ width: `${item.progress}%` }}
-                            transition={{ ease: "easeOut", duration: 0.2 }}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between text-[10px] text-zinc-400 font-mono">
-                          <span>
-                            {formatBytes(item.transferredBytes)} / {formatBytes(item.size)}
-                          </span>
-                          <div className="flex items-center gap-1.5">
-                            <span>{formatSpeed(item.speed)}</span>
-                            {item.eta !== undefined && (
-                              <>
-                                <span>•</span>
-                                <span>{formatEta(item.eta, locale)}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {/* Then standalone files */}
+              {standaloneTransfers.slice(0, 10).map((item) => renderTransferItem(item))}
             </div>
           </motion.div>
         )}
@@ -328,3 +606,4 @@ export const GlobalTransferProgress: React.FC = () => {
     </aside>
   );
 };
+

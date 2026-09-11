@@ -116,6 +116,8 @@ export interface TransferItem {
   completedAt?: number;
   file?: File;
   shareToken?: string;
+  /** Root folder name when file is part of a folder upload (e.g. "MyPhotos") */
+  folderGroup?: string;
 }
 
 export interface StorageStats {

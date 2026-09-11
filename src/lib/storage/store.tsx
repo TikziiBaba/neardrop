@@ -205,6 +205,14 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const initialTransfers: TransferItem[] = rawFiles.map((file, idx) => {
       const fullFilename = (file as any).relativePath || file.webkitRelativePath || file.name;
       const transferId = `tr_${Date.now()}_${idx}_${Math.random().toString(36).substring(2, 7)}`;
+
+      // Detect folder group: if the filename has path separators, the root segment is the folder name
+      let folderGroup: string | undefined;
+      const pathParts = fullFilename.split("/").filter(Boolean);
+      if (pathParts.length > 1) {
+        folderGroup = pathParts[0];
+      }
+
       return {
         id: transferId,
         filename: fullFilename,
@@ -217,6 +225,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         direction: "upload",
         startedAt: Date.now(),
         file,
+        folderGroup,
       };
     });
 
