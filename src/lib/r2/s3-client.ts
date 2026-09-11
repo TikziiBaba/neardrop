@@ -31,20 +31,19 @@ export const getR2Client = () => {
 
 export async function createPresignedUploadUrl(
   r2ObjectKey: string,
-  contentType: string,
+  _contentType?: string,
   _contentLength?: number,
   expiresInSeconds = 10800
 ) {
   const s3 = getR2Client();
   const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
 
-  // Note: We omit ContentLength from PutObjectCommand so AWS SDK does not sign
-  // content-length in X-Amz-SignedHeaders, preventing SignatureDoesNotMatch errors
-  // during direct browser uploads.
+  // Note: We omit ContentLength and ContentType from PutObjectCommand so AWS SDK does not sign
+  // them in X-Amz-SignedHeaders, preventing SignatureDoesNotMatch errors during direct browser
+  // uploads of diverse file types (such as .jar, .mca, archives, and custom binaries).
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: r2ObjectKey,
-    ContentType: contentType || "application/octet-stream",
   });
 
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });

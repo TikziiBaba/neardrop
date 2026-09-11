@@ -393,8 +393,8 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       }
 
-      // Step 3: Fallback to server proxy upload for small files (<= 25 MB) if direct upload failed
-      if (!uploadSucceeded && file.size <= 25 * 1024 * 1024 && lastError?.message !== "Upload cancelled" && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
+      // Step 3: Fallback to server proxy upload for files (<= 100 MB) if direct upload failed
+      if (!uploadSucceeded && file.size <= 100 * 1024 * 1024 && lastError?.message !== "Upload cancelled" && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
         try {
           const authHeaders = await getAuthHeaders();
           const formData = new FormData();
@@ -947,6 +947,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const item = transfersRef.current.find((t) => t.id === transferId);
       if (!item || !item.file) return;
 
+      // Refresh files & quota first in case storage quota was upgraded/freed
+      fetchFiles().catch(() => {});
+
       setTransfers((prev) =>
         prev.map((t) =>
           t.id === transferId
@@ -980,6 +983,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (failedItems.length === 0) return;
 
+      // Refresh files & quota first in case storage quota was upgraded/freed
+      fetchFiles().catch(() => {});
+
       setTransfers((prev) =>
         prev.map((t) => {
           const isTarget = failedItems.some((f) => f.id === t.id);
@@ -999,8 +1005,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       );
 
       await runUploadQueue(failedItems);
+      await fetchFiles();
     },
-    [runUploadQueue]
+    [runUploadQueue, fetchFiles]
   );
 
   const clearCompletedTransfers = () => {

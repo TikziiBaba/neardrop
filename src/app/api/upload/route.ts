@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
       const mimeType = file.type || "application/octet-stream";
 
       // Security: Prevent server heap exhaustion on large tunnel uploads
-      if (size > 25 * 1024 * 1024) {
+      if (size > 100 * 1024 * 1024) {
         return NextResponse.json(
-          { error: "Files larger than 25 MB must be uploaded via direct storage." },
+          { error: "Files larger than 100 MB must be uploaded via direct storage." },
           { status: 413 }
         );
       }

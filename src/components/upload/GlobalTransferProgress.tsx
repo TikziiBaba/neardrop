@@ -217,13 +217,24 @@ export const GlobalTransferProgress: React.FC = () => {
             )}
 
             {isFailed && (
-              <button
-                onClick={() => retryTransfer(item.id)}
-                className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
-              >
-                <RotateCw className="h-2.5 w-2.5" />
-                <span>{t.transferWidget.retry}</span>
-              </button>
+              <div className="flex items-center gap-1.5">
+                {item.errorMessage && (
+                  <span
+                    className="text-[10px] text-rose-400/80 truncate max-w-[120px] sm:max-w-[180px]"
+                    title={item.errorMessage}
+                  >
+                    {item.errorMessage}
+                  </span>
+                )}
+                <button
+                  onClick={() => retryTransfer(item.id)}
+                  className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
+                  title={item.errorMessage ? `${item.errorMessage} — ${t.transferWidget.retry}` : t.transferWidget.retry}
+                >
+                  <RotateCw className="h-2.5 w-2.5" />
+                  <span>{t.transferWidget.retry}</span>
+                </button>
+              </div>
             )}
 
             {isUploading && (
