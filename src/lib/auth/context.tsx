@@ -221,9 +221,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initAuth();
 
+    if (
+      typeof window !== "undefined" &&
+      window.location.hash.includes("type=recovery") &&
+      !window.location.pathname.startsWith("/reset-password")
+    ) {
+      window.location.href = "/reset-password" + window.location.hash;
+      return;
+    }
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        if (typeof window !== "undefined" && !window.location.pathname.startsWith("/reset-password")) {
+          window.location.href = "/reset-password";
+        }
+        return;
+      }
+
       if (event === "SIGNED_IN" && session?.user) {
         const isEmailConfirmed = Boolean(session.user.email_confirmed_at || session.user.confirmed_at);
         const isOAuth = session.user.app_metadata?.provider && session.user.app_metadata.provider !== "email";

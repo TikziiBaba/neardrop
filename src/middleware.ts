@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
   // Catch Supabase misconfigured redirect to "/**"
   if (pathname.includes("**")) {
     const url = request.nextUrl.clone();
-    url.pathname = "/reset-password";
+    url.pathname = "/dashboard";
     return NextResponse.redirect(url, 307);
   }
 
