@@ -51,9 +51,6 @@ export const FeaturesSection: React.FC = () => {
 
   return (
     <section id="features" className="py-24 md:py-36 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden select-none">
-      {/* Subtle background glow */}
-      <div className="pointer-events-none absolute -bottom-32 right-1/4 h-96 w-96 rounded-full bg-blue-500/5 blur-3xl" />
-
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeader
           label={t.features.sectionLabel}

@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/i18n/context";
 import { Logo } from "@/components/ui/Logo";
 
 export const Footer: React.FC = () => {
-  const { t, locale } = useLanguage();
+  const { t, locale, setLocale } = useLanguage();
 
   return (
     <footer className="w-full border-t border-zinc-800/80 bg-zinc-950 py-16 text-zinc-400 select-none">
@@ -140,21 +140,23 @@ export const Footer: React.FC = () => {
               {t.footer.builtFor}
             </span>
             <div className="flex items-center gap-2 pl-3 border-l border-zinc-800 text-xs">
-              <Link
-                href="/tr"
-                className={`transition-colors ${locale === 'tr' ? 'text-sky-400 font-semibold' : 'text-zinc-500 hover:text-zinc-300'}`}
-                title="Türkçe (neardrop.bekirr.dev/tr)"
+              <button
+                type="button"
+                onClick={() => setLocale('tr')}
+                className={`transition-colors cursor-pointer ${locale === 'tr' ? 'text-sky-400 font-semibold' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="Türkçe"
               >
                 TR
-              </Link>
+              </button>
               <span className="text-zinc-700">/</span>
-              <Link
-                href="/en"
-                className={`transition-colors ${locale === 'en' ? 'text-sky-400 font-semibold' : 'text-zinc-500 hover:text-zinc-300'}`}
-                title="English (neardrop.bekirr.dev/en)"
+              <button
+                type="button"
+                onClick={() => setLocale('en')}
+                className={`transition-colors cursor-pointer ${locale === 'en' ? 'text-sky-400 font-semibold' : 'text-zinc-500 hover:text-zinc-300'}`}
+                title="English"
               >
                 EN
-              </Link>
+              </button>
             </div>
           </div>
         </div>

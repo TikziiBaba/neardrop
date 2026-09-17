@@ -42,38 +42,38 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-40 w-full border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-xl transition-colors">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Logo size="md" badge="v1.0" href={`/${locale}`} />
+        <Logo size="md" badge="v1.0" href="/" />
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium text-zinc-400">
           {!user ? (
             <>
               <Link
-                href={`/${locale}#product`}
+                href="/#product"
                 className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
               >
                 {t.navbar.product}
               </Link>
               <Link
-                href={`/${locale}#how-it-works`}
+                href="/#how-it-works"
                 className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
               >
                 {t.navbar.howItWorks}
               </Link>
               <Link
-                href={`/${locale}#security`}
+                href="/#security"
                 className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
               >
                 {t.navbar.security}
               </Link>
               <Link
-                href={`/${locale}/pricing`}
+                href="/pricing"
                 className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
               >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link
-                href={`/${locale}/support`}
+                href="/support"
                 className="px-3.5 py-2 rounded-lg hover:text-white hover:bg-zinc-900/60 transition-colors"
               >
                 {t.navbar.support || "Destek"}
@@ -122,7 +122,7 @@ export const Navbar: React.FC = () => {
                 {t.navbar.transfers}
               </Link>
               <Link
-                href={`/${locale}/pricing`}
+                href="/pricing"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
                   cleanPath === "/pricing"
                     ? "text-white bg-zinc-800/80 font-semibold"
@@ -132,7 +132,7 @@ export const Navbar: React.FC = () => {
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link
-                href={`/${locale}/support`}
+                href="/support"
                 className={`px-3.5 py-2 rounded-lg transition-colors ${
                   cleanPath.startsWith("/support")
                     ? "text-white bg-zinc-800/80 font-semibold"
@@ -149,12 +149,12 @@ export const Navbar: React.FC = () => {
         <div className="hidden md:flex items-center gap-3">
           {!user ? (
             <div className="flex items-center gap-2">
-              <Link href={`/${locale}/login`}>
+              <Link href="/login">
                 <Button variant="ghost" size="sm">
                   {t.navbar.login}
                 </Button>
               </Link>
-              <Link href={`/${locale}/register`}>
+              <Link href="/register">
                 <Button variant="primary" size="pill" className="gap-2 shadow-lg shadow-sky-500/25">
                   <span>{t.navbar.getStarted}</span>
                   <ArrowRight className="h-3.5 w-3.5" />
@@ -234,54 +234,54 @@ export const Navbar: React.FC = () => {
           {!user ? (
             <div className="flex flex-col gap-2 text-sm font-medium text-zinc-300">
               <Link
-                href={`/${locale}#product`}
+                href="/#product"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.product}
               </Link>
               <Link
-                href={`/${locale}#how-it-works`}
+                href="/#how-it-works"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.howItWorks}
               </Link>
               <Link
-                href={`/${locale}#security`}
+                href="/#security"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.security}
               </Link>
               <Link
-                href={`/${locale}/pricing`}
+                href="/pricing"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link
-                href={`/${locale}/support`}
+                href="/support"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.support || "Destek"}
               </Link>
               <Link
-                href={`/${locale}#faq`}
+                href="/#faq"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.faq}
               </Link>
               <div className="pt-2 flex flex-col gap-2">
-                <Link href={`/${locale}/login`} onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full">
                     {t.navbar.login}
                   </Button>
                 </Link>
-                <Link href={`/${locale}/register`} onClick={() => setMobileMenuOpen(false)}>
+                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
                   <Button variant="primary" className="w-full">
                     {t.navbar.getStarted}
                   </Button>
@@ -319,14 +319,14 @@ export const Navbar: React.FC = () => {
                 {t.navbar.sharedLinks}
               </Link>
               <Link
-                href={`/${locale}/pricing`}
+                href="/pricing"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >
                 {t.navbar.pricing || "Fiyatlandırma"}
               </Link>
               <Link
-                href={`/${locale}/support`}
+                href="/support"
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg hover:bg-zinc-900"
               >

@@ -16,32 +16,19 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. Redirect root "/" to "/tr"
-  if (pathname === "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/tr";
-    return NextResponse.redirect(url, 307);
-  }
-
-  // 3. Exact "/tr" or "/en" -> rewrite to "/"
+  // 2. Exact "/tr" or "/en" -> redirect to "/"
   if (pathname === "/tr" || pathname === "/en") {
-    const locale = pathname.slice(1);
     const url = request.nextUrl.clone();
     url.pathname = "/";
-    const response = NextResponse.rewrite(url);
-    response.headers.set("x-neardrop-locale", locale);
-    return response;
+    return NextResponse.redirect(url, 308);
   }
 
-  // 4. Subpaths "/tr/:path*" or "/en/:path*" -> rewrite to "/:path*"
+  // 3. Subpaths "/tr/:path*" or "/en/:path*" -> redirect to clean path "/:path*"
   if (pathname.startsWith("/tr/") || pathname.startsWith("/en/")) {
-    const locale = pathname.slice(1, 3);
     const subpath = pathname.slice(3); // e.g. "/pricing"
     const url = request.nextUrl.clone();
     url.pathname = subpath || "/";
-    const response = NextResponse.rewrite(url);
-    response.headers.set("x-neardrop-locale", locale);
-    return response;
+    return NextResponse.redirect(url, 308);
   }
 
   return NextResponse.next();

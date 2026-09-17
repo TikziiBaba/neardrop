@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
+import { createClient } from "@/lib/supabase/client";
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -14,14 +16,35 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email.trim()) return;
 
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const supabase = createClient();
+      if (!supabase) {
+        toast.error("Supabase is not configured.");
+        setIsLoading(false);
+        return;
+      }
+
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://neardrop.bekirr.dev";
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${origin}/reset-password`,
+      });
+
+      if (error) {
+        toast.error(error.message || "Failed to send reset instructions");
+        setIsLoading(false);
+        return;
+      }
+
       setIsSubmitted(true);
       toast.success("Password recovery instructions sent!");
-    }, 800);
+    } catch (err: any) {
+      toast.error(err?.message || "An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

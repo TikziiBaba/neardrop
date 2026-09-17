@@ -58,18 +58,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         localStorage.setItem(STORAGE_KEY, newLocale);
       } catch {}
       document.documentElement.lang = newLocale;
-
-      // Update URL if currently on /tr or /en
-      if (pathname) {
-        if (pathname.startsWith("/tr") || pathname.startsWith("/en")) {
-          const cleanPath = pathname.replace(/^\/(tr|en)/, "");
-          router.push(`/${newLocale}${cleanPath || ""}`);
-        } else if (pathname === "/") {
-          router.push(`/${newLocale}`);
-        }
-      }
     },
-    [pathname, router]
+    []
   );
 
   const t = useMemo(() => translations[locale], [locale]);
