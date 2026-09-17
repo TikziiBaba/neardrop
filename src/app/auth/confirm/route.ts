@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
   const token_hash = requestUrl.searchParams.get("token_hash");
   const type = requestUrl.searchParams.get("type") as EmailOtpType | null;
   const code = requestUrl.searchParams.get("code");
-  const next = requestUrl.searchParams.get("next") || "/dashboard?verified=true";
+  const defaultNext = type === "recovery" ? "/reset-password" : "/dashboard?verified=true";
+  const next = requestUrl.searchParams.get("next") || defaultNext;
   const origin = requestUrl.origin;
 
   let response = NextResponse.redirect(new URL(next, origin));

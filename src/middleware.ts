@@ -16,6 +16,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Catch Supabase misconfigured redirect to "/**"
+  if (pathname.includes("**")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/reset-password";
+    return NextResponse.redirect(url, 307);
+  }
+
   // 2. Exact "/tr" or "/en" -> redirect to "/"
   if (pathname === "/tr" || pathname === "/en") {
     const url = request.nextUrl.clone();
