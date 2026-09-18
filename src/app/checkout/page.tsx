@@ -417,7 +417,7 @@ function CheckoutContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="max-w-3xl mx-auto space-y-5"
+            className="max-w-5xl mx-auto space-y-5"
           >
             {/* Top Bar for iFrame */}
             <div className="flex flex-wrap items-center justify-between gap-3 px-1">
@@ -459,7 +459,7 @@ function CheckoutContent() {
                   id="paytriframe"
                   frameBorder="0"
                   scrolling="yes"
-                  className="w-full min-h-[760px] sm:min-h-[800px] border-0 rounded-2xl block"
+                  className="w-full min-h-[760px] sm:min-h-[800px] lg:min-h-[860px] border-0 rounded-2xl block"
                   title="PayTR Güvenli Ödeme Terminali"
                 />
               </div>

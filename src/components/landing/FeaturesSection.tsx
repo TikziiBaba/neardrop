@@ -50,7 +50,9 @@ export const FeaturesSection: React.FC = () => {
   };
 
   return (
-    <section id="features" className="py-24 md:py-36 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden select-none">
+    <section id="features" className="py-24 md:py-36 bg-zinc-950 relative overflow-hidden select-none">
+      {/* Top gradient fade for smooth section transition */}
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950/40 to-transparent" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeader
           label={t.features.sectionLabel}

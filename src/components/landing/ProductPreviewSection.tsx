@@ -54,7 +54,9 @@ export const ProductPreviewSection: React.FC = () => {
   };
 
   return (
-    <section id="product" className="py-24 md:py-36 border-t border-zinc-800/80 bg-zinc-950/60 relative overflow-hidden select-none">
+    <section id="product" className="py-24 md:py-36 bg-zinc-950/60 relative overflow-hidden select-none">
+      {/* Top gradient fade for smooth section transition */}
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950/60 to-transparent" />
       {/* Background ambient lighting */}
       <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-96 w-[700px] rounded-full bg-sky-500/10 blur-3xl" />
 

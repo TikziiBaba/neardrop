@@ -20,6 +20,8 @@ export const HeroSection: React.FC = () => {
       {/* Background ambient lighting */}
       <div className="pointer-events-none absolute inset-0 hero-glow" />
       <div className="pointer-events-none absolute inset-0 mesh-grid opacity-30 dark:opacity-40" />
+      {/* Bottom gradient fade for smooth section transition */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-zinc-950/80" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">

@@ -43,7 +43,9 @@ export const SecuritySection: React.FC = () => {
   ];
 
   return (
-    <section id="security" className="py-20 md:py-32 border-t border-zinc-800/80 bg-zinc-950/60 relative overflow-hidden select-none">
+    <section id="security" className="py-20 md:py-32 bg-zinc-950/60 relative overflow-hidden select-none">
+      {/* Top gradient fade for smooth section transition */}
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950 to-transparent" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={t.security.badge}

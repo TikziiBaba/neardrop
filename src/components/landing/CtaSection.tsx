@@ -13,7 +13,9 @@ export const CtaSection: React.FC = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="py-24 md:py-36 border-t border-zinc-800/80 bg-zinc-950 relative overflow-hidden text-center select-none">
+    <section className="py-24 md:py-36 bg-zinc-950 relative overflow-hidden text-center select-none">
+      {/* Top gradient fade for smooth section transition */}
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950 to-transparent" />
       {/* Background ambient lighting */}
       <div className="pointer-events-none absolute inset-0 hero-glow" />
 
