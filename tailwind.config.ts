@@ -90,12 +90,43 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(0)" },
           "50%": { transform: "translateY(-6px)" },
         },
+        "bounce-slow": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "200% center" },
+          "100%": { backgroundPosition: "-200% center" },
+        },
+        "gradient-x": {
+          "0%, 100%": { backgroundPosition: "0% 50%" },
+          "50%": { backgroundPosition: "100% 50%" },
+        },
+        aurora: {
+          "0%, 100%": { transform: "translate(0, 0) rotate(0deg)" },
+          "33%": { transform: "translate(3%, -2%) rotate(2deg)" },
+          "66%": { transform: "translate(-2%, 3%) rotate(-1deg)" },
+        },
+        "spin-slow": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        "border-flow": {
+          "0%, 100%": { opacity: "0.5" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "pulse-glow": "pulseGlow 4s ease-in-out infinite",
         float: "float 6s ease-in-out infinite",
+        "bounce-slow": "bounce-slow 2.5s ease-in-out infinite",
+        shimmer: "shimmer 4s linear infinite",
+        "gradient-x": "gradient-x 8s ease infinite",
+        aurora: "aurora 18s ease-in-out infinite",
+        "spin-slow": "spin-slow 24s linear infinite",
+        "border-flow": "border-flow 3s ease-in-out infinite",
       },
     },
   },

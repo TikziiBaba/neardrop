@@ -7,10 +7,12 @@ import { ProductPreviewSection } from "@/components/landing/ProductPreviewSectio
 import { FaqSection } from "@/components/landing/FaqSection";
 import { CtaSection } from "@/components/landing/CtaSection";
 import { Footer } from "@/components/layout/Footer";
+import { LandingAmbient } from "@/components/landing/LandingAmbient";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
+    <main className="relative min-h-screen overflow-x-hidden">
+      <LandingAmbient />
       <HeroSection />
       <HowItWorksSection />
       <FeaturesSection />

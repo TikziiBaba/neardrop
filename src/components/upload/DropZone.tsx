@@ -95,27 +95,27 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
         onDrop={handleDrop}
         className={`group relative overflow-hidden rounded-3xl border transition-all duration-300 ${
           isDragging
-            ? "border-sky-400/80 bg-sky-500/15 scale-[1.01] shadow-2xl shadow-sky-500/25 ring-2 ring-sky-400/30"
-            : "border-zinc-800/80 bg-zinc-900/40 hover:border-zinc-700/80 hover:bg-zinc-900/60 backdrop-blur-xl shadow-xl"
+            ? "border-[#0071e3] bg-blue-50/80 scale-[1.01] shadow-2xl shadow-blue-500/20 ring-2 ring-[#0071e3]/40"
+            : "border-[#d4d4d8] bg-white/90 hover:border-[#0071e3]/60 hover:bg-white backdrop-blur-xl shadow-lg shadow-black/[0.03] dark:border-zinc-800/80 dark:bg-zinc-900/40"
         } ${compact ? "p-6" : "p-8 sm:p-12 text-center"}`}
       >
         {/* Ambient liquid glow background */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[28rem] rounded-full bg-gradient-to-b from-sky-500/15 via-blue-500/10 to-transparent blur-3xl group-hover:from-sky-500/25 transition-all duration-500" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[28rem] rounded-full bg-gradient-to-b from-blue-500/10 via-sky-500/5 to-transparent blur-3xl group-hover:from-blue-500/20 transition-all duration-500" />
 
         <div className="relative z-10 flex flex-col items-center justify-center space-y-5">
           {/* Multi-layered Apple Squircle Icon Container */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 rounded-2xl bg-sky-500/20 blur-xl group-hover:blur-2xl transition-all duration-300" />
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-b from-zinc-800/90 to-zinc-900/90 text-sky-400 border border-zinc-700/70 shadow-2xl shadow-sky-500/10 transition-transform duration-300 group-hover:scale-105 group-hover:border-sky-500/40">
-              <UploadCloud className="h-9 w-9 text-sky-400 group-hover:-translate-y-0.5 transition-transform duration-300" />
+            <div className="absolute inset-0 rounded-2xl bg-blue-500/20 blur-xl group-hover:blur-2xl transition-all duration-300" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-b from-[#0071e3] to-[#005bb5] text-white shadow-xl shadow-blue-500/25 border border-white/20 transition-transform duration-300 group-hover:scale-105">
+              <UploadCloud className="h-9 w-9 text-white group-hover:-translate-y-0.5 transition-transform duration-300" />
             </div>
           </div>
 
           <div className="space-y-1.5 max-w-md mx-auto">
-            <h3 className="text-base sm:text-lg font-bold tracking-tight text-white">
+            <h3 className="text-base sm:text-lg font-bold tracking-tight text-[#09090b] dark:text-white">
               {isDragging ? t.dropzone.dropHere : t.dropzone.dragDropHint}
             </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-[#27272a] dark:text-zinc-400 font-normal leading-relaxed">
               {t.dropzone.r2Description}
             </p>
           </div>
@@ -129,7 +129,7 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                 SoundManager.play("click");
                 fileInputRef.current?.click();
               }}
-              className="group/btn relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-xl shadow-sky-500/30 hover:shadow-sky-500/40 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
+              className="group/btn relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-[#0071e3] to-[#0077ed] hover:from-[#0077ed] hover:to-[#005bb5] shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
             >
               <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-white/20 text-white">
                 <UploadCloud className="h-3.5 w-3.5 group-hover/btn:-translate-y-0.5 transition-transform" />
@@ -138,40 +138,40 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
               <span className="text-[10px] opacity-70 font-mono font-normal pl-0.5 border-l border-white/25">⌘O</span>
             </button>
 
-            {/* Secondary Upload Folder Frosted Glass Button */}
+            {/* Secondary Upload Folder Button */}
             <button
               type="button"
               onClick={() => {
                 SoundManager.play("click");
                 folderInputRef.current?.click();
               }}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold text-xs text-[#09090b] dark:text-zinc-200 bg-white hover:bg-blue-50/60 border border-[#d4d4d8] hover:border-[#0071e3] hover:text-[#0071e3] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
             >
-              <FolderUp className="h-4 w-4 text-sky-400" />
+              <FolderUp className="h-4 w-4 text-[#0071e3]" />
               <span>{t.dropzone.uploadFolder}</span>
             </button>
           </div>
 
           {/* Security & All Formats Supported Banner */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[11px] font-medium backdrop-blur-md shadow-sm">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/25 text-emerald-800 dark:text-emerald-400 text-[11px] font-semibold shadow-sm">
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <span>{t.dropzone.allFormatsSupported}</span>
             <span className="opacity-40">•</span>
-            <span className="text-emerald-300">{t.dropzone.securityScanActive}</span>
+            <span className="text-emerald-700 dark:text-emerald-300">{t.dropzone.securityScanActive}</span>
           </div>
 
           {/* Feature Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-zinc-400 pt-1 font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-[#27272a] dark:text-zinc-400 pt-1 font-semibold">
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
               <span>{t.dropzone.encrypted}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#0071e3]" />
               <span>{t.dropzone.directStreaming}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
               <span>{t.dropzone.unlimitedSpeed}</span>
             </span>
           </div>

@@ -62,7 +62,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   const routeName = pathname.replace("/", "") || "Dashboard";
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-background text-foreground">
+    <div className="dark flex h-screen w-full overflow-hidden bg-zinc-950 text-zinc-100">
       {/* Desktop Sidebar */}
       <Sidebar />
 

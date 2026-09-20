@@ -25,15 +25,12 @@ export function LogoIcon({ size = "md", className = "" }: LogoIconProps) {
 
   return (
     <div
-      className={`relative flex items-center justify-center bg-gradient-to-b from-[#38bdf8] via-[#2563eb] to-[#1d4ed8] text-white shadow-lg shadow-blue-500/25 transition-transform duration-200 group-hover:scale-105 ${sizeMap[size]} ${className}`}
-      style={{
-        boxShadow: "0 4px 14px 0 rgba(37, 99, 235, 0.35)",
-      }}
+      className={`relative flex items-center justify-center bg-[#0071e3] text-white shadow-sm transition-transform duration-200 group-hover:scale-105 ${sizeMap[size]} ${className}`}
     >
       <svg
         viewBox="0 0 24 24"
         fill="currentColor"
-        className={`${svgSizeMap[size]} text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]`}
+        className={`${svgSizeMap[size]} text-white`}
         xmlns="http://www.w3.org/2000/svg"
       >
         {/* Main 4-pointed Sparkle */}
@@ -58,15 +55,15 @@ interface LogoProps {
 export function Logo({
   size = "md",
   showText = true,
-  badge = "v1.0",
+  badge = "",
   href = "/",
   className = "",
 }: LogoProps) {
   const textSizes = {
     sm: "text-sm",
-    md: "text-base font-bold",
-    lg: "text-xl font-bold",
-    xl: "text-2xl font-extrabold",
+    md: "text-base font-semibold",
+    lg: "text-xl font-semibold",
+    xl: "text-2xl font-bold",
   };
 
   const content = (
@@ -76,12 +73,12 @@ export function Logo({
       {showText && (
         <div className="flex items-center gap-1.5">
           <span
-            className={`tracking-tight text-white font-bold transition-colors group-hover:text-blue-100 ${textSizes[size]}`}
+            className={`tracking-tight text-[#1d1d1f] transition-colors group-hover:text-[#0071e3] ${textSizes[size]}`}
           >
             NearDrop
           </span>
           {badge && (
-            <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-blue-400 border border-blue-500/20">
+            <span className="rounded-full bg-[#0071e3]/8 px-1.5 py-0.5 text-[10px] font-medium text-[#0071e3]">
               {badge}
             </span>
           )}

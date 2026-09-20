@@ -2,60 +2,55 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
+
+const spring = { type: "spring" as const, bounce: 0.15, duration: 0.65 };
 
 export const CtaSection: React.FC = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
 
   return (
-    <section className="py-24 md:py-36 bg-zinc-950 relative overflow-hidden text-center select-none">
-      {/* Top gradient fade for smooth section transition */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950 to-transparent" />
-      {/* Background ambient lighting */}
-      <div className="pointer-events-none absolute inset-0 hero-glow" />
-
+    <section className="landing-divider py-20 md:py-28 relative overflow-hidden text-center select-none">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 space-y-6"
+        transition={spring}
+        className="relative mx-auto max-w-[680px] px-4 sm:px-6 lg:px-8"
       >
-        <div className="inline-flex items-center gap-2 rounded-full border border-sky-500/20 bg-sky-500/10 px-3.5 py-1 text-xs font-medium text-sky-400 backdrop-blur-md">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>{t.cta.badge}</span>
-        </div>
+        <div className="space-y-6">
+          <h2 className="apple-headline-section">
+            {t.cta.title}
+          </h2>
 
-        <h2 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.1]">
-          {t.cta.title}
-        </h2>
+          <p className="apple-subhead mx-auto max-w-lg">
+            {t.cta.subtitle}
+          </p>
 
-        <p className="text-base sm:text-lg text-zinc-400 max-w-xl mx-auto leading-relaxed font-normal">
-          {t.cta.subtitle}
-        </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <Link href={user ? "/dashboard" : "/register"}>
+              <Button variant="primary" size="lg" className="gap-2 rounded-full px-8 py-3.5 shadow-lg shadow-[#0071e3]/25 hover:shadow-2xl hover:shadow-[#0071e3]/45 hover:-translate-y-1 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 font-bold">
+                <span>{t.cta.ctaPrimary}</span>
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href={user ? "/dashboard" : "/login"}>
+              <span className="px-5 py-3 rounded-full text-[#0071e3] hover:text-[#005bb5] hover:bg-blue-50/80 border border-transparent hover:border-blue-200/80 text-base font-semibold cursor-pointer flex items-center gap-1.5 transition-all hover:-translate-y-0.5 hover:shadow-sm">
+                {t.cta.ctaSecondary}
+                <span>›</span>
+              </span>
+            </Link>
+          </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3.5 pt-4">
-          <Link href={user ? "/dashboard" : "/register"}>
-            <Button variant="primary" size="lg" className="gap-2 shadow-lg shadow-sky-500/20 hover:scale-[1.02] transition-transform">
-              <span>{t.cta.ctaPrimary}</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href={user ? "/dashboard" : "/login"}>
-            <Button variant="outline" size="lg" className="hover:bg-zinc-800/80">
-              {t.cta.ctaSecondary}
-            </Button>
-          </Link>
-        </div>
-
-        <div className="pt-4 flex items-center justify-center gap-2 text-xs text-zinc-500">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
-          <span>{t.cta.trust}</span>
+          <div className="pt-3 flex items-center justify-center gap-2 text-[13px] text-[#27272a] font-semibold">
+            <ShieldCheck className="h-4 w-4 text-[#16a34a]" />
+            <span>{t.cta.trust}</span>
+          </div>
         </div>
       </motion.div>
     </section>

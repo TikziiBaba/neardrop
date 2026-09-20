@@ -2,8 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ──────────────────────────────────────────
+   Apple Design System — Light-First Tokens
+   ────────────────────────────────────────── */
+
 @layer base {
   :root {
+    /* Apple semantic colors — high-contrast light mode */
+    --apple-bg: #f5f7fa;
+    --apple-bg-elevated: #ffffff;
+    --apple-bg-secondary: #f0f4f9;
+    --apple-text-primary: #09090b;       /* Pure ink black — maximum legibility */
+    --apple-text-secondary: #27272a;     /* Deep slate — crisp high-contrast body */
+    --apple-text-tertiary: #52525b;      /* Medium charcoal — clear readable caption/meta */
+    --apple-separator: #d4d4d8;
+    --apple-separator-light: #e4e4e7;
+    --apple-blue: #0071e3;
+    --apple-blue-hover: #0077ED;
+    --apple-blue-light: #eaf4fe;
+    --apple-green: #16a34a;
+    --apple-red: #dc2626;
+    --apple-orange: #ea580c;
+
+    /* Design system tokens */
+    --background: 215 25% 97%;           /* #f5f7fa */
+    --foreground: 240 10% 3.9%;          /* #09090b */
+    --surface: 0 0% 100%;                /* white */
+    --surface-secondary: 215 20% 98%;    /* soft ambient tint */
+    --surface-tertiary: 215 15% 95%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 211 100% 45%;             /* #0071e3 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 215 15% 95%;
+    --secondary-foreground: 240 10% 3.9%;
+    --muted: 215 15% 95%;
+    --muted-foreground: 240 5% 30%;      /* #4b5563 high contrast */
+    --accent: 211 100% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5.9% 85%;              /* #d4d4d8 */
+    --input: 240 5.9% 88%;
+    --ring: 211 100% 45%;
+    --radius: 1rem;
+  }
+
+  /* Dark mode tokens (for dashboard/app pages only) */
+  .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --surface: 240 6% 7%;
@@ -26,32 +74,6 @@
     --border: 240 3.7% 18%;
     --input: 240 3.7% 18%;
     --ring: 217 91% 60%;
-    --radius: 1rem;
-  }
-
-  .light {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --surface: 0 0% 98%;
-    --surface-secondary: 240 5% 94%;
-    --surface-tertiary: 240 5% 90%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 217 91% 60%;
   }
 }
 
@@ -62,18 +84,28 @@
     -moz-osx-font-smoothing: grayscale;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-sky-500/25 selection:text-sky-200;
+    @apply bg-background text-foreground antialiased;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", -system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "calt" 1;
     letter-spacing: -0.011em;
+    color: var(--apple-text-primary);
+  }
+
+  ::selection {
+    background: rgba(0, 113, 227, 0.15);
+    color: var(--apple-text-primary);
   }
 
   h1, h2, h3, h4, h5, h6 {
     letter-spacing: -0.025em;
+    color: var(--apple-text-primary);
   }
 }
 
-/* Custom Apple-grade minimal scrollbars */
+/* ──────────────────────────────────────────
+   Apple-grade Scrollbars
+   ────────────────────────────────────────── */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -84,23 +116,52 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.24);
 }
 
-.light ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+/* ──────────────────────────────────────────
+   Apple Frosted Glass (chrome-only: nav, sheets)
+   ────────────────────────────────────────── */
+
+.frosted-nav {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
 }
 
-.light ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.24);
+.frosted-nav-scrolled {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.12);
 }
 
-/* Apple Liquid Glass Materials */
+/* Dark mode glass (for dashboard) */
+.dark .frosted-nav {
+  background: rgba(29, 29, 31, 0.72);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .frosted-nav-scrolled {
+  background: rgba(29, 29, 31, 0.92);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Legacy liquid glass compat — kept for dashboard */
 .liquid-glass {
   background: rgba(18, 18, 20, 0.72);
   backdrop-filter: blur(24px) saturate(190%);
@@ -116,41 +177,187 @@
   box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05) inset;
 }
 
-.light .liquid-glass {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+/* ──────────────────────────────────────────
+   Apple Landing Page Components
+   ────────────────────────────────────────── */
+
+/* Section divider — Apple-thin separator */
+.landing-divider {
+  border-top: 0.5px solid var(--apple-separator-light);
 }
 
-.light .liquid-glass-elevated {
+/* Landing panel — subtle elevated surface */
+.landing-panel {
+  background: var(--apple-bg-elevated);
+  border: 0.5px solid var(--apple-separator);
+  box-shadow: 0 2px 12px -4px rgba(0, 0, 0, 0.06);
+}
+
+/* Landing card — clean frosted elevated card with high-definition tactile hover */
+.landing-card {
   background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.06), 0 0 1px 1px rgba(255, 255, 255, 0.8) inset;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              background-color 0.28s ease;
+}
+
+.landing-card:hover {
+  transform: translateY(-6px) scale(1.008);
+  background: #ffffff;
+  border-color: rgba(0, 113, 227, 0.45);
+  box-shadow: 0 20px 45px -10px rgba(0, 113, 227, 0.18), 0 8px 20px -4px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 113, 227, 0.25);
+}
+
+/* Dark section — for hero or special sections */
+.section-dark {
+  background: #111113;
+  color: #f5f5f7;
+}
+
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4,
+.section-dark h5,
+.section-dark h6 {
+  color: #f5f5f7;
+}
+
+.section-dark p {
+  color: #d1d1d6;
 }
 
 /* Apple spring interactive card */
 .apple-card {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .apple-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.4);
+  transform: translateY(-6px) scale(1.008);
+  border-color: rgba(0, 113, 227, 0.45);
+  box-shadow: 0 20px 45px -10px rgba(0, 113, 227, 0.18), 0 8px 20px -4px rgba(0, 0, 0, 0.06);
 }
 
-.light .apple-card:hover {
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.08);
+/* ──────────────────────────────────────────
+   Apple Marketing Typography Scale
+   ────────────────────────────────────────── */
+
+.apple-headline-hero {
+  font-size: clamp(2.5rem, 5vw + 1rem, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--apple-text-primary);
 }
 
-/* Subtle Apple-style glow & mesh */
-.hero-glow {
-  background: radial-gradient(circle 700px at 50% 0%, rgba(56, 189, 248, 0.1), rgba(37, 99, 235, 0.03), transparent 70%);
+.apple-headline-section {
+  font-size: clamp(1.75rem, 3vw + 0.5rem, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--apple-text-primary);
 }
 
+.apple-subhead {
+  font-size: clamp(1.05rem, 1.2vw + 0.3rem, 1.375rem);
+  font-weight: 450;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  color: var(--apple-text-secondary);
+}
+
+.apple-body {
+  font-size: 1.0625rem;
+  font-weight: 450;
+  letter-spacing: -0.01em;
+  line-height: 1.6;
+  color: var(--apple-text-secondary);
+}
+
+.apple-caption {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1.4;
+  color: var(--apple-text-tertiary);
+}
+
+/* ──────────────────────────────────────────
+   Minimal Animations
+   ────────────────────────────────────────── */
+
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-gentle-pulse {
+  animation: gentle-pulse 2.5s ease-in-out infinite;
+}
+
+/* ──────────────────────────────────────────
+   prefers-reduced-motion
+   ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-card {
+    transition: none;
+  }
+  .landing-card:hover {
+    transform: none;
+  }
+  .apple-card:hover {
+    transform: none;
+  }
+  .animate-gentle-pulse {
+    animation: none;
+  }
+}
+
+/* ──────────────────────────────────────────
+   prefers-reduced-transparency
+   ────────────────────────────────────────── */
+
+@media (prefers-reduced-transparency: reduce) {
+  .frosted-nav,
+  .frosted-nav-scrolled {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(255, 255, 255, 0.98);
+  }
+}
+
+/* ──────────────────────────────────────────
+   Dark legacy compat — keep dashboard working
+   ────────────────────────────────────────── */
+.dark .landing-card {
+  background: rgba(12, 12, 14, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+.dark .landing-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(16, 16, 18, 0.95);
+  box-shadow: none;
+}
+.dark .landing-panel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+.dark .landing-divider {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+/* Mesh grid — very subtle on light */
 .mesh-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
 }

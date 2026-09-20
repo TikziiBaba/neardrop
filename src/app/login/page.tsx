@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { toast } from "sonner";
+import { LandingAmbient } from "@/components/landing/LandingAmbient";
 
 function LoginForm() {
   const router = useRouter();
@@ -107,34 +108,32 @@ function LoginForm() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative">
-      {/* Glow background */}
-      <div className="pointer-events-none absolute inset-0 hero-glow" />
-
-      <div className="relative w-full max-w-md space-y-6">
+    <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 overflow-hidden">
+      <LandingAmbient />
+      <div className="relative z-10 w-full max-w-md space-y-6">
         {/* Card Header */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0071e3] text-white shadow-md shadow-blue-500/25 group-hover:scale-110 transition-transform duration-200">
+              <Sparkles className="h-5 w-5" />
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">NearDrop</span>
+            <span className="text-xl font-bold text-[#09090b] tracking-tight">NearDrop</span>
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-white">{t.login.welcomeBack}</h1>
-          <p className="text-xs text-zinc-400">{t.login.subtitle}</p>
+          <h1 className="text-3xl font-bold tracking-tight text-[#09090b]">{t.login.welcomeBack}</h1>
+          <p className="text-sm text-[#27272a] font-normal">{t.login.subtitle}</p>
         </div>
 
-        {/* Login Form Box */}
-        <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5">
+        {/* Apple ID Style Form Box with tactile hover */}
+        <div className="rounded-[28px] border border-black/10 bg-white/95 p-7 sm:p-9 shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-xl transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,113,227,0.12)] space-y-5">
           {error && (
-            <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300 space-y-2">
+            <div className="p-3.5 rounded-2xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30] space-y-2">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
-                <span>{error}</span>
+                <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
+                <span className="font-medium">{error}</span>
               </div>
               {showResend && (
-                <div className="pt-2 border-t border-rose-500/20 space-y-2">
-                  <p className="text-[11px] text-zinc-300 leading-relaxed">
+                <div className="pt-2 border-t border-[#ff3b30]/15 space-y-2">
+                  <p className="text-[11px] text-[#1d1d1f] leading-relaxed">
                     E-posta adresiniz henüz onaylanmamış. Giriş yapabilmek için lütfen gelen kutunuzdaki onay bağlantısına tıklayın.
                   </p>
                   <div className="flex items-center justify-between gap-2 pt-1">
@@ -142,7 +141,7 @@ function LoginForm() {
                       type="button"
                       onClick={handleResendEmail}
                       disabled={isResending || cooldown > 0}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] hover:underline disabled:opacity-50 transition-colors"
                     >
                       {isResending ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
                       <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Doğrulama Linkini Tekrar Gönder"}</span>
@@ -153,7 +152,7 @@ function LoginForm() {
                         href={getEmailProviderUrl(email)!}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1"
+                        className="text-[11px] font-semibold text-[#34c759] hover:underline inline-flex items-center gap-1"
                       >
                         <span>Gelen Kutusu</span>
                         <ExternalLink className="h-3 w-3" />
@@ -171,7 +170,7 @@ function LoginForm() {
               type="button"
               onClick={() => handleSocialLogin("google")}
               disabled={Boolean(isSocialLoading)}
-              className="flex items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800/60 hover:text-white transition-all shadow-sm group"
+              className="flex items-center justify-center gap-2 rounded-full border border-[#d4d4d8] bg-white px-4 py-2.5 text-xs font-semibold text-[#09090b] hover:bg-zinc-50 hover:border-[#0071e3] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer shadow-sm"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -198,9 +197,9 @@ function LoginForm() {
               type="button"
               onClick={() => handleSocialLogin("github")}
               disabled={Boolean(isSocialLoading)}
-              className="flex items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-950/70 px-4 py-2.5 text-xs font-semibold text-zinc-200 hover:bg-zinc-800/60 hover:text-white transition-all shadow-sm group"
+              className="flex items-center justify-center gap-2 rounded-full border border-[#d4d4d8] bg-white px-4 py-2.5 text-xs font-semibold text-[#09090b] hover:bg-zinc-50 hover:border-[#0071e3] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer shadow-sm"
             >
-              <svg className="h-4 w-4 fill-current text-white" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 fill-current text-[#09090b]" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
               <span>{isSocialLoading === "github" ? "Connecting..." : "GitHub"}</span>
@@ -209,23 +208,23 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-zinc-800" />
-            <span className="absolute bg-zinc-900 px-3 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+            <div className="w-full border-t border-[#e4e4e7]" />
+            <span className="absolute bg-white px-3 text-[11px] font-semibold text-[#52525b] uppercase tracking-wider">
               or continue with email
             </span>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 pt-1">
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">{t.login.emailLabel}</label>
+              <label className="text-xs font-semibold text-[#09090b]">{t.login.emailLabel}</label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#52525b]" />
                 <Input
                   type="email"
                   placeholder={t.login.emailPlaceholder}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 rounded-xl"
+                  className="pl-10 rounded-xl bg-white border-[#d4d4d8] text-[#09090b] placeholder:text-[#71717a] focus:border-[#0071e3] shadow-sm"
                   required
                 />
               </div>
@@ -233,22 +232,22 @@ function LoginForm() {
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-zinc-300">{t.login.passwordLabel}</label>
+                <label className="text-xs font-semibold text-[#09090b]">{t.login.passwordLabel}</label>
                 <Link
                   href="/forgot-password"
-                  className="text-[11px] text-sky-400 hover:text-sky-300 transition-colors"
+                  className="text-[11px] text-[#0071e3] hover:underline font-semibold transition-colors"
                 >
                   {t.login.forgotPassword}
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#52525b]" />
                 <Input
                   type="password"
                   placeholder="••••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 rounded-xl"
+                  className="pl-10 rounded-xl bg-white border-[#d4d4d8] text-[#09090b] placeholder:text-[#71717a] focus:border-[#0071e3] shadow-sm"
                   required
                 />
               </div>
@@ -256,9 +255,9 @@ function LoginForm() {
 
             <Button
               type="submit"
-              variant="primary"
               disabled={isLoading}
-              className="w-full gap-2 py-2.5 shadow-lg shadow-sky-500/25 rounded-xl"
+              variant="primary"
+              className="w-full h-11 gap-2 py-2.5 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[0.98] rounded-full font-bold transition-all duration-200 cursor-pointer"
             >
               <span>{isLoading ? t.login.loggingIn : t.login.loginButton}</span>
               <ArrowRight className="h-4 w-4" />
@@ -267,9 +266,9 @@ function LoginForm() {
         </div>
 
         {/* Footer Link */}
-        <p className="text-center text-xs text-zinc-400">
+        <p className="text-center text-xs text-[#6e6e73]">
           {t.login.noAccount}{" "}
-          <Link href="/register" className="font-semibold text-sky-400 hover:text-sky-300 transition-colors">
+          <Link href="/register" className="font-semibold text-[#0071e3] hover:underline transition-colors">
             {t.login.createAccount}
           </Link>
         </p>
@@ -282,8 +281,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f5f5f7]">
+          <Loader2 className="h-8 w-8 animate-spin text-[#0071e3]" />
         </div>
       }
     >

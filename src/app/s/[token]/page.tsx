@@ -328,56 +328,52 @@ export default function PublicSharePage() {
     const sizeClasses = large ? "h-8 w-8" : "h-5 w-5";
     switch (cat) {
       case "archive":
-        return <FileArchive className={`${sizeClasses} text-amber-400`} />;
+        return <FileArchive className={`${sizeClasses} text-[#ff9500]`} />;
       case "image":
-        return <FileImage className={`${sizeClasses} text-emerald-400`} />;
+        return <FileImage className={`${sizeClasses} text-[#34c759]`} />;
       case "video":
-        return <FileVideo className={`${sizeClasses} text-purple-400`} />;
+        return <FileVideo className={`${sizeClasses} text-[#af52de]`} />;
       case "audio":
-        return <FileAudio className={`${sizeClasses} text-pink-400`} />;
+        return <FileAudio className={`${sizeClasses} text-[#ff2d55]`} />;
       case "code":
-        return <FileCode className={`${sizeClasses} text-cyan-400`} />;
+        return <FileCode className={`${sizeClasses} text-[#0071e3]`} />;
       default:
-        return <FileText className={`${sizeClasses} text-sky-400`} />;
+        return <FileText className={`${sizeClasses} text-[#0071e3]`} />;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-zinc-950 text-foreground relative overflow-hidden">
-      {/* Background glow */}
-      <div className="pointer-events-none absolute inset-0 hero-glow" />
-      <div className="pointer-events-none absolute inset-0 mesh-grid opacity-30" />
-
+    <div className="min-h-screen flex flex-col justify-between bg-[#f5f5f7] text-[#1d1d1f] relative overflow-hidden">
       {/* Top Header */}
       <header className="relative z-10 mx-auto w-full max-w-5xl px-4 py-5 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-md shadow-sky-500/20">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0071e3] text-white shadow-sm group-hover:scale-105 transition-transform">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="text-base font-bold text-white tracking-tight">NearDrop</span>
+          <span className="text-base font-semibold text-[#1d1d1f] tracking-tight">NearDrop</span>
         </Link>
       </header>
 
       {/* Main Content */}
       <main className="relative z-10 mx-auto w-full max-w-4xl px-4 py-4 flex-1">
         {isLoading ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-12 shadow-2xl backdrop-blur-xl text-center space-y-4 max-w-lg mx-auto">
-            <div className="h-12 w-12 rounded-2xl bg-zinc-800 animate-pulse mx-auto" />
-            <div className="h-4 w-48 bg-zinc-800 animate-pulse rounded mx-auto" />
-            <div className="h-3 w-32 bg-zinc-800/60 animate-pulse rounded mx-auto" />
+          <div className="rounded-[28px] border border-[#d2d2d7]/70 bg-white p-12 shadow-sm text-center space-y-4 max-w-lg mx-auto">
+            <div className="h-12 w-12 rounded-2xl bg-[#e8e8ed] animate-pulse mx-auto" />
+            <div className="h-4 w-48 bg-[#e8e8ed] animate-pulse rounded mx-auto" />
+            <div className="h-3 w-32 bg-[#e8e8ed]/60 animate-pulse rounded mx-auto" />
           </div>
         ) : error && !file && !isFolder ? (
           /* Error / Expired View */
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/80 p-8 shadow-2xl backdrop-blur-xl text-center space-y-5 animate-in zoom-in-95 duration-200 max-w-lg mx-auto">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 mx-auto">
+          <div className="rounded-[28px] border border-[#d2d2d7]/70 bg-white p-8 shadow-sm text-center space-y-5 animate-in zoom-in-95 duration-200 max-w-lg mx-auto">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fff2f2] text-[#ff3b30] border border-[#ff3b30]/20 mx-auto">
               <AlertCircle className="h-7 w-7" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-lg font-bold text-white">{t.publicShare.linkUnavailable}</h2>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto">{error}</p>
+              <h2 className="text-lg font-semibold text-[#1d1d1f]">{t.publicShare.linkUnavailable}</h2>
+              <p className="text-xs text-[#6e6e73] leading-relaxed max-w-xs mx-auto">{error}</p>
             </div>
             <Link href="/">
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 rounded-full border-[#d2d2d7] text-[#1d1d1f] hover:bg-[#f5f5f7]">
                 <span>{t.publicShare.goToHome}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
@@ -389,29 +385,29 @@ export default function PublicSharePage() {
           /* ========================================================= */
           <div className="space-y-5 animate-in fade-in duration-300">
             {/* Header Hero Card */}
-            <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/85 p-6 sm:p-7 shadow-2xl backdrop-blur-xl space-y-5">
+            <div className="rounded-[28px] border border-[#d2d2d7]/70 bg-white p-6 sm:p-7 shadow-[0_4px_24px_rgba(0,0,0,0.04)] space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 shadow-xl shadow-sky-500/15 flex-shrink-0">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#eaf4fe] text-[#0071e3] shadow-sm flex-shrink-0">
                     <Folder className="h-8 w-8" />
                   </div>
                   <div className="space-y-1 min-w-0">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-[11px] font-semibold text-sky-400 border border-sky-500/20">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#f5f5f7] text-[11px] font-semibold text-[#0071e3] border border-[#e5e5ea]">
                       <ShieldCheck className="h-3 w-3" />
                       <span>Shared Folder</span>
                     </div>
-                    <h2 className="text-xl font-bold text-white tracking-tight truncate">
+                    <h2 className="text-xl font-semibold text-[#1d1d1f] tracking-tight truncate">
                       {folderName}
                     </h2>
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <span className="font-semibold text-zinc-200">
+                    <div className="flex items-center gap-2 text-xs text-[#6e6e73]">
+                      <span className="font-semibold text-[#1d1d1f]">
                         {totalCount} {totalCount === 1 ? "file" : "files"}
                       </span>
                       <span>•</span>
                       <span>{formatBytes(totalSize)}</span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3 text-sky-400" />
+                        <Clock className="h-3 w-3 text-[#0071e3]" />
                         {formatExpiresIn(share.expiresAt)}
                       </span>
                     </div>
@@ -421,11 +417,9 @@ export default function PublicSharePage() {
                 {/* Main Action: Download ZIP */}
                 <div className="flex items-center gap-2.5 self-start sm:self-auto">
                   <Button
-                    variant="primary"
-                    size="lg"
                     onClick={handleDownloadAllAsZip}
                     disabled={isZipping || (share.passwordProtected && !password.trim())}
-                    className="gap-2 shadow-xl shadow-sky-500/20 py-3 font-semibold"
+                    className="gap-2 bg-[#0071e3] hover:bg-[#0077ed] text-white rounded-full px-6 py-2.5 font-semibold shadow-sm"
                   >
                     {isZipping ? (
                       <>
@@ -444,13 +438,13 @@ export default function PublicSharePage() {
 
               {/* Password input bar if protected */}
               {share.passwordProtected && (
-                <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-amber-300 font-semibold">
+                <div className="rounded-2xl border border-[#ff9500]/25 bg-[#fff9ea] p-4 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[#ff9500] font-semibold">
                     <span className="flex items-center gap-1.5">
-                      <Lock className="h-3.5 w-3.5 text-amber-400" />
+                      <Lock className="h-3.5 w-3.5" />
                       <span>Password Protected Folder</span>
                     </span>
-                    <span className="text-[11px] font-normal text-amber-200/80">
+                    <span className="text-[11px] font-normal text-[#6e6e73]">
                       Enter password to unlock and download files
                     </span>
                   </div>
@@ -459,21 +453,21 @@ export default function PublicSharePage() {
                     placeholder="Enter folder access password..."
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="text-xs bg-zinc-950/80 border-amber-500/40 focus:border-amber-400"
+                    className="text-xs bg-white border-[#d2d2d7] text-[#1d1d1f] focus:border-[#0071e3]"
                   />
                 </div>
               )}
 
               {/* ZIP Progress Indicator */}
               {isZipping && zipProgress && (
-                <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 p-4 space-y-2 animate-in fade-in">
-                  <div className="flex items-center justify-between text-xs text-sky-300 font-semibold">
+                <div className="rounded-2xl border border-[#0071e3]/20 bg-[#eaf4fe] p-4 space-y-2 animate-in fade-in">
+                  <div className="flex items-center justify-between text-xs text-[#0071e3] font-semibold">
                     <span>{zipProgress.statusText}</span>
                     <span>{zipProgress.percent}%</span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-[#d2d2d7]/50 rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-sky-500 h-full transition-all duration-300 rounded-full"
+                      className="bg-[#0071e3] h-full transition-all duration-300 rounded-full"
                       style={{ width: `${zipProgress.percent}%` }}
                     />
                   </div>
@@ -482,8 +476,8 @@ export default function PublicSharePage() {
 
               {/* Error banner if any */}
               {error && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30]">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
                   <span>{error}</span>
                 </div>
               )}
@@ -493,21 +487,21 @@ export default function PublicSharePage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Breadcrumb path */}
               {!isSearching ? (
-                <div className="flex items-center gap-1.5 rounded-2xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-2 overflow-x-auto text-xs scrollbar-none flex-1">
+                <div className="flex items-center gap-1.5 rounded-full border border-[#d2d2d7]/70 bg-white px-3.5 py-1.5 overflow-x-auto text-xs scrollbar-none flex-1 shadow-sm">
                   {breadcrumbs.map((crumb, idx) => {
                     const isLast = idx === breadcrumbs.length - 1;
                     return (
                       <React.Fragment key={crumb.path || "root"}>
-                        {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-zinc-600 flex-shrink-0" />}
+                        {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-[#86868b] flex-shrink-0" />}
                         <button
                           onClick={() => setCurrentSubPath(crumb.path)}
-                          className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-colors whitespace-nowrap ${
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-colors whitespace-nowrap ${
                             isLast
-                              ? "font-semibold text-white bg-zinc-800/80 shadow-sm"
-                              : "text-zinc-400 hover:text-sky-300 hover:bg-zinc-800/50"
+                              ? "font-semibold text-[#1d1d1f] bg-[#f5f5f7]"
+                              : "text-[#6e6e73] hover:text-[#0071e3]"
                           }`}
                         >
-                          {idx === 0 ? <Home className="h-3.5 w-3.5 text-sky-400" /> : <Folder className="h-3.5 w-3.5 text-sky-400/80" />}
+                          {idx === 0 ? <Home className="h-3.5 w-3.5 text-[#0071e3]" /> : <Folder className="h-3.5 w-3.5 text-[#0071e3]" />}
                           <span>{crumb.name}</span>
                         </button>
                       </React.Fragment>
@@ -515,8 +509,8 @@ export default function PublicSharePage() {
                   })}
                 </div>
               ) : (
-                <div className="flex items-center gap-2 rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-2 text-xs text-sky-300 flex-1">
-                  <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+                <div className="flex items-center gap-2 rounded-full border border-[#0071e3]/20 bg-[#eaf4fe] px-4 py-2 text-xs text-[#0071e3] flex-1">
+                  <Sparkles className="h-3.5 w-3.5 text-[#0071e3]" />
                   <span>Searching for &ldquo;{searchQuery}&rdquo;</span>
                 </div>
               )}
@@ -524,29 +518,29 @@ export default function PublicSharePage() {
               {/* Search & View Switcher */}
               <div className="flex items-center gap-2 self-end sm:self-auto">
                 <div className="relative w-48 sm:w-56">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#86868b]" />
                   <Input
                     type="text"
                     placeholder="Search in folder..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 pr-7 h-9 text-xs"
+                    className="pl-8 pr-7 h-9 text-xs rounded-full bg-white border-[#d2d2d7] text-[#1d1d1f]"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-[#1d1d1f]"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
                   )}
                 </div>
 
-                <div className="flex items-center rounded-xl border border-zinc-800 bg-zinc-900/80 p-1">
+                <div className="flex items-center rounded-full border border-[#d2d2d7]/70 bg-white p-1 shadow-sm">
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`p-1.5 rounded-lg transition-colors ${
-                      viewMode === "list" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                    className={`p-1.5 rounded-full transition-colors ${
+                      viewMode === "list" ? "bg-[#f5f5f7] text-[#1d1d1f]" : "text-[#86868b] hover:text-[#1d1d1f]"
                     }`}
                     title="List View"
                   >
@@ -554,8 +548,8 @@ export default function PublicSharePage() {
                   </button>
                   <button
                     onClick={() => setViewMode("grid")}
-                    className={`p-1.5 rounded-lg transition-colors ${
-                      viewMode === "grid" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                    className={`p-1.5 rounded-full transition-colors ${
+                      viewMode === "grid" ? "bg-[#f5f5f7] text-[#1d1d1f]" : "text-[#86868b] hover:text-[#1d1d1f]"
                     }`}
                     title="Grid View"
                   >
@@ -567,28 +561,28 @@ export default function PublicSharePage() {
 
             {/* Folder Explorer Content */}
             {directFolders.length === 0 && directFiles.length === 0 ? (
-              <div className="rounded-3xl border border-zinc-800 bg-zinc-900/30 p-12 text-center space-y-3">
-                <FolderOpen className="h-10 w-10 text-zinc-600 mx-auto" />
-                <h4 className="text-sm font-semibold text-zinc-300">This directory is empty</h4>
-                <p className="text-xs text-zinc-500">No files or subdirectories found.</p>
+              <div className="rounded-[28px] border border-[#d2d2d7]/70 bg-white p-12 text-center space-y-3 shadow-sm">
+                <FolderOpen className="h-10 w-10 text-[#86868b] mx-auto" />
+                <h4 className="text-sm font-semibold text-[#1d1d1f]">This directory is empty</h4>
+                <p className="text-xs text-[#6e6e73]">No files or subdirectories found.</p>
                 {currentSubPath && (
-                  <Button variant="outline" size="sm" onClick={navigateUp} className="gap-1.5 mt-2">
-                    <CornerLeftUp className="h-3.5 w-3.5 text-sky-400" />
+                  <Button variant="outline" size="sm" onClick={navigateUp} className="gap-1.5 mt-2 rounded-full border-[#d2d2d7] text-[#1d1d1f] hover:bg-[#f5f5f7]">
+                    <CornerLeftUp className="h-3.5 w-3.5 text-[#0071e3]" />
                     <span>Go up to parent</span>
                   </Button>
                 )}
               </div>
             ) : viewMode === "list" ? (
               /* Explorer List View */
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden divide-y divide-zinc-800/60 shadow-lg">
+              <div className="rounded-[24px] border border-[#d2d2d7]/70 bg-white overflow-hidden divide-y divide-[#e8e8ed] shadow-sm">
                 {/* Go Up Parent Row */}
                 {!isSearching && currentSubPath && (
                   <div
                     onClick={navigateUp}
-                    className="flex items-center gap-3.5 p-3 sm:px-4 hover:bg-zinc-800/40 transition-colors cursor-pointer text-xs font-semibold text-zinc-400 hover:text-white group"
+                    className="flex items-center gap-3.5 p-3.5 sm:px-4 hover:bg-[#f5f5f7] transition-colors cursor-pointer text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f] group"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800/80 border border-zinc-700/50 group-hover:border-sky-500/40 transition-colors">
-                      <CornerLeftUp className="h-4 w-4 text-sky-400" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#f5f5f7] border border-[#e8e8ed] group-hover:border-[#0071e3]/40 transition-colors">
+                      <CornerLeftUp className="h-4 w-4 text-[#0071e3]" />
                     </div>
                     <span>.. (Parent folder)</span>
                   </div>
@@ -599,22 +593,22 @@ export default function PublicSharePage() {
                   <div
                     key={sub.fullPath}
                     onClick={() => setCurrentSubPath(sub.fullPath)}
-                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-sky-500/5 transition-colors cursor-pointer group"
+                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-[#fbfbfd] transition-colors cursor-pointer group"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 group-hover:bg-sky-500/20 transition-colors flex-shrink-0">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eaf4fe] text-[#0071e3] transition-colors flex-shrink-0">
                         <Folder className="h-4.5 w-4.5" />
                       </div>
                       <div className="min-w-0 truncate">
-                        <p className="font-semibold text-xs sm:text-sm text-zinc-100 truncate group-hover:text-sky-300 transition-colors">
+                        <p className="font-semibold text-xs sm:text-sm text-[#1d1d1f] truncate group-hover:text-[#0071e3] transition-colors">
                           {sub.name}
                         </p>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                        <p className="text-[11px] text-[#86868b] mt-0.5">
                           {sub.filesCount} {sub.filesCount === 1 ? "file" : "files"} • {formatBytes(sub.totalBytes)}
                         </p>
                       </div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-2" />
+                    <ChevronRight className="h-4 w-4 text-[#86868b] group-hover:text-[#0071e3] group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-2" />
                   </div>
                 ))}
 
@@ -622,17 +616,17 @@ export default function PublicSharePage() {
                 {directFiles.map((f) => (
                   <div
                     key={f.id}
-                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-zinc-800/40 transition-colors group"
+                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-[#fbfbfd] transition-colors group"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#f5f5f7] border border-[#e8e8ed] flex-shrink-0">
                         {renderFileIcon(f)}
                       </div>
                       <div className="min-w-0 truncate">
-                        <p className="font-semibold text-xs sm:text-sm text-zinc-100 truncate group-hover:text-sky-300 transition-colors">
+                        <p className="font-semibold text-xs sm:text-sm text-[#1d1d1f] truncate group-hover:text-[#0071e3] transition-colors">
                           {f.filename.split("/").pop() || f.filename}
                         </p>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                        <p className="text-[11px] text-[#86868b] mt-0.5">
                           {formatBytes(f.size)} • {formatRelativeTime(f.createdAt)}
                         </p>
                       </div>
@@ -643,7 +637,7 @@ export default function PublicSharePage() {
                       size="sm"
                       onClick={() => handleDownloadSingleFile(f.id)}
                       disabled={downloadingFileId === f.id || (share.passwordProtected && !password.trim())}
-                      className="text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1.5 text-xs h-8 ml-2 flex-shrink-0"
+                      className="text-[#0071e3] hover:text-[#0077ed] hover:bg-[#eaf4fe] gap-1.5 text-xs h-8 ml-2 rounded-full flex-shrink-0"
                     >
                       {downloadingFileId === f.id ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -664,23 +658,23 @@ export default function PublicSharePage() {
                       <div
                         key={sub.fullPath}
                         onClick={() => setCurrentSubPath(sub.fullPath)}
-                        className="rounded-2xl border border-zinc-800/90 bg-zinc-900/60 p-4 space-y-3 hover:border-sky-500/40 hover:bg-zinc-900/90 transition-all group cursor-pointer shadow-md flex flex-col justify-between"
+                        className="rounded-2xl border border-[#d2d2d7]/70 bg-white p-4 space-y-3 hover:border-[#0071e3]/40 hover:shadow-md transition-all group cursor-pointer shadow-sm flex flex-col justify-between"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 group-hover:scale-105 transition-transform">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#eaf4fe] text-[#0071e3] group-hover:scale-105 transition-transform">
                             <Folder className="h-5 w-5" />
                           </div>
-                          <Badge variant="secondary" className="text-[10px]">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#6e6e73]">
                             {sub.filesCount} {sub.filesCount === 1 ? "file" : "files"}
-                          </Badge>
+                          </span>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-sky-300 transition-colors">
+                          <h4 className="font-semibold text-xs sm:text-sm text-[#1d1d1f] truncate group-hover:text-[#0071e3] transition-colors">
                             {sub.name}
                           </h4>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">{formatBytes(sub.totalBytes)}</p>
+                          <p className="text-[11px] text-[#86868b] mt-0.5">{formatBytes(sub.totalBytes)}</p>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-sky-400 font-medium pt-1 border-t border-zinc-800/60">
+                        <div className="flex items-center gap-1 text-[11px] text-[#0071e3] font-medium pt-2 border-t border-[#e8e8ed]">
                           <span>Open directory</span>
                           <ChevronRight className="h-3 w-3" />
                         </div>
@@ -694,22 +688,22 @@ export default function PublicSharePage() {
                     {directFiles.map((f) => (
                       <div
                         key={f.id}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3 hover:border-zinc-700 transition-all group flex flex-col justify-between"
+                        className="rounded-2xl border border-[#d2d2d7]/70 bg-white p-4 space-y-3 hover:border-[#0071e3]/40 hover:shadow-md transition-all group flex flex-col justify-between shadow-sm"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#f5f5f7] border border-[#e8e8ed]">
                             {renderFileIcon(f)}
                           </div>
-                          <Badge variant="secondary" className="text-[10px] uppercase">
+                          <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#6e6e73]">
                             {f.mimeType.split("/")[1] || "File"}
-                          </Badge>
+                          </span>
                         </div>
 
                         <div>
-                          <h4 className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-sky-300 transition-colors">
+                          <h4 className="font-semibold text-xs sm:text-sm text-[#1d1d1f] truncate group-hover:text-[#0071e3] transition-colors">
                             {f.filename.split("/").pop() || f.filename}
                           </h4>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">{formatBytes(f.size)}</p>
+                          <p className="text-[11px] text-[#86868b] mt-0.5">{formatBytes(f.size)}</p>
                         </div>
 
                         <Button
@@ -717,7 +711,7 @@ export default function PublicSharePage() {
                           size="sm"
                           onClick={() => handleDownloadSingleFile(f.id)}
                           disabled={downloadingFileId === f.id || (share.passwordProtected && !password.trim())}
-                          className="w-full text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1.5 text-xs h-8 pt-1 border-t border-zinc-800/60"
+                          className="w-full text-[#0071e3] hover:text-[#0077ed] hover:bg-[#eaf4fe] gap-1.5 text-xs h-8 pt-1 border-t border-[#e8e8ed] rounded-full"
                         >
                           {downloadingFileId === f.id ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -737,44 +731,44 @@ export default function PublicSharePage() {
           /* ========================================================= */
           /* SINGLE FILE SHARE VIEW                                    */
           /* ========================================================= */
-          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/80 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6 max-w-lg mx-auto">
+          <div className="rounded-[28px] border border-[#d2d2d7]/70 bg-white p-7 sm:p-9 shadow-[0_4px_24px_rgba(0,0,0,0.04)] space-y-6 max-w-lg mx-auto">
             {/* Header: Shared by */}
             <div className="text-center space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 text-[11px] font-semibold text-sky-400 border border-sky-500/20 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#eaf4fe] text-[11px] font-semibold text-[#0071e3] border border-[#0071e3]/20 mb-2">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 <span>{t.publicShare.secureCloudShare}</span>
               </div>
-              <h2 className="text-lg font-bold text-white tracking-tight">
+              <h2 className="text-xl font-semibold text-[#1d1d1f] tracking-tight">
                 {t.publicShare.fileSharedWithYou}
               </h2>
-              <p className="text-xs text-zinc-400">{t.publicShare.encryptedSubtitle}</p>
+              <p className="text-xs text-[#6e6e73]">{t.publicShare.encryptedSubtitle}</p>
             </div>
 
             {/* File Info Box */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 sm:p-5 flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 flex-shrink-0">
+            <div className="rounded-2xl border border-[#e8e8ed] bg-[#fbfbfd] p-4 sm:p-5 flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white border border-[#d2d2d7]/70 shadow-sm flex-shrink-0">
                 {renderFileIcon(file, true)}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
-                <h3 className="font-bold text-sm text-white break-words">{file.filename}</h3>
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
-                  <span className="font-semibold text-zinc-300">{formatBytes(file.size)}</span>
+                <h3 className="font-semibold text-sm text-[#1d1d1f] break-words">{file.filename}</h3>
+                <div className="flex items-center gap-2 text-xs text-[#6e6e73]">
+                  <span className="font-semibold text-[#1d1d1f]">{formatBytes(file.size)}</span>
                   <span>•</span>
-                  <Badge variant="secondary" className="text-[10px] uppercase">
+                  <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-[#f5f5f7] text-[#6e6e73]">
                     {file.mimeType.split("/")[1] || "File"}
-                  </Badge>
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Badges / Security indicators */}
-            <div className="flex items-center justify-between text-xs text-zinc-400 px-1 border-t border-b border-zinc-800/60 py-3">
+            <div className="flex items-center justify-between text-xs text-[#6e6e73] px-1 border-t border-b border-[#e8e8ed] py-3">
               <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-sky-400" />
+                <Clock className="h-3.5 w-3.5 text-[#0071e3]" />
                 <span>{formatExpiresIn(share.expiresAt)}</span>
               </span>
               {share.passwordProtected && (
-                <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+                <span className="flex items-center gap-1.5 text-[#ff9500] font-medium">
                   <Lock className="h-3.5 w-3.5" />
                   <span>{t.publicShare.passwordProtected}</span>
                 </span>
@@ -784,8 +778,8 @@ export default function PublicSharePage() {
             {/* Password input if password protected & not unlocked */}
             {share.passwordProtected && !downloadStarted && (
               <div className="space-y-2">
-                <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-amber-400" />
+                <label className="text-xs font-semibold text-[#1d1d1f] flex items-center gap-1.5">
+                  <Lock className="h-3.5 w-3.5 text-[#ff9500]" />
                   <span>{t.publicShare.enterPasswordLabel}</span>
                 </label>
                 <Input
@@ -793,35 +787,35 @@ export default function PublicSharePage() {
                   placeholder={t.publicShare.enterPasswordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="text-xs"
+                  className="text-xs bg-[#f5f5f7] border-[#d2d2d7] text-[#1d1d1f] focus:bg-white focus:border-[#0071e3]"
                 />
               </div>
             )}
 
             {/* Error banner if unlock failed */}
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
-                <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30]">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
                 <span>{error}</span>
               </div>
             )}
 
             {/* Download CTA Button */}
             {downloadStarted && downloadUrl ? (
-              <div className="space-y-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center animate-in zoom-in-95 duration-150">
-                <CheckCircle2 className="h-6 w-6 text-emerald-400 mx-auto" />
+              <div className="space-y-3 p-5 rounded-2xl bg-[#eafbf0] border border-[#34c759]/25 text-center animate-in zoom-in-95 duration-150">
+                <CheckCircle2 className="h-7 w-7 text-[#34c759] mx-auto" />
                 <div>
-                  <h4 className="text-xs font-semibold text-emerald-300">
+                  <h4 className="text-xs font-semibold text-[#1d1d1f]">
                     {t.publicShare.downloadInitiated}
                   </h4>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-[#6e6e73] mt-0.5">
                     {t.publicShare.browserDidNotStart}
                   </p>
                 </div>
                 <a
                   href={downloadUrl}
                   download={file.filename}
-                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-xs transition-colors"
+                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-[#34c759] hover:bg-[#2fb34f] text-white font-semibold text-xs shadow-sm transition-colors"
                 >
                   <DownloadCloud className="h-4 w-4" />
                   <span>{t.publicShare.clickToRedownload}</span>
@@ -830,11 +824,9 @@ export default function PublicSharePage() {
             ) : (
               <Button
                 type="button"
-                variant="primary"
-                size="lg"
                 onClick={() => handleDownloadSingleFile()}
                 disabled={isUnlocking}
-                className="w-full gap-2 shadow-xl shadow-sky-500/25 py-3"
+                className="w-full gap-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white py-3 font-semibold shadow-sm text-sm"
               >
                 <DownloadCloud className="h-5 w-5" />
                 <span>{isUnlocking ? t.publicShare.verifying : t.publicShare.downloadFile}</span>
@@ -842,7 +834,7 @@ export default function PublicSharePage() {
             )}
 
             {/* Checksum verification */}
-            <div className="pt-2 text-center text-[10px] text-zinc-500 font-mono">
+            <div className="pt-2 text-center text-[10px] text-[#86868b] font-mono">
               <span>SHA-256: {file.checksum?.substring(0, 16) || "8f434346648f6b96"}...</span>
             </div>
           </div>
@@ -850,7 +842,7 @@ export default function PublicSharePage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-6 text-center text-xs text-zinc-600">
+      <footer className="relative z-10 py-6 text-center text-xs text-[#86868b]">
         <p>{t.publicShare.footerTagline}</p>
       </footer>
     </div>

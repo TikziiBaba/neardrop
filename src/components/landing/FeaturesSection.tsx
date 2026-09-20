@@ -7,21 +7,18 @@ import {
   Hourglass,
   ShieldCheck,
   CloudLightning,
-  FolderHeart,
   Laptop,
   Smartphone,
-  CheckCircle2,
   Lock,
   Zap,
-  ArrowRight,
-  HardDrive,
   Copy,
   Check,
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { Badge } from "@/components/ui/badge";
+
+const spring = { type: "spring" as const, bounce: 0.15, duration: 0.65 };
 
 export const FeaturesSection: React.FC = () => {
   const { t } = useLanguage();
@@ -50,76 +47,75 @@ export const FeaturesSection: React.FC = () => {
   };
 
   return (
-    <section id="features" className="py-24 md:py-36 bg-zinc-950 relative overflow-hidden select-none">
-      {/* Top gradient fade for smooth section transition */}
-      <div className="pointer-events-none absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-zinc-950/40 to-transparent" />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="features" className="landing-divider py-20 md:py-28 relative overflow-hidden select-none">
+      <div className="mx-auto max-w-[980px] px-4 sm:px-6 lg:px-8 relative z-10">
         <SectionHeader
-          label={t.features.sectionLabel}
           title={t.features.title}
           subtitle={t.features.subtitle}
         />
 
-        {/* Apple-style Interactive Bento Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          {/* Bento Card 1: Blazing Fast Direct Streaming (Wide 2-column or Hero Card) */}
+        {/* Apple Bento Grid — Light */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Bento Card 1: Blazing Fast (Wide 2-column Hero) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="md:col-span-2 rounded-3xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900/70 to-zinc-950/90 p-7 sm:p-8 space-y-6 hover:border-zinc-700 hover:shadow-2xl hover:shadow-sky-500/5 transition-all duration-300 relative overflow-hidden group"
+            transition={{ ...spring }}
+            className="group md:col-span-2 landing-card rounded-3xl p-8 space-y-6 relative overflow-hidden cursor-pointer"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20 shadow-md shadow-sky-500/10">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0071e3]/10 text-[#0071e3] group-hover:scale-110 transition-transform duration-300">
                   <Rocket className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">{t.features.blazingFastTitle}</h3>
-                  <span className="text-xs text-sky-400 font-medium">Peer-to-Peer & High Speed Direct Upload</span>
+                  <h3 className="text-lg font-bold text-[#09090b] tracking-tight">{t.features.blazingFastTitle}</h3>
+                  <span className="text-[12px] text-[#0071e3] font-semibold">Peer-to-Peer & High Speed Direct Upload</span>
                 </div>
               </div>
-              <Badge variant="sky" className="w-fit">450+ Mbps Local</Badge>
+              <span className="inline-flex items-center px-3.5 py-1 rounded-full bg-[#0071e3]/10 text-[11px] font-semibold text-[#0071e3] w-fit shadow-sm">
+                450+ Mbps Local
+              </span>
             </div>
 
-            <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-xl">
+            <p className="text-[14px] text-[#27272a] font-normal leading-relaxed max-w-xl">
               {t.features.blazingFastDesc}
             </p>
 
-            {/* Interactive Live Stream Visualization */}
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-5 backdrop-blur-xl">
+            {/* Interactive Stream Visualization */}
+            <div className="rounded-2xl border border-[#e4e4e7] bg-white/90 p-5 shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 {/* Device 1 */}
                 <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
-                  <div className="h-11 w-11 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 shadow-inner">
-                    <Laptop className="h-5 w-5 text-sky-400" />
+                  <div className="h-11 w-11 rounded-2xl bg-white border border-[#d4d4d8] flex items-center justify-center shadow-sm group-hover:border-[#0071e3]/50 transition-colors">
+                    <Laptop className="h-5 w-5 text-[#0071e3]" />
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-400">MacBook Pro</span>
+                  <span className="text-[11px] text-[#27272a] font-medium">MacBook Pro</span>
                 </div>
 
-                {/* Animated Data Stream Flow */}
+                {/* Animated Data Stream */}
                 <div className="flex-1 flex flex-col items-center gap-2">
-                  <div className="flex items-center gap-2 text-[11px] font-mono text-sky-400 font-semibold">
-                    <Zap className="h-3 w-3 animate-pulse" />
+                  <div className="flex items-center gap-2 text-[11px] text-[#0071e3] font-semibold">
+                    <Zap className="h-3.5 w-3.5 animate-gentle-pulse" />
                     <span>Direct Presigned Stream</span>
                   </div>
-                  <div className="relative w-full h-2.5 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
+                  <div className="relative w-full h-2.5 bg-[#e4e4e7] rounded-full overflow-hidden">
                     <motion.div
-                      className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-sky-400 to-transparent rounded-full blur-[1px]"
+                      className="absolute inset-y-0 w-24 bg-gradient-to-r from-transparent via-[#0071e3] to-transparent rounded-full shadow-sm"
                       animate={{ x: ["-100%", "400%"] }}
-                      transition={{ repeat: Infinity, duration: 1.6, ease: "linear" }}
+                      transition={{ repeat: Infinity, duration: 1.8, ease: "linear" }}
                     />
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500">Zero Server Storage Throttling</span>
+                  <span className="text-[11px] text-[#3f3f46] font-medium">Zero Server Storage Throttling</span>
                 </div>
 
                 {/* Device 2 */}
                 <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
-                  <div className="h-11 w-11 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-300 shadow-inner">
-                    <Smartphone className="h-5 w-5 text-emerald-400" />
+                  <div className="h-11 w-11 rounded-2xl bg-white border border-[#d4d4d8] flex items-center justify-center shadow-sm group-hover:border-green-500/50 transition-colors">
+                    <Smartphone className="h-5 w-5 text-[#16a34a]" />
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-400">iPhone 16</span>
+                  <span className="text-[11px] text-[#27272a] font-medium">iPhone 16</span>
                 </div>
               </div>
             </div>
@@ -130,121 +126,125 @@ export const FeaturesSection: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-3xl border border-zinc-800/90 bg-zinc-900/40 p-7 space-y-5 hover:border-zinc-700 hover:bg-zinc-900/70 hover:shadow-xl transition-all duration-200 flex flex-col justify-between"
+            transition={{ ...spring, delay: 0.1 }}
+            className="group landing-card rounded-3xl p-7 space-y-5 flex flex-col justify-between cursor-pointer"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#16a34a]/10 text-[#16a34a] group-hover:scale-110 transition-transform duration-300">
                   <KeyRound className="h-6 w-6" />
                 </div>
-                <Badge variant="success">128-bit Entropy</Badge>
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#16a34a]/10 text-[11px] font-semibold text-[#16a34a] shadow-sm">
+                  128-bit Entropy
+                </span>
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-white tracking-tight">{t.features.cryptoTokenTitle}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{t.features.cryptoTokenDesc}</p>
+                <h3 className="text-base font-bold text-[#09090b] tracking-tight">{t.features.cryptoTokenTitle}</h3>
+                <p className="text-[13px] text-[#27272a] leading-relaxed">{t.features.cryptoTokenDesc}</p>
               </div>
             </div>
 
             {/* Token Live Box */}
-            <div className="p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 flex items-center justify-between text-xs font-mono text-emerald-400">
+            <div className="p-3.5 rounded-2xl bg-white/90 border border-[#e4e4e7] flex items-center justify-between text-xs font-mono text-[#16a34a] font-semibold shadow-sm">
               <span className="truncate">s_9fA7bE4kL0q</span>
               <button
                 onClick={handleCopyMockToken}
-                className="p-1 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-zinc-100 text-[#27272a] hover:text-[#0071e3] transition-colors cursor-pointer"
                 title="Copy token"
               >
-                {copiedToken ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                {copiedToken ? <Check className="h-3.5 w-3.5 text-[#16a34a]" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
             </div>
           </motion.div>
 
-          {/* Bento Card 3: Auto-Expiry Live Countdown */}
+          {/* Bento Card 3: Auto-Expiry */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ delay: 0.15, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-3xl border border-zinc-800/90 bg-zinc-900/40 p-7 space-y-5 hover:border-zinc-700 hover:bg-zinc-900/70 hover:shadow-xl transition-all duration-200 flex flex-col justify-between"
+            transition={{ ...spring, delay: 0.15 }}
+            className="group landing-card rounded-3xl p-7 space-y-5 flex flex-col justify-between cursor-pointer"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0071e3]/10 text-[#0071e3] group-hover:scale-110 transition-transform duration-300">
                   <Hourglass className="h-6 w-6" />
                 </div>
-                <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-full border border-sky-500/20">Auto-Purge</span>
+                <span className="text-[11px] font-semibold text-[#0071e3] bg-[#0071e3]/10 px-3 py-1 rounded-full shadow-sm">Auto-Purge</span>
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-white tracking-tight">{t.features.autoExpiryTitle}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{t.features.autoExpiryDesc}</p>
+                <h3 className="text-base font-bold text-[#09090b] tracking-tight">{t.features.autoExpiryTitle}</h3>
+                <p className="text-[13px] text-[#27272a] leading-relaxed">{t.features.autoExpiryDesc}</p>
               </div>
             </div>
 
-            {/* Countdown Display */}
-            <div className="p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 flex items-center justify-between">
-              <span className="text-xs text-zinc-400 font-medium">Link Lifespan:</span>
-              <span className="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded-lg border border-sky-500/20">
+            {/* Countdown */}
+            <div className="p-3.5 rounded-2xl bg-white/90 border border-[#e4e4e7] flex items-center justify-between shadow-sm">
+              <span className="text-xs text-[#27272a] font-semibold">Link Lifespan:</span>
+              <span className="text-xs font-mono font-bold text-[#0071e3] bg-[#0071e3]/10 px-3 py-1 rounded-lg">
                 {formatTimer(timerSeconds)}
               </span>
             </div>
           </motion.div>
 
-          {/* Bento Card 4: SHA-256 Client-Side Protection */}
+          {/* Bento Card 4: SHA-256 */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-3xl border border-zinc-800/90 bg-zinc-900/40 p-7 space-y-5 hover:border-zinc-700 hover:bg-zinc-900/70 hover:shadow-xl transition-all duration-200 flex flex-col justify-between"
+            transition={{ ...spring, delay: 0.2 }}
+            className="group landing-card rounded-3xl p-7 space-y-5 flex flex-col justify-between cursor-pointer"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#5856d6]/10 text-[#5856d6] group-hover:scale-110 transition-transform duration-300">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
-                <Badge variant="secondary">Zero-Knowledge</Badge>
+                <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#5856d6]/10 text-[11px] font-semibold text-[#5856d6] shadow-sm">
+                  Zero-Knowledge
+                </span>
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-white tracking-tight">{t.features.sha256Title}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{t.features.sha256Desc}</p>
+                <h3 className="text-base font-bold text-[#09090b] tracking-tight">{t.features.sha256Title}</h3>
+                <p className="text-[13px] text-[#27272a] leading-relaxed">{t.features.sha256Desc}</p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 text-[11px] font-mono text-zinc-400 flex items-center gap-2">
-              <Lock className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0" />
+            <div className="p-3.5 rounded-2xl bg-white/90 border border-[#e4e4e7] text-[11px] font-mono text-[#27272a] font-medium flex items-center gap-2 shadow-sm">
+              <Lock className="h-3.5 w-3.5 text-[#16a34a] flex-shrink-0" />
               <span className="truncate">hash: 9a7f8b2c4e1d0...</span>
             </div>
           </motion.div>
 
-          {/* Bento Card 5: High-Speed Global Cloud */}
+          {/* Bento Card 5: Global Cloud */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ delay: 0.25, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="rounded-3xl border border-zinc-800/90 bg-zinc-900/40 p-7 space-y-5 hover:border-zinc-700 hover:bg-zinc-900/70 hover:shadow-xl transition-all duration-200 flex flex-col justify-between"
+            transition={{ ...spring, delay: 0.25 }}
+            className="group landing-card rounded-3xl p-7 space-y-5 flex flex-col justify-between cursor-pointer"
           >
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0284c7]/10 text-[#0284c7] group-hover:scale-110 transition-transform duration-300">
                   <CloudLightning className="h-6 w-6" />
                 </div>
-                <span className="text-[10px] font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-0.5 rounded-full border border-indigo-500/20">
+                <span className="text-[11px] font-semibold text-[#0284c7] bg-[#0284c7]/10 px-3 py-1 rounded-full shadow-sm">
                   {t.features.globalEdgeBadge || "Global Edge"}
                 </span>
               </div>
               <div className="space-y-1.5">
-                <h3 className="text-base font-bold text-white tracking-tight">{t.features.r2StorageTitle}</h3>
-                <p className="text-xs text-zinc-400 leading-relaxed">{t.features.r2StorageDesc}</p>
+                <h3 className="text-base font-bold text-[#09090b] tracking-tight">{t.features.r2StorageTitle}</h3>
+                <p className="text-[13px] text-[#27272a] leading-relaxed">{t.features.r2StorageDesc}</p>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-zinc-950/90 border border-zinc-800 flex items-center justify-between text-xs text-zinc-400 font-mono">
-              <span className="flex items-center gap-1.5 text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="p-3.5 rounded-2xl bg-white/90 border border-[#e4e4e7] flex items-center justify-between text-xs text-[#27272a] shadow-sm font-medium">
+              <span className="flex items-center gap-1.5 text-[#16a34a] font-semibold">
+                <span className="h-2 w-2 rounded-full bg-[#16a34a] animate-gentle-pulse" />
                 <span>{t.features.unlimitedBandwidth || "Sınırsız Bant Genişliği"}</span>
               </span>
-              <span>{t.features.highDurability || "Yüksek Dayanıklılık & Güven"}</span>
+              <span className="text-[11px] text-[#3f3f46]">{t.features.highDurability || "Yüksek Dayanıklılık & Güven"}</span>
             </div>
           </motion.div>
         </div>
