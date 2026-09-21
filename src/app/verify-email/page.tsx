@@ -53,6 +53,38 @@ function VerifyEmailContent() {
     }
   }, [queryVerified, user?.isEmailVerified]);
 
+  const [isDirectConfirming, setIsDirectConfirming] = useState(false);
+
+  const handleDirectConfirm = async () => {
+    if (!email.trim() || isDirectConfirming) return;
+    setIsDirectConfirming(true);
+    setErrorMessage(null);
+    try {
+      const res = await fetch("/api/auth/confirm-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsSuccess(true);
+        toast.success("E-posta adresiniz başarıyla onaylandı!");
+        try {
+          confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
+        } catch (e) {}
+        setTimeout(() => {
+          router.push("/dashboard?verified=true");
+        }, 1200);
+      } else {
+        setErrorMessage(data.error || "Doğrulama başarısız.");
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || "Hata oluştu.");
+    } finally {
+      setIsDirectConfirming(false);
+    }
+  };
+
   const handleResend = async () => {
     if (!email.trim() || cooldown > 0 || isResending) return;
     setIsResending(true);
@@ -205,6 +237,16 @@ function VerifyEmailContent() {
                     <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Doğrulama Linkini Tekrar Gönder"}</span>
                   </button>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={handleDirectConfirm}
+                  disabled={isDirectConfirming || !email}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2.5 text-xs font-bold text-sky-400 hover:bg-sky-500/20 transition-all disabled:opacity-50 active:scale-[0.98]"
+                >
+                  {isDirectConfirming ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-emerald-400" />}
+                  <span>E-posta Gelmedi — Hesabı Şimdi Doğrula</span>
+                </button>
               </div>
             </div>
           )}

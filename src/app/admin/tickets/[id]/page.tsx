@@ -127,12 +127,11 @@ export default function AdminTicketDetailPage() {
     }
   };
 
-  if (loading) {
+  if (loading && !ticket) {
     return (
       <AdminLayout>
-        <div className="py-24 text-center space-y-3">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400" />
-          <p className="text-xs text-zinc-400">Loading support conversation...</p>
+        <div className="flex h-[60vh] items-center justify-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-[#0071e3]" />
         </div>
       </AdminLayout>
     );
@@ -141,12 +140,11 @@ export default function AdminTicketDetailPage() {
   if (!ticket) {
     return (
       <AdminLayout>
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-12 text-center space-y-3">
-          <AlertTriangle className="h-10 w-10 text-amber-400 mx-auto" />
-          <h2 className="text-base font-bold text-white">Ticket Not Found</h2>
+        <div className="p-8 text-center space-y-4">
+          <p className="text-zinc-400">Support ticket not found.</p>
           <Link href="/admin/tickets">
-            <Button variant="outline" size="sm" className="text-xs rounded-xl mt-2">
-              Back to Ticket Inbox
+            <Button variant="outline" size="sm">
+              Return to Tickets
             </Button>
           </Link>
         </div>
@@ -156,12 +154,12 @@ export default function AdminTicketDetailPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6 max-w-5xl">
-        {/* Top bar */}
+      <div className="space-y-6 max-w-5xl mx-auto">
+        {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
           <Link
             href="/admin/tickets"
-            className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors shadow-sm"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to All Tickets</span>
@@ -179,11 +177,11 @@ export default function AdminTicketDetailPage() {
         </div>
 
         {/* Ticket Header & Status Manager */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-7 space-y-5 apple-card">
+        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 sm:p-7 space-y-5 apple-card">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-[10px] font-bold text-purple-400 border border-purple-500/20 capitalize">
+                <span className="rounded-md bg-[#0071e3]/15 px-2 py-0.5 text-[10px] font-bold text-[#2997ff] border border-[#0071e3]/30 capitalize">
                   {ticket.status.replace("_", " ")}
                 </span>
                 <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-400 capitalize">
@@ -201,7 +199,7 @@ export default function AdminTicketDetailPage() {
                 <span>•</span>
                 <Link
                   href={`/admin/users/${ticket.userId}`}
-                  className="text-purple-400 hover:text-purple-300 inline-flex items-center gap-1 font-semibold"
+                  className="text-[#2997ff] hover:text-[#0071e3] inline-flex items-center gap-1 font-semibold"
                 >
                   <span>Inspect Profile</span>
                   <ExternalLink className="h-3 w-3" />
@@ -214,7 +212,7 @@ export default function AdminTicketDetailPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value as any)}
-                className="h-9 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="h-9 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#0071e3]"
               >
                 <option value="open">Open</option>
                 <option value="in_progress">In Progress</option>
@@ -226,7 +224,7 @@ export default function AdminTicketDetailPage() {
               <select
                 value={selectedPriority}
                 onChange={(e) => setSelectedPriority(e.target.value as any)}
-                className="h-9 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+                className="h-9 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#0071e3]"
               >
                 <option value="low">Low Priority</option>
                 <option value="medium">Medium Priority</option>
@@ -239,7 +237,7 @@ export default function AdminTicketDetailPage() {
                 size="sm"
                 onClick={handleUpdateStatus}
                 disabled={isSavingStatus}
-                className="h-9 text-xs bg-purple-600 hover:bg-purple-500 rounded-xl gap-1"
+                className="h-9 text-xs bg-[#0071e3] hover:bg-[#0077ed] text-white rounded-xl gap-1 font-medium"
               >
                 <Save className="h-3.5 w-3.5" />
                 <span>Save Status</span>
@@ -258,13 +256,13 @@ export default function AdminTicketDetailPage() {
                 key={msg.id}
                 className={`flex gap-3.5 ${
                   isStaff
-                    ? "bg-purple-950/20 border-purple-500/30"
-                    : "bg-zinc-900/60 border-zinc-800"
+                    ? "bg-[#0071e3]/10 border-[#0071e3]/20"
+                    : "bg-[#16161a] border-zinc-800"
                 } rounded-3xl border p-5 sm:p-6 transition-all apple-card`}
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
                   {isStaff ? (
-                    <ShieldCheck className="h-5 w-5 text-purple-400" />
+                    <ShieldCheck className="h-5 w-5 text-[#2997ff]" />
                   ) : (
                     <User className="h-5 w-5 text-sky-400" />
                   )}
@@ -275,7 +273,7 @@ export default function AdminTicketDetailPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs text-white">{msg.senderName}</span>
                       {isStaff && (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-300 border border-purple-500/30">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-[#0071e3]/20 px-2 py-0.5 text-[10px] font-bold text-[#2997ff] border border-[#0071e3]/30">
                           Staff / Support
                         </span>
                       )}
@@ -298,11 +296,11 @@ export default function AdminTicketDetailPage() {
         {/* Staff Response Form */}
         <form
           onSubmit={handleSendStaffReply}
-          className="rounded-3xl border border-purple-500/30 bg-purple-950/15 p-5 space-y-3 apple-card"
+          className="rounded-3xl border border-[#0071e3]/30 bg-[#16161a] p-5 space-y-3 apple-card"
         >
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-white flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-purple-400" />
+              <ShieldCheck className="h-4 w-4 text-[#2997ff]" />
               <span>Official Staff Response</span>
             </label>
             <span className="text-[11px] text-zinc-400">
@@ -315,7 +313,7 @@ export default function AdminTicketDetailPage() {
             onChange={(e) => setReplyText(e.target.value)}
             rows={5}
             placeholder="Type your response to the customer..."
-            className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500 resize-none"
+            className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#0071e3] resize-none"
             required
           />
 
@@ -324,7 +322,7 @@ export default function AdminTicketDetailPage() {
               type="submit"
               variant="primary"
               disabled={isSending}
-              className="text-xs rounded-xl bg-purple-600 hover:bg-purple-500 gap-2 font-bold px-6"
+              className="text-xs rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white gap-2 font-bold px-6 shadow-md shadow-[#0071e3]/20"
             >
               <Send className="h-3.5 w-3.5" />
               <span>{isSending ? "Publishing..." : "Send Staff Response"}</span>

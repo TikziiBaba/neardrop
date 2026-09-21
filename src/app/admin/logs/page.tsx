@@ -111,7 +111,7 @@ export default function AdminLogsPage() {
     }
     if (action.includes("DOWNLOAD")) {
       return (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-purple-500/15 px-2 py-0.5 text-[11px] font-bold text-purple-400 border border-purple-500/25">
+        <span className="inline-flex items-center gap-1 rounded-lg bg-[#0071e3]/15 px-2 py-0.5 text-[11px] font-bold text-[#2997ff] border border-[#0071e3]/25">
           <Download className="h-3 w-3" />
           {action}
         </span>
@@ -199,7 +199,7 @@ export default function AdminLogsPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <span>Security & Audit Trail Logs</span>
-              <span className="rounded-md bg-purple-500/15 px-2.5 py-0.5 text-xs font-bold text-purple-300 border border-purple-500/30">
+              <span className="rounded-md bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-bold text-[#2997ff] border border-[#0071e3]/30">
                 {logs.length} Records
               </span>
             </h1>
@@ -224,7 +224,7 @@ export default function AdminLogsPage() {
               size="sm"
               onClick={fetchLogs}
               disabled={loading}
-              className="gap-2 text-xs rounded-xl"
+              className="gap-2 text-xs rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
               <span>Refresh</span>
@@ -249,7 +249,7 @@ export default function AdminLogsPage() {
               onClick={() => setCategoryFilter(cat.id)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-xl font-semibold transition-colors whitespace-nowrap ${
                 categoryFilter === cat.id
-                  ? "bg-zinc-800 text-white border-b-2 border-purple-500"
+                  ? "bg-zinc-800 text-white border-b-2 border-[#0071e3]"
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
               }`}
             >
@@ -269,7 +269,7 @@ export default function AdminLogsPage() {
               placeholder="Search filename, user email, IP address, device, or action..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
+              className="pl-10 text-xs bg-[#16161a] border-zinc-800 rounded-xl"
             />
           </div>
 
@@ -286,7 +286,7 @@ export default function AdminLogsPage() {
                 onClick={() => setStatusFilter(st.id)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
                   statusFilter === st.id
-                    ? "bg-purple-600 text-white font-semibold shadow-md shadow-purple-600/20"
+                    ? "bg-[#0071e3] text-white font-semibold shadow-md shadow-[#0071e3]/20"
                     : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
                 }`}
               >
@@ -297,7 +297,7 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-2xl apple-card">
+        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] overflow-hidden shadow-2xl apple-card">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-zinc-800 bg-zinc-950/70 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
@@ -315,7 +315,7 @@ export default function AdminLogsPage() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-16 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
                       Loading audit logs...
                     </td>
                   </tr>
@@ -446,7 +446,7 @@ export default function AdminLogsPage() {
 
                 <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
                   <span className="text-zinc-500 font-semibold block">IP Address</span>
-                  <span className="text-purple-400 font-mono">{selectedLog.ipAddress || "127.0.0.1"}</span>
+                  <span className="text-[#2997ff] font-mono">{selectedLog.ipAddress || "127.0.0.1"}</span>
                 </div>
 
                 {selectedLog.fileName && (

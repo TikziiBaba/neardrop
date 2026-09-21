@@ -113,7 +113,7 @@ export default function AdminSystemPage() {
             disabled={loading}
             className="gap-2 text-xs self-start sm:self-auto"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
             <span>Ping Services</span>
           </Button>
         </div>
@@ -121,7 +121,7 @@ export default function AdminSystemPage() {
         {/* Infrastructure Nodes Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* 1. Cloud Object Storage Node */}
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4 apple-card">
+          <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 space-y-4 apple-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
@@ -154,7 +154,7 @@ export default function AdminSystemPage() {
           </div>
 
           {/* 2. Supabase PostgreSQL Node */}
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4 apple-card">
+          <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 space-y-4 apple-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -187,10 +187,10 @@ export default function AdminSystemPage() {
           </div>
 
           {/* 3. Next.js Runtime Node */}
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4 apple-card">
+          <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 space-y-4 apple-card">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0071e3]/10 text-[#2997ff] border border-[#0071e3]/20">
                   <Cpu className="h-5 w-5" />
                 </div>
                 <div>
@@ -198,7 +198,7 @@ export default function AdminSystemPage() {
                   <p className="text-[11px] text-zinc-400">SSR & API Engine</p>
                 </div>
               </div>
-              <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-semibold text-purple-400 border border-purple-500/20">
+              <span className="rounded-full bg-[#0071e3]/10 px-2 py-0.5 text-[10px] font-semibold text-[#2997ff] border border-[#0071e3]/20">
                 {health?.server.nodeVersion || "Node.js"}
               </span>
             </div>
@@ -216,17 +216,17 @@ export default function AdminSystemPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-zinc-400">Uptime</span>
-                <span className="font-medium text-purple-400">Active</span>
+                <span className="font-medium text-emerald-400">Active</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Maintenance Controls */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6">
+        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 sm:p-8 space-y-6">
           <div>
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Zap className="h-4 w-4 text-purple-400" />
+              <Zap className="h-4 w-4 text-[#2997ff]" />
               <span>Maintenance & Integrity Operations</span>
             </h3>
             <p className="text-xs text-zinc-400 mt-1">

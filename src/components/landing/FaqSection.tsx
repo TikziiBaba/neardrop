@@ -24,38 +24,34 @@ export const FaqSection: React.FC = () => {
       <div className="mx-auto max-w-[680px] px-4 sm:px-6 lg:px-8">
         <SectionHeader title={t.faq.title} />
 
-        <div className="space-y-3">
+        <div className="space-y-0">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ delay: index * 0.04, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className={`group rounded-2xl border transition-all duration-200 overflow-hidden cursor-pointer ${
-                  isOpen
-                    ? "border-[#0071e3]/60 bg-white shadow-xl shadow-blue-500/5 ring-1 ring-[#0071e3]/25"
-                    : "border-[#e4e4e7] bg-white/90 hover:border-[#0071e3]/45 hover:bg-white hover:shadow-lg hover:-translate-y-0.5"
-                }`}
+                transition={{ delay: index * 0.03, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className={`border-b border-[var(--apple-separator-light)] ${index === 0 ? "border-t" : ""}`}
               >
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between p-5 text-left text-[15px] font-bold text-[#09090b] transition-colors cursor-pointer select-none"
+                  className="flex w-full items-center justify-between py-5 text-left text-[15px] font-semibold text-[var(--apple-text-primary)] cursor-pointer select-none group"
                 >
                   <span className="pr-4 tracking-tight">{faq.q}</span>
                   <motion.div
                     animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                    className={`flex-shrink-0 flex h-7 w-7 items-center justify-center rounded-full transition-colors ${
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className={`flex-shrink-0 flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                       isOpen
-                        ? "bg-[#0071e3] text-white shadow-sm"
-                        : "bg-zinc-100 text-[#27272a] group-hover:bg-blue-50 group-hover:text-[#0071e3]"
+                        ? "bg-[var(--apple-blue)] text-white"
+                        : "bg-[var(--apple-bg)] text-[var(--apple-text-tertiary)] group-hover:bg-[var(--apple-blue-light)] group-hover:text-[var(--apple-blue)]"
                     }`}
                   >
-                    <ChevronDown className="h-4 w-4" />
+                    <ChevronDown className="h-3.5 w-3.5" />
                   </motion.div>
                 </button>
 
@@ -69,7 +65,7 @@ export const FaqSection: React.FC = () => {
                         opacity: 1,
                         transition: {
                           height: { duration: 0.28, ease: [0.16, 1, 0.3, 1] },
-                          opacity: { duration: 0.2, delay: 0.05 },
+                          opacity: { duration: 0.2, delay: 0.04 },
                         },
                       }}
                       exit={{
@@ -77,12 +73,12 @@ export const FaqSection: React.FC = () => {
                         opacity: 0,
                         transition: {
                           height: { duration: 0.2, ease: [0.16, 1, 0.3, 1] },
-                          opacity: { duration: 0.12 },
+                          opacity: { duration: 0.1 },
                         },
                       }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 text-[14px] text-[#27272a] font-normal leading-relaxed border-t border-[#e4e4e7] pt-4">
+                      <div className="pb-5 text-[14px] text-[var(--apple-text-secondary)] leading-relaxed">
                         {faq.a}
                       </div>
                     </motion.div>

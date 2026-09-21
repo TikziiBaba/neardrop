@@ -265,11 +265,11 @@ export default function AdminUsersPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <span>User & Client Directory</span>
-              <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
+              <span className="rounded-full bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
                 {users.length} Total Accounts
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+            <p className="text-xs sm:text-sm text-[#86868b] mt-1">
               Live directory with real-time IP tracking, direct role management, quota controls, and device telemetry.
             </p>
           </div>
@@ -279,9 +279,9 @@ export default function AdminUsersPage() {
               variant="outline"
               size="sm"
               onClick={exportUsersCsv}
-              className="gap-1.5 text-xs rounded-xl border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800"
+              className="gap-1.5 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-[#a1a1a6] hover:bg-white/[0.08] hover:text-white"
             >
-              <Download className="h-3.5 w-3.5 text-purple-400" />
+              <Download className="h-3.5 w-3.5 text-[#2997ff]" />
               <span>Export CSV</span>
             </Button>
 
@@ -290,67 +290,67 @@ export default function AdminUsersPage() {
               size="sm"
               onClick={fetchUsers}
               disabled={loading}
-              className="gap-2 text-xs rounded-xl"
+              className="gap-2 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-[#a1a1a6] hover:bg-white/[0.08] hover:text-white"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
               <span>Refresh</span>
             </Button>
           </div>
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-zinc-900/40 p-3 rounded-2xl border border-zinc-800/80">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#16161a] p-3 rounded-2xl border border-white/[0.08]">
           {/* Search Bar */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
             <Input
               placeholder="Search by name, email, IP address, device, browser, platform..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-zinc-950/60 border-zinc-800 rounded-xl"
+              className="pl-10 text-xs bg-[#0e0e11] border-white/[0.08] text-white rounded-xl placeholder:text-[#6e6e73]"
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {/* Role Filter */}
-            <div className="flex items-center gap-1 bg-zinc-950/80 px-2.5 py-1.5 rounded-xl border border-zinc-800 text-xs">
-              <span className="text-zinc-500 text-[11px] font-medium mr-1">Role:</span>
+            <div className="flex items-center gap-1 bg-[#0e0e11] px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs">
+              <span className="text-[#86868b] text-[11px] font-medium mr-1">Role:</span>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="bg-transparent text-xs text-zinc-300 font-semibold focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-white font-semibold focus:outline-none cursor-pointer"
               >
-                <option value="all" className="bg-zinc-900">All Roles</option>
-                <option value="admin" className="bg-zinc-900">Admin Only</option>
-                <option value="moderator" className="bg-zinc-900">Moderators</option>
-                <option value="premium" className="bg-zinc-900">Premium</option>
-                <option value="member" className="bg-zinc-900">Members</option>
+                <option value="all" className="bg-[#16161a]">All Roles</option>
+                <option value="admin" className="bg-[#16161a] text-[#2997ff]">Admin Only</option>
+                <option value="moderator" className="bg-[#16161a] text-sky-400">Moderators</option>
+                <option value="premium" className="bg-[#16161a] text-emerald-400">Premium</option>
+                <option value="member" className="bg-[#16161a]">Members</option>
               </select>
             </div>
 
             {/* Status Filter */}
-            <div className="flex items-center gap-1 bg-zinc-950/80 px-2.5 py-1.5 rounded-xl border border-zinc-800 text-xs">
-              <span className="text-zinc-500 text-[11px] font-medium mr-1">Status:</span>
+            <div className="flex items-center gap-1 bg-[#0e0e11] px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs">
+              <span className="text-[#86868b] text-[11px] font-medium mr-1">Status:</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-transparent text-xs text-zinc-300 font-semibold focus:outline-none cursor-pointer"
+                className="bg-transparent text-xs text-white font-semibold focus:outline-none cursor-pointer"
               >
-                <option value="all" className="bg-zinc-900">All Statuses</option>
-                <option value="active" className="bg-zinc-900">Active</option>
-                <option value="banned" className="bg-zinc-900">Banned</option>
-                <option value="suspended" className="bg-zinc-900">Suspended</option>
+                <option value="all" className="bg-[#16161a]">All Statuses</option>
+                <option value="active" className="bg-[#16161a]">Active</option>
+                <option value="banned" className="bg-[#16161a]">Banned</option>
+                <option value="suspended" className="bg-[#16161a]">Suspended</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Users Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-white/[0.08] bg-[#16161a] overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 bg-zinc-950/80 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <thead className="border-b border-white/[0.08] bg-[#0e0e11] text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">User / Identity</th>
                   <th className="py-3.5 px-4">Role & Plan</th>
@@ -365,7 +365,7 @@ export default function AdminUsersPage() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
                       Loading user accounts and devices...
                     </td>
                   </tr>
@@ -395,12 +395,12 @@ export default function AdminUsersPage() {
                               user={u}
                               size="md"
                               showStatusDot={true}
-                              className="ring-2 ring-purple-500/20"
+                              className="ring-2 ring-[#0071e3]/30"
                             />
                             <div className="min-w-0">
-                              <p className="font-semibold text-white truncate group-hover:text-purple-300 transition-colors flex items-center gap-1.5">
+                              <p className="font-semibold text-white truncate group-hover:text-[#2997ff] transition-colors flex items-center gap-1.5">
                                 <span>{u.displayName}</span>
-                                <ChevronRight className="h-3.5 w-3.5 text-zinc-500 group-hover:text-purple-400 group-hover:translate-x-0.5 transition-all" />
+                                <ChevronRight className="h-3.5 w-3.5 text-zinc-500 group-hover:text-[#2997ff] group-hover:translate-x-0.5 transition-all" />
                               </p>
                               <p className="text-[11px] text-zinc-400 truncate">{u.email}</p>
                             </div>
@@ -416,7 +416,7 @@ export default function AdminUsersPage() {
                               onChange={(e) => handleQuickChangeRole(u, e.target.value as UserRole, e as any)}
                               className={`text-[10px] font-bold rounded-md px-2 py-0.5 border transition-all cursor-pointer ${
                                 isAdmin
-                                  ? "bg-purple-500/10 text-purple-400 border-purple-500/30"
+                                  ? "bg-[#0071e3]/15 text-[#2997ff] border-[#0071e3]/30"
                                   : isMod
                                   ? "bg-sky-500/10 text-sky-400 border-sky-500/30"
                                   : isPrem
@@ -424,13 +424,13 @@ export default function AdminUsersPage() {
                                   : "bg-zinc-800 text-zinc-300 border-zinc-700"
                               }`}
                             >
-                              <option value="admin" className="bg-zinc-900 text-purple-400 font-bold">Admin</option>
-                              <option value="moderator" className="bg-zinc-900 text-sky-400 font-bold">Moderator</option>
-                              <option value="premium" className="bg-zinc-900 text-emerald-400 font-bold">Premium</option>
-                              <option value="member" className="bg-zinc-900 text-zinc-300">Member</option>
+                              <option value="admin" className="bg-[#16161a] text-[#2997ff] font-bold">Admin</option>
+                              <option value="moderator" className="bg-[#16161a] text-sky-400 font-bold">Moderator</option>
+                              <option value="premium" className="bg-[#16161a] text-emerald-400 font-bold">Premium</option>
+                              <option value="member" className="bg-[#16161a] text-zinc-300">Member</option>
                             </select>
 
-                            <span className="text-[10px] text-zinc-400 uppercase font-mono tracking-wider">
+                            <span className="text-[10px] text-[#86868b] uppercase font-mono tracking-wider">
                               Plan: <strong className="text-zinc-300">{u.subscriptionTier?.toUpperCase() || "FREE"}</strong>
                             </span>
                           </div>
@@ -441,8 +441,8 @@ export default function AdminUsersPage() {
                           <div className="space-y-1 min-w-[170px]">
                             {/* IP Box with Copy button */}
                             <div className="flex items-center gap-1.5 text-[11px]">
-                              <span className="font-mono text-purple-300 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/30 font-semibold flex items-center gap-1">
-                                <Wifi className="h-3 w-3 text-purple-400" />
+                              <span className="font-mono text-[#2997ff] bg-[#0071e3]/10 px-2 py-0.5 rounded border border-[#0071e3]/25 font-semibold flex items-center gap-1">
+                                <Wifi className="h-3 w-3 text-[#2997ff]" />
                                 {u.lastIpAddress || "127.0.0.1"}
                               </span>
                               <button
@@ -481,7 +481,7 @@ export default function AdminUsersPage() {
                               <div
                                 style={{ width: `${usagePercent}%` }}
                                 className={`h-full rounded-full transition-all ${
-                                  usagePercent > 85 ? "bg-rose-500" : "bg-gradient-to-r from-sky-400 to-purple-500"
+                                  usagePercent > 85 ? "bg-rose-500" : "bg-gradient-to-r from-sky-400 to-[#0071e3]"
                                 }`}
                               />
                             </div>
@@ -531,7 +531,7 @@ export default function AdminUsersPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs h-8 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 gap-1 rounded-lg"
+                                className="text-xs h-8 text-[#2997ff] hover:text-[#0071e3] hover:bg-[#0071e3]/10 gap-1 rounded-lg"
                                 title="Inspect User Full Details & IP History"
                               >
                                 <Eye className="h-3.5 w-3.5" />
@@ -553,9 +553,12 @@ export default function AdminUsersPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => setSelectedUserForDelete(u)}
-                              title="Delete User"
-                              className="h-8 w-8 p-0 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedUserForDelete(u);
+                              }}
+                              title="Delete Account"
+                              className="text-xs h-8 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 gap-1 rounded-lg"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
@@ -589,7 +592,7 @@ export default function AdminUsersPage() {
             <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-1">
               <p className="text-zinc-300 font-semibold">{selectedUserForEdit?.email}</p>
               <p className="text-[11px] text-zinc-400 font-mono">
-                IP: <strong className="text-purple-300">{selectedUserForEdit?.lastIpAddress || "127.0.0.1"}</strong> • Client: {selectedUserForEdit?.lastDevice || "Desktop"} ({selectedUserForEdit?.lastBrowser || "Web"})
+                IP: <strong className="text-[#2997ff]">{selectedUserForEdit?.lastIpAddress || "127.0.0.1"}</strong> • Client: {selectedUserForEdit?.lastDevice || "Desktop"} ({selectedUserForEdit?.lastBrowser || "Web"})
               </p>
             </div>
 
@@ -600,7 +603,7 @@ export default function AdminUsersPage() {
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as UserRole)}
-                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
+                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-[#0071e3]"
                 >
                   <option value="member">Standard Member</option>
                   <option value="premium">Premium Member</option>
@@ -614,7 +617,7 @@ export default function AdminUsersPage() {
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as any)}
-                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
+                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-[#0071e3]"
                 >
                   <option value="active">Active (Normal Access)</option>
                   <option value="suspended">Suspended (Temporary)</option>
@@ -637,7 +640,7 @@ export default function AdminUsersPage() {
                     else if (newT === "pro") setEditQuotaGb(100);
                     else if (newT === "free") setEditQuotaGb(10);
                   }}
-                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-purple-500"
+                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-[#0071e3]"
                 >
                   <option value="free">Free Starter (2 GB)</option>
                   <option value="pro">Pro Plan (100 GB)</option>
@@ -667,7 +670,7 @@ export default function AdminUsersPage() {
                 onChange={(e) => setEditNotes(e.target.value)}
                 placeholder="Write private notes about this user, reasons for bans/upgrades, or special permissions..."
                 rows={3}
-                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-purple-500"
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-[#0071e3]"
               />
             </div>
           </div>
@@ -681,7 +684,7 @@ export default function AdminUsersPage() {
               size="sm"
               onClick={handleSaveUserEdit}
               disabled={isUpdating}
-              className="bg-purple-600 hover:bg-purple-500 text-xs rounded-xl"
+              className="bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs rounded-xl font-medium"
             >
               {isUpdating ? "Saving Changes..." : "Save All Changes"}
             </Button>

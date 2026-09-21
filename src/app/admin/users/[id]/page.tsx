@@ -264,14 +264,14 @@ export default function UserDetailPage() {
     if (deviceType === "tablet") {
       return <Tablet className="h-5 w-5 text-sky-400" />;
     }
-    return <Laptop className="h-5 w-5 text-purple-400" />;
+    return <Laptop className="h-5 w-5 text-[#2997ff]" />;
   };
 
   if (loading && !user) {
     return (
       <AdminLayout>
         <div className="flex h-[60vh] items-center justify-center">
-          <RefreshCw className="h-8 w-8 animate-spin text-purple-500" />
+          <RefreshCw className="h-8 w-8 animate-spin text-[#0071e3]" />
         </div>
       </AdminLayout>
     );
@@ -313,7 +313,7 @@ export default function UserDetailPage() {
             onClick={fetchUserData}
             className="gap-2 text-xs rounded-xl"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
             <span>Sync Live Data</span>
           </Button>
         </div>
@@ -327,7 +327,7 @@ export default function UserDetailPage() {
                 user={user}
                 size="2xl"
                 showStatusDot={true}
-                className="ring-4 ring-purple-500/30 shadow-2xl"
+                className="ring-4 ring-[#0071e3]/30 shadow-2xl"
               />
               <div className="space-y-1.5 min-w-0">
                 <div className="flex items-center gap-2.5 flex-wrap">
@@ -337,7 +337,7 @@ export default function UserDetailPage() {
 
                   {/* Role Badge */}
                   {user.role === "admin" ? (
-                    <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2.5 py-0.5 text-xs font-bold text-purple-400 border border-purple-500/20">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-bold text-[#2997ff] border border-[#0071e3]/30">
                       <ShieldCheck className="h-3.5 w-3.5" />
                       Administrator
                     </span>
@@ -374,8 +374,8 @@ export default function UserDetailPage() {
 
                 {/* IP & Telemetry Line */}
                 <div className="flex items-center gap-3 pt-1 text-xs text-zinc-400 flex-wrap">
-                  <div className="flex items-center gap-1.5 bg-zinc-950/80 px-2.5 py-1 rounded-xl border border-zinc-800 font-mono text-purple-300">
-                    <Wifi className="h-3.5 w-3.5 text-purple-400" />
+                  <div className="flex items-center gap-1.5 bg-zinc-950/80 px-2.5 py-1 rounded-xl border border-zinc-800 font-mono text-[#2997ff]">
+                    <Wifi className="h-3.5 w-3.5 text-[#2997ff]" />
                     <span>{user.lastIpAddress || "127.0.0.1"}</span>
                     <button
                       onClick={() => handleCopyIp(user.lastIpAddress || "127.0.0.1")}
@@ -417,7 +417,7 @@ export default function UserDetailPage() {
               <div className="space-y-0.5">
                 <span className="text-[10px] text-zinc-500 font-semibold uppercase">Devices</span>
                 <p className="text-lg font-bold text-white flex items-center justify-center lg:justify-start gap-1.5">
-                  <Laptop className="h-4 w-4 text-purple-400" />
+                  <Laptop className="h-4 w-4 text-[#2997ff]" />
                   <span>{devices.length}</span>
                 </p>
               </div>
@@ -426,10 +426,10 @@ export default function UserDetailPage() {
         </div>
 
         {/* Live Account Controls & Permissions Card */}
-        <div className="rounded-3xl border border-purple-500/30 bg-zinc-900/80 p-6 sm:p-8 space-y-6 shadow-2xl backdrop-blur-xl">
+        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 sm:p-8 space-y-6 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-zinc-800 pb-4">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#0071e3]/15 text-[#2997ff] border border-[#0071e3]/30">
                 <Edit3 className="h-4 w-4" />
               </div>
               <div>
@@ -443,7 +443,7 @@ export default function UserDetailPage() {
               size="sm"
               onClick={handleSaveAccountChanges}
               disabled={isSavingAccount}
-              className="gap-2 text-xs bg-purple-600 hover:bg-purple-500 shadow-lg shadow-purple-600/25 rounded-xl font-bold"
+              className="gap-2 text-xs bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-lg shadow-[#0071e3]/20 rounded-xl font-bold"
             >
               <Save className="h-3.5 w-3.5" />
               <span>{isSavingAccount ? "Saving Changes..." : "Save All Changes"}</span>
@@ -455,13 +455,13 @@ export default function UserDetailPage() {
             {/* 1. Role Selector */}
             <div className="space-y-2 p-4 rounded-2xl bg-zinc-950/70 border border-zinc-800">
               <label className="text-xs font-bold text-white flex items-center gap-1.5">
-                <ShieldCheck className="h-4 w-4 text-purple-400" />
+                <ShieldCheck className="h-4 w-4 text-[#2997ff]" />
                 <span>User Role</span>
               </label>
               <select
                 value={editRole}
                 onChange={(e) => setEditRole(e.target.value as UserRole)}
-                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500"
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#0071e3]"
               >
                 <option value="member">Standard Member (Basic Access)</option>
                 <option value="premium">Premium Member (High Quota)</option>
@@ -489,7 +489,7 @@ export default function UserDetailPage() {
                   else if (newT === "pro") setEditQuotaGb(100);
                   else if (newT === "free") setEditQuotaGb(10);
                 }}
-                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500"
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#0071e3]"
               >
                 <option value="free">Free Starter (2 GB)</option>
                 <option value="pro">Pro Plan (100 GB)</option>
@@ -510,7 +510,7 @@ export default function UserDetailPage() {
               <select
                 value={editStatus}
                 onChange={(e) => setEditStatus(e.target.value as any)}
-                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-purple-500"
+                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-700 px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-[#0071e3]"
               >
                 <option value="active">Active (Normal Access)</option>
                 <option value="suspended">Suspended (Read-only / Frozen)</option>
@@ -527,11 +527,11 @@ export default function UserDetailPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <h3 className="text-xs font-bold text-white flex items-center gap-2">
-                  <HardDrive className="h-4 w-4 text-purple-400" />
+                  <HardDrive className="h-4 w-4 text-[#2997ff]" />
                   <span>Custom Storage Quota Limit</span>
                 </h3>
                 <p className="text-[11px] text-zinc-400">
-                  Current usage: <strong className="text-zinc-200">{formatBytes(user.usedBytes)}</strong> of <strong className="text-purple-300">{formatBytes(user.quotaBytes)}</strong> ({usagePercent}%)
+                  Current usage: <strong className="text-zinc-200">{formatBytes(user.usedBytes)}</strong> of <strong className="text-[#2997ff]">{formatBytes(user.quotaBytes)}</strong> ({usagePercent}%)
                 </p>
               </div>
 
@@ -544,7 +544,7 @@ export default function UserDetailPage() {
                     onClick={() => setEditQuotaGb(gb)}
                     className={`rounded-lg border px-2.5 py-1 text-[11px] font-bold transition-all ${
                       editQuotaGb === gb
-                        ? "border-purple-500 bg-purple-500/20 text-purple-300"
+                        ? "border-[#0071e3] bg-[#0071e3]/20 text-[#2997ff]"
                         : "border-zinc-800 bg-zinc-900 text-zinc-400 hover:text-white"
                     }`}
                   >
@@ -576,7 +576,7 @@ export default function UserDetailPage() {
                 <div className="h-2 w-full rounded-full bg-zinc-900 overflow-hidden border border-zinc-800">
                   <div
                     style={{ width: `${Math.min(100, (user.usedBytes / (editQuotaGb * 1024 * 1024 * 1024 || 1)) * 100)}%` }}
-                    className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-sky-400 to-[#0071e3] rounded-full"
                   />
                 </div>
               </div>
@@ -594,7 +594,7 @@ export default function UserDetailPage() {
               onChange={(e) => setEditNotes(e.target.value)}
               placeholder="Write private notes about this user, history, or special permissions..."
               rows={2}
-              className="w-full bg-zinc-950/80 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-purple-500"
+              className="w-full bg-zinc-950/80 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-[#0071e3]"
             />
           </div>
         </div>
@@ -604,34 +604,34 @@ export default function UserDetailPage() {
           <button
             onClick={() => setActiveTab("files")}
             className={`pb-3 flex items-center gap-2 transition-colors relative ${
-              activeTab === "files" ? "text-purple-400 font-bold" : "text-zinc-400 hover:text-zinc-200"
+              activeTab === "files" ? "text-[#2997ff] font-bold" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             <FolderOpen className="h-4 w-4" />
             <span>Files ({files.length})</span>
-            {activeTab === "files" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />}
+            {activeTab === "files" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0071e3]" />}
           </button>
 
           <button
             onClick={() => setActiveTab("shares")}
             className={`pb-3 flex items-center gap-2 transition-colors relative ${
-              activeTab === "shares" ? "text-purple-400 font-bold" : "text-zinc-400 hover:text-zinc-200"
+              activeTab === "shares" ? "text-[#2997ff] font-bold" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             <Share2 className="h-4 w-4" />
             <span>Active Shares ({shares.length})</span>
-            {activeTab === "shares" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />}
+            {activeTab === "shares" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0071e3]" />}
           </button>
 
           <button
             onClick={() => setActiveTab("devices")}
             className={`pb-3 flex items-center gap-2 transition-colors relative ${
-              activeTab === "devices" ? "text-purple-400 font-bold" : "text-zinc-400 hover:text-zinc-200"
+              activeTab === "devices" ? "text-[#2997ff] font-bold" : "text-zinc-400 hover:text-zinc-200"
             }`}
           >
             <Laptop className="h-4 w-4" />
             <span>Devices & IP Telemetry ({devices.length})</span>
-            {activeTab === "devices" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500" />}
+            {activeTab === "devices" && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0071e3]" />}
           </button>
         </div>
 
@@ -728,7 +728,7 @@ export default function UserDetailPage() {
                       <tr key={share.id} className="hover:bg-zinc-800/40 transition-colors">
                         <td className="py-3.5 px-4 sm:px-6">
                           <div className="flex items-center gap-2">
-                            <span className="font-mono text-purple-300 bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
+                            <span className="font-mono text-[#2997ff] bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
                               /s/{share.token}
                             </span>
                             <button
@@ -793,7 +793,7 @@ export default function UserDetailPage() {
           <div className="space-y-4">
             <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-xl">
               <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-4">
-                <Wifi className="h-4 w-4 text-purple-400" />
+                <Wifi className="h-4 w-4 text-[#2997ff]" />
                 <span>Recorded Client Sessions & Devices</span>
               </h3>
 
@@ -825,8 +825,8 @@ export default function UserDetailPage() {
 
                             {/* IP Box */}
                             <div className="flex items-center gap-1.5 pt-1">
-                              <span className="font-mono text-[11px] text-purple-300 bg-purple-950/60 px-2 py-0.5 rounded border border-purple-500/30 flex items-center gap-1">
-                                <Wifi className="h-3 w-3 text-purple-400" />
+                              <span className="font-mono text-[11px] text-[#2997ff] bg-[#0071e3]/10 px-2 py-0.5 rounded border border-[#0071e3]/30 flex items-center gap-1">
+                                <Wifi className="h-3 w-3 text-[#2997ff]" />
                                 {devIp}
                               </span>
                               <button

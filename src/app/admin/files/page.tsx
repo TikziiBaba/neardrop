@@ -152,7 +152,7 @@ export default function AdminFilesPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <span>All Stored Files</span>
-              <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
+              <span className="rounded-md bg-[#0071e3]/15 px-2 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
                 {files.length} Stored Objects
               </span>
             </h1>
@@ -168,7 +168,7 @@ export default function AdminFilesPage() {
             disabled={loading}
             className="gap-2 text-xs self-start sm:self-auto rounded-xl"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
             <span>Refresh</span>
           </Button>
         </div>
@@ -181,7 +181,7 @@ export default function AdminFilesPage() {
               placeholder="Search by filename, owner email, or R2 key..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
+              className="pl-10 text-xs bg-[#16161a] border-zinc-800 rounded-xl"
             />
           </div>
 
@@ -193,7 +193,7 @@ export default function AdminFilesPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold capitalize transition-colors whitespace-nowrap ${
                   selectedCategory === cat
-                    ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
+                    ? "bg-[#0071e3] text-white shadow-md shadow-[#0071e3]/20"
                     : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
                 }`}
               >
@@ -204,7 +204,7 @@ export default function AdminFilesPage() {
         </div>
 
         {/* Files Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
@@ -222,7 +222,7 @@ export default function AdminFilesPage() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
                       Loading global files...
                     </td>
                   </tr>
@@ -242,7 +242,7 @@ export default function AdminFilesPage() {
                             {renderFileIcon(file)}
                           </div>
                           <div className="min-w-0 max-w-[200px] sm:max-w-[260px]">
-                            <p className="font-semibold text-white truncate group-hover:text-purple-300 transition-colors">
+                            <p className="font-semibold text-white truncate group-hover:text-[#2997ff] transition-colors">
                               {file.filename}
                             </p>
                             <p className="font-mono text-[10px] text-zinc-500 truncate">
@@ -256,10 +256,10 @@ export default function AdminFilesPage() {
                       <td className="py-4 px-4">
                         <Link
                           href={`/admin/users/${file.userId}`}
-                          className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-purple-300 transition-colors group/user"
+                          className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-[#2997ff] transition-colors group/user"
                           title="Inspect user profile"
                         >
-                          <User className="h-3.5 w-3.5 text-zinc-500 group-hover/user:text-purple-400" />
+                          <User className="h-3.5 w-3.5 text-zinc-500 group-hover/user:text-[#2997ff]" />
                           <span className="truncate max-w-[140px] text-xs font-semibold">
                             {file.userEmail || "User Profile"}
                           </span>
@@ -372,7 +372,7 @@ export default function AdminFilesPage() {
               href={downloadLinkModal?.url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white hover:bg-purple-500 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#0071e3] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0077ed] transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               <span>Open & Download</span>

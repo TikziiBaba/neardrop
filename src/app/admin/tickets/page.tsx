@@ -71,19 +71,19 @@ export default function AdminTicketsPage() {
         );
       case "waiting_customer":
         return (
-          <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-[10px] font-bold text-purple-400 border border-purple-500/20">
+          <span className="rounded-full bg-[#0071e3]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#2997ff] border border-[#0071e3]/30">
             Awaiting User
           </span>
         );
       case "resolved":
         return (
-          <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/20">
+          <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
             Resolved
           </span>
         );
       case "closed":
         return (
-          <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+          <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium text-[#86868b]">
             Closed
           </span>
         );
@@ -96,20 +96,20 @@ export default function AdminTicketsPage() {
     switch (priority) {
       case "urgent":
         return (
-          <span className="rounded-md bg-rose-500/10 px-2 py-0.5 text-[10px] font-bold text-rose-400 border border-rose-500/20">
+          <span className="rounded-full bg-rose-500/15 px-2.5 py-0.5 text-[10px] font-bold text-rose-400 border border-rose-500/30">
             Urgent
           </span>
         );
       case "high":
         return (
-          <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/20">
+          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/30">
             High
           </span>
         );
       case "medium":
         return <span className="text-sky-400 font-semibold text-xs">Medium</span>;
       default:
-        return <span className="text-zinc-500 text-xs">Low</span>;
+        return <span className="text-[#86868b] text-xs">Low</span>;
     }
   };
 
@@ -122,17 +122,17 @@ export default function AdminTicketsPage() {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 select-none">
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <span>Support Ticket Inbox</span>
-              <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
+              <span className="rounded-full bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
                 {tickets.length} Active Inquiries
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+            <p className="text-xs sm:text-sm text-[#86868b] mt-1">
               Review and respond to customer tickets, storage inquiries, and technical requests.
             </p>
           </div>
@@ -142,22 +142,23 @@ export default function AdminTicketsPage() {
             size="sm"
             onClick={fetchTickets}
             disabled={loading}
-            className="gap-2 text-xs rounded-xl"
+            className="gap-2 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-[#a1a1a6] hover:bg-white/[0.08] hover:text-white"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
             <span>Refresh Inbox</span>
           </Button>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#16161a] p-3 rounded-2xl border border-white/[0.08]">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-            <Input
-              placeholder="Search by subject, customer name, or email..."
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
+            <input
+              type="text"
+              placeholder="Search tickets by title, customer name, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
+              className="w-full pl-10 pr-4 py-2 text-xs bg-[#0e0e11] border border-white/[0.08] rounded-xl text-white placeholder:text-[#6e6e73] outline-none"
             />
           </div>
 
@@ -170,8 +171,8 @@ export default function AdminTicketsPage() {
                 onClick={() => setStatusFilter(st)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold capitalize transition-colors whitespace-nowrap ${
                   statusFilter === st
-                    ? "bg-purple-600 text-white shadow-md shadow-purple-600/20"
-                    : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                    ? "bg-[#0071e3] text-white shadow-md shadow-blue-500/20"
+                    : "bg-[#0e0e11] text-[#86868b] hover:text-white border border-white/[0.08]"
                 }`}
               >
                 {st.replace("_", " ")}
@@ -181,7 +182,7 @@ export default function AdminTicketsPage() {
         </div>
 
         {/* Tickets Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl apple-card">
+        <div className="rounded-3xl border border-white/[0.08] bg-[#16161a] overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
@@ -198,14 +199,14 @@ export default function AdminTicketsPage() {
               <tbody className="divide-y divide-zinc-800/60">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
+                    <td colSpan={7} className="py-12 text-center text-[#86868b]">
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
                       Loading staff inbox...
                     </td>
                   </tr>
                 ) : filteredTickets.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-500">
+                    <td colSpan={7} className="py-12 text-center text-[#86868b]">
                       No support tickets found for the selected filter.
                     </td>
                   </tr>
@@ -214,14 +215,14 @@ export default function AdminTicketsPage() {
                     <tr
                       key={t.id}
                       onClick={() => (window.location.href = `/admin/tickets/${t.id}`)}
-                      className="hover:bg-zinc-800/40 transition-colors group cursor-pointer"
+                      className="hover:bg-white/[0.04] transition-colors group cursor-pointer"
                     >
                       <td className="py-4 px-4 sm:px-6">
                         <div className="min-w-0 max-w-[240px] sm:max-w-[300px]">
-                          <p className="font-semibold text-white truncate group-hover:text-purple-300 transition-colors">
+                          <p className="font-semibold text-white truncate group-hover:text-[#2997ff] transition-colors">
                             {t.title}
                           </p>
-                          <p className="font-mono text-[10px] text-zinc-500 truncate">
+                          <p className="font-mono text-[10px] text-[#86868b] truncate">
                             {t.id}
                           </p>
                         </div>
@@ -229,12 +230,12 @@ export default function AdminTicketsPage() {
 
                       <td className="py-4 px-4">
                         <div className="min-w-0">
-                          <p className="font-semibold text-zinc-200 truncate">{t.userName}</p>
-                          <p className="text-[10px] text-zinc-400 truncate">{t.userEmail}</p>
+                          <p className="font-semibold text-[#f5f5f7] truncate">{t.userName}</p>
+                          <p className="text-[10px] text-[#86868b] truncate">{t.userEmail}</p>
                         </div>
                       </td>
 
-                      <td className="py-4 px-4 capitalize text-zinc-300 font-medium">
+                      <td className="py-4 px-4 capitalize text-[#a1a1a6] font-medium">
                         {t.department}
                       </td>
 
@@ -246,7 +247,7 @@ export default function AdminTicketsPage() {
                         {getStatusBadge(t.status)}
                       </td>
 
-                      <td className="py-4 px-4 text-[11px] text-zinc-400 whitespace-nowrap">
+                      <td className="py-4 px-4 text-[11px] text-[#86868b] whitespace-nowrap">
                         {formatRelativeTime(t.updatedAt)}
                       </td>
 
@@ -255,7 +256,7 @@ export default function AdminTicketsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-xs h-8 text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 gap-1 rounded-lg"
+                            className="text-xs h-8 text-[#2997ff] hover:text-blue-300 hover:bg-[#0071e3]/10 gap-1 rounded-full"
                           >
                             <span>Respond</span>
                             <ChevronRight className="h-3.5 w-3.5" />

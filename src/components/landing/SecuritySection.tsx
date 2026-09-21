@@ -6,7 +6,7 @@ import { useLanguage } from "@/lib/i18n/context";
 import { motion } from "framer-motion";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
-const spring = { type: "spring" as const, bounce: 0.15, duration: 0.65 };
+const spring = { type: "spring" as const, bounce: 0.12, duration: 0.6 };
 
 export const SecuritySection: React.FC = () => {
   const { t } = useLanguage();
@@ -16,57 +16,53 @@ export const SecuritySection: React.FC = () => {
       icon: KeyRound,
       title: t.security.rlsTitle,
       desc: t.security.rlsDesc,
-      color: "text-[#0071e3]",
-      bg: "bg-[#0071e3]/6",
+      color: "text-[var(--apple-blue)]",
+      bg: "bg-[var(--apple-blue-light)]",
     },
     {
       icon: FileCheck2,
       title: t.security.signedUrlTitle,
       desc: t.security.signedUrlDesc,
-      color: "text-[#34c759]",
-      bg: "bg-[#34c759]/6",
+      color: "text-[var(--apple-green)]",
+      bg: "bg-[rgba(52,199,89,0.08)]",
     },
     {
       icon: Fingerprint,
       title: t.security.highEntropyTitle,
       desc: t.security.highEntropyDesc,
-      color: "text-[#5856d6]",
-      bg: "bg-[#5856d6]/6",
+      color: "text-[var(--apple-indigo)]",
+      bg: "bg-[rgba(88,86,214,0.08)]",
     },
     {
       icon: Lock,
       title: t.security.zeroKnowledgeTitle,
       desc: t.security.zeroKnowledgeDesc,
-      color: "text-[#ff9500]",
-      bg: "bg-[#ff9500]/6",
+      color: "text-[var(--apple-orange)]",
+      bg: "bg-[rgba(255,149,0,0.08)]",
     },
     {
       icon: Hourglass,
       title: t.security.lifespanTitle,
       desc: t.security.lifespanDesc,
-      color: "text-[#32ade6]",
-      bg: "bg-[#32ade6]/6",
+      color: "text-[var(--apple-teal)]",
+      bg: "bg-[rgba(90,200,250,0.08)]",
     },
     {
       icon: ShieldCheck,
       title: t.security.egressTitle,
       desc: t.security.egressDesc,
-      color: "text-[#ff3b30]",
-      bg: "bg-[#ff3b30]/6",
+      color: "text-[var(--apple-red)]",
+      bg: "bg-[rgba(255,59,48,0.08)]",
     },
   ];
 
   return (
     <section id="security" className="landing-divider py-20 md:py-28 relative overflow-hidden select-none">
       <div className="mx-auto max-w-[980px] px-4 sm:px-6 lg:px-8">
-        <SectionHeader
-          title={t.security.title}
-          subtitle={t.security.subtitle}
-          align="center"
-        />
+        <SectionHeader title={t.security.title} subtitle={t.security.subtitle} align="center" />
 
         {/* Security Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {securityPillars.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -75,46 +71,68 @@ export const SecuritySection: React.FC = () => {
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ ...spring, delay: index * 0.06 }}
-                className="group landing-card rounded-3xl p-6 space-y-3 cursor-pointer"
+                transition={{ ...spring, delay: index * 0.05 }}
+                className="landing-card p-6 space-y-3"
               >
-                <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${item.bg} ${item.color} group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${item.bg} ${item.color}`}>
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-base font-bold text-[#09090b] tracking-tight">{item.title}</h3>
-                <p className="text-[13px] text-[#27272a] font-normal leading-relaxed">{item.desc}</p>
+                <h3 className="text-[15px] font-semibold text-[var(--apple-text-primary)] tracking-tight">
+                  {item.title}
+                </h3>
+                <p className="text-[13px] text-[var(--apple-text-secondary)] leading-relaxed">
+                  {item.desc}
+                </p>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Technical Architecture Flow */}
+        {/* Technical Architecture */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
-          transition={{ ...spring, delay: 0.15 }}
-          className="mt-12 landing-card rounded-3xl p-6 sm:p-8 bg-white/90 border border-[#e4e4e7] backdrop-blur-xl shadow-md"
+          transition={{ ...spring, delay: 0.1 }}
+          className="mt-10 landing-card p-6 sm:p-8"
         >
-          <h3 className="text-[12px] font-bold uppercase tracking-wider text-[#09090b] mb-5">
-            {t.security.archTitle}
-          </h3>
+          <h3 className="apple-caption mb-5">{t.security.archTitle}</h3>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 relative">
+            {/* Connector lines (desktop) */}
+            <div className="hidden md:block absolute top-1/2 left-[33.3%] w-[1px] h-12 -translate-y-1/2 bg-gradient-to-b from-transparent via-[var(--apple-separator)] to-transparent" />
+            <div className="hidden md:block absolute top-1/2 left-[66.6%] w-[1px] h-12 -translate-y-1/2 bg-gradient-to-b from-transparent via-[var(--apple-separator)] to-transparent" />
+
             {[
-              { title: t.security.arch1Title, desc: t.security.arch1Desc, color: "text-[#0071e3]", borderHover: "hover:border-[#0071e3] hover:shadow-blue-500/10" },
-              { title: t.security.arch2Title, desc: t.security.arch2Desc, color: "text-[#5856d6]", borderHover: "hover:border-[#5856d6] hover:shadow-indigo-500/10" },
-              { title: t.security.arch3Title, desc: t.security.arch3Desc, color: "text-[#16a34a]", borderHover: "hover:border-[#16a34a] hover:shadow-green-500/10" },
+              {
+                title: t.security.arch1Title,
+                desc: t.security.arch1Desc,
+                color: "text-[var(--apple-blue)]",
+                borderHover: "hover:border-[var(--apple-blue)]",
+              },
+              {
+                title: t.security.arch2Title,
+                desc: t.security.arch2Desc,
+                color: "text-[var(--apple-indigo)]",
+                borderHover: "hover:border-[var(--apple-indigo)]",
+              },
+              {
+                title: t.security.arch3Title,
+                desc: t.security.arch3Desc,
+                color: "text-[var(--apple-green)]",
+                borderHover: "hover:border-[var(--apple-green)]",
+              },
             ].map((arch, i) => (
               <motion.div
                 key={arch.title}
-                initial={{ opacity: 0, x: -12 }}
+                initial={{ opacity: 0, x: -10 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ ...spring, delay: 0.15 + i * 0.1 }}
-                className={`p-5 rounded-2xl bg-white border border-[#e4e4e7] space-y-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${arch.borderHover}`}
+                transition={{ ...spring, delay: 0.12 + i * 0.08 }}
+                className={`p-5 rounded-xl bg-[var(--apple-bg)] border border-[var(--apple-separator-light)] space-y-2 transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${arch.borderHover}`}
               >
-                <span className={`${arch.color} font-bold text-sm font-mono`}>{arch.title}</span>
-                <p className="text-[#27272a] text-[13px] font-normal leading-relaxed">{arch.desc}</p>
+                <span className={`${arch.color} font-semibold text-sm font-mono`}>{arch.title}</span>
+                <p className="text-[var(--apple-text-secondary)] text-[13px] leading-relaxed">{arch.desc}</p>
               </motion.div>
             ))}
           </div>

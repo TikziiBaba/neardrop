@@ -3,23 +3,48 @@
 import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, Mail, Lock, ArrowRight, AlertCircle, Loader2, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  Mail,
+  Lock,
+  ArrowRight,
+  AlertCircle,
+  Loader2,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  CheckCircle2,
+} from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { toast } from "sonner";
-import { LandingAmbient } from "@/components/landing/LandingAmbient";
+import { SoundManager } from "@/lib/utils/sound-effects";
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#f5f5f7]">
+          <Loader2 className="h-7 w-7 animate-spin text-[#0071e3]" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
 
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/dashboard";
   const { login, signInWithOAuth, resendVerificationEmail } = useAuth();
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
+  const isTr = locale === "tr";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSocialLoading, setIsSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,26 +68,59 @@ function LoginForm() {
     setShowResend(false);
 
     if (!email || !password) {
-      setError(t.login.fillAllFields);
+      setError(isTr ? "Lütfen tüm alanları doldurun." : "Please fill out all fields.");
       return;
     }
 
+    SoundManager.play("pop");
     setIsLoading(true);
     try {
       const res = await login(email, password);
       if (!res.success) {
-        setError(res.error || t.login.invalidCredentials);
+        setError(res.error || (isTr ? "Geçersiz e-posta veya şifre." : "Invalid email or password."));
         if (res.requiresVerification) {
           setShowResend(true);
         }
       } else {
-        toast.success(t.login.welcomeToast);
+        SoundManager.play("success");
+        toast.success(isTr ? "Giriş başarılı! Yönlendiriliyorsunuz..." : "Welcome back!");
         router.push(redirectUrl);
       }
     } catch (err: any) {
-      setError(err.message || t.login.unexpectedError);
+      setError(err.message || (isTr ? "Beklenmeyen bir hata oluştu." : "Unexpected error."));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const [isDirectConfirming, setIsDirectConfirming] = useState(false);
+
+  const handleDirectConfirm = async () => {
+    if (!email.trim() || isDirectConfirming) return;
+    setIsDirectConfirming(true);
+    try {
+      const res = await fetch("/api/auth/confirm-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim() }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(isTr ? "E-posta doğrulandı! Giriş yapılıyor..." : "Email verified! Signing in...");
+        setError(null);
+        setShowResend(false);
+        if (password) {
+          await handleSubmit(new Event("submit") as any);
+        } else {
+          toast.info(isTr ? "Lütfen parolanızı girip Giriş Yap'a tıklayın." : "Please enter your password to sign in.");
+        }
+      } else {
+        toast.error(data.error || "Doğrulama başarısız.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Hata oluştu.");
+    } finally {
+      setIsDirectConfirming(false);
     }
   };
 
@@ -72,7 +130,7 @@ function LoginForm() {
     try {
       const res = await resendVerificationEmail(email.trim());
       if (res.success) {
-        toast.success(`Doğrulama bağlantısı ${email} adresine tekrar gönderildi!`);
+        toast.success(isTr ? `Onay bağlantısı ${email} adresine tekrar gönderildi!` : `Verification link resent to ${email}`);
         setCooldown(60);
         const timer = setInterval(() => {
           setCooldown((prev) => {
@@ -84,49 +142,62 @@ function LoginForm() {
           });
         }, 1000);
       } else {
-        toast.error(res.error || "Failed to resend confirmation email.");
+        toast.error(res.error || "E-posta gönderilemedi.");
       }
-    } catch (e: any) {
-      toast.error(e.message || "Error resending email");
+    } catch (err: any) {
+      toast.error(err.message || "Hata oluştu.");
     } finally {
       setIsResending(false);
     }
   };
 
   const handleSocialLogin = async (provider: "google" | "github") => {
+    SoundManager.play("click");
     setIsSocialLoading(provider);
     try {
       const res = await signInWithOAuth(provider);
       if (!res.success) {
-        toast.error(res.error || `Failed to connect with ${provider}`);
+        toast.error(res.error || `${provider} ile bağlanılamadı.`);
       }
     } catch (err: any) {
-      toast.error(err.message || "Social login error");
+      toast.error(err.message || "Sosyal giriş hatası");
     } finally {
       setIsSocialLoading(null);
     }
   };
 
   return (
-    <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 overflow-hidden">
-      <LandingAmbient />
-      <div className="relative z-10 w-full max-w-md space-y-6">
-        {/* Card Header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2 mb-2 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0071e3] text-white shadow-md shadow-blue-500/25 group-hover:scale-110 transition-transform duration-200">
-              <Sparkles className="h-5 w-5" />
+    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 sm:p-8 bg-[#f5f5f7] select-none">
+      {/* Background Subtle Gradient */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-b from-[#0071e3]/8 to-transparent rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-[420px] space-y-6">
+        {/* Apple ID Brand Avatar & Header */}
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-block group">
+            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#43a047] p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#0071e3]">
+                <ShieldCheck className="h-8 w-8" />
+              </div>
             </div>
-            <span className="text-xl font-bold text-[#09090b] tracking-tight">NearDrop</span>
           </Link>
-          <h1 className="text-3xl font-bold tracking-tight text-[#09090b]">{t.login.welcomeBack}</h1>
-          <p className="text-sm text-[#27272a] font-normal">{t.login.subtitle}</p>
+
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
+              {isTr ? "NearDrop ID ile Giriş Yapın" : "Sign in with NearDrop ID"}
+            </h1>
+            <p className="text-xs sm:text-sm text-[#6e6e73] mt-1 max-w-xs mx-auto">
+              {isTr
+                ? "Tüm transferlerinizi yönetin ve güvenli bulut kotalarınıza erişin."
+                : "Manage your transfers and access your cloud storage."}
+            </p>
+          </div>
         </div>
 
-        {/* Apple ID Style Form Box with tactile hover */}
-        <div className="rounded-[28px] border border-black/10 bg-white/95 p-7 sm:p-9 shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur-xl transition-all duration-300 hover:shadow-[0_20px_50px_rgba(0,113,227,0.12)] space-y-5">
+        {/* Apple ID Container Box */}
+        <div className="rounded-[28px] border border-black/[0.08] bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] space-y-5">
           {error && (
-            <div className="p-3.5 rounded-2xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30] space-y-2">
+            <div className="p-3.5 rounded-2xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30] space-y-2 animate-in fade-in">
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
                 <span className="font-medium">{error}</span>
@@ -134,17 +205,19 @@ function LoginForm() {
               {showResend && (
                 <div className="pt-2 border-t border-[#ff3b30]/15 space-y-2">
                   <p className="text-[11px] text-[#1d1d1f] leading-relaxed">
-                    E-posta adresiniz henüz onaylanmamış. Giriş yapabilmek için lütfen gelen kutunuzdaki onay bağlantısına tıklayın.
+                    {isTr
+                      ? "E-posta adresiniz henüz doğrulanmamış. Lütfen gelen kutunuzdaki bağlantıya tıklayın."
+                      : "Your email is not verified yet. Please check your inbox for the link."}
                   </p>
                   <div className="flex items-center justify-between gap-2 pt-1">
                     <button
                       type="button"
                       onClick={handleResendEmail}
                       disabled={isResending || cooldown > 0}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#0071e3] hover:underline disabled:opacity-50 transition-colors"
+                      className="text-xs font-semibold text-[#0071e3] hover:underline disabled:opacity-50"
                     >
-                      {isResending ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
-                      <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Doğrulama Linkini Tekrar Gönder"}</span>
+                      {isResending ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
+                      <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Bağlantıyı Tekrar Gönder"}</span>
                     </button>
 
                     {getEmailProviderUrl(email) && (
@@ -152,25 +225,115 @@ function LoginForm() {
                         href={getEmailProviderUrl(email)!}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-semibold text-[#34c759] hover:underline inline-flex items-center gap-1"
+                        className="text-[11px] font-semibold text-emerald-600 hover:underline inline-flex items-center gap-1"
                       >
                         <span>Gelen Kutusu</span>
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     )}
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={handleDirectConfirm}
+                    disabled={isDirectConfirming}
+                    className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[#0071e3]/30 bg-white py-2 text-xs font-bold text-[#0071e3] shadow-sm hover:bg-blue-50/70 transition-all disabled:opacity-50"
+                  >
+                    {isDirectConfirming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />}
+                    <span>{isTr ? "E-posta Gelmedi — Hesabı Şimdi Doğrula" : "Instant Verify Account Without Email"}</span>
+                  </button>
                 </div>
               )}
             </div>
           )}
 
-          {/* Social Logins */}
+          {/* Apple ID Grouped Inputs */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="rounded-2xl border border-black/[0.12] overflow-hidden focus-within:border-[#0071e3] focus-within:ring-2 focus-within:ring-[#0071e3]/20 transition-all bg-[#fafafa]">
+              {/* Email Input */}
+              <div className="relative border-b border-black/[0.06] p-3">
+                <label className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider block">
+                  {isTr ? "NearDrop ID (E-posta)" : "NearDrop ID (Email)"}
+                </label>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <Mail className="h-4 w-4 text-[#86868b] flex-shrink-0" />
+                  <input
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none font-medium"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="relative p-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider block">
+                    {isTr ? "Parola" : "Password"}
+                  </label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-[11px] text-[#0071e3] hover:underline font-medium"
+                  >
+                    {isTr ? "Unuttunuz mu?" : "Forgot?"}
+                  </Link>
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <Lock className="h-4 w-4 text-[#86868b] flex-shrink-0" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none font-medium"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-[#86868b] hover:text-[#1d1d1f] transition-colors p-1"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Apple Primary Sign In Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 rounded-full bg-[#0071e3] py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-[0.98] transition-all disabled:opacity-50"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  <span>{isTr ? "Giriş Yap" : "Sign In"}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="relative flex items-center justify-center py-1">
+            <div className="w-full border-t border-black/[0.08]" />
+            <span className="absolute bg-white px-3 text-[11px] font-medium text-[#86868b]">
+              {isTr ? "veya" : "or continue with"}
+            </span>
+          </div>
+
+          {/* Apple Style Social Buttons */}
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => handleSocialLogin("google")}
               disabled={Boolean(isSocialLoading)}
-              className="flex items-center justify-center gap-2 rounded-full border border-[#d4d4d8] bg-white px-4 py-2.5 text-xs font-semibold text-[#09090b] hover:bg-zinc-50 hover:border-[#0071e3] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-full border border-black/[0.1] bg-white py-2.5 px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-[#f5f5f7] active:scale-95 transition-all shadow-sm"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -190,103 +353,47 @@ function LoginForm() {
                   d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 16.4C3.7 20.2 7.5 23 12 23z"
                 />
               </svg>
-              <span>{isSocialLoading === "google" ? "Connecting..." : "Google"}</span>
+              <span>{isSocialLoading === "google" ? "..." : "Google"}</span>
             </button>
 
             <button
               type="button"
               onClick={() => handleSocialLogin("github")}
               disabled={Boolean(isSocialLoading)}
-              className="flex items-center justify-center gap-2 rounded-full border border-[#d4d4d8] bg-white px-4 py-2.5 text-xs font-semibold text-[#09090b] hover:bg-zinc-50 hover:border-[#0071e3] hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 cursor-pointer shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-full border border-black/[0.1] bg-white py-2.5 px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-[#f5f5f7] active:scale-95 transition-all shadow-sm"
             >
-              <svg className="h-4 w-4 fill-current text-[#09090b]" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 fill-current text-[#1d1d1f]" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
-              <span>{isSocialLoading === "github" ? "Connecting..." : "GitHub"}</span>
+              <span>{isSocialLoading === "github" ? "..." : "GitHub"}</span>
             </button>
           </div>
+        </div>
 
-          {/* Divider */}
-          <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-[#e4e4e7]" />
-            <span className="absolute bg-white px-3 text-[11px] font-semibold text-[#52525b] uppercase tracking-wider">
-              or continue with email
+        {/* Footer Create Account Link */}
+        <div className="text-center space-y-4">
+          <p className="text-xs text-[#6e6e73]">
+            {isTr ? "NearDrop ID'niz yok mu?" : "Don't have a NearDrop ID?"}{" "}
+            <Link
+              href="/register"
+              className="text-[#0071e3] font-semibold hover:underline inline-flex items-center gap-0.5"
+            >
+              <span>{isTr ? "Şimdi oluşturun" : "Create yours now"}</span>
+              <span className="text-sm leading-none">›</span>
+            </Link>
+          </p>
+
+          {/* Privacy Note */}
+          <div className="pt-2 text-[11px] text-[#86868b] max-w-xs mx-auto flex items-center justify-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+            <span>
+              {isTr
+                ? "NearDrop ID bilgileriniz yalnızca güvenli oturum açma amacıyla kullanılır."
+                : "Your NearDrop ID is used solely to provide secure sign-in."}
             </span>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-[#09090b]">{t.login.emailLabel}</label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#52525b]" />
-                <Input
-                  type="email"
-                  placeholder={t.login.emailPlaceholder}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 rounded-xl bg-white border-[#d4d4d8] text-[#09090b] placeholder:text-[#71717a] focus:border-[#0071e3] shadow-sm"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-[#09090b]">{t.login.passwordLabel}</label>
-                <Link
-                  href="/forgot-password"
-                  className="text-[11px] text-[#0071e3] hover:underline font-semibold transition-colors"
-                >
-                  {t.login.forgotPassword}
-                </Link>
-              </div>
-              <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#52525b]" />
-                <Input
-                  type="password"
-                  placeholder="••••••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 rounded-xl bg-white border-[#d4d4d8] text-[#09090b] placeholder:text-[#71717a] focus:border-[#0071e3] shadow-sm"
-                  required
-                />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isLoading}
-              variant="primary"
-              className="w-full h-11 gap-2 py-2.5 shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:scale-[1.01] active:scale-[0.98] rounded-full font-bold transition-all duration-200 cursor-pointer"
-            >
-              <span>{isLoading ? t.login.loggingIn : t.login.loginButton}</span>
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </form>
         </div>
-
-        {/* Footer Link */}
-        <p className="text-center text-xs text-[#6e6e73]">
-          {t.login.noAccount}{" "}
-          <Link href="/register" className="font-semibold text-[#0071e3] hover:underline transition-colors">
-            {t.login.createAccount}
-          </Link>
-        </p>
       </div>
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#f5f5f7]">
-          <Loader2 className="h-8 w-8 animate-spin text-[#0071e3]" />
-        </div>
-      }
-    >
-      <LoginForm />
-    </Suspense>
   );
 }

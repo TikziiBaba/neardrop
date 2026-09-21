@@ -47,7 +47,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="min-h-screen bg-[#f5f5f7] text-foreground antialiased font-sans">
+      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Navbar />
@@ -59,9 +59,17 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                  navigator.serviceWorker.register('/sw.js').catch(() => {});
-                });
+                if (process.env.NODE_ENV === 'production') {
+                  window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                  });
+                } else {
+                  navigator.serviceWorker.getRegistrations().then((registrations) => {
+                    for (const registration of registrations) {
+                      registration.unregister();
+                    }
+                  });
+                }
               }
             `,
           }}

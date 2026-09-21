@@ -101,7 +101,7 @@ export default function AdminSharesPage() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
               <span>Active Share Links</span>
-              <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-xs font-semibold text-purple-400 border border-purple-500/20">
+              <span className="rounded-md bg-[#0071e3]/15 px-2 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
                 {shares.length} Generated Links
               </span>
             </h1>
@@ -117,7 +117,7 @@ export default function AdminSharesPage() {
             disabled={loading}
             className="gap-2 text-xs self-start sm:self-auto rounded-xl"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-purple-400" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
             <span>Refresh</span>
           </Button>
         </div>
@@ -129,12 +129,12 @@ export default function AdminSharesPage() {
             placeholder="Search by token, file, or owner..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 text-xs bg-zinc-900/60 border-zinc-800 rounded-xl"
+            className="pl-10 text-xs bg-[#16161a] border-zinc-800 rounded-xl"
           />
         </div>
 
         {/* Shares Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
@@ -152,7 +152,7 @@ export default function AdminSharesPage() {
                 {loading ? (
                   <tr>
                     <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-purple-400 mb-2" />
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
                       Loading active shares...
                     </td>
                   </tr>
@@ -168,7 +168,7 @@ export default function AdminSharesPage() {
                       {/* Token */}
                       <td className="py-4 px-4 sm:px-6">
                         <div className="flex items-center gap-2">
-                          <code className="rounded-lg bg-zinc-950 px-2 py-1 font-mono text-[11px] font-semibold text-purple-400 border border-zinc-800">
+                          <code className="rounded-lg bg-zinc-950 px-2 py-1 font-mono text-[11px] font-semibold text-[#2997ff] border border-zinc-800">
                             /s/{share.token}
                           </code>
                           <button
@@ -203,10 +203,10 @@ export default function AdminSharesPage() {
                       <td className="py-4 px-4">
                         <Link
                           href={`/admin/users/${share.userId}`}
-                          className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-purple-300 transition-colors group/user"
+                          className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-[#2997ff] transition-colors group/user"
                           title="Inspect user profile"
                         >
-                          <User className="h-3.5 w-3.5 text-zinc-500 group-hover/user:text-purple-400" />
+                          <User className="h-3.5 w-3.5 text-zinc-500 group-hover/user:text-[#2997ff]" />
                           <span className="truncate max-w-[130px] text-xs font-semibold">
                             {share.userEmail || "User Profile"}
                           </span>
