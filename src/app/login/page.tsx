@@ -93,37 +93,6 @@ function LoginForm() {
     }
   };
 
-  const [isDirectConfirming, setIsDirectConfirming] = useState(false);
-
-  const handleDirectConfirm = async () => {
-    if (!email.trim() || isDirectConfirming) return;
-    setIsDirectConfirming(true);
-    try {
-      const res = await fetch("/api/auth/confirm-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        toast.success(isTr ? "E-posta doğrulandı! Giriş yapılıyor..." : "Email verified! Signing in...");
-        setError(null);
-        setShowResend(false);
-        if (password) {
-          await handleSubmit(new Event("submit") as any);
-        } else {
-          toast.info(isTr ? "Lütfen parolanızı girip Giriş Yap'a tıklayın." : "Please enter your password to sign in.");
-        }
-      } else {
-        toast.error(data.error || "Doğrulama başarısız.");
-      }
-    } catch (err: any) {
-      toast.error(err.message || "Hata oluştu.");
-    } finally {
-      setIsDirectConfirming(false);
-    }
-  };
-
   const handleResendEmail = async () => {
     if (!email.trim() || isResending || cooldown > 0) return;
     setIsResending(true);
@@ -204,10 +173,10 @@ function LoginForm() {
               </div>
               {showResend && (
                 <div className="pt-2 border-t border-red-500/20 space-y-2">
-                  <p className="text-[11px] text-zinc-300 leading-relaxed">
+                  <p className="text-[11px] text-amber-300/90 leading-relaxed bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
                     {isTr
-                      ? "E-posta adresiniz henüz doğrulanmamış. Lütfen gelen kutunuzdaki bağlantıya tıklayın."
-                      : "Your email is not verified yet. Please check your inbox for the link."}
+                      ? "⚠️ E-postayı bulamadıysanız lütfen Spam / İstenmeyen kutunuzu kontrol edin veya bağlantıyı tekrar gönderin."
+                      : "⚠️ If you cannot find the email, please check your Spam / Junk folder or resend the link."}
                   </p>
                   <div className="flex items-center justify-between gap-2 pt-1">
                     <button
@@ -232,16 +201,6 @@ function LoginForm() {
                       </a>
                     )}
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={handleDirectConfirm}
-                    disabled={isDirectConfirming}
-                    className="w-full mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-[#0071e3]/30 bg-zinc-900 py-2 text-xs font-bold text-blue-400 shadow-sm hover:bg-zinc-800 transition-all disabled:opacity-50 cursor-pointer"
-                  >
-                    {isDirectConfirming ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />}
-                    <span>{isTr ? "E-posta Gelmedi — Hesabı Şimdi Doğrula" : "Instant Verify Account Without Email"}</span>
-                  </button>
                 </div>
               )}
             </div>

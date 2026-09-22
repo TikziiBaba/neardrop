@@ -35,10 +35,11 @@ function VerifyEmailContent() {
   const [email, setEmail] = useState(queryEmail);
   const [otpCode, setOtpCode] = useState("");
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [isResending, setIsResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [isSuccess, setIsSuccess] = useState(Boolean(queryVerified) || user?.isEmailVerified === true);
-  const [isDirectConfirming, setIsDirectConfirming] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(
     queryError === "invalid_token"
       ? isTr
@@ -91,39 +92,6 @@ function VerifyEmailContent() {
       setErrorMessage(err.message || (isTr ? "Doğrulama hatası oluştu." : "Verification failed."));
     } finally {
       setIsVerifyingOtp(false);
-    }
-  };
-
-  const handleDirectConfirm = async () => {
-    if (!email.trim() || isDirectConfirming) return;
-    setIsDirectConfirming(true);
-    setErrorMessage(null);
-    SoundManager.play("click");
-
-    try {
-      const res = await fetch("/api/auth/confirm-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim() }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setIsSuccess(true);
-        SoundManager.play("success");
-        toast.success(isTr ? "E-posta adresiniz başarıyla onaylandı!" : "Email verified successfully!");
-        try {
-          confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
-        } catch (e) {}
-        setTimeout(() => {
-          router.push("/dashboard?verified=true");
-        }, 1200);
-      } else {
-        setErrorMessage(data.error || (isTr ? "Doğrulama başarısız." : "Verification failed."));
-      }
-    } catch (err: any) {
-      setErrorMessage(err.message || (isTr ? "Hata oluştu." : "An error occurred."));
-    } finally {
-      setIsDirectConfirming(false);
     }
   };
 
@@ -264,33 +232,66 @@ function VerifyEmailContent() {
                 )}
               </div>
 
-              {/* OTP Code Form (Supports 6 to 8+ digits) */}
-              <form onSubmit={handleOtpVerify} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
+              {/* OTP Code Form with Button-Like Digit Cells */}
+              <form onSubmit={handleOtpVerify} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5 space-y-4">
                 <div className="text-center space-y-1">
                   <label className="text-xs font-semibold text-zinc-200 block">
-                    {isTr ? "Güvenlik Onay Kodu (6 veya 8 Haneli)" : "Security Code (6 or 8 Digits)"}
+                    {isTr ? "Güvenlik Onay Kodu" : "Security Verification Code"}
                   </label>
                   <p className="text-[11px] text-zinc-400">
                     {isTr
-                      ? "Gelen kutunuzdaki veya bildirimdeki güvenlik kodunu buraya girin."
-                      : "Enter the security code received in your inbox."}
+                      ? "Gelen kutunuzdaki 6 veya 8 haneli güvenlik kodunu girin."
+                      : "Enter the 6 or 8-digit security code received in your email."}
                   </p>
                 </div>
 
-                <input
-                  type="text"
-                  maxLength={10}
-                  placeholder="123456"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 10))}
-                  className="w-full text-center text-2xl sm:text-3xl font-mono tracking-[0.25em] sm:tracking-[0.35em] py-3 rounded-xl border border-zinc-800 bg-zinc-900 text-white focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none"
-                  autoFocus
-                />
+                {/* Discrete Button-Like OTP Cells */}
+                <div
+                  onClick={() => inputRef.current?.focus()}
+                  className="relative cursor-pointer py-1"
+                >
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    autoComplete="one-time-code"
+                    maxLength={8}
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                    onFocus={() => setIsInputFocused(true)}
+                    onBlur={() => setIsInputFocused(false)}
+                    className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
+                    autoFocus
+                  />
+
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    {Array.from({ length: 8 }).map((_, idx) => {
+                      const digit = cleanCode[idx] || "";
+                      const isCurrent = idx === cleanCode.length && isInputFocused;
+
+                      return (
+                        <div
+                          key={idx}
+                          className={`w-9 h-12 sm:w-11 sm:h-14 rounded-xl border flex items-center justify-center font-mono text-xl sm:text-2xl font-bold transition-all select-none ${
+                            digit
+                              ? "border-blue-500 bg-zinc-900 text-white shadow-lg shadow-blue-500/10 ring-1 ring-blue-500/30"
+                              : isCurrent
+                              ? "border-blue-500 bg-zinc-900/90 text-white ring-2 ring-blue-500/30 animate-pulse"
+                              : "border-zinc-800 bg-zinc-950/80 text-zinc-500 hover:border-zinc-700 hover:bg-zinc-900/40"
+                          }`}
+                        >
+                          {digit}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
 
                 <Button
                   type="submit"
                   disabled={!canSubmitOtp}
-                  className="w-full py-2.5 rounded-full text-xs font-bold gap-2 bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-40"
+                  className="w-full py-3 rounded-full text-xs font-bold gap-2 bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99]"
                 >
                   {isVerifyingOtp ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -301,50 +302,35 @@ function VerifyEmailContent() {
                 </Button>
               </form>
 
-              {/* Fallback Direct Confirmation */}
-              <div className="space-y-3 pt-1">
-                <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-3.5 text-center space-y-1.5">
-                  <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-blue-400">
-                    <ShieldCheck className="h-4 w-4" />
-                    <span>{isTr ? "E-posta Gelen Kutunuza Ulaşmadı mı?" : "Email Not Arriving?"}</span>
-                  </div>
-                  <p className="text-[11px] text-zinc-400 leading-relaxed">
-                    {isTr
-                      ? "E-posta sağlayıcınız spam filtreleri veya sunucu gecikmesi yaşıyorsa, hesabınızı tek tıkla hemen doğrulayabilirsiniz."
-                      : "If emails are delayed by spam filters or provider latency, you can instantly verify your account."}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleDirectConfirm}
-                    disabled={isDirectConfirming || !email}
-                    className="w-full mt-1 flex items-center justify-center gap-2 rounded-xl border border-[#0071e3]/30 bg-zinc-900 py-2.5 text-xs font-bold text-blue-400 hover:bg-zinc-800 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
-                  >
-                    {isDirectConfirming ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    )}
-                    <span>{isTr ? "Hesabı Şimdi Doğrula ve Başla" : "Verify Instantly & Get Started"}</span>
-                  </button>
+              {/* Spam Folder Warning Reminder */}
+              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 space-y-1.5 text-left">
+                <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  <span>{isTr ? "E-posta Gelen Kutunuzda Yok mu? Spam Kutusunu Kontrol Edin!" : "Email Missing? Check Spam Folder!"}</span>
                 </div>
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  {isTr
+                    ? "Doğrulama e-postası bazen sağlayıcınız (Gmail, Outlook vb.) tarafından Spam (İstenmeyen / Gereksiz) klasörüne yönlendirilebilir. Lütfen spam kutunuzu mutlaka kontrol edin."
+                    : "Verification emails may sometimes be delivered to your Spam, Junk, or Promotions folder. Please make sure to check all mailbox folders."}
+                </p>
+              </div>
 
-                {/* Resend Link Button */}
-                <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">{isTr ? "E-posta gelmedi mi?" : "Didn't get an email?"}</span>
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    disabled={isResending || cooldown > 0 || !email}
-                    className="inline-flex items-center gap-1.5 font-semibold text-[#0071e3] hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-                  >
-                    <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
-                    <span>
-                      {cooldown > 0
-                        ? isTr ? `Tekrar gönder (${cooldown}s)` : `Resend (${cooldown}s)`
-                        : isTr ? "Tekrar Gönder" : "Resend Email"}
-                    </span>
-                  </button>
-                </div>
+              {/* Resend Link Section */}
+              <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
+                <span className="text-zinc-400">{isTr ? "Kod ulaşmadı mı?" : "Didn't receive code?"}</span>
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={isResending || cooldown > 0 || !email}
+                  className="inline-flex items-center gap-1.5 font-semibold text-[#0071e3] hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
+                  <span>
+                    {cooldown > 0
+                      ? isTr ? `Tekrar gönder (${cooldown}s)` : `Resend (${cooldown}s)`
+                      : isTr ? "Yeni Kod Gönder" : "Resend Code"}
+                  </span>
+                </button>
               </div>
             </div>
           )}
