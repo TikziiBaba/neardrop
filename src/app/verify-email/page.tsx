@@ -22,13 +22,15 @@ import confetti from "canvas-confetti";
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, resendVerificationEmail } = useAuth();
+  const { user, resendVerificationEmail, verifyOtp } = useAuth();
 
   const queryEmail = searchParams.get("email") || user?.email || "";
   const queryError = searchParams.get("error");
   const queryVerified = searchParams.get("verified");
 
   const [email, setEmail] = useState(queryEmail);
+  const [otpCode, setOtpCode] = useState("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [isSuccess, setIsSuccess] = useState(Boolean(queryVerified) || user?.isEmailVerified === true);
@@ -54,6 +56,33 @@ function VerifyEmailContent() {
   }, [queryVerified, user?.isEmailVerified]);
 
   const [isDirectConfirming, setIsDirectConfirming] = useState(false);
+
+  const handleOtpVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanCode = otpCode.trim().replace(/\D/g, "");
+    if (!cleanCode || isVerifyingOtp || !email.trim()) return;
+    setIsVerifyingOtp(true);
+    setErrorMessage(null);
+    try {
+      const res = await verifyOtp(email.trim(), cleanCode);
+      if (res.success) {
+        setIsSuccess(true);
+        toast.success("E-posta adresiniz başarıyla onaylandı!");
+        try {
+          confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
+        } catch (e) {}
+        setTimeout(() => {
+          router.push("/dashboard?verified=true");
+        }, 1200);
+      } else {
+        setErrorMessage(res.error || "Geçersiz veya süresi dolmuş kod.");
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message || "Doğrulama hatası oluştu.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
 
   const handleDirectConfirm = async () => {
     if (!email.trim() || isDirectConfirming) return;
@@ -214,6 +243,37 @@ function VerifyEmailContent() {
                   </a>
                 )}
               </div>
+
+              {/* OTP Code Form (Supports 6 or 8 digits) */}
+              <form onSubmit={handleOtpVerify} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
+                <div className="text-center space-y-1">
+                  <label className="text-xs font-semibold text-zinc-200 block">
+                    Doğrulama Kodu (6 veya 8 Haneli)
+                  </label>
+                  <p className="text-[11px] text-zinc-400">
+                    E-postanıza gelen 6 veya 8 haneli kodu buraya girerek hesabınızı hemen onaylayabilirsiniz.
+                  </p>
+                </div>
+
+                <input
+                  type="text"
+                  maxLength={12}
+                  placeholder="Örn. 12345678"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                  className="w-full text-center text-2xl font-mono tracking-[0.25em] py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none"
+                />
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={otpCode.length < 6 || isVerifyingOtp || !email.trim()}
+                  className="w-full py-2.5 rounded-xl text-xs font-bold gap-2"
+                >
+                  {isVerifyingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-emerald-400" />}
+                  <span>Kodu Doğrula ve Panele Git</span>
+                </Button>
+              </form>
 
               <div className="space-y-3 pt-2">
                 <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5 text-center space-y-1">

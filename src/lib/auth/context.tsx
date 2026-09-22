@@ -415,19 +415,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     type: "signup" | "email" | "magiclink" | "recovery" = "signup"
   ): Promise<{ success: boolean; error?: string }> => {
     if (!supabase) return { success: false, error: "Supabase is not configured." };
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanToken = token.trim().replace(/\s+/g, "");
+
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email: email.trim(),
-        token: token.trim(),
+      let result = await supabase.auth.verifyOtp({
+        email: cleanEmail,
+        token: cleanToken,
         type: type as any,
       });
-      if (error) throw error;
-      if (data?.session?.user) {
+
+      // If signup failed, try 'email' type as fallback (Supabase frequently uses 'email' OTP type)
+      if (result.error && type === "signup") {
+        const emailFallback = await supabase.auth.verifyOtp({
+          email: cleanEmail,
+          token: cleanToken,
+          type: "email" as any,
+        });
+        if (!emailFallback.error) {
+          result = emailFallback;
+        }
+      }
+
+      if (result.error) throw result.error;
+
+      if (result.data?.session?.user) {
         const profile = await fetchProfile(
-          data.session.user.id,
-          data.session.user.email || email,
-          data.session.user.user_metadata,
-          data.session.user
+          result.data.session.user.id,
+          result.data.session.user.email || cleanEmail,
+          result.data.session.user.user_metadata,
+          result.data.session.user
         );
         setUser(profile);
         return { success: true };

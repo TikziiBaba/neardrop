@@ -120,14 +120,30 @@ export default function RegisterPage() {
 
   const handleOtpVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpCode.trim() || isVerifyingOtp) return;
+    const cleanCode = otpCode.trim().replace(/\D/g, "");
+    if (!cleanCode || isVerifyingOtp) return;
     setIsVerifyingOtp(true);
     setError(null);
     try {
-      const res = await verifyOtp(email.trim(), otpCode.trim());
+      const res = await verifyOtp(email.trim(), cleanCode);
       if (res.success) {
         SoundManager.play("success");
         toast.success(isTr ? "E-posta doğrulandı! Hoş geldiniz!" : "Email verified! Welcome!");
+
+        // Auto-login with password if available so session is active
+        if (password) {
+          const loginRes = await login(email.trim(), password);
+          if (loginRes.success) {
+            try {
+              confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
+            } catch (e) {}
+            setTimeout(() => {
+              router.push("/dashboard");
+            }, 800);
+            return;
+          }
+        }
+
         try {
           confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
         } catch (e) {}
@@ -557,18 +573,30 @@ export default function RegisterPage() {
             <form onSubmit={handleOtpVerify} className="space-y-4">
               <div className="space-y-2 text-center">
                 <label className="text-xs font-semibold text-[#1d1d1f] block">
-                  {isTr ? "6 Haneli Doğrulama Kodu (varsa)" : "6-Digit Verification Code (if received)"}
+                  {isTr ? "E-posta Doğrulama Kodu (6 veya 8 Haneli)" : "Verification Code (6 or 8 Digits)"}
                 </label>
                 <input
                   type="text"
-                  maxLength={6}
-                  placeholder="000000"
+                  maxLength={12}
+                  placeholder={isTr ? "6 veya 8 haneli kod" : "6 or 8-digit code"}
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                  className="w-full text-center text-3xl font-mono tracking-[0.4em] py-3 rounded-2xl border border-black/[0.12] bg-[#fafafa] text-[#1d1d1f] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none"
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                  className="w-full text-center text-2xl sm:text-3xl font-mono tracking-[0.25em] sm:tracking-[0.35em] py-3 rounded-2xl border border-black/[0.12] bg-[#fafafa] text-[#1d1d1f] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none"
                   autoFocus
                 />
+                <p className="text-[11px] text-[#86868b]">
+                  {isTr
+                    ? "Gelen kutunuzdaki 6 veya 8 haneli güvenlik kodunu girin."
+                    : "Enter the 6 or 8-digit security code received in your inbox."}
+                </p>
               </div>
+
+              {error && (
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30] text-left animate-in fade-in">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
+                  <span>{error}</span>
+                </div>
+              )}
 
               <button
                 type="submit"
@@ -577,7 +605,7 @@ export default function RegisterPage() {
               >
                 {isVerifyingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                   <>
-                    <span>{isTr ? "Kodu Doğrula" : "Verify Code"}</span>
+                    <span>{isTr ? "Kodu Doğrula ve Başla" : "Verify Code & Start"}</span>
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
