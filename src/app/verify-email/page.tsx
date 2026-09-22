@@ -64,7 +64,7 @@ function VerifyEmailContent() {
   }, [queryVerified, user?.isEmailVerified]);
 
   const cleanCode = otpCode.trim().replace(/\D/g, "");
-  const canSubmitOtp = cleanCode.length === 6 && !isVerifyingOtp && Boolean(email.trim());
+  const canSubmitOtp = cleanCode.length >= 6 && !isVerifyingOtp && Boolean(email.trim());
 
   const handleOtpVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -232,20 +232,20 @@ function VerifyEmailContent() {
                 )}
               </div>
 
-              {/* OTP Code Form with 6 Button-Like Digit Cells */}
+              {/* OTP Code Form with Button-Like Digit Cells (Supports 6 to 8 Digits) */}
               <form onSubmit={handleOtpVerify} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5 space-y-4">
                 <div className="text-center space-y-1">
                   <label className="text-xs font-semibold text-zinc-200 block">
-                    {isTr ? "Güvenlik Onay Kodu (6 Haneli)" : "Security Verification Code (6 Digits)"}
+                    {isTr ? "Güvenlik Onay Kodu" : "Security Verification Code"}
                   </label>
                   <p className="text-[11px] text-zinc-400">
                     {isTr
-                      ? "Gelen kutunuzdaki 6 haneli güvenlik kodunu girin."
-                      : "Enter the 6-digit security code received in your email."}
+                      ? "E-postanıza gelen güvenlik kodunu girin."
+                      : "Enter the verification code received in your email."}
                   </p>
                 </div>
 
-                {/* Discrete 6 Button-Like OTP Cells */}
+                {/* Discrete Button-Like OTP Cells */}
                 <div
                   onClick={() => inputRef.current?.focus()}
                   className="relative cursor-pointer py-1"
@@ -256,24 +256,24 @@ function VerifyEmailContent() {
                     inputMode="numeric"
                     pattern="[0-9]*"
                     autoComplete="one-time-code"
-                    maxLength={6}
+                    maxLength={8}
                     value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
                     onFocus={() => setIsInputFocused(true)}
                     onBlur={() => setIsInputFocused(false)}
                     className="absolute inset-0 w-full h-full opacity-0 z-20 cursor-pointer"
                     autoFocus
                   />
 
-                  <div className="flex items-center justify-center gap-2 sm:gap-3">
-                    {Array.from({ length: 6 }).map((_, idx) => {
+                  <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                    {Array.from({ length: 8 }).map((_, idx) => {
                       const digit = cleanCode[idx] || "";
                       const isCurrent = idx === cleanCode.length && isInputFocused;
 
                       return (
                         <div
                           key={idx}
-                          className={`w-11 h-14 sm:w-12 sm:h-16 rounded-2xl border flex items-center justify-center font-mono text-2xl sm:text-3xl font-bold transition-all select-none ${
+                          className={`w-9 h-12 sm:w-11 sm:h-14 rounded-xl border flex items-center justify-center font-mono text-xl sm:text-2xl font-bold transition-all select-none ${
                             digit
                               ? "border-blue-500 bg-zinc-900 text-white shadow-lg shadow-blue-500/10 ring-1 ring-blue-500/30"
                               : isCurrent
