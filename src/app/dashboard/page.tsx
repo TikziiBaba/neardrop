@@ -218,7 +218,9 @@ export default function DashboardPage() {
               </h1>
 
               <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
-                Store your assets securely, preview photos and videos directly in your browser, and share with encrypted links.
+                {locale === "tr"
+                  ? "Varlıklarınızı güvenle saklayın, fotoğraf ve videoları doğrudan tarayıcınızda önizleyin ve şifreli bağlantılarla paylaşın."
+                  : "Store your assets securely, preview photos and videos directly in your browser, and share with encrypted links."}
               </p>
             </div>
 
@@ -228,30 +230,30 @@ export default function DashboardPage() {
                 <Button
                   variant="primary"
                   size="default"
-                  className="px-5 py-2.5 rounded-2xl shadow-lg shadow-sky-500/25 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap"
+                  className="px-5 py-2.5 rounded-2xl shadow-lg shadow-sky-500/25 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
                 >
-                  <FolderOpen className="h-4 w-4" />
-                  <span>My Files</span>
+                  <FolderOpen className="h-4 w-4 text-white" />
+                  <span className="text-white">{locale === "tr" ? "Dosyalarım" : "My Files"}</span>
                 </Button>
               </Link>
               <Link href="/shared">
                 <Button
                   variant="outline"
                   size="default"
-                  className="px-5 py-2.5 rounded-2xl border-zinc-700/80 bg-zinc-900/80 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-medium whitespace-nowrap"
+                  className="px-5 py-2.5 rounded-2xl border-zinc-700 bg-zinc-900 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
                 >
                   <Share2 className="h-4 w-4 text-emerald-400" />
-                  <span>Shared ({shares.length})</span>
+                  <span className="text-white">{locale === "tr" ? "Paylaşılanlar" : "Shared"} ({shares.length})</span>
                 </Button>
               </Link>
               <Link href="/transfers">
                 <Button
                   variant="outline"
                   size="default"
-                  className="px-5 py-2.5 rounded-2xl border-zinc-700/80 bg-zinc-900/80 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-medium whitespace-nowrap"
+                  className="px-5 py-2.5 rounded-2xl border-zinc-700 bg-zinc-900 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
                 >
                   <Activity className="h-4 w-4 text-purple-400" />
-                  <span>Transfers</span>
+                  <span className="text-white">{locale === "tr" ? "Aktarımlar" : "Transfers"}</span>
                 </Button>
               </Link>
             </div>
@@ -272,12 +274,14 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{stats.filesCount}</p>
-              <span className="text-xs text-zinc-500 font-mono">files & folders</span>
+              <span className="text-xs text-zinc-500 font-mono">
+                {locale === "tr" ? "dosya & klasör" : "files & folders"}
+              </span>
             </div>
             <div className="flex items-center gap-2 pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
-              <span className="text-emerald-400 font-medium">📷 {categoryStats.counts.image.count} Images</span>
+              <span className="text-emerald-400 font-medium">📷 {categoryStats.counts.image.count} {locale === "tr" ? "Görsel" : "Images"}</span>
               <span>•</span>
-              <span className="text-purple-400 font-medium">🎬 {categoryStats.counts.video.count} Videos</span>
+              <span className="text-purple-400 font-medium">🎬 {categoryStats.counts.video.count} {locale === "tr" ? "Video" : "Videos"}</span>
             </div>
           </div>
 
@@ -300,7 +304,9 @@ export default function DashboardPage() {
                   style={{ width: `${Math.max(2, quotaPercent)}%` }}
                 />
               </div>
-              <p className="text-[10px] text-zinc-500 text-right font-mono">{quotaPercent}% Used</p>
+              <p className="text-[10px] text-zinc-500 text-right font-mono">
+                {quotaPercent}% {locale === "tr" ? "Dolu" : "Used"}
+              </p>
             </div>
           </div>
 
@@ -314,12 +320,14 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-emerald-400 tracking-tight">{stats.sharedCount}</p>
-              <Badge variant="success" className="text-[10px]">Live Links</Badge>
+              <Badge variant="success" className="text-[10px]">
+                {locale === "tr" ? "Canlı Linkler" : "Live Links"}
+              </Badge>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
-              <span>Encrypted & Ephemeral</span>
+              <span>{locale === "tr" ? "Şifreli & Süreli" : "Encrypted & Ephemeral"}</span>
               <Link href="/shared" className="text-sky-400 hover:underline flex items-center gap-0.5">
-                Manage <ArrowUpRight className="h-3 w-3" />
+                {t.dashboard.manage || (locale === "tr" ? "Yönet" : "Manage")} <ArrowUpRight className="h-3 w-3" />
               </Link>
             </div>
           </div>
@@ -334,13 +342,15 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-purple-400 tracking-tight">{stats.totalDownloads}</p>
-              <span className="text-xs text-zinc-500 font-mono">successful hits</span>
+              <span className="text-xs text-zinc-500 font-mono">
+                {locale === "tr" ? "başarılı indirme" : "successful hits"}
+              </span>
             </div>
             <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
               <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                <Zap className="h-3 w-3" /> Direct Edge Stream
+                <Zap className="h-3 w-3" /> {locale === "tr" ? "Doğrudan Edge Akışı" : "Direct Edge Stream"}
               </span>
-              <span className="text-zinc-500 font-mono">Zero Waiting</span>
+              <span className="text-zinc-500 font-mono">{locale === "tr" ? "Sıfır Bekleme" : "Zero Waiting"}</span>
             </div>
           </div>
         </div>
@@ -352,10 +362,14 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Layers className="h-4 w-4 text-sky-400" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">Storage Distribution</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                {locale === "tr" ? "Depolama Dağılımı" : "Storage Distribution"}
+              </h3>
             </div>
             <span className="text-xs text-zinc-400 font-mono">
-              Total {formatBytes(stats.usedBytes)} across {files.length} files
+              {locale === "tr"
+                ? `Toplam ${formatBytes(stats.usedBytes)} (${files.length} dosya)`
+                : `Total ${formatBytes(stats.usedBytes)} across ${files.length} files`}
             </span>
           </div>
 
@@ -365,35 +379,35 @@ export default function DashboardPage() {
               <div
                 style={{ width: `${categoryStats.percentages.image}%` }}
                 className="bg-emerald-500 hover:opacity-90 transition-all"
-                title={`Photos: ${formatBytes(categoryStats.counts.image.bytes)} (${categoryStats.percentages.image}%)`}
+                title={`${locale === "tr" ? "Fotoğraflar" : "Photos"}: ${formatBytes(categoryStats.counts.image.bytes)} (${categoryStats.percentages.image}%)`}
               />
             )}
             {categoryStats.percentages.video > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.video}%` }}
                 className="bg-purple-500 hover:opacity-90 transition-all"
-                title={`Videos: ${formatBytes(categoryStats.counts.video.bytes)} (${categoryStats.percentages.video}%)`}
+                title={`${locale === "tr" ? "Videolar" : "Videos"}: ${formatBytes(categoryStats.counts.video.bytes)} (${categoryStats.percentages.video}%)`}
               />
             )}
             {categoryStats.percentages.document > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.document}%` }}
                 className="bg-sky-500 hover:opacity-90 transition-all"
-                title={`Documents: ${formatBytes(categoryStats.counts.document.bytes)} (${categoryStats.percentages.document}%)`}
+                title={`${locale === "tr" ? "Belgeler" : "Documents"}: ${formatBytes(categoryStats.counts.document.bytes)} (${categoryStats.percentages.document}%)`}
               />
             )}
             {categoryStats.percentages.archive > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.archive}%` }}
                 className="bg-amber-500 hover:opacity-90 transition-all"
-                title={`Archives: ${formatBytes(categoryStats.counts.archive.bytes)} (${categoryStats.percentages.archive}%)`}
+                title={`${locale === "tr" ? "Arşivler" : "Archives"}: ${formatBytes(categoryStats.counts.archive.bytes)} (${categoryStats.percentages.archive}%)`}
               />
             )}
             {categoryStats.percentages.code > 0 && (
               <div
                 style={{ width: `${categoryStats.percentages.code}%` }}
                 className="bg-pink-500 hover:opacity-90 transition-all"
-                title={`Code: ${formatBytes(categoryStats.counts.code.bytes)} (${categoryStats.percentages.code}%)`}
+                title={`${locale === "tr" ? "Kod Dosyaları" : "Code"}: ${formatBytes(categoryStats.counts.code.bytes)} (${categoryStats.percentages.code}%)`}
               />
             )}
           </div>
@@ -402,19 +416,19 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs text-zinc-400 pt-1">
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              <span>Images ({formatBytes(categoryStats.counts.image.bytes)})</span>
+              <span>{locale === "tr" ? "Görseller" : "Images"} ({formatBytes(categoryStats.counts.image.bytes)})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
-              <span>Videos ({formatBytes(categoryStats.counts.video.bytes)})</span>
+              <span>{locale === "tr" ? "Videolar" : "Videos"} ({formatBytes(categoryStats.counts.video.bytes)})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-sky-500" />
-              <span>Documents ({formatBytes(categoryStats.counts.document.bytes)})</span>
+              <span>{locale === "tr" ? "Belgeler" : "Documents"} ({formatBytes(categoryStats.counts.document.bytes)})</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-              <span>Archives ({formatBytes(categoryStats.counts.archive.bytes)})</span>
+              <span>{locale === "tr" ? "Arşivler" : "Archives"} ({formatBytes(categoryStats.counts.archive.bytes)})</span>
             </div>
           </div>
         </div>
@@ -444,13 +458,17 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
                 <Play className="h-4 w-4 text-purple-400" />
-                <h3 className="text-sm font-bold text-white">Recent Media (Photos & Videos)</h3>
+                <h3 className="text-sm font-bold text-white">
+                  {locale === "tr" ? "Son Medyalar (Fotoğraf & Video)" : "Recent Media (Photos & Videos)"}
+                </h3>
                 <Badge variant="secondary" className="text-[10px]">
-                  {recentMediaFiles.length} media
+                  {recentMediaFiles.length} {locale === "tr" ? "medya" : "media"}
                 </Badge>
               </div>
               <span className="text-xs text-zinc-400 hidden sm:inline">
-                Click to preview or play in full screen
+                {locale === "tr"
+                  ? "Önizlemek veya tam ekranda oynatmak için tıklayın"
+                  : "Click to preview or play in full screen"}
               </span>
             </div>
 
@@ -524,7 +542,7 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-bold text-white">{t.dashboard.recentFiles}</h3>
                 <Badge variant="secondary" className="text-[10px]">
-                  {files.length} files
+                  {files.length} {locale === "tr" ? "dosya" : "files"}
                 </Badge>
               </div>
 
@@ -536,7 +554,7 @@ export default function DashboardPage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search files..."
+                    placeholder={locale === "tr" ? "Dosyalarda ara..." : "Search files..."}
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-8 pr-2.5 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-sky-500 transition-colors"
                   />
                 </div>
@@ -555,10 +573,14 @@ export default function DashboardPage() {
               <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 text-center space-y-2">
                 <FolderOpen className="h-8 w-8 text-zinc-600 mx-auto" />
                 <h4 className="text-sm font-semibold text-zinc-300">
-                  {searchQuery ? "No matching files found" : t.dashboard.noFilesTitle}
+                  {searchQuery
+                    ? (locale === "tr" ? "Eşleşen dosya bulunamadı" : "No matching files found")
+                    : t.dashboard.noFilesTitle}
                 </h4>
                 <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-                  {searchQuery ? `No results found for "${searchQuery}".` : t.dashboard.noFilesDesc}
+                  {searchQuery
+                    ? (locale === "tr" ? `"${searchQuery}" için sonuç bulunamadı.` : `No results found for "${searchQuery}".`)
+                    : t.dashboard.noFilesDesc}
                 </p>
               </div>
             ) : (
@@ -594,7 +616,9 @@ export default function DashboardPage() {
                             <span>{formatRelativeTime(file.createdAt)}</span>
                             {isMedia && (
                               <Badge variant="outline" className="text-[9px] py-0 px-1.5 text-zinc-400 border-zinc-700">
-                                {cat === "video" ? "🎬 Video Preview" : "📷 Photo Preview"}
+                                {cat === "video"
+                                  ? (locale === "tr" ? "🎬 Video Önizleme" : "🎬 Video Preview")
+                                  : (locale === "tr" ? "📷 Fotoğraf Önizleme" : "📷 Photo Preview")}
                               </Badge>
                             )}
                           </div>
@@ -609,10 +633,10 @@ export default function DashboardPage() {
                             size="sm"
                             onClick={() => setSelectedFileForPreview(file)}
                             className="text-zinc-400 hover:text-sky-400 hover:bg-sky-500/10 h-8 px-2 text-xs gap-1"
-                            title="Preview"
+                            title={locale === "tr" ? "Önizle" : "Preview"}
                           >
                             <Eye className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">Preview</span>
+                            <span className="hidden sm:inline">{locale === "tr" ? "Önizle" : "Preview"}</span>
                           </Button>
                         )}
 
@@ -631,7 +655,7 @@ export default function DashboardPage() {
                           size="sm"
                           onClick={() => handleDownload(file)}
                           className="text-zinc-400 hover:text-white h-8 w-8 p-0"
-                          title="Download"
+                          title={locale === "tr" ? "İndir" : "Download"}
                         >
                           <Download className="h-4 w-4" />
                         </Button>
@@ -641,7 +665,7 @@ export default function DashboardPage() {
                           size="sm"
                           onClick={() => setSelectedFileForRename(file)}
                           className="text-zinc-400 hover:text-white h-8 w-8 p-0"
-                          title="Rename"
+                          title={locale === "tr" ? "Yeniden Adlandır" : "Rename"}
                         >
                           <Edit2 className="h-3.5 w-3.5" />
                         </Button>
@@ -651,7 +675,7 @@ export default function DashboardPage() {
                           size="sm"
                           onClick={() => setSelectedFileForDelete(file)}
                           className="text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 h-8 w-8 p-0"
-                          title="Delete"
+                          title={locale === "tr" ? "Sil" : "Delete"}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -730,7 +754,7 @@ export default function DashboardPage() {
                               </span>
                             )}
                             <Badge variant="success" className="text-[10px]">
-                              {share.downloadCount} downloads
+                              {share.downloadCount} {locale === "tr" ? "indirme" : "downloads"}
                             </Badge>
                           </div>
                         </div>
@@ -745,20 +769,32 @@ export default function DashboardPage() {
             <div className="rounded-2xl border border-zinc-800/80 bg-gradient-to-br from-zinc-900/70 via-zinc-900/30 to-zinc-950 p-5 space-y-3.5 shadow-md">
               <div className="flex items-center gap-2 text-xs font-bold text-white">
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                <span>NearDrop Security & Infrastructure</span>
+                <span>
+                  {locale === "tr" ? "NearDrop Güvenlik & Altyapı" : "NearDrop Security & Infrastructure"}
+                </span>
               </div>
               <div className="space-y-2 text-xs">
                 <div className="flex items-center justify-between py-1 border-b border-zinc-800/50">
-                  <span className="text-zinc-400">Encryption Standard</span>
+                  <span className="text-zinc-400">
+                    {locale === "tr" ? "Şifreleme Standardı" : "Encryption Standard"}
+                  </span>
                   <span className="font-mono text-zinc-200">AES-256-GCM</span>
                 </div>
                 <div className="flex items-center justify-between py-1 border-b border-zinc-800/50">
-                  <span className="text-zinc-400">Global Edge CDN</span>
-                  <span className="text-emerald-400 font-medium">Active • 280+ Locations</span>
+                  <span className="text-zinc-400">
+                    {locale === "tr" ? "Küresel Edge CDN" : "Global Edge CDN"}
+                  </span>
+                  <span className="text-emerald-400 font-medium">
+                    {locale === "tr" ? "Aktif • 280+ Konum" : "Active • 280+ Locations"}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-zinc-400">Privacy Architecture</span>
-                  <span className="text-zinc-200">Zero-Knowledge</span>
+                  <span className="text-zinc-400">
+                    {locale === "tr" ? "Gizlilik Mimarisi" : "Privacy Architecture"}
+                  </span>
+                  <span className="text-zinc-200">
+                    {locale === "tr" ? "Sıfır-Bilgi (Zero-Knowledge)" : "Zero-Knowledge"}
+                  </span>
                 </div>
               </div>
             </div>
