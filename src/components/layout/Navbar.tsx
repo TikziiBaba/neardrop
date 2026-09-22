@@ -25,12 +25,12 @@ export const Navbar: React.FC = () => {
   const navBg = useTransform(
     scrollY,
     [0, 50],
-    ["rgba(245,245,247,0.72)", "rgba(245,245,247,0.92)"]
+    ["rgba(10,10,12,0.72)", "rgba(10,10,12,0.92)"]
   );
   const navBorder = useTransform(
     scrollY,
     [0, 50],
-    ["rgba(0,0,0,0.04)", "rgba(0,0,0,0.1)"]
+    ["rgba(255,255,255,0.06)", "rgba(255,255,255,0.12)"]
   );
 
   const cleanPath = pathname.replace(/^\/(tr|en)/, "") || "/";
@@ -159,9 +159,9 @@ export const Navbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 rounded-full border border-[var(--apple-separator)] bg-white/80 p-0.5 pr-3 hover:border-[var(--apple-text-quaternary)] transition-all cursor-pointer"
+                className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 p-0.5 pr-3 hover:border-zinc-700 transition-all cursor-pointer"
               >
-                <UserAvatar user={user} size="sm" className="ring-1 ring-[var(--apple-blue)]/20" />
+                <UserAvatar user={user} size="sm" className="ring-1 ring-blue-500/20" />
                 <span className="text-[12px] font-medium text-[var(--apple-text-primary)]">
                   {user.displayName}
                 </span>
@@ -169,10 +169,10 @@ export const Navbar: React.FC = () => {
 
               {userDropdownOpen && (
                 <div
-                  className="absolute right-0 mt-2 w-56 rounded-2xl border border-[var(--apple-separator)] bg-white/95 p-2 shadow-xl backdrop-blur-xl z-50"
+                  className="absolute right-0 mt-2 w-56 rounded-2xl border border-zinc-800 bg-zinc-900/95 p-2 shadow-2xl backdrop-blur-xl z-50"
                   onMouseLeave={() => setUserDropdownOpen(false)}
                 >
-                  <div className="px-3 py-2 border-b border-[var(--apple-separator-light)] mb-1">
+                  <div className="px-3 py-2 border-b border-zinc-800/80 mb-1">
                     <p className="text-xs font-medium text-[var(--apple-text-primary)] truncate">
                       {user.displayName}
                     </p>
@@ -204,7 +204,7 @@ export const Navbar: React.FC = () => {
                       setUserDropdownOpen(false);
                       await logout();
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-[var(--apple-red)] hover:bg-red-50 transition-colors mt-1 cursor-pointer"
+                    className="flex w-full items-center gap-2 px-3 py-2 rounded-xl text-xs text-[var(--apple-red)] hover:bg-red-500/10 transition-colors mt-1 cursor-pointer"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     <span>{t.navbar.logout}</span>
@@ -298,7 +298,7 @@ export const Navbar: React.FC = () => {
                     setMobileMenuOpen(false);
                     await logout();
                   }}
-                  className="flex items-center gap-2 px-3 py-2.5 text-left text-sm text-[var(--apple-red)] hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
+                  className="flex items-center gap-2 px-3 py-2.5 text-left text-sm text-[var(--apple-red)] hover:bg-red-500/10 rounded-xl transition-colors cursor-pointer"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>{t.navbar.logout}</span>

@@ -37,16 +37,16 @@ export const Footer: React.FC = () => {
             {/* Contact */}
             <div className="pt-3 text-[12px] text-[var(--apple-text-secondary)] space-y-1.5 border-t border-[var(--apple-separator-light)]">
               <p>
-                <span className="font-medium text-[var(--apple-text-primary)]">Adres:</span> Sivas Diriliş Mah. 21. Sok., Sivas / Türkiye
+                <span className="font-medium text-[var(--apple-text-primary)]">{locale === "tr" ? "Adres:" : "Address:"}</span> Sivas Diriliş Mah. 21. Sok., Sivas / Türkiye
               </p>
               <p className="flex items-center gap-1.5">
-                <span className="font-medium text-[var(--apple-text-primary)]">Destek Hattı:</span>
+                <span className="font-medium text-[var(--apple-text-primary)]">{locale === "tr" ? "Destek Hattı:" : "Support Line:"}</span>
                 <a href="tel:05456458416" className="text-[var(--apple-blue)] hover:underline font-mono font-medium">
                   0545 645 84 16
                 </a>
               </p>
               <p className="flex items-center gap-1.5">
-                <span className="font-medium text-[var(--apple-text-primary)]">E-Posta:</span>
+                <span className="font-medium text-[var(--apple-text-primary)]">{locale === "tr" ? "E-Posta:" : "Email:"}</span>
                 <a href="mailto:destek@neardrop.bekirr.dev" className="text-[var(--apple-blue)] hover:underline font-medium">
                   destek@neardrop.bekirr.dev
                 </a>
@@ -134,7 +134,7 @@ export const Footer: React.FC = () => {
               </li>
               <li>
                 <Link href="/contact" className="text-[var(--apple-blue)] hover:underline font-semibold transition-colors">
-                  İletişim &amp; Bize Ulaşın
+                  {locale === "tr" ? "İletişim & Bize Ulaşın" : "Contact & Support"}
                 </Link>
               </li>
             </ul>

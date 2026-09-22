@@ -44,30 +44,30 @@ export const AppleFaqSection: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="relative py-24 md:py-32 bg-[#f5f5f7] select-none">
+    <section id="faq" className="relative py-24 md:py-32 bg-black select-none">
       <div className="mx-auto max-w-[840px] px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-3 mb-14">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#0071e3]">
             {isTr ? "Sık Sorulan Sorular" : "Q & A"}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.035em] text-[#1d1d1f]">
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.035em] text-white">
             {isTr ? "Merak ettikleriniz." : "Questions & Answers."}
           </h2>
         </div>
 
         {/* Separator-based Accordion */}
-        <div className="divide-y divide-black/[0.08] border-t border-b border-black/[0.08]">
+        <div className="divide-y divide-white/[0.08] border-t border-b border-white/[0.08]">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div key={idx} className="py-6">
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between text-left text-base sm:text-lg font-semibold text-[#1d1d1f] hover:text-[#0071e3] transition-colors gap-4"
+                  className="w-full flex items-center justify-between text-left text-base sm:text-lg font-semibold text-white hover:text-[#0071e3] transition-colors gap-4 cursor-pointer"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`h-5 w-5 text-[#86868b] transition-transform duration-300 flex-shrink-0 ${
+                    className={`h-5 w-5 text-zinc-400 transition-transform duration-300 flex-shrink-0 ${
                       isOpen ? "rotate-180 text-[#0071e3]" : ""
                     }`}
                   />
@@ -81,7 +81,7 @@ export const AppleFaqSection: React.FC = () => {
                       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="pt-3 text-sm sm:text-base text-[#6e6e73] leading-relaxed">
+                      <p className="pt-3 text-sm sm:text-base text-zinc-400 leading-relaxed">
                         {faq.a}
                       </p>
                     </motion.div>

@@ -18,17 +18,17 @@ export const AppleDropStudio: React.FC = () => {
   const isTr = locale === "tr";
 
   return (
-    <section id="studio" className="relative py-24 md:py-32 bg-white select-none">
+    <section id="studio" className="relative py-24 md:py-32 bg-[#09090b] select-none">
       <div className="mx-auto max-w-[1040px] px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3 mb-14">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#0071e3]">
             {isTr ? "Canlı Stüdyo" : "Live Studio"}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.035em] text-[#1d1d1f]">
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.035em] text-white">
             {isTr ? "Hemen gönderin. Sadece bırakın." : "Ready to send? Just drop."}
           </h2>
-          <p className="text-base text-[#6e6e73]">
+          <p className="text-base text-zinc-400">
             {isTr
               ? "Herhangi bir dosya veya klasörü sürükleyin. Saniyeler içinde güvenli, süreli ve şifreli bağlantınız hazır."
               : "Drag and drop any file or folder. Your secure, expiring link is generated in seconds."}
@@ -36,35 +36,35 @@ export const AppleDropStudio: React.FC = () => {
         </div>
 
         {/* The Studio Card */}
-        <div className="max-w-3xl mx-auto rounded-[32px] border border-black/[0.08] bg-[#f5f5f7] p-6 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
+        <div className="max-w-3xl mx-auto rounded-[32px] border border-white/[0.08] bg-zinc-900/60 backdrop-blur-xl p-6 sm:p-10 shadow-2xl">
           {/* Real DropZone Component */}
           <DropZone />
 
           {/* Feature Badges below */}
-          <div className="mt-8 pt-6 border-t border-black/[0.06] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+          <div className="mt-8 pt-6 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-xs font-semibold text-[#1d1d1f]">
+              <span className="text-xs font-semibold text-white">
                 {isTr ? "Tek Tıkla Bağlantı" : "One-Click Link"}
               </span>
-              <span className="text-[11px] text-[#86868b]">
+              <span className="text-[11px] text-zinc-400">
                 {isTr ? "Kopyalayın ve doğrudan gönderin" : "Copy and beam instantly"}
               </span>
             </div>
 
             <div className="flex flex-col items-center gap-1">
-              <span className="text-xs font-semibold text-[#1d1d1f]">
+              <span className="text-xs font-semibold text-white">
                 {isTr ? "Otomatik İmha" : "Automated Expiry"}
               </span>
-              <span className="text-[11px] text-[#86868b]">
+              <span className="text-[11px] text-zinc-400">
                 {isTr ? "Süre dolunca sunucudan silinir" : "Purged when timer expires"}
               </span>
             </div>
 
             <div className="flex flex-col items-center gap-1">
-              <span className="text-xs font-semibold text-[#1d1d1f]">
+              <span className="text-xs font-semibold text-white">
                 {isTr ? "Şifre Koruması" : "Password Protected"}
               </span>
-              <span className="text-[11px] text-[#86868b]">
+              <span className="text-[11px] text-zinc-400">
                 {isTr ? "İsteğe bağlı AES şifreleme" : "Optional PIN encryption"}
               </span>
             </div>

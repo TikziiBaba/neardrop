@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
-import { PRICING_PLANS } from "@/lib/subscription/plans";
+import { getPricingPlans } from "@/lib/subscription/plans";
 import { SubscriptionTier } from "@/types";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
@@ -38,6 +38,8 @@ export default function RegisterPage() {
 
   // Stepper: 1 = Credentials, 2 = Plan Selection, 3 = OTP Verification
   const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  const plans = getPricingPlans(isTr);
 
   // Step 1: Credentials
   const [displayName, setDisplayName] = useState("");
@@ -241,30 +243,30 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center bg-[#f5f5f7] select-none">
+    <div className="relative min-h-[calc(100vh-4rem)] py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center bg-zinc-950 text-zinc-100 select-none">
       {/* Background Soft Glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-b from-[#0071e3]/8 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-gradient-to-b from-[#0071e3]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className={`relative z-10 w-full ${step === 2 ? "max-w-5xl" : "max-w-[440px]"} space-y-6 transition-all duration-300`}>
         {/* Apple ID Brand Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-block group">
             <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#43a047] p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-[#0071e3]">
+              <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center text-[#0071e3]">
                 <ShieldCheck className="h-8 w-8" />
               </div>
             </div>
           </Link>
 
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1d1d1f]">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
               {step === 1
                 ? isTr ? "Yeni NearDrop ID Oluşturun" : "Create Your NearDrop ID"
                 : step === 2
                 ? isTr ? "Bulut Depolama Planınızı Seçin" : "Select Your Storage Plan"
                 : isTr ? "E-postanızı Doğrulayın" : "Verify Your Email"}
             </h1>
-            <p className="text-xs sm:text-sm text-[#6e6e73] mt-1 max-w-sm mx-auto">
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-sm mx-auto">
               {step === 1
                 ? isTr ? "Tek bir hesapla güvenli dosya paylaşımı ve depolama dünyasına adım atın." : "One account to share, store, and manage files securely."
                 : step === 2
@@ -276,7 +278,7 @@ export default function RegisterPage() {
           {/* Apple Stepper Pill */}
           {step < 3 && (
             <div className="flex justify-center pt-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-black/[0.08] text-[11px] font-semibold text-[#1d1d1f] shadow-sm">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-[11px] font-semibold text-zinc-200 shadow-sm">
                 <span className={`h-2 w-2 rounded-full ${step === 1 ? "bg-[#0071e3]" : "bg-emerald-500"}`} />
                 <span>{isTr ? `Adım ${step} / 2` : `Step ${step} of 2`}</span>
               </div>
@@ -286,72 +288,72 @@ export default function RegisterPage() {
 
         {/* Global Error Banner */}
         {error && (
-          <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30] animate-in fade-in">
-            <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
+          <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 animate-in fade-in">
+            <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
             <span className="font-medium">{error}</span>
           </div>
         )}
 
         {/* ── STEP 1: CREDENTIALS ── */}
         {step === 1 && (
-          <div className="rounded-[28px] border border-black/[0.08] bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] space-y-5 animate-in fade-in">
+          <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5 animate-in fade-in">
             <form onSubmit={handleStep1Submit} className="space-y-4">
-              <div className="rounded-2xl border border-black/[0.12] overflow-hidden focus-within:border-[#0071e3] focus-within:ring-2 focus-within:ring-[#0071e3]/20 transition-all bg-[#fafafa]">
+              <div className="rounded-2xl border border-zinc-800 overflow-hidden focus-within:border-[#0071e3] focus-within:ring-2 focus-within:ring-[#0071e3]/20 transition-all bg-zinc-950/70">
                 {/* Name */}
-                <div className="p-3 border-b border-black/[0.06]">
-                  <label className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider block">
+                <div className="p-3 border-b border-zinc-800/80">
+                  <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
                     {isTr ? "Adınız & Soyadınız" : "Full Name"}
                   </label>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <User className="h-4 w-4 text-[#86868b] flex-shrink-0" />
+                    <User className="h-4 w-4 text-zinc-400 flex-shrink-0" />
                     <input
                       type="text"
                       placeholder={isTr ? "Adınız Soyadınız" : "John Appleseed"}
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none font-medium"
+                      className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none font-medium"
                       required
                     />
                   </div>
                 </div>
 
                 {/* Email */}
-                <div className="p-3 border-b border-black/[0.06]">
-                  <label className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider block">
+                <div className="p-3 border-b border-zinc-800/80">
+                  <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
                     {isTr ? "E-posta Adresi" : "Email Address"}
                   </label>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <Mail className="h-4 w-4 text-[#86868b] flex-shrink-0" />
+                    <Mail className="h-4 w-4 text-zinc-400 flex-shrink-0" />
                     <input
                       type="email"
                       placeholder="name@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none font-medium"
+                      className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none font-medium"
                       required
                     />
                   </div>
                 </div>
 
                 {/* Password */}
-                <div className="p-3 border-b border-black/[0.06]">
-                  <label className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider block">
+                <div className="p-3 border-b border-zinc-800/80">
+                  <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
                     {isTr ? "Parola (En az 6 karakter)" : "Password (Min 6 chars)"}
                   </label>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <Lock className="h-4 w-4 text-[#86868b] flex-shrink-0" />
+                    <Lock className="h-4 w-4 text-zinc-400 flex-shrink-0" />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none font-medium"
+                      className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none font-medium"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="text-[#86868b] hover:text-[#1d1d1f] p-1"
+                      className="text-zinc-400 hover:text-white p-1"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -360,17 +362,17 @@ export default function RegisterPage() {
 
                 {/* Confirm Password */}
                 <div className="p-3">
-                  <label className="text-[10px] font-semibold text-[#86868b] uppercase tracking-wider block">
+                  <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
                     {isTr ? "Parolayı Onaylayın" : "Confirm Password"}
                   </label>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <Lock className="h-4 w-4 text-[#86868b] flex-shrink-0" />
+                    <Lock className="h-4 w-4 text-zinc-400 flex-shrink-0" />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full bg-transparent text-sm text-[#1d1d1f] placeholder:text-[#86868b] outline-none font-medium"
+                      className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none font-medium"
                       required
                     />
                   </div>
@@ -379,7 +381,7 @@ export default function RegisterPage() {
 
               <button
                 type="submit"
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-[#0071e3] py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-[0.98] transition-all"
+                className="w-full flex items-center justify-center gap-2 rounded-full bg-[#0071e3] py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-[0.98] transition-all cursor-pointer"
               >
                 <span>{isTr ? "Devam Et (Plan Seçimi)" : "Continue (Choose Plan)"}</span>
                 <ArrowRight className="h-4 w-4" />
@@ -388,8 +390,8 @@ export default function RegisterPage() {
 
             {/* Divider */}
             <div className="relative flex items-center justify-center py-1">
-              <div className="w-full border-t border-black/[0.08]" />
-              <span className="absolute bg-white px-3 text-[11px] font-medium text-[#86868b]">
+              <div className="w-full border-t border-zinc-800" />
+              <span className="absolute bg-zinc-900 px-3 text-[11px] font-medium text-zinc-400">
                 {isTr ? "veya hızlı kayıt" : "or quick sign up"}
               </span>
             </div>
@@ -400,7 +402,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => handleSocialLogin("google")}
                 disabled={Boolean(isSocialLoading)}
-                className="flex items-center justify-center gap-2 rounded-full border border-black/[0.1] bg-white py-2.5 px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-[#f5f5f7] active:scale-95 transition-all shadow-sm"
+                className="flex items-center justify-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 py-2.5 px-4 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 active:scale-95 transition-all shadow-sm cursor-pointer"
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                   <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.4l3.7 2.9C6.5 7.4 9 5 12 5z" />
@@ -415,9 +417,9 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => handleSocialLogin("github")}
                 disabled={Boolean(isSocialLoading)}
-                className="flex items-center justify-center gap-2 rounded-full border border-black/[0.1] bg-white py-2.5 px-4 text-xs font-semibold text-[#1d1d1f] hover:bg-[#f5f5f7] active:scale-95 transition-all shadow-sm"
+                className="flex items-center justify-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 py-2.5 px-4 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 active:scale-95 transition-all shadow-sm cursor-pointer"
               >
-                <svg className="h-4 w-4 fill-current text-[#1d1d1f]" viewBox="0 0 24 24">
+                <svg className="h-4 w-4 fill-current text-zinc-200" viewBox="0 0 24 24">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                 </svg>
                 <span>GitHub</span>
@@ -425,7 +427,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Login Link */}
-            <p className="text-center text-xs text-[#6e6e73] pt-2">
+            <p className="text-center text-xs text-zinc-400 pt-2">
               {isTr ? "Zaten bir hesabınız var mı?" : "Already have an account?"}{" "}
               <Link href="/login" className="text-[#0071e3] font-semibold hover:underline">
                 {isTr ? "Giriş yapın ›" : "Sign in ›"}
@@ -439,12 +441,12 @@ export default function RegisterPage() {
           <div className="space-y-6 animate-in fade-in">
             {/* Monthly / Yearly Toggle */}
             <div className="flex justify-center">
-              <div className="inline-flex items-center p-1 rounded-full bg-white border border-black/[0.08] shadow-sm">
+              <div className="inline-flex items-center p-1 rounded-full bg-zinc-900 border border-zinc-800 shadow-sm">
                 <button
                   type="button"
                   onClick={() => setBillingCycle("monthly")}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    billingCycle === "monthly" ? "bg-[#0071e3] text-white shadow-sm" : "text-[#6e6e73] hover:text-[#1d1d1f]"
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                    billingCycle === "monthly" ? "bg-[#0071e3] text-white shadow-sm" : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   {isTr ? "Aylık Ödeme" : "Monthly"}
@@ -452,8 +454,8 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setBillingCycle("yearly")}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    billingCycle === "yearly" ? "bg-[#0071e3] text-white shadow-sm" : "text-[#6e6e73] hover:text-[#1d1d1f]"
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                    billingCycle === "yearly" ? "bg-[#0071e3] text-white shadow-sm" : "text-zinc-400 hover:text-white"
                   }`}
                 >
                   {isTr ? "Yıllık (2 Ay Hediye)" : "Yearly (Save 20%)"}
@@ -463,7 +465,7 @@ export default function RegisterPage() {
 
             {/* 4 Plans Bento Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {PRICING_PLANS.map((plan) => {
+              {plans.map((plan) => {
                 const isSelected = selectedTier === plan.id;
                 const price = billingCycle === "monthly" ? plan.priceMonthly : plan.priceYearly;
 
@@ -473,40 +475,40 @@ export default function RegisterPage() {
                     onClick={() => setSelectedTier(plan.id)}
                     className={`rounded-[24px] border p-6 flex flex-col justify-between cursor-pointer transition-all duration-200 ${
                       isSelected
-                        ? "border-[#0071e3] bg-white ring-2 ring-[#0071e3]/20 shadow-lg scale-[1.02]"
-                        : "border-black/[0.08] bg-white/90 hover:border-black/[0.16] shadow-sm"
+                        ? "border-[#0071e3] bg-zinc-900 ring-2 ring-[#0071e3]/20 shadow-lg scale-[1.02] text-white"
+                        : "border-zinc-800 bg-zinc-900/80 hover:border-zinc-700 shadow-sm text-white"
                     }`}
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-base font-bold text-[#1d1d1f]">{plan.name}</h3>
-                        {plan.popular && (
-                          <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold text-[#0071e3]">
-                            Popular
+                        <h3 className="text-base font-bold text-white">{plan.name}</h3>
+                        {plan.badge && (
+                          <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-[10px] font-bold text-[#0071e3]">
+                            {plan.badge}
                           </span>
                         )}
                       </div>
 
                       <div className="flex items-baseline gap-1">
-                        <span className="text-3xl font-extrabold tracking-tight text-[#1d1d1f]">
+                        <span className="text-3xl font-extrabold tracking-tight text-white">
                           {price === 0 ? "0 ₺" : `${price} ₺`}
                         </span>
-                        <span className="text-xs text-[#86868b]">
-                          /{billingCycle === "monthly" ? "ay" : "yıl"}
+                        <span className="text-xs text-zinc-400">
+                          /{billingCycle === "monthly" ? (isTr ? "ay" : "mo") : (isTr ? "yıl" : "yr")}
                         </span>
                       </div>
 
-                      <div className="text-xs font-semibold text-[#0071e3] bg-blue-50/60 px-2.5 py-1 rounded-xl">
-                        {plan.quotaLabel} Depolama
+                      <div className="text-xs font-semibold text-[#0071e3] bg-blue-500/10 px-2.5 py-1 rounded-xl">
+                        {plan.quotaLabel} {isTr ? "Depolama" : "Storage"}
                       </div>
 
-                      <p className="text-[11px] text-[#6e6e73]">{plan.tagline}</p>
+                      <p className="text-[11px] text-zinc-400">{plan.tagline}</p>
 
-                      <ul className="space-y-2 pt-2 border-t border-black/[0.06] text-xs text-[#1d1d1f]">
+                      <ul className="space-y-2 pt-2 border-t border-zinc-800 text-xs text-zinc-200">
                         {plan.features.slice(0, 4).map((f, i) => (
                           <li key={i} className="flex items-center gap-2">
-                            <Check className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0" />
-                            <span className="text-[11px] text-[#424245]">{f}</span>
+                            <Check className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0" />
+                            <span className="text-[11px] text-zinc-300">{f}</span>
                           </li>
                         ))}
                       </ul>
@@ -518,7 +520,7 @@ export default function RegisterPage() {
                         className={`w-full py-2.5 rounded-full text-xs font-semibold transition-all ${
                           isSelected
                             ? "bg-[#0071e3] text-white shadow-md shadow-blue-500/20"
-                            : "bg-[#f5f5f7] text-[#1d1d1f] hover:bg-[#e8e8ed]"
+                            : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
                         }`}
                       >
                         {isSelected ? (isTr ? "✓ Seçildi" : "✓ Selected") : (isTr ? "Bu Planı Seç" : "Select Plan")}
@@ -534,7 +536,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-[#6e6e73] hover:text-[#1d1d1f]"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-white cursor-pointer"
               >
                 <ArrowLeft className="h-4 w-4" />
                 <span>{isTr ? "Geri Dön" : "Back"}</span>
@@ -544,7 +546,7 @@ export default function RegisterPage() {
                 type="button"
                 onClick={() => handleFinalSubmit(selectedTier)}
                 disabled={isLoading}
-                className="inline-flex items-center gap-2 rounded-full bg-[#0071e3] px-8 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-95 transition-all disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0071e3] px-8 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
               >
                 {isLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -561,9 +563,9 @@ export default function RegisterPage() {
 
         {/* ── STEP 3: OTP VERIFICATION ── */}
         {step === 3 && (
-          <div className="rounded-[28px] border border-black/[0.08] bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.04)] space-y-5 animate-in fade-in">
+          <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5 animate-in fade-in">
             <div className="text-center space-y-1">
-              <p className="text-xs text-[#86868b]">
+              <p className="text-xs text-zinc-400">
                 {isTr
                   ? `Onay bağlantısı veya kodu ${email} adresine gönderildi.`
                   : `Verification email or code was sent to ${email}.`}
@@ -572,7 +574,7 @@ export default function RegisterPage() {
 
             <form onSubmit={handleOtpVerify} className="space-y-4">
               <div className="space-y-2 text-center">
-                <label className="text-xs font-semibold text-[#1d1d1f] block">
+                <label className="text-xs font-semibold text-zinc-200 block">
                   {isTr ? "E-posta Doğrulama Kodu (6 veya 8 Haneli)" : "Verification Code (6 or 8 Digits)"}
                 </label>
                 <input
@@ -581,10 +583,10 @@ export default function RegisterPage() {
                   placeholder={isTr ? "6 veya 8 haneli kod" : "6 or 8-digit code"}
                   value={otpCode}
                   onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
-                  className="w-full text-center text-2xl sm:text-3xl font-mono tracking-[0.25em] sm:tracking-[0.35em] py-3 rounded-2xl border border-black/[0.12] bg-[#fafafa] text-[#1d1d1f] focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none"
+                  className="w-full text-center text-2xl sm:text-3xl font-mono tracking-[0.25em] sm:tracking-[0.35em] py-3 rounded-2xl border border-zinc-800 bg-zinc-950 text-white focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none"
                   autoFocus
                 />
-                <p className="text-[11px] text-[#86868b]">
+                <p className="text-[11px] text-zinc-400">
                   {isTr
                     ? "Gelen kutunuzdaki 6 veya 8 haneli güvenlik kodunu girin."
                     : "Enter the 6 or 8-digit security code received in your inbox."}
@@ -592,8 +594,8 @@ export default function RegisterPage() {
               </div>
 
               {error && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-[#fff2f2] border border-[#ff3b30]/20 text-xs text-[#ff3b30] text-left animate-in fade-in">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-[#ff3b30]" />
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 text-left animate-in fade-in">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
                   <span>{error}</span>
                 </div>
               )}
@@ -601,7 +603,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={otpCode.length < 6 || isVerifyingOtp}
-                className="w-full flex items-center justify-center gap-2 rounded-full bg-[#0071e3] py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-[0.98] transition-all disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2 rounded-full bg-[#0071e3] py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
               >
                 {isVerifyingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : (
                   <>
@@ -613,12 +615,12 @@ export default function RegisterPage() {
             </form>
 
             {/* Instant Verification Fallback for Mail Delays / Spam / Rate-limits */}
-            <div className="rounded-2xl bg-blue-50/80 border border-blue-100 p-4 text-center space-y-2.5">
-              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-[#0071e3]">
+            <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-4 text-center space-y-2.5">
+              <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-blue-400">
                 <ShieldCheck className="h-4 w-4" />
                 <span>{isTr ? "E-posta Gelen Kutunuza Ulaşmadı mı?" : "Email Not Arriving?"}</span>
               </div>
-              <p className="text-[11px] text-[#424245] leading-relaxed">
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
                 {isTr
                   ? "E-posta sağlayıcınız spam filtreleri veya sunucu kotaları nedeniyle gecikiyorsa, hesabınızı tek tıkla hemen doğrulayıp platforma giriş yapabilirsiniz."
                   : "If emails are delayed by spam filters or provider rate limits, you can instantly verify and proceed directly."}
@@ -627,22 +629,22 @@ export default function RegisterPage() {
                 type="button"
                 onClick={handleDirectConfirm}
                 disabled={isDirectConfirming}
-                className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#0071e3]/30 bg-white py-2.5 text-xs font-bold text-[#0071e3] shadow-sm hover:bg-blue-50 transition-all disabled:opacity-50 active:scale-[0.98]"
+                className="w-full flex items-center justify-center gap-2 rounded-xl border border-[#0071e3]/30 bg-zinc-900 py-2.5 text-xs font-bold text-blue-400 shadow-sm hover:bg-zinc-800 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
               >
-                {isDirectConfirming ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
+                {isDirectConfirming ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
                 <span>{isTr ? "Hesabı Şimdi Doğrula ve Başla" : "Verify Instantly & Get Started"}</span>
               </button>
             </div>
 
-            <div className="pt-2 border-t border-black/[0.06] text-center space-y-2">
+            <div className="pt-2 border-t border-zinc-800 text-center space-y-2">
               <button
                 type="button"
                 onClick={handleResendOtp}
                 disabled={isResending || cooldown > 0}
-                className="text-xs font-semibold text-[#0071e3] hover:underline disabled:opacity-50"
+                className="text-xs font-semibold text-[#0071e3] hover:underline disabled:opacity-50 cursor-pointer"
               >
                 {isResending ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
-                <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "E-postayı Tekrar Gönder"}</span>
+                <span>{cooldown > 0 ? (isTr ? `Tekrar gönder (${cooldown}s)` : `Resend (${cooldown}s)`) : (isTr ? "E-postayı Tekrar Gönder" : "Resend Verification Email")}</span>
               </button>
             </div>
           </div>

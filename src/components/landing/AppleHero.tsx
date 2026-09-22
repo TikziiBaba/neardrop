@@ -90,7 +90,7 @@ export const AppleHero: React.FC = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-black/[0.04] border border-black/[0.06] text-[12px] font-semibold text-[#1d1d1f]"
+            className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.06] border border-white/[0.08] text-[12px] font-semibold text-white"
           >
             <span className="flex h-2 w-2 rounded-full bg-[#0071e3] animate-pulse" />
             <span>{isTr ? "NearDrop 2.0 · Eşler Arası Dosya Aktarımı" : "NearDrop 2.0 · Peer-to-Peer Transfer"}</span>
@@ -101,7 +101,7 @@ export const AppleHero: React.FC = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.08 }}
-            className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.035em] text-[#1d1d1f] leading-[1.08]"
+            className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-[-0.035em] text-white leading-[1.08]"
           >
             {isTr ? (
               <>
@@ -125,7 +125,7 @@ export const AppleHero: React.FC = () => {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.16 }}
-            className="text-lg sm:text-xl text-[#6e6e73] font-normal leading-relaxed max-w-2xl mx-auto pt-2"
+            className="text-lg sm:text-xl text-zinc-400 font-normal leading-relaxed max-w-2xl mx-auto pt-2"
           >
             {isTr
               ? "Cihazınız doğrudan alıcıya bağlanır. Bulut yüklemesi beklemeden, boyut sınırı olmadan, uçtan uca AES-256 şifreli transfer."
@@ -190,22 +190,22 @@ export const AppleHero: React.FC = () => {
             onDrop={handleFileDrop}
             className={`relative rounded-[32px] border ${
               isDragOver
-                ? "border-[#0071e3] bg-[#0071e3]/[0.04] shadow-2xl scale-[1.01]"
-                : "border-black/[0.08] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.06)]"
+                ? "border-[#0071e3] bg-[#0071e3]/[0.08] shadow-2xl scale-[1.01]"
+                : "border-white/[0.08] bg-zinc-900/70 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
             } p-8 sm:p-12 transition-all duration-300 overflow-hidden`}
           >
             {/* Top Bar / Status */}
-            <div className="flex items-center justify-between border-b border-black/[0.06] pb-5 mb-8">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-5 mb-8">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-3 w-3 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
                 </span>
-                <span className="text-xs font-semibold text-[#1d1d1f] tracking-tight">
+                <span className="text-xs font-semibold text-white tracking-tight">
                   {isTr ? "Aktif Radar — Çevredeki 4 Cihaz Algılandı" : "Active Radar — 4 Nearby Devices Discovered"}
                 </span>
               </div>
-              <span className="text-[11px] font-medium text-[#86868b] hidden sm:inline">
+              <span className="text-[11px] font-medium text-zinc-400 hidden sm:inline">
                 {isTr ? "WebRTC Mesh · Doğrudan Eşleşme" : "WebRTC Mesh · Direct Peer Connection"}
               </span>
             </div>
@@ -262,10 +262,10 @@ export const AppleHero: React.FC = () => {
                     {isTr ? "veya tıklayın" : "or click"}
                   </span>
                 </motion.div>
-                <span className="mt-2.5 text-xs font-semibold text-[#1d1d1f]">
+                <span className="mt-2.5 text-xs font-semibold text-white">
                   {isTr ? "Sizin Cihazınız" : "Your Device"}
                 </span>
-                <span className="text-[10px] text-[#86868b]">
+                <span className="text-[10px] text-zinc-400">
                   {droppedFileName ? droppedFileName : isTr ? "Göndermeye Hazır" : "Ready to beam"}
                 </span>
               </div>
@@ -276,17 +276,17 @@ export const AppleHero: React.FC = () => {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSimulateTransfer("mac")}
-                className="absolute top-4 left-6 sm:top-8 sm:left-14 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/90 border border-black/[0.08] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
+                className="absolute top-4 left-6 sm:top-8 sm:left-14 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-zinc-800/80 border border-white/[0.1] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
               >
-                <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-zinc-900 flex items-center justify-center text-white group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
                   <Laptop className="h-5 w-5" />
                 </div>
                 <div className="text-center">
-                  <div className="text-[11px] font-semibold text-[#1d1d1f]">MacBook Pro 16″</div>
-                  <div className="text-[9px] text-[#86868b]">0.8 m · {isTr ? "Bağlan" : "Beam"}</div>
+                  <div className="text-[11px] font-semibold text-white">MacBook Pro 16″</div>
+                  <div className="text-[9px] text-zinc-400">0.8 m · {isTr ? "Bağlan" : "Beam"}</div>
                 </div>
                 {activeTransferPeer === "mac" && (
-                  <div className="w-full bg-[#f5f5f7] h-1.5 rounded-full overflow-hidden mt-1">
+                  <div className="w-full bg-zinc-700 h-1.5 rounded-full overflow-hidden mt-1">
                     <div className="bg-[#0071e3] h-full transition-all duration-150" style={{ width: `${transferProgress}%` }} />
                   </div>
                 )}
@@ -297,17 +297,17 @@ export const AppleHero: React.FC = () => {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSimulateTransfer("iphone")}
-                className="absolute top-4 right-6 sm:top-8 sm:right-14 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/90 border border-black/[0.08] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
+                className="absolute top-4 right-6 sm:top-8 sm:right-14 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-zinc-800/80 border border-white/[0.1] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
               >
-                <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-zinc-900 flex items-center justify-center text-white group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <div className="text-center">
-                  <div className="text-[11px] font-semibold text-[#1d1d1f]">iPhone 16 Pro</div>
-                  <div className="text-[9px] text-[#86868b]">1.2 m · {isTr ? "Bağlan" : "Beam"}</div>
+                  <div className="text-[11px] font-semibold text-white">iPhone 16 Pro</div>
+                  <div className="text-[9px] text-zinc-400">1.2 m · {isTr ? "Bağlan" : "Beam"}</div>
                 </div>
                 {activeTransferPeer === "iphone" && (
-                  <div className="w-full bg-[#f5f5f7] h-1.5 rounded-full overflow-hidden mt-1">
+                  <div className="w-full bg-zinc-700 h-1.5 rounded-full overflow-hidden mt-1">
                     <div className="bg-[#0071e3] h-full transition-all duration-150" style={{ width: `${transferProgress}%` }} />
                   </div>
                 )}
@@ -318,17 +318,17 @@ export const AppleHero: React.FC = () => {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSimulateTransfer("win")}
-                className="absolute bottom-4 left-6 sm:bottom-6 sm:left-16 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/90 border border-black/[0.08] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
+                className="absolute bottom-4 left-6 sm:bottom-6 sm:left-16 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-zinc-800/80 border border-white/[0.1] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
               >
-                <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-zinc-900 flex items-center justify-center text-white group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
                   <Monitor className="h-5 w-5" />
                 </div>
                 <div className="text-center">
-                  <div className="text-[11px] font-semibold text-[#1d1d1f]">Dell XPS 15 (Windows)</div>
-                  <div className="text-[9px] text-[#86868b]">2.4 m · {isTr ? "Bağlan" : "Beam"}</div>
+                  <div className="text-[11px] font-semibold text-white">Dell XPS 15 (Windows)</div>
+                  <div className="text-[9px] text-zinc-400">2.4 m · {isTr ? "Bağlan" : "Beam"}</div>
                 </div>
                 {activeTransferPeer === "win" && (
-                  <div className="w-full bg-[#f5f5f7] h-1.5 rounded-full overflow-hidden mt-1">
+                  <div className="w-full bg-zinc-700 h-1.5 rounded-full overflow-hidden mt-1">
                     <div className="bg-[#0071e3] h-full transition-all duration-150" style={{ width: `${transferProgress}%` }} />
                   </div>
                 )}
@@ -339,17 +339,17 @@ export const AppleHero: React.FC = () => {
                 whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleSimulateTransfer("pixel")}
-                className="absolute bottom-4 right-6 sm:bottom-6 sm:right-16 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-white/90 border border-black/[0.08] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
+                className="absolute bottom-4 right-6 sm:bottom-6 sm:right-16 z-20 flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-zinc-800/80 border border-white/[0.1] shadow-sm hover:shadow-md hover:border-[#0071e3] transition-all group"
               >
-                <div className="w-11 h-11 rounded-xl bg-[#f5f5f7] flex items-center justify-center text-[#1d1d1f] group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
+                <div className="w-11 h-11 rounded-xl bg-zinc-900 flex items-center justify-center text-white group-hover:bg-[#0071e3]/10 group-hover:text-[#0071e3] transition-colors">
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <div className="text-center">
-                  <div className="text-[11px] font-semibold text-[#1d1d1f]">Pixel 9 Pro (Android)</div>
-                  <div className="text-[9px] text-[#86868b]">3.1 m · {isTr ? "Bağlan" : "Beam"}</div>
+                  <div className="text-[11px] font-semibold text-white">Pixel 9 Pro (Android)</div>
+                  <div className="text-[9px] text-zinc-400">3.1 m · {isTr ? "Bağlan" : "Beam"}</div>
                 </div>
                 {activeTransferPeer === "pixel" && (
-                  <div className="w-full bg-[#f5f5f7] h-1.5 rounded-full overflow-hidden mt-1">
+                  <div className="w-full bg-zinc-700 h-1.5 rounded-full overflow-hidden mt-1">
                     <div className="bg-[#0071e3] h-full transition-all duration-150" style={{ width: `${transferProgress}%` }} />
                   </div>
                 )}
@@ -357,7 +357,7 @@ export const AppleHero: React.FC = () => {
             </div>
 
             {/* Bottom Interactive Hint */}
-            <div className="mt-8 pt-4 border-t border-black/[0.06] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-[#6e6e73]">
+            <div className="mt-8 pt-4 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-zinc-400">
               <span className="flex items-center gap-2">
                 <Sparkles className="h-3.5 w-3.5 text-[#0071e3]" />
                 {isTr

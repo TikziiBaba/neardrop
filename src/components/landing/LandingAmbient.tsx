@@ -27,7 +27,7 @@ export const LandingAmbient: React.FC = () => {
       {/* Ambient background — very subtle, nearly invisible */}
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
         {/* Clean base gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#f5f5f7] via-[#fafafa] to-[#f5f5f7]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-black to-zinc-950" />
 
         {/* Single soft hero aura — barely visible */}
         <div

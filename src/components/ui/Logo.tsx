@@ -73,12 +73,12 @@ export function Logo({
       {showText && (
         <div className="flex items-center gap-1.5">
           <span
-            className={`tracking-tight text-[#1d1d1f] transition-colors group-hover:text-[#0071e3] ${textSizes[size]}`}
+            className={`tracking-tight text-white transition-colors group-hover:text-blue-400 ${textSizes[size]}`}
           >
             NearDrop
           </span>
           {badge && (
-            <span className="rounded-full bg-[#0071e3]/8 px-1.5 py-0.5 text-[10px] font-medium text-[#0071e3]">
+            <span className="rounded-full bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
               {badge}
             </span>
           )}

@@ -42,17 +42,17 @@ export const AppleSubNav: React.FC = () => {
   ];
 
   return (
-    <div className="sticky top-12 z-30 w-full border-b border-black/[0.06] bg-[#f5f5f7]/80 backdrop-blur-xl backdrop-saturate-150 transition-all">
+    <div className="sticky top-12 z-30 w-full border-b border-white/[0.08] bg-black/80 backdrop-blur-xl backdrop-saturate-150 transition-all">
       <div className="mx-auto flex h-11 max-w-[1040px] items-center justify-between px-4 sm:px-6">
         {/* Product Identity */}
         <div className="flex items-center gap-2.5">
           <Link
             href="#overview"
-            className="text-[15px] font-semibold text-[#1d1d1f] tracking-tight hover:opacity-80 transition-opacity"
+            className="text-[15px] font-semibold text-white tracking-tight hover:opacity-80 transition-opacity"
           >
             NearDrop
           </Link>
-          <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+          <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
             P2P Ready
           </span>
@@ -69,7 +69,7 @@ export const AppleSubNav: React.FC = () => {
                 className={`text-[12px] font-medium transition-colors ${
                   isActive
                     ? "text-[#0071e3]"
-                    : "text-[#6e6e73] hover:text-[#1d1d1f]"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 {item.label}

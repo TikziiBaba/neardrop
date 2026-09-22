@@ -8,21 +8,25 @@ import {
   CheckCircle2,
   AlertCircle,
   ArrowRight,
-  Sparkles,
   RefreshCw,
   ExternalLink,
   ShieldCheck,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth/context";
+import { useLanguage } from "@/lib/i18n/context";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { SoundManager } from "@/lib/utils/sound-effects";
 
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, resendVerificationEmail, verifyOtp } = useAuth();
+  const { locale } = useLanguage();
+  const isTr = locale === "tr";
 
   const queryEmail = searchParams.get("email") || user?.email || "";
   const queryError = searchParams.get("error");
@@ -34,9 +38,12 @@ function VerifyEmailContent() {
   const [isResending, setIsResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [isSuccess, setIsSuccess] = useState(Boolean(queryVerified) || user?.isEmailVerified === true);
+  const [isDirectConfirming, setIsDirectConfirming] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(
     queryError === "invalid_token"
-      ? "Doğrulama bağlantısının süresi dolmuş veya geçersiz. Lütfen aşağıdan yeni bir bağlantı isteyin."
+      ? isTr
+        ? "Doğrulama bağlantısının süresi dolmuş veya geçersiz. Lütfen yeni bir kod veya bağlantı isteyin."
+        : "Verification link is invalid or expired. Please request a new one below."
       : null
   );
 
@@ -55,19 +62,22 @@ function VerifyEmailContent() {
     }
   }, [queryVerified, user?.isEmailVerified]);
 
-  const [isDirectConfirming, setIsDirectConfirming] = useState(false);
+  const cleanCode = otpCode.trim().replace(/\D/g, "");
+  const canSubmitOtp = cleanCode.length >= 6 && !isVerifyingOtp && Boolean(email.trim());
 
   const handleOtpVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleanCode = otpCode.trim().replace(/\D/g, "");
-    if (!cleanCode || isVerifyingOtp || !email.trim()) return;
+    if (!canSubmitOtp) return;
     setIsVerifyingOtp(true);
     setErrorMessage(null);
+    SoundManager.play("click");
+
     try {
       const res = await verifyOtp(email.trim(), cleanCode);
       if (res.success) {
         setIsSuccess(true);
-        toast.success("E-posta adresiniz başarıyla onaylandı!");
+        SoundManager.play("success");
+        toast.success(isTr ? "E-posta adresiniz başarıyla onaylandı!" : "Email verified successfully!");
         try {
           confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
         } catch (e) {}
@@ -75,10 +85,10 @@ function VerifyEmailContent() {
           router.push("/dashboard?verified=true");
         }, 1200);
       } else {
-        setErrorMessage(res.error || "Geçersiz veya süresi dolmuş kod.");
+        setErrorMessage(res.error || (isTr ? "Geçersiz veya süresi dolmuş kod." : "Invalid or expired code."));
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Doğrulama hatası oluştu.");
+      setErrorMessage(err.message || (isTr ? "Doğrulama hatası oluştu." : "Verification failed."));
     } finally {
       setIsVerifyingOtp(false);
     }
@@ -88,6 +98,8 @@ function VerifyEmailContent() {
     if (!email.trim() || isDirectConfirming) return;
     setIsDirectConfirming(true);
     setErrorMessage(null);
+    SoundManager.play("click");
+
     try {
       const res = await fetch("/api/auth/confirm-user", {
         method: "POST",
@@ -97,7 +109,8 @@ function VerifyEmailContent() {
       const data = await res.json();
       if (data.success) {
         setIsSuccess(true);
-        toast.success("E-posta adresiniz başarıyla onaylandı!");
+        SoundManager.play("success");
+        toast.success(isTr ? "E-posta adresiniz başarıyla onaylandı!" : "Email verified successfully!");
         try {
           confetti({ particleCount: 80, spread: 90, origin: { y: 0.5 } });
         } catch (e) {}
@@ -105,10 +118,10 @@ function VerifyEmailContent() {
           router.push("/dashboard?verified=true");
         }, 1200);
       } else {
-        setErrorMessage(data.error || "Doğrulama başarısız.");
+        setErrorMessage(data.error || (isTr ? "Doğrulama başarısız." : "Verification failed."));
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "Hata oluştu.");
+      setErrorMessage(err.message || (isTr ? "Hata oluştu." : "An error occurred."));
     } finally {
       setIsDirectConfirming(false);
     }
@@ -122,7 +135,7 @@ function VerifyEmailContent() {
     try {
       const res = await resendVerificationEmail(email.trim());
       if (res.success) {
-        toast.success(`Yeni doğrulama bağlantısı ${email} adresine gönderildi!`);
+        toast.success(isTr ? `Yeni doğrulama bağlantısı ${email} adresine gönderildi!` : `Verification email resent to ${email}!`);
         setCooldown(60);
         const timer = setInterval(() => {
           setCooldown((prev) => {
@@ -134,10 +147,10 @@ function VerifyEmailContent() {
           });
         }, 1000);
       } else {
-        setErrorMessage(res.error || "Doğrulama e-postası gönderilemedi.");
+        setErrorMessage(res.error || (isTr ? "Doğrulama e-postası gönderilemedi." : "Failed to resend verification email."));
       }
     } catch (err: any) {
-      setErrorMessage(err.message || "E-posta gönderilirken hata oluştu.");
+      setErrorMessage(err.message || (isTr ? "E-posta gönderilirken hata oluştu." : "Error while sending email."));
     } finally {
       setIsResending(false);
     }
@@ -156,78 +169,85 @@ function VerifyEmailContent() {
   const emailProviderUrl = getEmailProviderUrl(email);
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative">
-      <div className="pointer-events-none absolute inset-0 hero-glow" />
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative bg-zinc-950 text-zinc-100 select-none">
+      {/* Background Soft Ambient Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] bg-gradient-to-b from-[#0071e3]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative w-full max-w-lg space-y-6">
+      <div className="relative z-10 w-full max-w-lg space-y-6">
         {/* Brand header */}
-        <div className="text-center space-y-2">
-          <Link href="/" className="inline-flex items-center gap-2 mb-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-blue-600 text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-4 w-4" />
+        <div className="text-center space-y-3">
+          <Link href="/" className="inline-block group">
+            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#43a047] p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center text-[#0071e3]">
+                <ShieldCheck className="h-8 w-8" />
+              </div>
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">NearDrop</span>
           </Link>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-            {isSuccess ? "E-posta Başarıyla Doğrulandı" : "E-posta Doğrulaması Gerekiyor"}
-          </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 max-w-sm mx-auto">
-            {isSuccess
-              ? "NearDrop hesabınız başarıyla aktifleştirildi. Paneliniz hazır!"
-              : "Hesabınızı aktifleştirmek için gelen kutunuzdaki onay linkine tıklayın."}
-          </p>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              {isSuccess
+                ? isTr ? "E-posta Başarıyla Doğrulandı" : "Email Successfully Verified"
+                : isTr ? "E-posta Doğrulaması Gerekiyor" : "Email Verification Required"}
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-sm mx-auto">
+              {isSuccess
+                ? isTr
+                  ? "NearDrop hesabınız başarıyla aktifleştirildi. Paneliniz kullanıma hazır!"
+                  : "Your NearDrop ID is fully active and ready to use."
+                : isTr
+                  ? "Hesabınızı aktifleştirmek için gelen kutunuzdaki onay linkine tıklayın veya kodu girin."
+                  : "Please click the link in your inbox or enter your verification code below."}
+            </p>
+          </div>
         </div>
 
         {/* Card */}
-        <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/80 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-6">
+        <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6">
           {/* Success State */}
           {isSuccess ? (
             <div className="text-center space-y-5 py-4 animate-in zoom-in-95 duration-300">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 mx-auto shadow-lg shadow-emerald-500/20">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mx-auto shadow-lg shadow-emerald-500/15">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
 
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white">Hesabınız Doğrulandı</h3>
+                <h3 className="text-base font-bold text-white">
+                  {isTr ? "Hesabınız Doğrulandı" : "Account Verified"}
+                </h3>
                 <p className="text-xs text-zinc-400">
-                  Dosyalarınızı güvenle yükleyebilir ve dilediğiniz gibi paylaşabilirsiniz.
+                  {isTr
+                    ? "Dosyalarınızı güvenle yükleyebilir, şifreleyebilir ve dilediğiniz gibi paylaşabilirsiniz."
+                    : "You can now upload, encrypt, and share your files seamlessly."}
                 </p>
               </div>
 
               <div className="pt-2">
-                <Link href="/dashboard">
-                  <Button variant="primary" size="lg" className="w-full gap-2 rounded-2xl font-bold shadow-lg shadow-sky-500/25">
-                    <span>Panele Git</span>
+                <Link href="/dashboard" className="block w-full">
+                  <Button className="w-full gap-2 rounded-full font-bold py-3 bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-lg shadow-blue-500/25 cursor-pointer">
+                    <span>{isTr ? "Panele Git" : "Go to Dashboard"}</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
               </div>
             </div>
           ) : (
-            /* Pending Link Confirmation State */
+            /* Pending Verification State */
             <div className="space-y-5 animate-in fade-in duration-200">
-              {/* Top illustration envelope */}
-              <div className="flex items-center justify-center">
-                <div className="w-16 h-16 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center shadow-lg shadow-sky-500/10 animate-bounce">
-                  <Mail className="h-8 w-8" />
-                </div>
-              </div>
-
               {/* Error banner */}
               {errorMessage && (
-                <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-300">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-rose-400" />
+                <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
-              {/* Email badge & Quick Webmail Shortcut */}
+              {/* Email Address & Quick Webmail Shortcut */}
               <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">Onay Linki Gönderilen E-posta:</span>
-                  <span className="font-semibold text-white font-mono truncate max-w-[200px]">
-                    {email || "Belirtilen e-posta"}
+                  <span className="text-zinc-400">{isTr ? "Doğrulanan E-posta:" : "Target Email:"}</span>
+                  <span className="font-semibold text-white font-mono truncate max-w-[220px]">
+                    {email || (isTr ? "Belirtilen e-posta" : "Pending email")}
                   </span>
                 </div>
 
@@ -236,77 +256,95 @@ function VerifyEmailContent() {
                     href={emailProviderUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-sky-500/25 transition-all group"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0071e3] to-[#0077ed] hover:from-blue-500 hover:to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
                   >
-                    <span>Gelen Kutusunu Aç</span>
-                    <ExternalLink className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+                    <span>{isTr ? "Gelen Kutusunu Aç" : "Open Email Inbox"}</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 )}
               </div>
 
-              {/* OTP Code Form (Supports 6 or 8 digits) */}
+              {/* OTP Code Form (Supports 6 to 8+ digits) */}
               <form onSubmit={handleOtpVerify} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
                 <div className="text-center space-y-1">
                   <label className="text-xs font-semibold text-zinc-200 block">
-                    Doğrulama Kodu (6 veya 8 Haneli)
+                    {isTr ? "Güvenlik Onay Kodu (6 veya 8 Haneli)" : "Security Code (6 or 8 Digits)"}
                   </label>
                   <p className="text-[11px] text-zinc-400">
-                    E-postanıza gelen 6 veya 8 haneli kodu buraya girerek hesabınızı hemen onaylayabilirsiniz.
+                    {isTr
+                      ? "Gelen kutunuzdaki veya bildirimdeki güvenlik kodunu buraya girin."
+                      : "Enter the security code received in your inbox."}
                   </p>
                 </div>
 
                 <input
                   type="text"
-                  maxLength={12}
-                  placeholder="Örn. 12345678"
+                  maxLength={10}
+                  placeholder="123456"
                   value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 8))}
-                  className="w-full text-center text-2xl font-mono tracking-[0.25em] py-2.5 rounded-xl border border-zinc-700 bg-zinc-900 text-white focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 outline-none"
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                  className="w-full text-center text-2xl sm:text-3xl font-mono tracking-[0.25em] sm:tracking-[0.35em] py-3 rounded-xl border border-zinc-800 bg-zinc-900 text-white focus:border-[#0071e3] focus:ring-2 focus:ring-[#0071e3]/20 outline-none"
+                  autoFocus
                 />
 
                 <Button
                   type="submit"
-                  variant="primary"
-                  disabled={otpCode.length < 6 || isVerifyingOtp || !email.trim()}
-                  className="w-full py-2.5 rounded-xl text-xs font-bold gap-2"
+                  disabled={!canSubmitOtp}
+                  className="w-full py-2.5 rounded-full text-xs font-bold gap-2 bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-40"
                 >
-                  {isVerifyingOtp ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-emerald-400" />}
-                  <span>Kodu Doğrula ve Panele Git</span>
+                  {isVerifyingOtp ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                  )}
+                  <span>{isTr ? "Kodu Doğrula ve Başla" : "Verify Code & Continue"}</span>
                 </Button>
               </form>
 
-              <div className="space-y-3 pt-2">
-                <div className="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5 text-center space-y-1">
-                  <p className="text-xs font-bold text-amber-300">
-                    E-posta Doğrulaması Zorunludur
+              {/* Fallback Direct Confirmation */}
+              <div className="space-y-3 pt-1">
+                <div className="rounded-2xl bg-blue-500/10 border border-blue-500/20 p-3.5 text-center space-y-1.5">
+                  <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-blue-400">
+                    <ShieldCheck className="h-4 w-4" />
+                    <span>{isTr ? "E-posta Gelen Kutunuza Ulaşmadı mı?" : "Email Not Arriving?"}</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                    {isTr
+                      ? "E-posta sağlayıcınız spam filtreleri veya sunucu gecikmesi yaşıyorsa, hesabınızı tek tıkla hemen doğrulayabilirsiniz."
+                      : "If emails are delayed by spam filters or provider latency, you can instantly verify your account."}
                   </p>
-                  <p className="text-[11px] text-zinc-300 leading-relaxed">
-                    Hesabınızı kullanabilmek için gelen kutunuzdaki aktivasyon bağlantısına tıklamanız gerekmektedir. Bağlantıya tıkladığınızda oturumunuz otomatik olarak açılacaktır.
-                  </p>
+                  <button
+                    type="button"
+                    onClick={handleDirectConfirm}
+                    disabled={isDirectConfirming || !email}
+                    className="w-full mt-1 flex items-center justify-center gap-2 rounded-xl border border-[#0071e3]/30 bg-zinc-900 py-2.5 text-xs font-bold text-blue-400 hover:bg-zinc-800 transition-all disabled:opacity-50 active:scale-[0.98] cursor-pointer"
+                  >
+                    {isDirectConfirming ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    )}
+                    <span>{isTr ? "Hesabı Şimdi Doğrula ve Başla" : "Verify Instantly & Get Started"}</span>
+                  </button>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                  <span className="text-zinc-400">E-posta ulaşmadı mı?</span>
+                {/* Resend Link Button */}
+                <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
+                  <span className="text-zinc-400">{isTr ? "E-posta gelmedi mi?" : "Didn't get an email?"}</span>
                   <button
                     type="button"
                     onClick={handleResend}
                     disabled={isResending || cooldown > 0 || !email}
-                    className="inline-flex items-center gap-1.5 font-semibold text-sky-400 hover:text-sky-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="inline-flex items-center gap-1.5 font-semibold text-[#0071e3] hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
-                    <span>{cooldown > 0 ? `Tekrar gönder (${cooldown}s)` : "Doğrulama Linkini Tekrar Gönder"}</span>
+                    <span>
+                      {cooldown > 0
+                        ? isTr ? `Tekrar gönder (${cooldown}s)` : `Resend (${cooldown}s)`
+                        : isTr ? "Tekrar Gönder" : "Resend Email"}
+                    </span>
                   </button>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleDirectConfirm}
-                  disabled={isDirectConfirming || !email}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl border border-sky-500/30 bg-sky-500/10 py-2.5 text-xs font-bold text-sky-400 hover:bg-sky-500/20 transition-all disabled:opacity-50 active:scale-[0.98]"
-                >
-                  {isDirectConfirming ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4 text-emerald-400" />}
-                  <span>E-posta Gelmedi — Hesabı Şimdi Doğrula</span>
-                </button>
               </div>
             </div>
           )}
@@ -315,7 +353,7 @@ function VerifyEmailContent() {
         {/* Footer info */}
         <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500">
           <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-          <span>NearDrop Güvenli Bulut Mimarisi</span>
+          <span>{isTr ? "NearDrop Güvenli Bulut Mimarisi" : "NearDrop Secure Cloud Architecture"}</span>
         </div>
       </div>
     </div>
@@ -326,8 +364,8 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-zinc-950">
+          <Loader2 className="h-8 w-8 animate-spin text-[#0071e3]" />
         </div>
       }
     >

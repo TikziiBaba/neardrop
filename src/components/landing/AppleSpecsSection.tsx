@@ -60,17 +60,17 @@ export const AppleSpecsSection: React.FC = () => {
   ];
 
   return (
-    <section id="specs" className="relative py-24 md:py-32 bg-[#f5f5f7] select-none">
+    <section id="specs" className="relative py-24 md:py-32 bg-black select-none">
       <div className="mx-auto max-w-[1040px] px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
           <span className="text-xs font-semibold uppercase tracking-widest text-[#0071e3]">
             {isTr ? "Teknik Özellikler" : "Technical Specs"}
           </span>
-          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.035em] text-[#1d1d1f]">
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-[-0.035em] text-white">
             {isTr ? "Farkı karşılaştırın." : "Compare the difference."}
           </h2>
-          <p className="text-base text-[#6e6e73]">
+          <p className="text-base text-zinc-400">
             {isTr
               ? "Geleneksel bulut yöntemleri ve kapalı ekosistemlerle NearDrop arasındaki teknik farklar."
               : "How NearDrop stacks up against traditional cloud transfers and walled gardens."}
@@ -78,37 +78,37 @@ export const AppleSpecsSection: React.FC = () => {
         </div>
 
         {/* Comparison Table */}
-        <div className="overflow-x-auto rounded-[28px] border border-black/[0.06] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+        <div className="overflow-x-auto rounded-[28px] border border-white/[0.08] bg-zinc-900/60 backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.5)]">
           <table className="w-full text-left border-collapse min-w-[640px]">
             <thead>
-              <tr className="border-b border-black/[0.06] bg-[#fafafa]">
-                <th className="p-5 sm:p-6 text-xs font-semibold text-[#86868b] uppercase tracking-wider w-1/4">
+              <tr className="border-b border-white/[0.08] bg-zinc-900/90">
+                <th className="p-5 sm:p-6 text-xs font-semibold text-zinc-400 uppercase tracking-wider w-1/4">
                   {isTr ? "Özellik" : "Feature"}
                 </th>
-                <th className="p-5 sm:p-6 text-sm font-bold text-[#0071e3] bg-blue-50/50 w-1/4">
+                <th className="p-5 sm:p-6 text-sm font-bold text-[#0071e3] bg-[#0071e3]/10 w-1/4">
                   <div className="flex items-center gap-1.5">
                     <Sparkles className="h-4 w-4" />
                     <span>NearDrop</span>
                   </div>
                 </th>
-                <th className="p-5 sm:p-6 text-sm font-semibold text-[#1d1d1f] w-1/6">WeTransfer</th>
-                <th className="p-5 sm:p-6 text-sm font-semibold text-[#1d1d1f] w-1/6">Google Drive</th>
-                <th className="p-5 sm:p-6 text-sm font-semibold text-[#1d1d1f] w-1/6">AirDrop</th>
+                <th className="p-5 sm:p-6 text-sm font-semibold text-white w-1/6">WeTransfer</th>
+                <th className="p-5 sm:p-6 text-sm font-semibold text-white w-1/6">Google Drive</th>
+                <th className="p-5 sm:p-6 text-sm font-semibold text-white w-1/6">AirDrop</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-black/[0.04] text-xs sm:text-sm">
+            <tbody className="divide-y divide-white/[0.06] text-xs sm:text-sm">
               {rows.map((row, idx) => (
-                <tr key={idx} className="hover:bg-black/[0.01] transition-colors">
-                  <td className="p-5 sm:p-6 font-medium text-[#1d1d1f]">{row.feature}</td>
-                  <td className="p-5 sm:p-6 font-semibold text-[#0071e3] bg-blue-50/30">
+                <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="p-5 sm:p-6 font-medium text-zinc-200">{row.feature}</td>
+                  <td className="p-5 sm:p-6 font-semibold text-[#0071e3] bg-[#0071e3]/10">
                     <div className="flex items-center gap-1.5">
                       <Check className="h-4 w-4 flex-shrink-0 text-[#0071e3]" />
                       <span>{row.neardrop}</span>
                     </div>
                   </td>
-                  <td className="p-5 sm:p-6 text-[#6e6e73]">{row.wetransfer}</td>
-                  <td className="p-5 sm:p-6 text-[#6e6e73]">{row.drive}</td>
-                  <td className="p-5 sm:p-6 text-[#6e6e73]">{row.airdrop}</td>
+                  <td className="p-5 sm:p-6 text-zinc-400">{row.wetransfer}</td>
+                  <td className="p-5 sm:p-6 text-zinc-400">{row.drive}</td>
+                  <td className="p-5 sm:p-6 text-zinc-400">{row.airdrop}</td>
                 </tr>
               ))}
             </tbody>

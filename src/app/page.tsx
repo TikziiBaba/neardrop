@@ -12,7 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen bg-[#f5f5f7] text-[#1d1d1f] antialiased overflow-x-hidden">
+    <main className="relative min-h-screen bg-black text-white antialiased overflow-x-hidden">
       <AppleSubNav />
       <AppleHero />
       <AppleHighlights />
