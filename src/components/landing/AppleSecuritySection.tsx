@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/i18n/context";
 import {
@@ -20,18 +20,33 @@ export const AppleSecuritySection: React.FC = () => {
   const isTr = locale === "tr";
 
   const [inputVal, setInputVal] = useState("Proje_Gizli_Mali_Rapor.pdf");
+  const [cipherText, setCipherText] = useState(
+    "AES-GCM-256:d8a9f03bc17e84992ca77401f8e129b015e7"
+  );
 
-  // Simulated hash derivation
-  const fakeHash = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0;
-    }
-    return Math.abs(hash).toString(16).padStart(8, "0");
-  };
-
-  const cipherText = `AES-GCM-256:d8a9f${fakeHash(inputVal)}03bc17e84992ca77401f8e129b015e7`;
+  useEffect(() => {
+    let active = true;
+    const deriveLiveCrypto = async () => {
+      try {
+        if (typeof window !== "undefined" && window.crypto?.subtle) {
+          const enc = new TextEncoder();
+          const data = enc.encode(inputVal || "NearDrop");
+          const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          const hex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+          if (active) {
+            setCipherText(`AES-GCM-256:${hex.slice(0, 32)}:${hex.slice(32)}`);
+          }
+        }
+      } catch {
+        // fallback
+      }
+    };
+    deriveLiveCrypto();
+    return () => {
+      active = false;
+    };
+  }, [inputVal]);
 
   return (
     <section

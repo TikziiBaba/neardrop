@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { DirectTransfer } from "@/components/transfer/DirectTransfer";
 import { useStorage } from "@/lib/storage/store";
+import { useAuth } from "@/lib/auth/context";
 import { formatBytes, formatSpeed, formatEta } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
+import { Footer } from "@/components/layout/Footer";
 import {
   ArrowLeftRight,
   UploadCloud,
@@ -24,6 +27,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
 export default function TransfersPage() {
+  const { user, isLoading } = useAuth();
   const { transfers, cancelTransfer, retryTransfer, clearCompletedTransfers } = useStorage();
   const { locale } = useLanguage();
   const [activeTab, setActiveTab] = useState<"direct" | "cloud">("direct");
@@ -32,9 +36,8 @@ export default function TransfersPage() {
   const completed = transfers.filter((t) => t.status === "completed");
   const failed = transfers.filter((t) => t.status === "failed" || t.status === "cancelled");
 
-  return (
-    <DashboardLayout>
-      <div className="space-y-8 select-none">
+  const content = (
+    <div className="space-y-8 select-none">
         {/* Page Header with Mode Switcher */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -83,7 +86,35 @@ export default function TransfersPage() {
         )}
 
         {/* Tab 2: Cloud Storage Queue & History */}
-        {activeTab === "cloud" && (
+        {activeTab === "cloud" && !user && (
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-10 sm:p-14 text-center space-y-4 max-w-xl mx-auto backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-[#0071e3] flex items-center justify-center mx-auto">
+              <UploadCloud className="h-6 w-6" />
+            </div>
+            <h3 className="text-lg font-bold text-white">
+              {locale === "tr" ? "Bulut Kuyruğu İçin Giriş Yapın" : "Sign In to Access Cloud Queue"}
+            </h3>
+            <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
+              {locale === "tr"
+                ? "Bulut yüklemelerini izlemek, kalıcı bağlantı geçmişini görmek ve dosyalarınızı depolamak için ücretsiz NearDrop hesabınıza giriş yapın."
+                : "Sign in to your free account to track cloud uploads, manage links, and store files."}
+            </p>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <Link href="/login?redirect=/transfers">
+                <Button variant="primary" size="sm" className="rounded-full px-5 text-xs">
+                  {locale === "tr" ? "Giriş Yap" : "Sign In"}
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button variant="outline" size="sm" className="rounded-full px-5 text-xs">
+                  {locale === "tr" ? "Hesap Oluştur" : "Create Account"}
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "cloud" && user && (
           <div className="space-y-8">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -238,6 +269,45 @@ export default function TransfersPage() {
           </div>
         )}
       </div>
-    </DashboardLayout>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <Loader2 className="h-7 w-7 animate-spin text-[#0071e3]" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return <DashboardLayout>{content}</DashboardLayout>;
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white flex flex-col justify-between">
+      <div className="mx-auto max-w-6xl w-full px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+        {/* Guest Banner */}
+        <div className="mb-8 rounded-2xl border border-white/[0.08] bg-zinc-900/70 p-4 sm:p-5 backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-lg">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <span className="text-zinc-300 font-medium">
+              {locale === "tr"
+                ? "Eşler Arası (P2P) Modu: Hesap veya kurulum gerektirmeden tarayıcılar arasında doğrudan şifreli aktarım yapabilirsiniz."
+                : "Peer-to-Peer Mode: Direct encrypted file streaming between devices without sign-up."}
+            </span>
+          </div>
+          <Link
+            href="/login?redirect=/transfers"
+            className="text-[#0071e3] hover:text-[#0077ed] font-semibold flex items-center gap-1 shrink-0"
+          >
+            <span>{locale === "tr" ? "Bulut depolama için Giriş Yapın" : "Sign in for Cloud Storage"}</span>
+            <span className="text-sm">›</span>
+          </Link>
+        </div>
+
+        {content}
+      </div>
+      <Footer />
+    </div>
   );
 }

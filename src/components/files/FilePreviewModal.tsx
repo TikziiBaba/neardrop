@@ -583,7 +583,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             }}
           />
 
-          {/* Image */}
+          {/* Image Canvas with Pan/Zoom/Rotate */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={previewUrl}
             alt={displayName}

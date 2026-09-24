@@ -57,11 +57,13 @@ export async function createPresignedDownloadUrl(
   const s3 = getR2Client();
   const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
   const downloadName = filename.split("/").pop() || filename;
+  const asciiName = downloadName.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, '\\"');
+  const utf8Name = encodeURIComponent(downloadName);
 
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: r2ObjectKey,
-    ResponseContentDisposition: `attachment; filename="${encodeURIComponent(downloadName)}"`,
+    ResponseContentDisposition: `attachment; filename="${asciiName}"; filename*=UTF-8''${utf8Name}`,
   });
 
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
@@ -76,12 +78,14 @@ export async function createPresignedPreviewUrl(
   const s3 = getR2Client();
   const bucketName = process.env.R2_BUCKET_NAME || "neardrop";
   const displayName = filename.split("/").pop() || filename;
+  const asciiName = displayName.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, '\\"');
+  const utf8Name = encodeURIComponent(displayName);
 
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: r2ObjectKey,
-    ResponseContentDisposition: `inline; filename="${encodeURIComponent(displayName)}"`,
     ResponseContentType: contentType || "application/octet-stream",
+    ResponseContentDisposition: `inline; filename="${asciiName}"; filename*=UTF-8''${utf8Name}`,
   });
 
   return await getSignedUrl(s3, command, { expiresIn: expiresInSeconds });

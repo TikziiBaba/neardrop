@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { UploadCloud, FolderUp, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, ArrowRight, X, ShieldCheck } from "lucide-react";
+import Link from "next/link";
+import { UploadCloud, FolderUp, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, ArrowRight, X, ShieldCheck, Zap } from "lucide-react";
 import { useStorage } from "@/lib/storage/store";
+import { useAuth } from "@/lib/auth/context";
 import { useLanguage } from "@/lib/i18n/context";
 import { extractFilesFromDataTransfer } from "@/lib/utils/folder-upload";
 import { formatBytes, formatSpeed, formatEta } from "@/lib/utils";
@@ -17,9 +19,12 @@ interface DropZoneProps {
 }
 
 export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadStarted }) => {
+  const { user } = useAuth();
   const { uploadFiles, transfers, cancelTransfer } = useStorage();
   const { t, locale } = useLanguage();
   const [isDragging, setIsDragging] = useState(false);
+  const [showGuestChoice, setShowGuestChoice] = useState(false);
+  const [guestFilesCount, setGuestFilesCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,6 +50,12 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
     try {
       const extractedFiles = await extractFilesFromDataTransfer(e.dataTransfer);
       if (extractedFiles.length > 0) {
+        if (!user) {
+          SoundManager.play("pop");
+          setGuestFilesCount(extractedFiles.length);
+          setShowGuestChoice(true);
+          return;
+        }
         onUploadStarted?.();
         await uploadFiles(extractedFiles);
       }
@@ -56,6 +67,13 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const filesArray = Array.from(e.target.files);
+      if (!user) {
+        SoundManager.play("pop");
+        setGuestFilesCount(filesArray.length);
+        setShowGuestChoice(true);
+        e.target.value = "";
+        return;
+      }
       onUploadStarted?.();
       try {
         await uploadFiles(filesArray);
@@ -334,6 +352,90 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
           </div>
         );
       })()}
+
+      {/* Guest Transfer Choice Modal */}
+      {showGuestChoice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-[32px] border border-white/[0.12] bg-[#161617] p-6 sm:p-8 shadow-2xl space-y-6 text-left">
+            <button
+              onClick={() => setShowGuestChoice(false)}
+              className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-full hover:bg-white/[0.08] transition-colors"
+              aria-label="Kapat"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            <div className="space-y-1.5">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#0071e3]">
+                {locale === "tr" ? "NearDrop Transfer Seçenekleri" : "NearDrop Transfer Modes"}
+              </span>
+              <h3 className="text-xl font-bold text-white tracking-tight">
+                {locale === "tr"
+                  ? `${guestFilesCount} dosya hazır. Nasıl göndermek istersiniz?`
+                  : `${guestFilesCount} file(s) ready. How would you like to share?`}
+              </h3>
+            </div>
+
+            <div className="space-y-3.5">
+              {/* Option 1: Direct P2P (No Account) */}
+              <Link
+                href="/transfers"
+                onClick={() => setShowGuestChoice(false)}
+                className="block p-4 sm:p-5 rounded-2xl border border-[#0071e3]/30 bg-[#0071e3]/10 hover:bg-[#0071e3]/20 hover:border-[#0071e3]/50 transition-all group cursor-pointer"
+              >
+                <div className="flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-[#0071e3] text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/30 group-hover:scale-105 transition-transform">
+                    <Zap className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-white">
+                        {locale === "tr" ? "Eşler Arası (P2P) Aktar" : "Direct P2P Streaming"}
+                      </span>
+                      <span className="text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                        {locale === "tr" ? "Hesapsız · Sınırsız Hız" : "No Account · Unlimited"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                      {locale === "tr"
+                        ? "Dosyalar sunucuya yüklenmez. Cihazınızdan doğrudan alıcının tarayıcısına akar."
+                        : "Files never touch our servers. Stream directly from your browser to recipient."}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Option 2: Cloud Link (Sign In) */}
+              <Link
+                href="/register?redirect=/dashboard"
+                onClick={() => setShowGuestChoice(false)}
+                className="block p-4 sm:p-5 rounded-2xl border border-white/[0.08] bg-zinc-900/80 hover:bg-zinc-800/80 hover:border-white/[0.16] transition-all group cursor-pointer"
+              >
+                <div className="flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <UploadCloud className="h-5 w-5 text-sky-400" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-bold text-white">
+                        {locale === "tr" ? "Buluta Yükle & Link Al" : "Upload to Cloud & Get Link"}
+                      </span>
+                      <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">
+                        {locale === "tr" ? "Ücretsiz Hesap" : "Free Account"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                      {locale === "tr"
+                        ? "Süreli ve şifreli indirme bağlantısı oluşturun. 10 saniyede ücretsiz kaydolun."
+                        : "Create an expiring, password-protected link with a free 10-second sign-up."}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

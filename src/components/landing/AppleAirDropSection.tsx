@@ -49,6 +49,8 @@ export const AppleAirDropSection: React.FC = () => {
 
   return (
     <section id="airdrop" className="relative py-20 md:py-32 bg-[#09090b] overflow-hidden select-none">
+      {/* Anchor alias for backwards compatibility */}
+      <span id="how-it-works" className="absolute top-0 pointer-events-none" />
       <div className="mx-auto max-w-[1040px] px-4 sm:px-6 lg:px-8">
         {/* Intro */}
         <div className="text-center max-w-2xl mx-auto space-y-4 mb-16">

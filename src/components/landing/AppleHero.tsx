@@ -80,6 +80,8 @@ export const AppleHero: React.FC = () => {
 
   return (
     <section id="overview" className="relative pt-12 pb-24 md:pt-20 md:pb-32 overflow-hidden select-none">
+      {/* Anchor alias for backwards compatibility */}
+      <span id="product" className="absolute top-0 pointer-events-none" />
       {/* Background Soft Glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-gradient-to-b from-[#0071e3]/10 via-[#0071e3]/5 to-transparent blur-[120px] rounded-full pointer-events-none" />
 
@@ -364,9 +366,13 @@ export const AppleHero: React.FC = () => {
                   ? "Cihaz ikonlarına tıklayarak P2P aktarımı canlı simüle edebilirsiniz."
                   : "Click any device icon above to simulate a live direct P2P transfer."}
               </span>
-              <span className="text-[#0071e3] font-medium">
-                {isTr ? "Hafızadan Doğrudan Aktarım (RAM-to-RAM)" : "RAM-to-RAM Direct Streaming"}
-              </span>
+              <Link
+                href="/transfers"
+                className="text-[#0071e3] hover:text-[#0077ed] hover:underline font-semibold flex items-center gap-1 transition-colors"
+              >
+                <span>{isTr ? "Gerçek P2P Transferi Aç" : "Launch Real P2P Transfer"}</span>
+                <span>›</span>
+              </Link>
             </div>
           </div>
         </motion.div>

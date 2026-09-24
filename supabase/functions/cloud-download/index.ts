@@ -34,14 +34,14 @@ serve(async (req: Request) => {
         .eq("is_active", true)
         .single();
 
-      if (linkError || !link || !link.cloud_files) {
+      if (linkError || !link) {
         return new Response(JSON.stringify({ error: "Share link not found or inactive" }), {
           status: 404,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
 
-      if (link.expires_at && new Date(link.expires_at) < new Date()) {
+      if (link.expires_at && new Date(link.expires_at).getTime() < Date.now()) {
         return new Response(JSON.stringify({ error: "Share link has expired" }), {
           status: 410,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -56,9 +56,9 @@ serve(async (req: Request) => {
       }
 
       if (link.password_hash) {
-        // Simple hash comparison (SHA-256)
+        // SHA-256 hash comparison
         const encoder = new TextEncoder();
-        const data = encoder.encode(password || "");
+        const data = encoder.encode((password || "").trim());
         const hashBuffer = await crypto.subtle.digest("SHA-256", data);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const computedHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -71,14 +71,57 @@ serve(async (req: Request) => {
         }
       }
 
-      r2ObjectKey = link.cloud_files.r2_object_key;
-      filename = link.cloud_files.filename;
-      size = link.cloud_files.size;
+      if (link.cloud_files) {
+        // Single file share
+        r2ObjectKey = link.cloud_files.r2_object_key;
+        filename = link.cloud_files.filename;
+        size = link.cloud_files.size;
+      } else if (link.folder_path) {
+        // Folder share: requires fileId
+        if (!fileId) {
+          return new Response(JSON.stringify({ error: "Folder share requires fileId parameter" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
 
-      // Increment download counter
+        const { data: targetFile, error: targetError } = await supabaseClient
+          .from("cloud_files")
+          .select("*")
+          .eq("id", fileId)
+          .eq("user_id", link.user_id)
+          .eq("is_deleted", false)
+          .single();
+
+        if (targetError || !targetFile) {
+          return new Response(JSON.stringify({ error: "Requested file not found in folder" }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        r2ObjectKey = targetFile.r2_object_key;
+        filename = targetFile.filename;
+        size = targetFile.size;
+      } else {
+        return new Response(JSON.stringify({ error: "No target file attached to this share" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Increment download counter & burn-after-read check
+      const newCount = (link.download_count || 0) + 1;
+      const shouldDeactivate = Boolean(
+        link.burn_after_read || (link.max_downloads && newCount >= link.max_downloads)
+      );
+
       await supabaseClient
         .from("share_links")
-        .update({ download_count: link.download_count + 1 })
+        .update({
+          download_count: newCount,
+          is_active: !shouldDeactivate,
+        })
         .eq("id", link.id);
     } else if (fileId) {
       // 2. Direct authenticated download by file owner
@@ -144,10 +187,14 @@ serve(async (req: Request) => {
       },
     });
 
+    const displayName = filename.split("/").pop() || filename;
+    const asciiName = displayName.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, '\\"');
+    const utf8Name = encodeURIComponent(displayName);
+
     const getCommand = new GetObjectCommand({
       Bucket: r2BucketName,
       Key: r2ObjectKey,
-      ResponseContentDisposition: `attachment; filename="${encodeURIComponent(filename)}"`,
+      ResponseContentDisposition: `attachment; filename="${asciiName}"; filename*=UTF-8''${utf8Name}`,
     });
 
     // Generate presigned download URL valid for 15 minutes

@@ -10,6 +10,7 @@ import { useLanguage } from "@/lib/i18n/context";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/Logo";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 const spring = { type: "spring" as const, bounce: 0.15, duration: 0.5 };
 
@@ -40,15 +41,25 @@ export const Navbar: React.FC = () => {
     cleanPath.startsWith("/register") ||
     cleanPath.startsWith("/forgot-password");
   const isPublicSharePage = cleanPath.startsWith("/s/");
-  const isDashboardOrAppPage =
-    cleanPath.startsWith("/dashboard") ||
-    cleanPath.startsWith("/files") ||
-    cleanPath.startsWith("/shared") ||
-    cleanPath.startsWith("/transfers") ||
-    cleanPath.startsWith("/storage") ||
-    cleanPath.startsWith("/settings") ||
-    cleanPath.startsWith("/support") ||
-    cleanPath.startsWith("/admin");
+  const isDashboardOrAppPage = user
+    ? (
+        cleanPath.startsWith("/dashboard") ||
+        cleanPath.startsWith("/files") ||
+        cleanPath.startsWith("/shared") ||
+        cleanPath.startsWith("/transfers") ||
+        cleanPath.startsWith("/storage") ||
+        cleanPath.startsWith("/settings") ||
+        cleanPath.startsWith("/support") ||
+        cleanPath.startsWith("/admin")
+      )
+    : (
+        cleanPath.startsWith("/dashboard") ||
+        cleanPath.startsWith("/files") ||
+        cleanPath.startsWith("/shared") ||
+        cleanPath.startsWith("/storage") ||
+        cleanPath.startsWith("/settings") ||
+        cleanPath.startsWith("/admin")
+      );
 
   if (isAuthPage || isPublicSharePage || isDashboardOrAppPage) return null;
 
@@ -77,14 +88,17 @@ export const Navbar: React.FC = () => {
         <nav className="hidden md:flex items-center gap-0.5">
           {!user ? (
             <>
-              <Link href="/#product" className={navLinkClass}>
-                {t.navbar.product}
+              <Link href="/#overview" className={navLinkClass}>
+                {locale === "tr" ? "Genel Bakış" : "Overview"}
               </Link>
-              <Link href="/#how-it-works" className={navLinkClass}>
-                {t.navbar.howItWorks}
+              <Link href="/#airdrop" className={navLinkClass}>
+                AirDrop P2P
               </Link>
               <Link href="/#security" className={navLinkClass}>
                 {t.navbar.security}
+              </Link>
+              <Link href="/#specs" className={navLinkClass}>
+                {locale === "tr" ? "Karşılaştırma" : "Compare"}
               </Link>
               <Link href="/pricing" className={navLinkClass}>
                 {t.navbar.pricing || "Fiyatlandırma"}
@@ -136,7 +150,8 @@ export const Navbar: React.FC = () => {
         </nav>
 
         {/* Right Controls */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2.5">
+          <LanguageToggle size="sm" />
           {!user ? (
             <div className="flex items-center gap-1.5">
               <Link href="/login">
@@ -215,8 +230,9 @@ export const Navbar: React.FC = () => {
           )}
         </div>
 
-        {/* Mobile Hamburger */}
+        {/* Mobile Hamburger & Language */}
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageToggle size="sm" />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="inline-flex h-9 w-9 items-center justify-center rounded-xl text-[var(--apple-text-secondary)] hover:text-[var(--apple-text-primary)] cursor-pointer"
@@ -239,14 +255,17 @@ export const Navbar: React.FC = () => {
           >
             {!user ? (
               <div className="flex flex-col gap-0.5 text-sm text-[var(--apple-text-primary)]">
-                <Link href="/#product" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
-                  {t.navbar.product}
+                <Link href="/#overview" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
+                  {locale === "tr" ? "Genel Bakış" : "Overview"}
                 </Link>
-                <Link href="/#how-it-works" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
-                  {t.navbar.howItWorks}
+                <Link href="/#airdrop" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
+                  AirDrop P2P
                 </Link>
                 <Link href="/#security" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
                   {t.navbar.security}
+                </Link>
+                <Link href="/#specs" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
+                  {locale === "tr" ? "Karşılaştırma" : "Compare"}
                 </Link>
                 <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-[var(--apple-bg-elevated)] transition-colors">
                   {t.navbar.pricing || "Fiyatlandırma"}
