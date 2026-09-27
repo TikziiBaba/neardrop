@@ -46,6 +46,7 @@ export const DirectTransfer: React.FC = () => {
   const searchParams = useSearchParams();
   const roomParam = searchParams.get("room") || "lobby";
   const { locale } = useLanguage();
+  const isTr = locale === "tr";
 
   const [roomCode, setRoomCode] = useState<string>(roomParam);
   const [customRoomInput, setCustomRoomInput] = useState<string>("");
@@ -97,7 +98,9 @@ export const DirectTransfer: React.FC = () => {
 
     engine.onCompleted = (meta) => {
       toast.success(
-        `"${meta.filename}" received and downloaded!`
+        isTr
+          ? `"${meta.filename}" başarıyla alındı ve indirildi!`
+          : `"${meta.filename}" received and downloaded!`
       );
     };
 
@@ -106,7 +109,7 @@ export const DirectTransfer: React.FC = () => {
     return () => {
       engine.destroy();
     };
-  }, [roomCode, locale]);
+  }, [roomCode, locale, isTr]);
 
   const handleJoinRoom = (code: string) => {
     const cleaned = code.trim().toLowerCase() || "lobby";
@@ -142,12 +145,16 @@ export const DirectTransfer: React.FC = () => {
     const fileArray = Array.from(files);
     try {
       SoundManager.play("swoosh");
-      toast.info(`Sending ${fileArray.length} file(s) to ${peer.deviceName}...`);
+      toast.info(
+        isTr
+          ? `${peer.deviceName} cihazına ${fileArray.length} dosya gönderiliyor...`
+          : `Sending ${fileArray.length} file(s) to ${peer.deviceName}...`
+      );
       for (const file of fileArray) {
         await engineRef.current?.sendFileToPeer(peer, file);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to send file directly");
+      toast.error(err.message || (isTr ? "Doğrudan dosya gönderimi başarısız oldu" : "Failed to send file directly"));
     }
   };
 
@@ -156,12 +163,16 @@ export const DirectTransfer: React.FC = () => {
     const fileArray = Array.from(e.target.files);
     try {
       SoundManager.play("swoosh");
-      toast.info(`Sending ${fileArray.length} file(s) to ${selectedPeerForUpload.deviceName}...`);
+      toast.info(
+        isTr
+          ? `${selectedPeerForUpload.deviceName} cihazına ${fileArray.length} dosya gönderiliyor...`
+          : `Sending ${fileArray.length} file(s) to ${selectedPeerForUpload.deviceName}...`
+      );
       for (const file of fileArray) {
         await engineRef.current?.sendFileToPeer(selectedPeerForUpload, file);
       }
     } catch (err: any) {
-      toast.error(err.message || "Failed to send file directly");
+      toast.error(err.message || (isTr ? "Doğrudan dosya gönderimi başarısız oldu" : "Failed to send file directly"));
     } finally {
       e.target.value = "";
     }
@@ -170,7 +181,7 @@ export const DirectTransfer: React.FC = () => {
   const getPlatformIcon = (platform: string, deviceType: string) => {
     if (deviceType === "mobile") return <Smartphone className="h-5 w-5 text-emerald-400" />;
     if (deviceType === "tablet") return <Tablet className="h-5 w-5 text-purple-400" />;
-    if (platform === "macos") return <Laptop className="h-5 w-5 text-sky-400" />;
+    if (platform === "macos") return <Laptop className="h-5 w-5 text-[#0071e3]" />;
     return <Monitor className="h-5 w-5 text-blue-400" />;
   };
 
@@ -186,71 +197,77 @@ export const DirectTransfer: React.FC = () => {
       />
 
       {/* Top Header Card: Room Controls & Quick QR Code */}
-      <div className="rounded-3xl border border-zinc-800/90 bg-gradient-to-b from-zinc-900/80 to-zinc-950/80 p-6 shadow-2xl backdrop-blur-2xl ring-1 ring-white/[0.06] space-y-6">
+      <div className="rounded-[32px] border border-white/[0.08] bg-[#101014]/90 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
               <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                <span>Direct P2P Transfer (AirDrop)</span>
+                <span>{isTr ? "Doğrudan P2P Aktarım (AirDrop)" : "Direct P2P Transfer (AirDrop)"}</span>
               </h2>
             </div>
-            <p className="text-xs text-zinc-400 max-w-xl">
-              {"Zero-knowledge direct peer-to-peer file transfer between devices in the same room. No cloud storage quota used."}
+            <p className="text-xs text-zinc-400 max-w-xl leading-relaxed">
+              {isTr
+                ? "Aynı odadaki cihazlar arasında sıfır bilgi doğrudan dosya aktarımı. Bulut depolama kotası harcanmaz, dosya boyutu sınırı yoktur."
+                : "Zero-knowledge direct peer-to-peer file transfer between devices in the same room. No cloud storage quota used, no file size caps."}
             </p>
           </div>
 
           {/* Room Badge & Actions */}
           <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-zinc-950 border border-zinc-800 text-xs font-mono">
-              <span className="text-zinc-500">ROOM:</span>
-              <span className="font-bold text-sky-400">{roomCode.toUpperCase()}</span>
+            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-black/60 border border-white/[0.08] text-xs font-mono">
+              <span className="text-zinc-500">{isTr ? "ODA:" : "ROOM:"}</span>
+              <span className="font-bold text-[#0071e3]">{roomCode.toUpperCase()}</span>
             </div>
 
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowQrModal(true)}
-              className="gap-1.5 text-xs"
+              className="gap-1.5 text-xs rounded-xl border-white/[0.08] text-zinc-200 hover:text-white"
             >
-              <QrCode className="h-3.5 w-3.5 text-sky-400" />
-              <span>Mobile QR</span>
+              <QrCode className="h-3.5 w-3.5 text-[#0071e3]" />
+              <span>{isTr ? "Mobil QR Kod" : "Mobile QR"}</span>
             </Button>
 
             <Button
               variant="ghost"
               size="sm"
               onClick={generateRandomRoom}
-              className="gap-1.5 text-xs text-zinc-400 hover:text-white"
+              className="gap-1.5 text-xs text-zinc-400 hover:text-white rounded-xl"
             >
               <RotateCw className="h-3.5 w-3.5" />
-              <span>New Code</span>
+              <span>{isTr ? "Yeni Oda" : "New Code"}</span>
             </Button>
           </div>
         </div>
 
         {/* Room Code Quick Join Input */}
-        <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2 border-t border-zinc-800/80">
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-4 border-t border-white/[0.06]">
           <input
             type="text"
-            placeholder="Enter custom room code (e.g. 842109)"
+            placeholder={isTr ? "Özel oda kodu girin (örn. 842109)" : "Enter custom room code (e.g. 842109)"}
             value={customRoomInput}
             onChange={(e) => setCustomRoomInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleJoinRoom(customRoomInput)}
-            className="w-full sm:max-w-xs px-3.5 py-2 rounded-xl bg-zinc-950/80 border border-zinc-800 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-sky-500 font-mono"
+            className="w-full sm:max-w-xs px-3.5 py-2 rounded-xl bg-black/50 border border-white/[0.08] text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-[#0071e3] font-mono transition-colors"
           />
           <Button
             variant="secondary"
             size="sm"
             onClick={() => handleJoinRoom(customRoomInput)}
             disabled={!customRoomInput.trim()}
-            className="w-full sm:w-auto text-xs"
+            className="w-full sm:w-auto text-xs rounded-xl"
           >
-            Join Room
+            {isTr ? "Odaya Katıl" : "Join Room"}
           </Button>
 
-          <span className="text-[11px] text-zinc-500 sm:ml-auto">
-            {peers.length} device(s) discovered
+          <span className="text-[11px] text-zinc-400 sm:ml-auto flex items-center gap-1.5 font-mono">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            {peers.length} {isTr ? "cihaz keşfedildi" : "device(s) discovered"}
           </span>
         </div>
       </div>
@@ -259,63 +276,65 @@ export const DirectTransfer: React.FC = () => {
       <div className="space-y-4">
         <div className="flex items-center justify-between px-1">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Zap className="h-4 w-4 text-sky-400" />
-            <span>Nearby Discovered Devices</span>
+            <Zap className="h-4 w-4 text-[#0071e3]" />
+            <span>{isTr ? "Çevrede Keşfedilen Cihazlar" : "Nearby Discovered Devices"}</span>
           </h3>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center rounded-xl bg-zinc-900 border border-zinc-800 p-0.5 text-xs">
+            <div className="flex items-center rounded-xl bg-[#121216] border border-white/[0.08] p-0.5 text-xs">
               <button
                 type="button"
                 onClick={() => setViewMode("radar")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                   viewMode === "radar"
-                    ? "bg-sky-500/20 text-sky-400 font-semibold"
+                    ? "bg-[#0071e3] text-white font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Radar View
+                {isTr ? "Radar Görünümü" : "Radar View"}
               </button>
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors ${
                   viewMode === "grid"
-                    ? "bg-sky-500/20 text-sky-400 font-semibold"
+                    ? "bg-[#0071e3] text-white font-semibold shadow-sm"
                     : "text-zinc-400 hover:text-white"
                 }`}
               >
-                Grid View
+                {isTr ? "Liste / Izgara" : "Grid View"}
               </button>
             </div>
-            <span className="text-xs text-zinc-500 font-mono hidden sm:inline">
-              {myDevice ? `${myDevice.deviceName} (You)` : ""}
+            <span className="text-xs text-zinc-400 font-mono hidden sm:inline">
+              {myDevice ? `${myDevice.deviceName} (${isTr ? "Siz" : "You"})` : ""}
             </span>
           </div>
         </div>
 
         {viewMode === "radar" ? (
-          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/60 p-6 backdrop-blur-xl shadow-2xl flex flex-col items-center justify-center">
+          <div className="rounded-[32px] border border-white/[0.08] bg-[#101014]/70 p-6 sm:p-8 backdrop-blur-2xl shadow-2xl flex flex-col items-center justify-center">
             <PeerRadar
               peers={peers}
-              myDeviceName={myDevice?.deviceName || "You"}
+              myDeviceName={myDevice?.deviceName || (isTr ? "Siz" : "You")}
               onPeerClick={handlePeerSelect}
               onPeerDrop={handlePeerDrop}
               isScanning={true}
             />
           </div>
         ) : peers.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-zinc-800 bg-zinc-900/30 p-12 text-center space-y-4">
-            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-20" />
-              <Laptop className="h-8 w-8 text-sky-400" />
+          <div className="rounded-[32px] border border-dashed border-white/[0.08] bg-[#101014]/40 p-12 text-center space-y-4">
+            <div className="relative mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#0071e3]/10 text-[#0071e3] border border-blue-500/20">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0071e3] opacity-20" />
+              <Laptop className="h-8 w-8 text-[#0071e3]" />
             </div>
             <div className="space-y-1 max-w-sm mx-auto">
               <h4 className="text-sm font-semibold text-white">
-                Looking for devices...
+                {isTr ? "Cihazlar taranıyor..." : "Looking for devices..."}
               </h4>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                  {`Join room "${roomCode}" from your phone or another computer, or scan the QR code.`}
+                {isTr
+                  ? `Telefonunuzdan veya başka bir bilgisayardan "${roomCode}" odasına katılın ya da QR kodu taratın.`
+                  : `Join room "${roomCode}" from your phone or another computer, or scan the QR code.`}
               </p>
             </div>
 
@@ -323,10 +342,10 @@ export const DirectTransfer: React.FC = () => {
               variant="outline"
               size="sm"
               onClick={() => setShowQrModal(true)}
-              className="gap-2 text-xs"
+              className="gap-2 text-xs rounded-xl border-white/[0.1] text-zinc-200"
             >
-              <QrCode className="h-3.5 w-3.5 text-sky-400" />
-              <span>Show QR Code</span>
+              <QrCode className="h-3.5 w-3.5 text-[#0071e3]" />
+              <span>{isTr ? "QR Kodu Göster" : "Show QR Code"}</span>
             </Button>
           </div>
         ) : (
@@ -337,19 +356,19 @@ export const DirectTransfer: React.FC = () => {
                 whileHover={{ y: -3 }}
                 transition={{ duration: 0.2 }}
                 onClick={() => handlePeerSelect(peer)}
-                className="group rounded-3xl border border-zinc-800/90 bg-zinc-900/70 p-5 space-y-4 hover:border-sky-500/50 hover:bg-zinc-900/90 hover:shadow-xl hover:shadow-sky-500/5 transition-all cursor-pointer"
+                className="group rounded-[28px] border border-white/[0.08] bg-[#101014]/90 p-5 space-y-4 hover:border-[#0071e3]/50 hover:bg-[#15151a] hover:shadow-xl hover:shadow-blue-500/5 transition-all cursor-pointer"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-800/90 border border-zinc-700/80 group-hover:scale-105 transition-transform">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-900 border border-white/[0.08] group-hover:scale-105 transition-transform">
                     {getPlatformIcon(peer.platform, peer.deviceType)}
                   </div>
-                  <Badge variant="success" className="text-[10px]">
-                    Online
+                  <Badge variant="success" className="text-[10px] bg-emerald-500/15 text-emerald-400 border-emerald-500/25">
+                    {isTr ? "Çevrimiçi" : "Online"}
                   </Badge>
                 </div>
 
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-white truncate group-hover:text-sky-300 transition-colors">
+                  <h4 className="text-sm font-bold text-white truncate group-hover:text-blue-300 transition-colors">
                     {peer.deviceName}
                   </h4>
                   <p className="text-[11px] text-zinc-400 font-mono">
@@ -357,8 +376,8 @@ export const DirectTransfer: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between text-xs text-sky-400 font-medium">
-                  <span>Send File</span>
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-xs text-[#0071e3] font-medium">
+                  <span>{isTr ? "Dosya Gönder" : "Send File"}</span>
                   <Send className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                 </div>
               </motion.div>
@@ -372,15 +391,15 @@ export const DirectTransfer: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl border border-sky-500/30 bg-zinc-900/90 p-5 shadow-2xl backdrop-blur-2xl space-y-3"
+          className="rounded-[28px] border border-[#0071e3]/40 bg-[#101014]/95 p-5 shadow-2xl backdrop-blur-2xl space-y-3"
         >
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex-shrink-0">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0071e3]/15 text-[#0071e3] border border-blue-500/20 flex-shrink-0">
                 {activeTransfer.status === "completed" ? (
                   <CheckCircle2 className="h-5 w-5 text-emerald-400" />
                 ) : (
-                  <Loader2 className="h-5 w-5 animate-spin text-sky-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-[#0071e3]" />
                 )}
               </div>
               <div className="truncate">
@@ -388,21 +407,23 @@ export const DirectTransfer: React.FC = () => {
                   {activeTransfer.filename}
                 </p>
                 <p className="text-[11px] text-zinc-400 font-mono">
-                  {activeTransfer.direction === "send" ? "Sending to" : "Receiving from"}{" "}
-                  <span className="text-sky-400 font-semibold">{activeTransfer.peerName}</span>
+                  {activeTransfer.direction === "send"
+                    ? isTr ? "Gönderilen Cihaz:" : "Sending to"
+                    : isTr ? "Gönderen Cihaz:" : "Receiving from"}{" "}
+                  <span className="text-[#0071e3] font-semibold">{activeTransfer.peerName}</span>
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-3 font-mono">
-              <span className="text-xs font-bold text-sky-400">%{activeTransfer.progress}</span>
+              <span className="text-xs font-bold text-[#0071e3]">%{activeTransfer.progress}</span>
               <span className="text-xs text-zinc-300 font-semibold">{formatSpeed(activeTransfer.speed)}</span>
             </div>
           </div>
 
-          <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800/80 p-0.5 border border-white/[0.04]">
             <motion.div
-              className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500"
+              className="h-full bg-gradient-to-r from-[#0071e3] to-[#34c759] rounded-full shadow-sm shadow-blue-500/30"
               animate={{ width: `${activeTransfer.progress}%` }}
               transition={{ ease: "easeOut", duration: 0.2 }}
             />
@@ -412,7 +433,7 @@ export const DirectTransfer: React.FC = () => {
             <span>
               {formatBytes(activeTransfer.transferredBytes)} / {formatBytes(activeTransfer.size)}
             </span>
-            <span className="capitalize text-sky-300 font-medium">
+            <span className="capitalize text-blue-300 font-medium">
               {activeTransfer.status}
             </span>
           </div>
@@ -422,29 +443,29 @@ export const DirectTransfer: React.FC = () => {
       {/* Incoming File Transfer Request Modal */}
       <AnimatePresence>
         {incomingRequest && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-md rounded-3xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl space-y-5"
+              className="w-full max-w-md rounded-[32px] border border-white/[0.1] bg-[#121216] p-7 shadow-2xl space-y-6"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              <div className="flex items-center gap-3.5">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#0071e3]/15 text-[#0071e3] border border-blue-500/20">
                   <UploadCloud className="h-6 w-6" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    Incoming Direct Transfer
+                    {isTr ? "Gelen Doğrudan Transfer" : "Incoming Direct Transfer"}
                   </h3>
                   <p className="text-xs text-zinc-400">
-                    <span className="text-sky-400 font-semibold">{incomingRequest.req.senderName}</span>{" "}
-                    wants to send you a file
+                    <span className="text-[#0071e3] font-semibold">{incomingRequest.req.senderName}</span>{" "}
+                    {isTr ? "size bir dosya göndermek istiyor" : "wants to send you a file"}
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 space-y-1">
+              <div className="p-4 rounded-2xl bg-black/50 border border-white/[0.08] space-y-1">
                 <p className="text-sm font-semibold text-white truncate">
                   {incomingRequest.req.filename}
                 </p>
@@ -457,22 +478,24 @@ export const DirectTransfer: React.FC = () => {
                 <Button
                   variant="outline"
                   size="default"
+                  className="rounded-xl border-white/[0.1]"
                   onClick={() => {
                     incomingRequest.decline();
                     setIncomingRequest(null);
                   }}
                 >
-                  Decline
+                  {isTr ? "Reddet" : "Decline"}
                 </Button>
                 <Button
                   variant="primary"
                   size="default"
+                  className="rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/25"
                   onClick={() => {
                     incomingRequest.accept();
                     setIncomingRequest(null);
                   }}
                 >
-                  Accept & Download
+                  {isTr ? "Kabul Et & İndir" : "Accept & Download"}
                 </Button>
               </div>
             </motion.div>
@@ -483,16 +506,16 @@ export const DirectTransfer: React.FC = () => {
       {/* QR Code Modal for Mobile Quick Connection */}
       <AnimatePresence>
         {showQrModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-sm rounded-3xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl space-y-5 text-center"
+              className="w-full max-w-sm rounded-[32px] border border-white/[0.1] bg-[#121216] p-6 shadow-2xl space-y-5 text-center"
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white">
-                  Connect with Phone
+                  {isTr ? "Telefon ile Bağlan" : "Connect with Phone"}
                 </h3>
                 <button
                   onClick={() => setShowQrModal(false)}
@@ -508,9 +531,11 @@ export const DirectTransfer: React.FC = () => {
 
               <div className="space-y-2">
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                    Scan with your phone camera to join room and transfer files directly.
+                  {isTr
+                    ? "Kameranızla QR kodu okutarak odaya katılın ve anında doğrudan dosya aktarın."
+                    : "Scan with your phone camera to join room and transfer files directly."}
                 </p>
-                <div className="p-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-sky-400 flex items-center justify-between gap-2">
+                <div className="p-2.5 rounded-xl bg-black/60 border border-white/[0.08] text-[11px] font-mono text-[#0071e3] flex items-center justify-between gap-2">
                   <span className="truncate">{getShareableUrl()}</span>
                   <button
                     onClick={handleCopyLink}

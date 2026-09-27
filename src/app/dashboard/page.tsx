@@ -193,31 +193,31 @@ export default function DashboardPage() {
         {/* ========================================================= */}
         {/* 1. HERO GREETING & COMMAND BAR                            */}
         {/* ========================================================= */}
-        <div className="relative overflow-hidden rounded-3xl border border-zinc-800/80 bg-gradient-to-br from-zinc-900/90 via-zinc-900/50 to-zinc-950 p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+        <div className="relative overflow-hidden rounded-[32px] border border-white/[0.08] bg-[#101014]/90 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl">
           {/* Ambient luminous glow circles */}
-          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
+          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#0071e3]/10 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-purple-500/10 blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-[11px] font-mono border-sky-500/30 text-sky-400 bg-sky-500/10 py-0.5 px-2.5">
+                <Badge variant="outline" className="text-[11px] font-mono border-white/[0.08] text-[#0071e3] bg-[#0071e3]/10 py-0.5 px-2.5 rounded-full">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping mr-1.5 inline-block" />
                   {locale === "tr" ? "Bulut Çevrimiçi • Güvenli Depolama" : "Cloud Online • Secure Storage"}
                 </Badge>
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-zinc-500 font-mono">
                   {new Date().toLocaleDateString(locale === "tr" ? "tr-TR" : "en-US", { weekday: "long", day: "numeric", month: "long" })}
                 </span>
               </div>
 
               <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white">
                 <span>{greeting}, </span>
-                <span className="bg-gradient-to-r from-sky-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#0071e3] via-teal-300 to-[#0071e3] bg-clip-text text-transparent">
                   {user?.displayName || "NearDrop User"}
                 </span>
               </h1>
 
-              <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
+              <p className="text-xs sm:text-sm text-zinc-400 max-w-xl leading-relaxed">
                 {locale === "tr"
                   ? "Varlıklarınızı güvenle saklayın, fotoğraf ve videoları doğrudan tarayıcınızda önizleyin ve şifreli bağlantılarla paylaşın."
                   : "Store your assets securely, preview photos and videos directly in your browser, and share with encrypted links."}
@@ -225,12 +225,12 @@ export default function DashboardPage() {
             </div>
 
             {/* Quick Action Navigation Buttons */}
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               <Link href="/files">
                 <Button
                   variant="primary"
                   size="default"
-                  className="px-5 py-2.5 rounded-2xl shadow-lg shadow-sky-500/25 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
+                  className="px-5 py-2.5 rounded-2xl bg-[#0071e3] hover:bg-[#0077ed] shadow-md shadow-blue-500/20 gap-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
                 >
                   <FolderOpen className="h-4 w-4 text-white" />
                   <span className="text-white">{locale === "tr" ? "Dosyalarım" : "My Files"}</span>
@@ -240,7 +240,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   size="default"
-                  className="px-5 py-2.5 rounded-2xl border-zinc-700 bg-zinc-900 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
+                  className="px-5 py-2.5 rounded-2xl border-white/[0.08] bg-zinc-900/80 hover:bg-zinc-800 gap-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
                 >
                   <Share2 className="h-4 w-4 text-emerald-400" />
                   <span className="text-white">{locale === "tr" ? "Paylaşılanlar" : "Shared"} ({shares.length})</span>
@@ -250,7 +250,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   size="default"
-                  className="px-5 py-2.5 rounded-2xl border-zinc-700 bg-zinc-900 hover:bg-zinc-800 gap-2.5 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
+                  className="px-5 py-2.5 rounded-2xl border-white/[0.08] bg-zinc-900/80 hover:bg-zinc-800 gap-2 text-xs sm:text-sm font-semibold whitespace-nowrap text-white"
                 >
                   <Activity className="h-4 w-4 text-purple-400" />
                   <span className="text-white">{locale === "tr" ? "Aktarımlar" : "Transfers"}</span>
@@ -265,10 +265,10 @@ export default function DashboardPage() {
         {/* ========================================================= */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Total Files Card */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-3 hover:border-zinc-700/80 transition-all shadow-md group">
+          <div className="rounded-[28px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-5 space-y-3 hover:border-white/[0.16] transition-all shadow-lg group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-zinc-400">{t.dashboard.filesStored}</span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 group-hover:scale-110 transition-transform">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0071e3]/10 border border-blue-500/20 text-[#0071e3] group-hover:scale-110 transition-transform">
                 <FileText className="h-4 w-4" />
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function DashboardPage() {
                 {locale === "tr" ? "dosya & klasör" : "files & folders"}
               </span>
             </div>
-            <div className="flex items-center gap-2 pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
+            <div className="flex items-center gap-2 pt-1 border-t border-white/[0.06] text-[11px] text-zinc-400">
               <span className="text-emerald-400 font-medium">📷 {categoryStats.counts.image.count} {locale === "tr" ? "Görsel" : "Images"}</span>
               <span>•</span>
               <span className="text-purple-400 font-medium">🎬 {categoryStats.counts.video.count} {locale === "tr" ? "Video" : "Videos"}</span>
@@ -286,7 +286,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Cloud Storage Used Card */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-3 hover:border-zinc-700/80 transition-all shadow-md group">
+          <div className="rounded-[28px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-5 space-y-3 hover:border-white/[0.16] transition-all shadow-lg group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-zinc-400">{t.dashboard.cloudStorage}</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 group-hover:scale-110 transition-transform">
@@ -297,21 +297,21 @@ export default function DashboardPage() {
               <p className="text-2xl sm:text-3xl font-bold text-teal-300 tracking-tight">{formatBytes(stats.usedBytes)}</p>
               <span className="text-xs text-zinc-500 font-mono">/ {formatBytes(stats.quotaBytes || 2147483648)}</span>
             </div>
-            <div className="space-y-1 pt-1">
-              <div className="w-full bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+            <div className="space-y-1.5 pt-1">
+              <div className="w-full bg-zinc-800/80 rounded-full h-1.5 overflow-hidden p-0.5 border border-white/[0.04]">
                 <div
-                  className="bg-gradient-to-r from-teal-500 to-sky-400 h-full rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-teal-500 to-[#0071e3] h-full rounded-full transition-all duration-500 shadow-sm shadow-teal-500/30"
                   style={{ width: `${Math.max(2, quotaPercent)}%` }}
                 />
               </div>
-              <p className="text-[10px] text-zinc-500 text-right font-mono">
+              <p className="text-[10px] text-zinc-400 text-right font-mono">
                 {quotaPercent}% {locale === "tr" ? "Dolu" : "Used"}
               </p>
             </div>
           </div>
 
           {/* Active Shares Card */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-3 hover:border-zinc-700/80 transition-all shadow-md group">
+          <div className="rounded-[28px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-5 space-y-3 hover:border-white/[0.16] transition-all shadow-lg group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-zinc-400">{t.dashboard.activeShares}</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
@@ -320,20 +320,20 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-baseline justify-between">
               <p className="text-2xl sm:text-3xl font-bold text-emerald-400 tracking-tight">{stats.sharedCount}</p>
-              <Badge variant="success" className="text-[10px]">
+              <Badge variant="success" className="text-[10px] bg-emerald-500/15 text-emerald-400 border-emerald-500/25">
                 {locale === "tr" ? "Canlı Linkler" : "Live Links"}
               </Badge>
             </div>
-            <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
+            <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[11px] text-zinc-400">
               <span>{locale === "tr" ? "Şifreli & Süreli" : "Encrypted & Ephemeral"}</span>
-              <Link href="/shared" className="text-sky-400 hover:underline flex items-center gap-0.5">
+              <Link href="/shared" className="text-[#0071e3] hover:underline flex items-center gap-0.5">
                 {t.dashboard.manage || (locale === "tr" ? "Yönet" : "Manage")} <ArrowUpRight className="h-3 w-3" />
               </Link>
             </div>
           </div>
 
           {/* Total Downloads Card */}
-          <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-5 space-y-3 hover:border-zinc-700/80 transition-all shadow-md group">
+          <div className="rounded-[28px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-5 space-y-3 hover:border-white/[0.16] transition-all shadow-lg group">
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-zinc-400">{t.dashboard.totalDownloads}</span>
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 group-hover:scale-110 transition-transform">
@@ -346,7 +346,7 @@ export default function DashboardPage() {
                 {locale === "tr" ? "başarılı indirme" : "successful hits"}
               </span>
             </div>
-            <div className="flex items-center justify-between pt-1 border-t border-zinc-800/50 text-[11px] text-zinc-400">
+            <div className="flex items-center justify-between pt-1 border-t border-white/[0.06] text-[11px] text-zinc-400">
               <span className="flex items-center gap-1 text-emerald-400 font-medium">
                 <Zap className="h-3 w-3" /> {locale === "tr" ? "Doğrudan Edge Akışı" : "Direct Edge Stream"}
               </span>
@@ -584,67 +584,57 @@ export default function DashboardPage() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden divide-y divide-zinc-800/60 shadow-lg">
+              <div className="rounded-[28px] border border-white/[0.08] bg-[#101014]/80 overflow-hidden divide-y divide-white/[0.06] shadow-xl backdrop-blur-xl">
                 {filteredRecentFiles.map((file) => {
                   const cat = getFileCategory(file.mimeType, file.filename);
-                  const isMedia = cat === "image" || cat === "video";
 
                   return (
                     <div
                       key={file.id}
-                      className="flex items-center justify-between p-3 sm:p-4 hover:bg-zinc-800/40 transition-colors group"
+                      className="flex items-center justify-between p-3 sm:p-4 hover:bg-white/[0.03] transition-colors group cursor-pointer"
+                      onClick={() => setSelectedFileForPreview(file)}
                     >
                       {/* Left: Icon & Info */}
-                      <div
-                        className={`flex items-center gap-3.5 min-w-0 flex-1 ${isMedia ? "cursor-pointer" : "cursor-default"}`}
-                        onClick={() => {
-                          if (isMedia) {
-                            setSelectedFileForPreview(file);
-                          }
-                        }}
-                      >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0 group-hover:border-sky-500/40 transition-colors">
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900 border border-white/[0.08] flex-shrink-0 group-hover:border-[#0071e3]/40 transition-colors shadow-sm">
                           {renderFileIcon(file)}
                         </div>
                         <div className="min-w-0 truncate">
-                          <p className={`font-semibold text-xs sm:text-sm text-zinc-100 truncate transition-colors ${isMedia ? "group-hover:text-sky-300" : ""}`}>
+                          <p className="font-semibold text-xs sm:text-sm text-zinc-100 truncate group-hover:text-blue-300 transition-colors">
                             {file.filename.split("/").pop() || file.filename}
                           </p>
-                          <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
+                          <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5 font-mono">
                             <span>{formatBytes(file.size)}</span>
                             <span>•</span>
                             <span>{formatRelativeTime(file.createdAt)}</span>
-                            {isMedia && (
-                              <Badge variant="outline" className="text-[9px] py-0 px-1.5 text-zinc-400 border-zinc-700">
-                                {cat === "video"
-                                  ? (locale === "tr" ? "🎬 Video Önizleme" : "🎬 Video Preview")
-                                  : (locale === "tr" ? "📷 Fotoğraf Önizleme" : "📷 Photo Preview")}
-                              </Badge>
-                            )}
+                            <Badge variant="outline" className="text-[9px] py-0 px-1.5 text-zinc-400 border-white/[0.08]">
+                              {cat.toUpperCase()}
+                            </Badge>
                           </div>
                         </div>
                       </div>
 
                       {/* Right Actions */}
-                      <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2">
-                        {isMedia && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setSelectedFileForPreview(file)}
-                            className="text-zinc-400 hover:text-sky-400 hover:bg-sky-500/10 h-8 px-2 text-xs gap-1"
-                            title={locale === "tr" ? "Önizle" : "Preview"}
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">{locale === "tr" ? "Önizle" : "Preview"}</span>
-                          </Button>
-                        )}
+                      <div
+                        className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 ml-2"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedFileForPreview(file)}
+                          className="text-zinc-400 hover:text-[#0071e3] hover:bg-[#0071e3]/10 h-8 px-2 text-xs gap-1"
+                          title={locale === "tr" ? "Önizle" : "Preview"}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">{locale === "tr" ? "Önizle" : "Preview"}</span>
+                        </Button>
 
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setSelectedFileForShare(file)}
-                          className="text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1.5 text-xs h-8 px-2"
+                          className="text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10 gap-1.5 text-xs h-8 px-2"
                         >
                           <Share2 className="h-3.5 w-3.5" />
                           <span className="hidden sm:inline">{t.dashboard.share}</span>

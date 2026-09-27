@@ -196,12 +196,6 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       return;
     }
 
-    const category = getFileCategory(file.mimeType, file.filename);
-    if (category !== "image" && category !== "video") {
-      resetState();
-      return;
-    }
-
     let cancelled = false;
     const loadPreview = async () => {
       setIsLoading(true);
@@ -437,8 +431,6 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   if (!open || !file) return null;
 
   const category = getFileCategory(file.mimeType, file.filename);
-  if (category !== "image" && category !== "video") return null;
-
   const displayName = file.filename.split("/").pop() || file.filename;
   const ext = displayName.split(".").pop()?.toLowerCase() || "";
 
@@ -463,18 +455,28 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
   const isImage = category === "image";
   const isVideo = category === "video";
-  const isSpreadsheet = false;
-  const isWordDoc = false;
-  const isHtml = false;
-  const isMarkdown = false;
-  const isAudio = false;
-  const isPdf = false;
+  const isAudio = category === "audio";
+  const isPdf = ext === "pdf" || file.mimeType === "application/pdf";
+  const isSpreadsheet = Boolean(parsedXlsx) || ext === "xlsx" || ext === "xls" || ext === "csv" || ext === "tsv";
+  const isWordDoc = Boolean(parsedDocx) || ext === "docx" || ext === "doc";
+  const isHtml = ext === "html" || ext === "htm";
+  const isMarkdown = ext === "md" || ext === "markdown";
 
   const renderCategoryIcon = () => {
-    if (isVideo) {
-      return <FileVideo className="h-4 w-4 text-purple-400" />;
+    switch (category) {
+      case "video":
+        return <FileVideo className="h-4 w-4 text-purple-400" />;
+      case "image":
+        return <FileImage className="h-4 w-4 text-emerald-400" />;
+      case "audio":
+        return <FileAudio className="h-4 w-4 text-pink-400" />;
+      case "code":
+        return <FileCode className="h-4 w-4 text-cyan-400" />;
+      case "archive":
+        return <FileArchive className="h-4 w-4 text-amber-400" />;
+      default:
+        return <FileText className="h-4 w-4 text-[#0071e3]" />;
     }
-    return <FileImage className="h-4 w-4 text-emerald-400" />;
   };
 
   const renderPreviewContent = () => {

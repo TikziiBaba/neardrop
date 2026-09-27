@@ -22,7 +22,6 @@ export const AppleHighlights: React.FC = () => {
   const isTr = locale === "tr";
 
   const [selectedExpiry, setSelectedExpiry] = useState<"10m" | "1h" | "24h" | "burn">("1h");
-  const [speedActive, setSpeedActive] = useState(false);
 
   return (
     <section id="highlights" className="relative py-20 md:py-32 bg-black select-none">
@@ -40,9 +39,9 @@ export const AppleHighlights: React.FC = () => {
         {/* Bento Grid — Apple Style (2 large + 2 medium) */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
           {/* Tile 1: P2P Speed (7 cols) */}
-          <div className="md:col-span-7 rounded-[28px] border border-white/[0.08] bg-zinc-900/60 backdrop-blur-xl p-8 sm:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between overflow-hidden relative group">
-            <div className="space-y-2 z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/15 text-[11px] font-semibold text-blue-400">
+          <div className="md:col-span-7 rounded-[32px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col justify-between overflow-hidden relative group hover:border-[#0071e3]/40 transition-all duration-300">
+            <div className="space-y-3 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0071e3]/15 text-[11px] font-semibold text-blue-400 border border-blue-500/20">
                 <Zap className="h-3 w-3" />
                 {isTr ? "WebRTC Mesh Protokolü" : "WebRTC Mesh Protocol"}
               </span>
@@ -60,38 +59,38 @@ export const AppleHighlights: React.FC = () => {
             <div className="mt-8 pt-6 border-t border-white/[0.08] z-10">
               <div className="space-y-4">
                 <div>
-                  <div className="flex justify-between text-xs font-semibold text-white mb-1.5">
-                    <span className="flex items-center gap-1.5 text-[#0071e3]">
+                  <div className="flex justify-between text-xs font-semibold text-white mb-2">
+                    <span className="flex items-center gap-2 text-[#0071e3]">
                       <span className="h-2 w-2 rounded-full bg-[#0071e3] animate-ping" />
                       NearDrop P2P
                     </span>
-                    <span>1.2 Gbps · {isTr ? "Gecikme: 2ms" : "Latency: 2ms"}</span>
+                    <span className="font-mono">1.2 Gbps · {isTr ? "Gecikme: 2ms" : "Latency: 2ms"}</span>
                   </div>
-                  <div className="h-3 w-full bg-zinc-800 rounded-full overflow-hidden p-0.5">
-                    <div className="h-full bg-gradient-to-r from-[#0071e3] to-[#34c759] rounded-full w-[95%] transition-all duration-500" />
+                  <div className="h-3 w-full bg-zinc-900 rounded-full overflow-hidden p-0.5 border border-white/[0.06]">
+                    <div className="h-full bg-gradient-to-r from-[#0071e3] to-[#34c759] rounded-full w-[95%] transition-all duration-500 shadow-sm shadow-blue-500/30" />
                   </div>
                 </div>
 
                 <div>
-                  <div className="flex justify-between text-xs font-medium text-zinc-400 mb-1.5">
+                  <div className="flex justify-between text-xs font-medium text-zinc-400 mb-2">
                     <span>{isTr ? "Geleneksel Bulut (Drive / WeTransfer)" : "Traditional Cloud Storage"}</span>
-                    <span>45 Mbps · {isTr ? "Çift Yükleme Süresi" : "Double Wait"}</span>
+                    <span className="font-mono">45 Mbps · {isTr ? "Çift Yükleme Süresi" : "Double Wait"}</span>
                   </div>
-                  <div className="h-3 w-full bg-zinc-800 rounded-full overflow-hidden p-0.5">
-                    <div className="h-full bg-zinc-600/50 rounded-full w-[22%]" />
+                  <div className="h-3 w-full bg-zinc-900 rounded-full overflow-hidden p-0.5 border border-white/[0.04]">
+                    <div className="h-full bg-zinc-700/60 rounded-full w-[22%]" />
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Subtle background ambient graphic */}
-            <div className="absolute -bottom-10 -right-10 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[#0071e3]/10 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           {/* Tile 2: Zero-Knowledge (5 cols) */}
-          <div className="md:col-span-5 rounded-[28px] border border-white/[0.08] bg-zinc-900/60 backdrop-blur-xl p-8 sm:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between overflow-hidden relative">
-            <div className="space-y-2 z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-[11px] font-semibold text-emerald-400">
+          <div className="md:col-span-5 rounded-[32px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col justify-between overflow-hidden relative group hover:border-emerald-500/30 transition-all duration-300">
+            <div className="space-y-3 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
                 <ShieldCheck className="h-3 w-3" />
                 {isTr ? "Sıfır Bilgi Mimarisi" : "Zero-Knowledge Architecture"}
               </span>
@@ -107,10 +106,10 @@ export const AppleHighlights: React.FC = () => {
 
             {/* Key lock visual */}
             <div className="mt-8 pt-6 border-t border-white/[0.08] z-10">
-              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-800/80 border border-white/[0.06]">
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-900/90 border border-white/[0.08]">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-zinc-900 shadow-sm flex items-center justify-center text-emerald-400">
-                    <KeyRound className="h-4 w-4" />
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 shadow-sm flex items-center justify-center text-emerald-400">
+                    <KeyRound className="h-5 w-5" />
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-white">AES-256-GCM</div>
@@ -119,7 +118,7 @@ export const AppleHighlights: React.FC = () => {
                     </div>
                   </div>
                 </div>
-                <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/20 px-2.5 py-1 rounded-full border border-emerald-500/30">
                   Verified
                 </span>
               </div>
@@ -127,9 +126,9 @@ export const AppleHighlights: React.FC = () => {
           </div>
 
           {/* Tile 3: Self-Destruction Timer (5 cols) */}
-          <div className="md:col-span-5 rounded-[28px] border border-white/[0.08] bg-zinc-900/60 backdrop-blur-xl p-8 sm:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between overflow-hidden relative">
-            <div className="space-y-2 z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-[11px] font-semibold text-amber-400">
+          <div className="md:col-span-5 rounded-[32px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col justify-between overflow-hidden relative group hover:border-amber-500/30 transition-all duration-300">
+            <div className="space-y-3 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 text-[11px] font-semibold text-amber-400 border border-amber-500/20">
                 <Clock className="h-3 w-3" />
                 {isTr ? "Otomatik İmha" : "Auto-Destruct"}
               </span>
@@ -145,7 +144,7 @@ export const AppleHighlights: React.FC = () => {
 
             {/* Interactive Expiry Toggle */}
             <div className="mt-8 pt-6 border-t border-white/[0.08] z-10">
-              <div className="grid grid-cols-4 gap-1.5 p-1 bg-zinc-800 rounded-xl">
+              <div className="grid grid-cols-4 gap-1.5 p-1 bg-zinc-900/90 rounded-2xl border border-white/[0.06]">
                 {[
                   { id: "10m", label: "10 dk" },
                   { id: "1h", label: "1 saat" },
@@ -158,9 +157,9 @@ export const AppleHighlights: React.FC = () => {
                       SoundManager.play("click");
                       setSelectedExpiry(item.id as any);
                     }}
-                    className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                    className={`py-2 text-xs font-semibold rounded-xl transition-all ${
                       selectedExpiry === item.id
-                        ? "bg-zinc-700 text-white shadow-sm"
+                        ? "bg-zinc-800 text-white shadow-md border border-white/[0.1]"
                         : "text-zinc-400 hover:text-white"
                     }`}
                   >
@@ -177,9 +176,9 @@ export const AppleHighlights: React.FC = () => {
           </div>
 
           {/* Tile 4: Zero Friction & Cross-Platform (7 cols) */}
-          <div className="md:col-span-7 rounded-[28px] border border-white/[0.08] bg-zinc-900/60 backdrop-blur-xl p-8 sm:p-10 shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between overflow-hidden relative">
-            <div className="space-y-2 z-10">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 text-[11px] font-semibold text-purple-400">
+          <div className="md:col-span-7 rounded-[32px] border border-white/[0.08] bg-[#101014]/80 backdrop-blur-2xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex flex-col justify-between overflow-hidden relative group hover:border-purple-500/30 transition-all duration-300">
+            <div className="space-y-3 z-10">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/15 text-[11px] font-semibold text-purple-400 border border-purple-500/20">
                 <Globe className="h-3 w-3" />
                 {isTr ? "Evrensel Uyum" : "Universal Compatibility"}
               </span>
@@ -194,11 +193,11 @@ export const AppleHighlights: React.FC = () => {
             </div>
 
             {/* Platform Badges */}
-            <div className="mt-8 pt-6 border-t border-white/[0.08] z-10 flex flex-wrap items-center gap-3">
+            <div className="mt-8 pt-6 border-t border-white/[0.08] z-10 flex flex-wrap items-center gap-2.5">
               {["iOS & iPadOS", "macOS", "Android", "Windows 11", "Linux"].map((platform) => (
                 <span
                   key={platform}
-                  className="px-3.5 py-1.5 rounded-full bg-zinc-800 text-xs font-semibold text-zinc-200 border border-white/[0.06]"
+                  className="px-4 py-2 rounded-full bg-zinc-900/90 text-xs font-semibold text-zinc-200 border border-white/[0.08] hover:border-white/[0.16] transition-colors"
                 >
                   {platform}
                 </span>

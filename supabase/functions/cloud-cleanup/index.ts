@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { S3Client, DeleteObjectCommand, ListObjectsV2Command } from "https://esm.sh/@aws-sdk/client-s3@3.370.0";
+import { S3Client, DeleteObjectCommand } from "https://esm.sh/@aws-sdk/client-s3@3.370.0";
 
 /**
  * NearDrop R2 Garbage Collection — Enhanced Cloud Cleanup
@@ -43,7 +43,7 @@ serve(async (req: Request) => {
     };
 
     // Helper: delete R2 object and mark DB record
-    async function cleanFile(file: { id: string; r2_object_key: string; size?: number; filename?: string }) {
+    const cleanFile = async (file: { id: string; r2_object_key: string; size?: number; filename?: string }) => {
       try {
         await s3.send(
           new DeleteObjectCommand({
@@ -62,7 +62,7 @@ serve(async (req: Request) => {
         report.errors.push(`Failed to delete ${file.r2_object_key}: ${delErr.message}`);
         return false;
       }
-    }
+    };
 
     // === 1. Expired files (expires_at < NOW(), not yet deleted) ===
     const { data: expiredFiles } = await supabaseClient
