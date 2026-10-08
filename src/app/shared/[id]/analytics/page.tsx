@@ -100,13 +100,13 @@ export default function ShareAnalyticsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/shared">
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-zinc-400 hover:text-white">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-white">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold tracking-tight text-white truncate max-w-md">
+                <h1 className="page-title-sm truncate max-w-md">
                   {displayName}
                 </h1>
                 {share && (
@@ -115,7 +115,7 @@ export default function ShareAnalyticsPage() {
                   </Badge>
                 )}
               </div>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Detailed access insights, geo-distribution, and client device breakdown.
               </p>
             </div>
@@ -127,7 +127,7 @@ export default function ShareAnalyticsPage() {
                 href={`/s/${share.token}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs bg-zinc-900 border border-zinc-800 text-sky-400 hover:text-sky-300 transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs bg-surface border border-border text-accent-text hover:text-accent-text transition-colors"
               >
                 <span>Open Public Page</span>
                 <ExternalLink className="h-3 w-3" />
@@ -139,15 +139,15 @@ export default function ShareAnalyticsPage() {
         {/* Loading state */}
         {isLoading && (
           <div className="py-24 text-center space-y-3">
-            <Loader2 className="h-8 w-8 text-sky-400 animate-spin mx-auto" />
-            <p className="text-xs text-zinc-400">Loading download analytics...</p>
+            <Loader2 className="h-8 w-8 text-accent-text animate-spin mx-auto" />
+            <p className="text-xs text-muted-foreground">Loading download analytics...</p>
           </div>
         )}
 
         {/* Error state */}
         {!isLoading && error && (
-          <div className="p-6 rounded-2xl border border-rose-500/30 bg-rose-500/10 text-center space-y-2">
-            <p className="text-sm font-semibold text-rose-300">{error}</p>
+          <div className="p-6 rounded-2xl border border-danger/30 bg-danger/10 text-center space-y-2">
+            <p className="text-sm font-semibold text-danger">{error}</p>
             <Button variant="outline" size="sm" onClick={() => router.refresh()}>
               Retry
             </Button>
@@ -160,40 +160,40 @@ export default function ShareAnalyticsPage() {
             {/* Top 3 Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="liquid-glass-elevated rounded-2xl p-5 space-y-1">
-                <div className="flex items-center justify-between text-xs text-zinc-400">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Total Downloads</span>
-                  <Download className="h-4 w-4 text-sky-400" />
+                  <Download className="h-4 w-4 text-accent-text" />
                 </div>
                 <p className="text-3xl font-extrabold text-white">
                   {analytics.totalDownloads}
                 </p>
-                <p className="text-[10px] text-zinc-500">
+                <p className="text-[10px] text-subtle">
                   {share?.maxDownloads ? `Limit: ${share.maxDownloads} downloads` : "Unlimited limit"}
                 </p>
               </div>
 
               <div className="liquid-glass-elevated rounded-2xl p-5 space-y-1">
-                <div className="flex items-center justify-between text-xs text-zinc-400">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Bandwidth Delivered</span>
-                  <HardDrive className="h-4 w-4 text-emerald-400" />
+                  <HardDrive className="h-4 w-4 text-success" />
                 </div>
                 <p className="text-3xl font-extrabold text-white">
                   {formatBytes(analytics.totalBandwidth)}
                 </p>
-                <p className="text-[10px] text-zinc-500">
+                <p className="text-[10px] text-subtle">
                   Direct encrypted cloud egress
                 </p>
               </div>
 
               <div className="liquid-glass-elevated rounded-2xl p-5 space-y-1">
-                <div className="flex items-center justify-between text-xs text-zinc-400">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
                   <span>Unique Countries</span>
-                  <Globe className="h-4 w-4 text-purple-400" />
+                  <Globe className="h-4 w-4 text-accent-text" />
                 </div>
                 <p className="text-3xl font-extrabold text-white">
                   {analytics.byCountry.length}
                 </p>
-                <p className="text-[10px] text-zinc-500">
+                <p className="text-[10px] text-subtle">
                   Global CDN points of access
                 </p>
               </div>
@@ -204,10 +204,10 @@ export default function ShareAnalyticsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-sky-400" />
+                    <Activity className="h-4 w-4 text-accent-text" />
                     <span>Daily Downloads (Last 30 Days)</span>
                   </h3>
-                  <p className="text-xs text-zinc-400">Volume distribution of access requests</p>
+                  <p className="text-xs text-muted-foreground">Volume distribution of access requests</p>
                 </div>
                 <Badge variant="outline" className="text-[10px] font-mono">
                   30 Days
@@ -215,7 +215,7 @@ export default function ShareAnalyticsPage() {
               </div>
 
               {analytics.dailyDownloads.length === 0 ? (
-                <div className="py-12 text-center text-xs text-zinc-500">
+                <div className="py-12 text-center text-xs text-subtle">
                   No download events recorded in the last 30 days.
                 </div>
               ) : (
@@ -229,10 +229,10 @@ export default function ShareAnalyticsPage() {
                       >
                         <div
                           style={{ height: `${heightPct}%` }}
-                          className="w-full rounded-t-md bg-gradient-to-t from-sky-600 to-sky-400 group-hover:from-sky-500 group-hover:to-sky-300 transition-all cursor-pointer relative"
+                          className="w-full rounded-t-xl bg-gradient-to-t from-accent to-accent-text group-hover:from-accent group-hover:to-accent-text transition-all cursor-pointer relative"
                           title={`${d.date}: ${d.count} downloads`}
                         />
-                        <span className="text-[8px] text-zinc-500 font-mono rotate-45 sm:rotate-0 mt-1">
+                        <span className="text-[8px] text-subtle font-mono rotate-45 sm:rotate-0 mt-1">
                           {d.date.slice(5)}
                         </span>
                       </div>
@@ -247,11 +247,11 @@ export default function ShareAnalyticsPage() {
               {/* Country breakdown */}
               <div className="liquid-glass-elevated rounded-3xl p-6 space-y-4">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-emerald-400" />
+                  <Globe className="h-4 w-4 text-success" />
                   <span>Top Countries</span>
                 </h3>
                 {analytics.byCountry.length === 0 ? (
-                  <p className="text-xs text-zinc-500">No geo data yet</p>
+                  <p className="text-xs text-subtle">No geo data yet</p>
                 ) : (
                   <div className="space-y-2.5">
                     {analytics.byCountry.slice(0, 6).map((c) => {
@@ -259,13 +259,13 @@ export default function ShareAnalyticsPage() {
                       return (
                         <div key={c.name} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-zinc-300 font-medium">{c.name}</span>
-                            <span className="text-zinc-400 font-mono">{c.count} ({pct}%)</span>
+                            <span className="text-foreground/80 font-medium">{c.name}</span>
+                            <span className="text-muted-foreground font-mono">{c.count} ({pct}%)</span>
                           </div>
-                          <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
                             <div
                               style={{ width: `${pct}%` }}
-                              className="h-full bg-emerald-400 rounded-full"
+                              className="h-full bg-success rounded-full"
                             />
                           </div>
                         </div>
@@ -278,11 +278,11 @@ export default function ShareAnalyticsPage() {
               {/* Browser breakdown */}
               <div className="liquid-glass-elevated rounded-3xl p-6 space-y-4">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Monitor className="h-4 w-4 text-sky-400" />
+                  <Monitor className="h-4 w-4 text-accent-text" />
                   <span>Browsers</span>
                 </h3>
                 {analytics.byBrowser.length === 0 ? (
-                  <p className="text-xs text-zinc-500">No browser data yet</p>
+                  <p className="text-xs text-subtle">No browser data yet</p>
                 ) : (
                   <div className="space-y-2.5">
                     {analytics.byBrowser.slice(0, 6).map((b) => {
@@ -290,13 +290,13 @@ export default function ShareAnalyticsPage() {
                       return (
                         <div key={b.name} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-zinc-300 font-medium">{b.name}</span>
-                            <span className="text-zinc-400 font-mono">{b.count} ({pct}%)</span>
+                            <span className="text-foreground/80 font-medium">{b.name}</span>
+                            <span className="text-muted-foreground font-mono">{b.count} ({pct}%)</span>
                           </div>
-                          <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
                             <div
                               style={{ width: `${pct}%` }}
-                              className="h-full bg-sky-400 rounded-full"
+                              className="h-full bg-accent rounded-full"
                             />
                           </div>
                         </div>
@@ -309,11 +309,11 @@ export default function ShareAnalyticsPage() {
               {/* Device breakdown */}
               <div className="liquid-glass-elevated rounded-3xl p-6 space-y-4">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Smartphone className="h-4 w-4 text-purple-400" />
+                  <Smartphone className="h-4 w-4 text-accent-text" />
                   <span>Device Types</span>
                 </h3>
                 {analytics.byDevice.length === 0 ? (
-                  <p className="text-xs text-zinc-500">No device data yet</p>
+                  <p className="text-xs text-subtle">No device data yet</p>
                 ) : (
                   <div className="space-y-2.5">
                     {analytics.byDevice.map((d) => {
@@ -321,13 +321,13 @@ export default function ShareAnalyticsPage() {
                       return (
                         <div key={d.name} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-zinc-300 font-medium capitalize">{d.name}</span>
-                            <span className="text-zinc-400 font-mono">{d.count} ({pct}%)</span>
+                            <span className="text-foreground/80 font-medium capitalize">{d.name}</span>
+                            <span className="text-muted-foreground font-mono">{d.count} ({pct}%)</span>
                           </div>
-                          <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
                             <div
                               style={{ width: `${pct}%` }}
-                              className="h-full bg-purple-400 rounded-full"
+                              className="h-full bg-accent rounded-full"
                             />
                           </div>
                         </div>
@@ -342,23 +342,23 @@ export default function ShareAnalyticsPage() {
             <div className="liquid-glass-elevated rounded-3xl p-6 space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-amber-400" />
+                  <Clock className="h-4 w-4 text-warning" />
                   <span>Recent Download Log</span>
                 </h3>
-                <span className="text-xs text-zinc-500 font-mono">
+                <span className="text-xs text-subtle font-mono">
                   Showing latest {analytics.recentEvents.length} events
                 </span>
               </div>
 
               {analytics.recentEvents.length === 0 ? (
-                <div className="py-8 text-center text-xs text-zinc-500">
+                <div className="py-8 text-center text-xs text-subtle">
                   No downloads recorded yet.
                 </div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-zinc-800 text-zinc-500 font-semibold">
+                      <tr className="border-b border-border text-subtle font-semibold">
                         <th className="pb-3 pl-2">Time</th>
                         <th className="pb-3">Location</th>
                         <th className="pb-3">Browser / OS</th>
@@ -366,24 +366,24 @@ export default function ShareAnalyticsPage() {
                         <th className="pb-3 pr-2">Referrer</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800/60 font-mono">
+                    <tbody className="divide-y divide-border/60 font-mono">
                       {analytics.recentEvents.map((evt) => (
                         <tr key={evt.id} className="hover:bg-white/[0.02] transition-colors">
-                          <td className="py-3 pl-2 text-zinc-400">
+                          <td className="py-3 pl-2 text-muted-foreground">
                             {formatRelativeTime(evt.createdAt)}
                           </td>
-                          <td className="py-3 text-zinc-300">
+                          <td className="py-3 text-foreground/80">
                             {evt.city ? `${evt.city}, ` : ""}{evt.country || "Unknown"}
                           </td>
-                          <td className="py-3 text-zinc-300">
+                          <td className="py-3 text-foreground/80">
                             {evt.browser || "Unknown"} on {evt.os || "Unknown"}
                           </td>
                           <td className="py-3">
-                            <span className="capitalize text-zinc-400 bg-zinc-800/80 px-2 py-0.5 rounded-full text-[10px]">
+                            <span className="capitalize text-muted-foreground bg-surface-secondary/80 px-2 py-0.5 rounded-full text-[10px]">
                               {evt.deviceType || "desktop"}
                             </span>
                           </td>
-                          <td className="py-3 pr-2 text-zinc-500 truncate max-w-xs">
+                          <td className="py-3 pr-2 text-subtle truncate max-w-xs">
                             {evt.referrer || "Direct"}
                           </td>
                         </tr>

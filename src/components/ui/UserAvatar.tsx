@@ -26,13 +26,13 @@ function getGradientFromName(str: string): string {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
   const palettes = [
-    "from-purple-600 via-indigo-600 to-blue-600",
-    "from-sky-500 via-blue-600 to-indigo-700",
-    "from-emerald-500 via-teal-600 to-cyan-700",
-    "from-pink-500 via-rose-600 to-purple-700",
-    "from-amber-500 via-orange-600 to-rose-700",
-    "from-violet-600 via-purple-700 to-fuchsia-800",
-    "from-cyan-500 via-blue-600 to-violet-700",
+    "from-file-video via-accent to-accent",
+    "from-accent via-accent to-accent",
+    "from-success via-success to-accent",
+    "from-file-audio via-danger to-file-video",
+    "from-warning via-warning to-danger",
+    "from-file-video via-file-video to-file-audio",
+    "from-accent via-accent to-file-video",
   ];
   const index = Math.abs(hash) % palettes.length;
   return palettes[index];
@@ -98,14 +98,14 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       {/* Online / Banned status dot */}
       {showStatusDot && (
         <span
-          className={`absolute bottom-0 right-0 block rounded-full ring-2 ring-zinc-950 ${
+          className={`absolute bottom-0 right-0 block rounded-full ring-2 ring-border/60 ${
             size === "xs" || size === "sm" ? "h-2 w-2" : "h-2.5 w-2.5"
           } ${
             user?.status === "banned"
-              ? "bg-rose-500"
+              ? "bg-danger"
               : user?.status === "suspended"
-              ? "bg-amber-500"
-              : "bg-emerald-500"
+              ? "bg-warning"
+              : "bg-success"
           }`}
         />
       )}

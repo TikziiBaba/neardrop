@@ -113,8 +113,8 @@ export default function TicketDetailPage() {
     return (
       <DashboardLayout>
         <div className="py-24 text-center space-y-3">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400" />
-          <p className="text-xs text-zinc-400">Loading support conversation...</p>
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-accent-text" />
+          <p className="text-xs text-muted-foreground">Loading support conversation...</p>
         </div>
       </DashboardLayout>
     );
@@ -123,8 +123,8 @@ export default function TicketDetailPage() {
   if (!ticket) {
     return (
       <DashboardLayout>
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-12 text-center space-y-3">
-          <AlertTriangle className="h-10 w-10 text-amber-400 mx-auto" />
+        <div className="rounded-3xl border border-border bg-surface/60 p-12 text-center space-y-3">
+          <AlertTriangle className="h-10 w-10 text-warning mx-auto" />
           <h2 className="text-base font-bold text-white">Ticket Not Found</h2>
           <Link href="/support">
             <Button variant="outline" size="sm" className="text-xs rounded-xl mt-2">
@@ -145,7 +145,7 @@ export default function TicketDetailPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/support"
-            className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/60 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-white hover:bg-surface-secondary transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to All Tickets</span>
@@ -156,7 +156,7 @@ export default function TicketDetailPage() {
               variant="outline"
               size="sm"
               onClick={handleCloseTicket}
-              className="text-xs gap-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-xl"
+              className="text-xs gap-1.5 text-success hover:text-success hover:bg-success/10 rounded-xl"
             >
               <CheckCircle2 className="h-3.5 w-3.5" />
               <span>Mark as Resolved</span>
@@ -165,26 +165,26 @@ export default function TicketDetailPage() {
         </div>
 
         {/* Ticket Header Card */}
-        <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-7 space-y-4 apple-card">
+        <div className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-7 space-y-4 apple-card">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="rounded-md bg-purple-500/10 px-2 py-0.5 text-[10px] font-bold text-purple-400 border border-purple-500/20 capitalize">
+                <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent-text border border-accent/20 capitalize">
                   {ticket.status.replace("_", " ")}
                 </span>
-                <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-400 capitalize">
+                <span className="rounded-full bg-surface-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground capitalize">
                   {ticket.department}
                 </span>
-                <span className="text-[11px] text-zinc-400 capitalize">
+                <span className="text-[11px] text-muted-foreground capitalize">
                   Priority: <strong className="text-white">{ticket.priority}</strong>
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+              <h1 className="page-title-sm">
                 {ticket.title}
               </h1>
             </div>
 
-            <span className="text-[11px] text-zinc-500 font-mono">
+            <span className="text-[11px] text-subtle font-mono">
               Ticket: {ticket.id}
             </span>
           </div>
@@ -199,14 +199,14 @@ export default function TicketDetailPage() {
             return (
               <div
                 key={msg.id}
-                className={`flex gap-3.5 ${isStaff ? "bg-purple-950/20 border-purple-500/30" : "bg-zinc-900/60 border-zinc-800"} rounded-3xl border p-5 sm:p-6 transition-all apple-card`}
+                className={`flex gap-3.5 ${isStaff ? "bg-accent/5 border-accent/30" : "bg-surface/60 border-border"} rounded-3xl border p-5 sm:p-6 transition-all apple-card`}
               >
                 {/* Avatar */}
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-secondary border border-border-strong/60 flex-shrink-0">
                   {isStaff ? (
-                    <ShieldCheck className="h-5 w-5 text-purple-400" />
+                    <ShieldCheck className="h-5 w-5 text-accent-text" />
                   ) : (
-                    <User className="h-5 w-5 text-sky-400" />
+                    <User className="h-5 w-5 text-accent-text" />
                   )}
                 </div>
 
@@ -215,22 +215,22 @@ export default function TicketDetailPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs text-white">{msg.senderName}</span>
                       {isStaff && (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/20 px-2 py-0.5 text-[10px] font-bold text-purple-300 border border-purple-500/30">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-bold text-accent-text border border-accent/30">
                           NearDrop Staff
                         </span>
                       )}
                       {isMe && !isStaff && (
-                        <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
+                        <span className="rounded-full bg-surface-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                           You
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-zinc-500">
+                    <span className="text-[11px] text-subtle">
                       {formatRelativeTime(msg.createdAt)}
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-xs sm:text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                     {msg.message}
                   </p>
                 </div>
@@ -244,15 +244,15 @@ export default function TicketDetailPage() {
         {!isClosed ? (
           <form
             onSubmit={handleSendReply}
-            className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-5 space-y-3 apple-card"
+            className="rounded-3xl border border-border bg-surface/60 p-5 space-y-3 apple-card"
           >
-            <label className="text-xs font-semibold text-zinc-300">Add a Response</label>
+            <label className="text-xs font-semibold text-foreground/80">Add a Response</label>
             <textarea
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               rows={4}
               placeholder="Type your reply here..."
-              className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/60 p-4 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-purple-500 resize-none"
+              className="w-full rounded-2xl border border-border bg-background/60 p-4 text-xs text-white placeholder-subtle focus:outline-none focus:ring-1 focus:ring-accent resize-none"
               required
             />
             <div className="flex justify-end">
@@ -260,7 +260,7 @@ export default function TicketDetailPage() {
                 type="submit"
                 variant="primary"
                 disabled={isSending}
-                className="text-xs rounded-xl bg-purple-600 hover:bg-purple-500 gap-2 font-bold px-5"
+                className="text-xs rounded-xl bg-accent hover:bg-accent-hover gap-2 font-bold px-5"
               >
                 <Send className="h-3.5 w-3.5" />
                 <span>{isSending ? "Posting..." : "Send Reply"}</span>
@@ -268,7 +268,7 @@ export default function TicketDetailPage() {
             </div>
           </form>
         ) : (
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-5 text-center text-xs text-zinc-400">
+          <div className="rounded-2xl border border-border bg-background/60 p-5 text-center text-xs text-muted-foreground">
             This support ticket has been closed. If you have another issue, please open a new ticket.
           </div>
         )}

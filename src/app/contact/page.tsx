@@ -63,13 +63,13 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between">
+    <div className="min-h-screen text-foreground flex flex-col justify-between">
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 w-full space-y-12">
         {/* Back Link */}
         <div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-semibold text-zinc-400 hover:text-white transition-all shadow-sm group"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-xs font-semibold text-muted-foreground hover:text-white transition-all shadow-sm group"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
             <span>{isTr ? "Ana Sayfaya Dön" : "Back to Home"}</span>
@@ -78,14 +78,14 @@ export default function ContactPage() {
 
         {/* Page Header */}
         <div className="space-y-3 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold text-[#0071e3] shadow-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border text-xs font-semibold text-accent-text shadow-sm">
             <MessageSquare className="h-3.5 w-3.5" />
             <span>{isTr ? "Müşteri Hizmetleri & İletişim" : "Customer Support & Contact"}</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-semibold tracking-tight text-white">
+          <h1 className="display-title">
             {isTr ? "Bize Ulaşın" : "Contact Us"}
           </h1>
-          <p className="text-zinc-400 text-sm sm:text-base leading-relaxed">
+          <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
             {isTr
               ? "NearDrop bulut depolama, abonelikler veya teknik destek ile ilgili tüm sorularınız için ekibimize doğrudan ulaşabilirsiniz."
               : "Get in touch with our team for questions about storage plans, subscriptions, or technical support."}
@@ -97,61 +97,61 @@ export default function ContactPage() {
           {/* Left Column: Official Contact Info Cards */}
           <div className="lg:col-span-5 space-y-4">
             {/* Address Card */}
-            <div className="rounded-[24px] border border-zinc-800 bg-zinc-900/80 p-6 space-y-3 shadow-sm">
+            <div className="rounded-3xl border border-border bg-surface/80 p-6 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-blue-500/10 text-[#0071e3] flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-accent/10 text-accent-text flex items-center justify-center">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-xs font-semibold text-white uppercase tracking-wider">{isTr ? "Açık Adres" : "Office Address"}</h3>
-                  <p className="text-[11px] text-zinc-400">{isTr ? "Genel Merkez & İletişim Adresi" : "Headquarters & Office"}</p>
+                  <p className="text-[11px] text-muted-foreground">{isTr ? "Genel Merkez & İletişim Adresi" : "Headquarters & Office"}</p>
                 </div>
               </div>
               <p className="text-sm font-medium text-white pl-1 leading-relaxed">
                 Sivas Diriliş Mah. 21. Sok.
-                <span className="block text-xs text-zinc-400 mt-0.5">Sivas, Türkiye</span>
+                <span className="block text-xs text-muted-foreground mt-0.5">Sivas, Türkiye</span>
               </p>
             </div>
 
             {/* Phone Card */}
-            <div className="rounded-[24px] border border-zinc-800 bg-zinc-900/80 p-6 space-y-3 shadow-sm">
+            <div className="rounded-3xl border border-border bg-surface/80 p-6 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-success/10 text-success flex items-center justify-center">
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-xs font-semibold text-white uppercase tracking-wider">{isTr ? "Telefon Numarası" : "Phone Number"}</h3>
-                  <p className="text-[11px] text-zinc-400">{isTr ? "Müşteri Destek Hattı" : "Customer Support Line"}</p>
+                  <p className="text-[11px] text-muted-foreground">{isTr ? "Müşteri Destek Hattı" : "Customer Support Line"}</p>
                 </div>
               </div>
               <div className="pl-1">
                 <a
                   href="tel:05456458416"
-                  className="text-base font-semibold text-[#0071e3] hover:underline font-mono tracking-wide transition-colors"
+                  className="text-base font-semibold text-accent-text hover:underline font-mono tracking-wide transition-colors"
                 >
                   0545 645 84 16
                 </a>
-                <span className="block text-[11px] text-zinc-400 mt-0.5">
+                <span className="block text-[11px] text-muted-foreground mt-0.5">
                   {isTr ? "Uluslararası: " : "International: "}+90 545 645 84 16
                 </span>
               </div>
             </div>
 
             {/* Email Card */}
-            <div className="rounded-[24px] border border-zinc-800 bg-zinc-900/80 p-6 space-y-3 shadow-sm">
+            <div className="rounded-3xl border border-border bg-surface/80 p-6 space-y-3 shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-accent/10 text-accent-text flex items-center justify-center">
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-xs font-semibold text-white uppercase tracking-wider">{isTr ? "E-Posta Adresi" : "Email Address"}</h3>
-                  <p className="text-[11px] text-zinc-400">{isTr ? "7/24 Destek & Faturalandırma" : "24/7 Support & Billing"}</p>
+                  <p className="text-[11px] text-muted-foreground">{isTr ? "7/24 Destek & Faturalandırma" : "24/7 Support & Billing"}</p>
                 </div>
               </div>
               <div className="pl-1">
                 <a
                   href="mailto:destek@neardrop.bekirr.dev"
-                  className="text-sm font-semibold text-[#0071e3] hover:underline transition-colors"
+                  className="text-sm font-semibold text-accent-text hover:underline transition-colors"
                 >
                   destek@neardrop.bekirr.dev
                 </a>
@@ -159,9 +159,9 @@ export default function ContactPage() {
             </div>
 
             {/* Working Hours & Response Times */}
-            <div className="rounded-[24px] border border-zinc-800/80 bg-zinc-900/50 p-5 space-y-2 text-xs text-zinc-400">
+            <div className="rounded-3xl border border-border/80 bg-surface/50 p-5 space-y-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-2 text-white font-semibold">
-                <Clock className="h-4 w-4 text-[#0071e3]" />
+                <Clock className="h-4 w-4 text-accent-text" />
                 <span>{isTr ? "Çalışma Saatleri & Yanıt Süresi" : "Working Hours & Response Time"}</span>
               </div>
               <p className="text-[11px] leading-relaxed">
@@ -174,13 +174,13 @@ export default function ContactPage() {
 
           {/* Right Column: Interactive Contact Form */}
           <div className="lg:col-span-7">
-            <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-7 sm:p-9 space-y-6 shadow-2xl backdrop-blur-xl">
-              <div className="border-b border-zinc-800 pb-4 space-y-1">
+            <div className="rounded-3xl border border-border bg-surface/90 p-7 sm:p-9 space-y-6 shadow-2xl backdrop-blur-xl">
+              <div className="border-b border-border pb-4 space-y-1">
                 <h2 className="text-xl font-semibold text-white tracking-tight flex items-center gap-2">
                   <span>{isTr ? "Hızlı İletişim Formu" : "Quick Contact Form"}</span>
-                  <Sparkles className="h-4 w-4 text-[#0071e3]" />
+                  <Sparkles className="h-4 w-4 text-accent-text" />
                 </h2>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   {isTr
                     ? "Bize mesajınızı iletin, en geç birkaç saat içinde geri dönüş sağlayalım."
                     : "Send us your message and we will respond shortly."}
@@ -189,12 +189,12 @@ export default function ContactPage() {
 
               {isSubmitted ? (
                 <div className="py-12 text-center space-y-4">
-                  <div className="h-16 w-16 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto">
+                  <div className="h-16 w-16 rounded-full bg-success/10 text-success border border-success/30 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="h-9 w-9" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-lg font-semibold text-white">{isTr ? "Mesajınız Alındı!" : "Message Received!"}</h3>
-                    <p className="text-xs text-zinc-400 max-w-sm mx-auto">
+                    <p className="text-xs text-muted-foreground max-w-sm mx-auto">
                       {isTr
                         ? "Destek ekibimiz en kısa sürede girdiğiniz iletişim bilgileri üzerinden sizinle iletişime geçecektir."
                         : "Our support team will get in touch with you as soon as possible."}
@@ -206,7 +206,7 @@ export default function ContactPage() {
                       setIsSubmitted(false);
                       setMessage("");
                     }}
-                    className="text-xs rounded-full mt-2 border-zinc-700 text-zinc-200 hover:bg-zinc-800 cursor-pointer"
+                    className="text-xs rounded-full mt-2 border-border-strong text-foreground hover:bg-surface-secondary cursor-pointer"
                   >
                     {isTr ? "Yeni Bir Mesaj Gönder" : "Send Another Message"}
                   </Button>
@@ -215,59 +215,59 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-zinc-300">{isTr ? "Ad Soyad" : "Full Name"}</label>
+                      <label className="text-xs font-semibold text-foreground/80">{isTr ? "Ad Soyad" : "Full Name"}</label>
                       <Input
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder={isTr ? "Adınız Soyadınız" : "Your Name"}
-                        className="rounded-xl text-xs bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3] py-2.5"
+                        className="rounded-xl text-xs bg-background/70 border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent py-2.5"
                         required
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-zinc-300">{isTr ? "Telefon Numarası" : "Phone Number"}</label>
+                      <label className="text-xs font-semibold text-foreground/80">{isTr ? "Telefon Numarası" : "Phone Number"}</label>
                       <Input
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="05XXXXXXXXX"
-                        className="rounded-xl text-xs bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3] py-2.5 font-mono"
+                        className="rounded-xl text-xs bg-background/70 border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent py-2.5 font-mono"
                         required
                       />
                     </div>
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-300">{isTr ? "E-Posta Adresi" : "Email Address"}</label>
+                    <label className="text-xs font-semibold text-foreground/80">{isTr ? "E-Posta Adresi" : "Email Address"}</label>
                     <Input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="name@example.com"
-                      className="rounded-xl text-xs bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3] py-2.5"
+                      className="rounded-xl text-xs bg-background/70 border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent py-2.5"
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-300">{isTr ? "Konu" : "Subject"}</label>
+                    <label className="text-xs font-semibold text-foreground/80">{isTr ? "Konu" : "Subject"}</label>
                     <Input
                       value={subject}
                       onChange={(e) => setSubject(e.target.value)}
                       placeholder={isTr ? "Abonelik, Dosya Aktarımı veya Destek Talebi" : "Subscription, File Transfer, or Support"}
-                      className="rounded-xl text-xs bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3] py-2.5"
+                      className="rounded-xl text-xs bg-background/70 border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent py-2.5"
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-300">{isTr ? "Mesajınız" : "Message"}</label>
+                    <label className="text-xs font-semibold text-foreground/80">{isTr ? "Mesajınız" : "Message"}</label>
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       rows={4}
                       placeholder={isTr ? "Detaylı olarak iletmek istediğiniz mesajınızı buraya yazınız..." : "Write your message here..."}
-                      className="w-full rounded-xl text-xs bg-zinc-950/70 border border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3] p-3 focus:outline-none focus:ring-2 focus:ring-[#0071e3]/20"
+                      className="w-full rounded-xl text-xs bg-background/70 border border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent p-3 focus:outline-none focus:ring-2 focus:ring-accent/20"
                       required
                     />
                   </div>
@@ -275,7 +275,7 @@ export default function ContactPage() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full text-xs sm:text-sm rounded-full py-3 font-semibold gap-2 text-white bg-[#0071e3] hover:bg-[#0077ed] shadow-md shadow-blue-500/20 transition-all cursor-pointer"
+                    className="w-full text-xs sm:text-sm rounded-full py-3 font-semibold gap-2 text-white bg-accent hover:bg-accent-hover shadow-md shadow-accent/20 transition-all cursor-pointer"
                   >
                     <Send className="h-4 w-4" />
                     <span>{isSubmitting ? (isTr ? "Gönderiliyor..." : "Sending...") : (isTr ? "Mesajı Gönder" : "Send Message")}</span>

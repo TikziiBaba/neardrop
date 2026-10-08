@@ -43,7 +43,7 @@ export function TabsList({ children, className }: { children: React.ReactNode; c
   return (
     <div
       className={cn(
-        "inline-flex h-11 items-center justify-start rounded-xl bg-zinc-900/90 p-1 text-zinc-400 border border-zinc-800",
+        "inline-flex h-11 items-center justify-start rounded-xl bg-surface/90 p-1 text-muted-foreground border border-border",
         className
       )}
     >
@@ -71,10 +71,10 @@ export function TabsTrigger({
       type="button"
       onClick={() => context.setActiveTab(value)}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center whitespace-nowrap rounded-2xl px-3.5 py-1.5 text-xs font-medium transition-all focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
         isActive
-          ? "bg-zinc-800 text-white shadow-sm font-semibold"
-          : "hover:text-zinc-200 hover:bg-zinc-800/40 text-zinc-400",
+          ? "bg-surface-secondary text-white shadow-sm font-semibold"
+          : "hover:text-foreground hover:bg-surface-secondary/40 text-muted-foreground",
         className
       )}
     >

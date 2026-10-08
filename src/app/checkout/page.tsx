@@ -107,15 +107,15 @@ function CheckoutContent() {
           initial={{ opacity: 0, scale: 0.96, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-[28px] border border-white/10 bg-zinc-950/70 p-8 sm:p-10 text-center max-w-md space-y-6 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-3xl"
+          className="rounded-3xl border border-white/10 bg-background/70 p-8 sm:p-10 text-center max-w-md space-y-6 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-3xl"
         >
-          <div className="h-14 w-14 rounded-2xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center mx-auto text-sky-400">
+          <div className="h-14 w-14 rounded-2xl bg-accent/15 border border-accent/30 flex items-center justify-center mx-auto text-accent-text">
             <Lock className="h-7 w-7" />
           </div>
           <div className="space-y-2">
             <h2 className="text-xl font-bold text-white tracking-tight">Giriş Yapmanız Gerekiyor</h2>
-            <p className="text-xs text-zinc-400 leading-relaxed">
-              <strong className="text-zinc-200">{plan.name}</strong> aboneliğinizi başlatmak ve kotanızı yükseltmek için lütfen hesabınıza giriş yapın.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              <strong className="text-foreground">{plan.name}</strong> aboneliğinizi başlatmak ve kotanızı yükseltmek için lütfen hesabınıza giriş yapın.
             </p>
           </div>
           <div className="flex flex-col gap-2.5 pt-2">
@@ -125,7 +125,7 @@ function CheckoutContent() {
               </Button>
             </Link>
             <Link href="/register">
-              <Button variant="outline" className="w-full text-xs rounded-xl py-3 border-white/10 text-zinc-300">
+              <Button variant="outline" className="w-full text-xs rounded-xl py-3 border-white/10 text-foreground/80">
                 Ücretsiz Hesap Oluştur
               </Button>
             </Link>
@@ -149,7 +149,7 @@ function CheckoutContent() {
             initial={{ scale: 0.15, opacity: 0.9 }}
             animate={{ scale: [0.15, 2.2, 4.5], opacity: [0.9, 0.45, 0] }}
             transition={{ duration: 3.6, repeat: Infinity, ease: [0.16, 1, 0.3, 1], repeatDelay: 0.2 }}
-            className="absolute w-[500px] h-[500px] rounded-full border-2 border-emerald-400/50 bg-gradient-to-tr from-emerald-500/15 via-teal-500/10 to-transparent blur-sm"
+            className="absolute w-[500px] h-[500px] rounded-full border-2 border-success/50 bg-gradient-to-tr from-success/15 via-success/10 to-transparent blur-sm"
           />
 
           {/* Wave Ring 2 */}
@@ -157,7 +157,7 @@ function CheckoutContent() {
             initial={{ scale: 0.15, opacity: 0.9 }}
             animate={{ scale: [0.15, 2.2, 4.5], opacity: [0.9, 0.45, 0] }}
             transition={{ duration: 3.6, delay: 1.2, repeat: Infinity, ease: [0.16, 1, 0.3, 1], repeatDelay: 0.2 }}
-            className="absolute w-[500px] h-[500px] rounded-full border border-emerald-300/40 bg-emerald-500/10 blur-md"
+            className="absolute w-[500px] h-[500px] rounded-full border border-success/40 bg-success/10 blur-md"
           />
 
           {/* Wave Ring 3 */}
@@ -165,7 +165,7 @@ function CheckoutContent() {
             initial={{ scale: 0.15, opacity: 0.9 }}
             animate={{ scale: [0.15, 2.2, 5], opacity: [0.9, 0.35, 0] }}
             transition={{ duration: 3.6, delay: 2.4, repeat: Infinity, ease: [0.16, 1, 0.3, 1], repeatDelay: 0.2 }}
-            className="absolute w-[500px] h-[500px] rounded-full border border-teal-400/30 bg-teal-400/5 blur-lg"
+            className="absolute w-[500px] h-[500px] rounded-full border border-success/30 bg-success/5 blur-lg"
           />
         </div>
 
@@ -173,25 +173,25 @@ function CheckoutContent() {
           initial={{ opacity: 0, scale: 0.92, y: 25 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-[36px] border border-emerald-500/35 bg-zinc-950/90 p-8 sm:p-12 text-center max-w-lg w-full space-y-7 shadow-[0_30px_100px_rgba(16,185,129,0.25)] backdrop-blur-3xl relative z-10 overflow-hidden"
+          className="rounded-3xl border border-success/35 bg-background/90 p-8 sm:p-12 text-center max-w-lg w-full space-y-7 shadow-[0_30px_100px_rgba(16,185,129,0.25)] backdrop-blur-3xl relative z-10 overflow-hidden"
         >
           {/* Subtle top specular sheen */}
-          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
+          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-success/60 to-transparent" />
 
           {/* Centerpiece: Glowing Checkmark with Spring Entry and Draw */}
           <div className="relative flex items-center justify-center mx-auto my-2">
             {/* Ambient emerald radial aura */}
-            <div className="absolute -inset-6 rounded-full bg-emerald-500/35 blur-2xl animate-pulse pointer-events-none" />
+            <div className="absolute -inset-6 rounded-full bg-success/35 blur-2xl animate-pulse pointer-events-none" />
 
             {/* Frosted concentric glass ring */}
             <motion.div
               initial={{ scale: 0, rotate: -30 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", stiffness: 280, damping: 20 }}
-              className="relative h-28 w-28 rounded-full bg-emerald-950/50 border border-emerald-500/40 backdrop-blur-2xl flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.45)] ring-2 ring-emerald-400/20"
+              className="relative h-28 w-28 rounded-full bg-success/5 border border-success/40 backdrop-blur-2xl flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.45)] ring-2 ring-success/20"
             >
               {/* Inner glowing emerald checkmark sphere */}
-              <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.6)] border border-emerald-200/50">
+              <div className="h-20 w-20 rounded-full bg-gradient-to-tr from-success via-success to-success flex items-center justify-center shadow-[0_10px_30px_rgba(16,185,129,0.6)] border border-success/50">
                 <motion.svg
                   viewBox="0 0 24 24"
                   className="w-10 h-10 text-white stroke-[3.5]"
@@ -212,20 +212,20 @@ function CheckoutContent() {
           </div>
 
           <div className="space-y-2.5">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 tracking-wider uppercase">
+            <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[11px] font-bold bg-success/15 text-success border border-success/30 tracking-wider uppercase">
               <Sparkles className="h-3.5 w-3.5" /> 3D Secure İle Onaylandı
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            <h1 className="page-title">
               Tebrikler, {plan.name} Aktif!
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-300 max-w-sm mx-auto leading-relaxed">
-              Bulut depolama alanınız anında <strong className="text-emerald-400 font-bold">{plan.quotaLabel}</strong> seviyesine yükseltildi. Tüm ayrıcalıklar hesabınıza tanımlandı.
+            <p className="text-xs sm:text-sm text-foreground/80 max-w-sm mx-auto leading-relaxed">
+              Bulut depolama alanınız anında <strong className="text-success font-bold">{plan.quotaLabel}</strong> seviyesine yükseltildi. Tüm ayrıcalıklar hesabınıza tanımlandı.
             </p>
           </div>
 
           {orderId && (
-            <div className="py-2.5 px-4 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-zinc-400 font-mono tracking-wider">
-              Sipariş Kodu: <span className="text-zinc-100 font-bold">{orderId}</span>
+            <div className="py-2.5 px-4 rounded-xl bg-white/[0.04] border border-white/10 text-[11px] text-muted-foreground font-mono tracking-wider">
+              Sipariş Kodu: <span className="text-foreground font-bold">{orderId}</span>
             </div>
           )}
 
@@ -241,7 +241,7 @@ function CheckoutContent() {
                   else window.location.href = "/dashboard";
                 }
               }}
-              className="flex-1 inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-bold rounded-2xl py-4 px-6 text-white bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-400 hover:to-teal-500 shadow-[0_10px_35px_-10px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all cursor-pointer z-20"
+              className="flex-1 inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-bold rounded-2xl py-4 px-6 text-white bg-gradient-to-r from-success via-success to-success hover:from-success hover:to-success shadow-[0_10px_35px_-10px_rgba(16,185,129,0.5)] active:scale-[0.98] transition-all cursor-pointer z-20"
             >
               <Sparkles className="h-4 w-4" />
               <span>Dashboard&apos;a Git</span>
@@ -257,7 +257,7 @@ function CheckoutContent() {
                   else window.location.href = "/settings";
                 }
               }}
-              className="flex-1 inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold rounded-2xl py-4 px-6 text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 active:scale-[0.98] transition-all cursor-pointer z-20"
+              className="flex-1 inline-flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold rounded-2xl py-4 px-6 text-foreground/80 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 active:scale-[0.98] transition-all cursor-pointer z-20"
             >
               <span>Abonelik Detayları</span>
             </a>
@@ -275,17 +275,17 @@ function CheckoutContent() {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-[32px] border border-rose-500/30 bg-zinc-950/80 p-8 sm:p-12 text-center max-w-md space-y-6 shadow-[0_30px_90px_rgba(244,63,94,0.15)] backdrop-blur-3xl"
+          className="rounded-3xl border border-danger/30 bg-background/80 p-8 sm:p-12 text-center max-w-md space-y-6 shadow-[0_30px_90px_rgba(244,63,94,0.15)] backdrop-blur-3xl"
         >
-          <div className="h-18 w-18 rounded-3xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-400">
+          <div className="h-18 w-18 rounded-3xl bg-danger/15 border border-danger/30 flex items-center justify-center mx-auto text-danger">
             <AlertCircle className="h-10 w-10 stroke-[2.2]" />
           </div>
 
           <div className="space-y-2">
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            <h1 className="page-title">
               Ödeme Tamamlanamadı
             </h1>
-            <p className="text-xs text-zinc-300 leading-relaxed">
+            <p className="text-xs text-foreground/80 leading-relaxed">
               İşlem bankanız tarafından onaylanmadı veya SMS doğrulaması tamamlanamadı. Kartınızdan herhangi bir ücret tahsil edilmemiştir.
             </p>
           </div>
@@ -314,7 +314,7 @@ function CheckoutContent() {
                   else window.location.href = "/pricing";
                 }
               }}
-              className="w-full inline-flex items-center justify-center text-xs rounded-xl py-3.5 border border-white/10 text-zinc-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="w-full inline-flex items-center justify-center text-xs rounded-xl py-3.5 border border-white/10 text-foreground/80 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] transition-colors cursor-pointer"
             >
               Paketlere Dön
             </a>
@@ -393,20 +393,20 @@ function CheckoutContent() {
         <div className="flex items-center justify-between">
           <Link
             href="/pricing"
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-zinc-950/60 px-4 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-white/20 transition-all backdrop-blur-xl group"
+            className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-background/60 px-4 py-2 text-xs font-semibold text-foreground/80 hover:text-white hover:border-white/20 transition-all backdrop-blur-xl group"
           >
             <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
             <span>Paket Seçimine Dön</span>
           </Link>
 
           {/* Micro trust indicators */}
-          <div className="hidden sm:flex items-center gap-3 text-[11px] font-medium text-zinc-400">
-            <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+          <div className="hidden sm:flex items-center gap-3 text-[11px] font-medium text-muted-foreground">
+            <span className="flex items-center gap-1 text-success font-semibold">
               <ShieldCheck className="h-3.5 w-3.5" /> 256-Bit SSL
             </span>
-            <span className="text-zinc-600">•</span>
+            <span className="text-subtle/80">•</span>
             <span>3D Secure Onayı</span>
-            <span className="text-zinc-600">•</span>
+            <span className="text-subtle/80">•</span>
             <span>BDDK Lisanslı Altyapı</span>
           </div>
         </div>
@@ -425,7 +425,7 @@ function CheckoutContent() {
                 <button
                   type="button"
                   onClick={() => setPaytrToken(null)}
-                  className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors py-1 px-2.5 rounded-lg hover:bg-white/5"
+                  className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-white transition-colors py-1 px-2.5 rounded-2xl hover:bg-white/5"
                 >
                   <RotateCcw className="h-3 w-3" />
                   <span>Bilgileri Değiştir</span>
@@ -433,18 +433,18 @@ function CheckoutContent() {
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-sky-500/10 border border-sky-500/25 text-sky-300 flex items-center gap-1.5">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-accent/10 border border-accent/25 text-accent-text flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
                   {plan.name} • {price} ₺ ({billingCycle === "yearly" ? "Yıllık" : "Aylık"})
                 </span>
               </div>
             </div>
 
             {/* Glass Container with FULL SCROLL FREEDOM */}
-            <div className="rounded-[32px] border border-white/10 bg-zinc-950/85 p-2 sm:p-5 shadow-[0_30px_90px_rgba(0,0,0,0.85)] backdrop-blur-3xl relative">
+            <div className="rounded-3xl border border-white/10 bg-background/85 p-2 sm:p-5 shadow-[0_30px_90px_rgba(0,0,0,0.85)] backdrop-blur-3xl relative">
               {/* Inner wrapper with smooth vertical scrolling */}
               <div
-                className="w-full rounded-[24px] bg-white/[0.02] border border-white/5 overflow-y-auto overflow-x-hidden"
+                className="w-full rounded-3xl bg-white/[0.02] border border-white/5 overflow-y-auto overflow-x-hidden"
                 style={{
                   maxHeight: "calc(88vh - 120px)",
                   WebkitOverflowScrolling: "touch",
@@ -465,13 +465,13 @@ function CheckoutContent() {
               </div>
 
               {/* Bottom security strip */}
-              <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-zinc-400 pt-4 pb-2">
-                <span className="flex items-center gap-1 text-emerald-400 font-semibold">
+              <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-muted-foreground pt-4 pb-2">
+                <span className="flex items-center gap-1 text-success font-semibold">
                   <ShieldCheck className="h-3.5 w-3.5" /> 3D Secure Koruması
                 </span>
-                <span className="text-zinc-600">•</span>
-                <span className="font-mono text-zinc-300">Troy • Visa • MasterCard</span>
-                <span className="text-zinc-600">•</span>
+                <span className="text-subtle/80">•</span>
+                <span className="font-mono text-foreground/80">Troy • Visa • MasterCard</span>
+                <span className="text-subtle/80">•</span>
                 <span>PayTR Ödeme ve Elektronik Para Kuruluşu A.Ş.</span>
               </div>
             </div>
@@ -482,33 +482,33 @@ function CheckoutContent() {
             {/* Left Column: Form */}
             <div className="lg:col-span-7 space-y-6">
               <div className="space-y-1.5">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                <h1 className="page-title">
                   Aboneliğinizi Başlatın
                 </h1>
-                <p className="text-xs text-zinc-400">
-                  Depolama alanınız anında <strong className="text-sky-400 font-semibold">{plan.quotaLabel}</strong> seviyesine yükseltilecektir.
+                <p className="text-xs text-muted-foreground">
+                  Depolama alanınız anında <strong className="text-accent-text font-semibold">{plan.quotaLabel}</strong> seviyesine yükseltilecektir.
                 </p>
               </div>
 
               <form
                 onSubmit={handleStartPayment}
-                className="rounded-[30px] border border-white/10 bg-zinc-950/70 p-6 sm:p-8 space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl"
+                className="rounded-3xl border border-white/10 bg-background/70 p-6 sm:p-8 space-y-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl"
               >
                 {/* Header */}
                 <div className="flex items-center justify-between border-b border-white/10 pb-4">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-9 w-9 rounded-xl bg-sky-500/15 border border-sky-500/25 flex items-center justify-center text-sky-400">
+                    <div className="h-9 w-9 rounded-xl bg-accent/15 border border-accent/25 flex items-center justify-center text-accent-text">
                       <CreditCard className="h-4 w-4" />
                     </div>
                     <div>
                       <h3 className="text-xs font-bold text-white uppercase tracking-wider">
                         Fatura & İletişim Bilgileri
                       </h3>
-                      <p className="text-[11px] text-zinc-400">3D Secure SMS doğrulaması için gereklidir</p>
+                      <p className="text-[11px] text-muted-foreground">3D Secure SMS doğrulaması için gereklidir</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/20 text-success text-[10px] font-bold">
                     <ShieldCheck className="h-3 w-3" />
                     <span>3D Secure</span>
                   </div>
@@ -517,15 +517,15 @@ function CheckoutContent() {
                 <div className="space-y-4">
                   {/* Full Name */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                      <User className="h-3.5 w-3.5 text-zinc-400" />
+                    <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                      <User className="h-3.5 w-3.5 text-muted-foreground" />
                       <span>Ad Soyad</span>
                     </label>
                     <Input
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Kart üzerindeki isim"
-                      className="rounded-xl text-xs bg-white/[0.03] border-white/10 font-medium focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-zinc-600 py-3"
+                      className="rounded-xl text-xs bg-white/[0.03] border-white/10 font-medium focus:border-accent focus:ring-2 focus:ring-accent/20 text-white placeholder:text-subtle/80 py-3"
                       required
                     />
                   </div>
@@ -533,8 +533,8 @@ function CheckoutContent() {
                   {/* Phone and City */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                        <Phone className="h-3.5 w-3.5 text-zinc-400" />
+                      <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                        <Phone className="h-3.5 w-3.5 text-muted-foreground" />
                         <span>Cep Telefonu (SMS için)</span>
                       </label>
                       <Input
@@ -542,21 +542,21 @@ function CheckoutContent() {
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="05XXXXXXXXX"
                         maxLength={15}
-                        className="rounded-xl text-xs bg-white/[0.03] border-white/10 font-mono focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-zinc-600 py-3"
+                        className="rounded-xl text-xs bg-white/[0.03] border-white/10 font-mono focus:border-accent focus:ring-2 focus:ring-accent/20 text-white placeholder:text-subtle/80 py-3"
                         required
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                        <MapPin className="h-3.5 w-3.5 text-zinc-400" />
+                      <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                        <MapPin className="h-3.5 w-3.5 text-muted-foreground" />
                         <span>Şehir</span>
                       </label>
                       <Input
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         placeholder="İstanbul"
-                        className="rounded-xl text-xs bg-white/[0.03] border-white/10 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 text-white placeholder:text-zinc-600 py-3"
+                        className="rounded-xl text-xs bg-white/[0.03] border-white/10 focus:border-accent focus:ring-2 focus:ring-accent/20 text-white placeholder:text-subtle/80 py-3"
                         required
                       />
                     </div>
@@ -565,31 +565,31 @@ function CheckoutContent() {
                   {/* Email */}
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold text-zinc-300">E-Posta Adresi (Hesap & Fatura)</label>
-                      <span className="text-[10px] font-semibold text-sky-400">Doğrulanmış</span>
+                      <label className="text-xs font-semibold text-foreground/80">E-Posta Adresi (Hesap & Fatura)</label>
+                      <span className="text-[10px] font-semibold text-accent-text">Doğrulanmış</span>
                     </div>
                     <Input
                       value={user.email}
                       disabled
-                      className="rounded-xl text-xs bg-white/[0.02] border-white/5 text-zinc-400 font-mono py-3"
+                      className="rounded-xl text-xs bg-white/[0.02] border-white/5 text-muted-foreground font-mono py-3"
                     />
                   </div>
 
                   {/* Legal acceptance checkbox */}
                   <div className="pt-2">
-                    <label className="flex items-start gap-3 cursor-pointer text-[11px] text-zinc-400 leading-relaxed select-none group">
+                    <label className="flex items-start gap-3 cursor-pointer text-[11px] text-muted-foreground leading-relaxed select-none group">
                       <input
                         type="checkbox"
                         checked={isAgreed}
                         onChange={(e) => setIsAgreed(e.target.checked)}
-                        className="mt-0.5 rounded-md border-white/20 bg-zinc-900 text-sky-500 focus:ring-0 h-4 w-4 transition-colors"
+                        className="mt-0.5 rounded-xl border-white/20 bg-surface text-accent-text focus:ring-0 h-4 w-4 transition-colors"
                       />
                       <span>
-                        <Link href="/terms" target="_blank" className="text-sky-400 hover:underline">
+                        <Link href="/terms" target="_blank" className="text-accent-text hover:underline">
                           Mesafeli Satış Sözleşmesi
                         </Link>
                         &apos;ni ve{" "}
-                        <Link href="/privacy" target="_blank" className="text-sky-400 hover:underline">
+                        <Link href="/privacy" target="_blank" className="text-accent-text hover:underline">
                           Ön Bilgilendirme Formu
                         </Link>
                         &apos;nu okudum, kabul ediyorum.
@@ -602,7 +602,7 @@ function CheckoutContent() {
                     <Button
                       type="submit"
                       disabled={isLoadingToken}
-                      className="w-full text-xs sm:text-sm rounded-2xl py-4 font-bold gap-2 text-white bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-[0_10px_35px_-10px_rgba(14,165,233,0.5)] transition-all active:scale-[0.99] cursor-pointer"
+                      className="w-full text-xs sm:text-sm rounded-2xl py-4 font-bold gap-2 text-white bg-gradient-to-r from-accent via-accent to-accent hover:from-accent-text hover:to-accent shadow-[0_10px_35px_-10px_rgba(14,165,233,0.5)] transition-all active:scale-[0.99] cursor-pointer"
                     >
                       {isLoadingToken ? (
                         <>
@@ -611,14 +611,14 @@ function CheckoutContent() {
                         </>
                       ) : (
                         <>
-                          <ShieldCheck className="h-4 w-4 text-emerald-300" />
+                          <ShieldCheck className="h-4 w-4 text-success" />
                           <span>PayTR ile Güvenli Ödemeye Geç • {price} ₺</span>
                         </>
                       )}
                     </Button>
                   </div>
 
-                  <p className="text-[11px] text-center text-zinc-500 leading-snug">
+                  <p className="text-[11px] text-center text-subtle leading-snug">
                     Ödemeniz PayTR 256-Bit SSL altyapısı ve banka 3D Secure SMS onayı ile güvence altındadır. Kart bilgileriniz sunucularımızda asla saklanmaz.
                   </p>
                 </div>
@@ -627,39 +627,39 @@ function CheckoutContent() {
 
             {/* Right Column: Order Summary */}
             <div className="lg:col-span-5 space-y-5">
-              <div className="rounded-[30px] border border-white/10 bg-zinc-950/70 p-6 sm:p-7 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
+              <div className="rounded-3xl border border-white/10 bg-background/70 p-6 sm:p-7 space-y-5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-3xl">
                 <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider text-zinc-300">
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider text-foreground/80">
                     Sipariş Özeti
                   </h3>
-                  <span className="text-[10px] font-semibold text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <span className="text-[10px] font-semibold text-success px-2 py-0.5 rounded-full bg-success/10 border border-success/20">
                     Anında Aktivasyon
                   </span>
                 </div>
 
                 {/* Selected Plan Bento */}
-                <div className="rounded-2xl border border-sky-500/30 bg-gradient-to-b from-sky-500/10 to-sky-950/20 p-4 space-y-2 relative overflow-hidden">
+                <div className="rounded-2xl border border-accent/30 bg-gradient-to-b from-accent/10 to-accent/20 p-4 space-y-2 relative overflow-hidden">
                   <div className="flex items-center justify-between">
                     <h4 className="font-extrabold text-base text-white">{plan.name}</h4>
-                    <span className="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-[10px] font-bold text-sky-300 border border-sky-500/30">
+                    <span className="rounded-full bg-accent/20 px-2.5 py-0.5 text-[10px] font-bold text-accent-text border border-accent/30">
                       {billingCycle === "yearly" ? "Yıllık Plan" : "Aylık Plan"}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-sky-300 font-medium">
-                    <HardDrive className="h-3.5 w-3.5 text-sky-400" />
+                  <div className="flex items-center gap-1.5 text-xs text-accent-text font-medium">
+                    <HardDrive className="h-3.5 w-3.5 text-accent-text" />
                     <span>{plan.quotaLabel} Yüksek Hızlı Güvenli Bulut Alanı</span>
                   </div>
                 </div>
 
                 {/* Features Highlights */}
                 <div className="space-y-2.5 pt-1">
-                  <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                     Dahil Olan Özellikler:
                   </span>
                   <ul className="space-y-2">
                     {limits.features.slice(0, 5).map((f, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-xs text-zinc-300">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <li key={i} className="flex items-start gap-2.5 text-xs text-foreground/80">
+                        <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
                         <span className="leading-snug">{f}</span>
                       </li>
                     ))}
@@ -668,19 +668,19 @@ function CheckoutContent() {
 
                 {/* Price Breakdown */}
                 <div className="space-y-2.5 pt-4 border-t border-white/10 text-xs">
-                  <div className="flex justify-between text-zinc-400">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>Abonelik Ücreti</span>
-                    <span className="font-mono text-zinc-200 font-semibold">{price} ₺</span>
+                    <span className="font-mono text-foreground font-semibold">{price} ₺</span>
                   </div>
-                  <div className="flex justify-between text-zinc-400">
+                  <div className="flex justify-between text-muted-foreground">
                     <span>KDV (%20)</span>
-                    <span className="font-mono text-emerald-400 font-medium">Fiyata Dahil</span>
+                    <span className="font-mono text-success font-medium">Fiyata Dahil</span>
                   </div>
                   <div className="flex justify-between text-sm font-bold text-white pt-3 border-t border-white/10">
                     <span>Toplam Tutar</span>
                     <div className="text-right">
-                      <span className="text-xl text-sky-400 font-extrabold font-mono">{price} ₺</span>
-                      <span className="text-[11px] text-zinc-400 block font-normal">
+                      <span className="text-xl text-accent-text font-extrabold font-mono">{price} ₺</span>
+                      <span className="text-[11px] text-muted-foreground block font-normal">
                         /{billingCycle === "yearly" ? "yıl" : "ay"}
                       </span>
                     </div>
@@ -689,12 +689,12 @@ function CheckoutContent() {
               </div>
 
               {/* Apple Security Pill Box */}
-              <div className="rounded-2xl border border-white/5 bg-zinc-950/40 p-4 space-y-2 text-xs text-zinc-400 backdrop-blur-xl">
-                <div className="flex items-center gap-2 text-zinc-200 font-semibold">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
+              <div className="rounded-2xl border border-white/5 bg-background/40 p-4 space-y-2 text-xs text-muted-foreground backdrop-blur-xl">
+                <div className="flex items-center gap-2 text-foreground font-semibold">
+                  <ShieldCheck className="h-4 w-4 text-success" />
                   <span>Güvenli Alışveriş Teminatı</span>
                 </div>
-                <p className="text-[11px] leading-relaxed text-zinc-400">
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
                   Ödemeniz doğrudan bankanızın 3D Secure SMS doğrulama sayfası üzerinden gerçekleşir. İstediğiniz zaman ayarlarınızdan aboneliğinizi iptal edebilirsiniz.
                 </p>
               </div>
@@ -711,8 +711,8 @@ export default function CheckoutPage() {
     <Suspense
       fallback={
         <div className="min-h-[70vh] flex items-center justify-center">
-          <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <RefreshCw className="h-4 w-4 animate-spin text-sky-400" />
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <RefreshCw className="h-4 w-4 animate-spin text-accent-text" />
             <span>Ödeme sayfası hazırlanıyor...</span>
           </div>
         </div>

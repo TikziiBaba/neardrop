@@ -68,17 +68,17 @@ export default function AdminFilesPage() {
     const cat = getFileCategory(file.mimeType, file.filename);
     switch (cat) {
       case "archive":
-        return <FileArchive className="h-4 w-4 text-amber-400" />;
+        return <FileArchive className="h-4 w-4 text-warning" />;
       case "image":
-        return <FileImage className="h-4 w-4 text-emerald-400" />;
+        return <FileImage className="h-4 w-4 text-success" />;
       case "video":
-        return <FileVideo className="h-4 w-4 text-purple-400" />;
+        return <FileVideo className="h-4 w-4 text-file-video" />;
       case "audio":
-        return <FileAudio className="h-4 w-4 text-pink-400" />;
+        return <FileAudio className="h-4 w-4 text-file-audio" />;
       case "code":
-        return <FileCode className="h-4 w-4 text-cyan-400" />;
+        return <FileCode className="h-4 w-4 text-accent-text" />;
       default:
-        return <FileText className="h-4 w-4 text-sky-400" />;
+        return <FileText className="h-4 w-4 text-accent-text" />;
     }
   };
 
@@ -150,13 +150,13 @@ export default function AdminFilesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>All Stored Files</span>
-              <span className="rounded-md bg-[#0071e3]/15 px-2 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
+              <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent-text border border-accent/30">
                 {files.length} Stored Objects
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Global catalog of objects across all user accounts in secure cloud storage.
             </p>
           </div>
@@ -168,7 +168,7 @@ export default function AdminFilesPage() {
             disabled={loading}
             className="gap-2 text-xs self-start sm:self-auto rounded-xl"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-accent-text" : ""}`} />
             <span>Refresh</span>
           </Button>
         </div>
@@ -176,12 +176,12 @@ export default function AdminFilesPage() {
         {/* Filter Controls */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-subtle" />
             <Input
               placeholder="Search by filename, owner email, or R2 key..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-[#16161a] border-zinc-800 rounded-xl"
+              className="pl-10 text-xs bg-surface-secondary border-border rounded-xl"
             />
           </div>
 
@@ -193,8 +193,8 @@ export default function AdminFilesPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold capitalize transition-colors whitespace-nowrap ${
                   selectedCategory === cat
-                    ? "bg-[#0071e3] text-white shadow-md shadow-[#0071e3]/20"
-                    : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                    ? "bg-accent text-white shadow-md shadow-accent/20"
+                    : "bg-surface text-muted-foreground hover:text-white border border-border"
                 }`}
               >
                 {cat}
@@ -204,10 +204,10 @@ export default function AdminFilesPage() {
         </div>
 
         {/* Files Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-border bg-surface-secondary overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <thead className="border-b border-border bg-background/60 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">Filename</th>
                   <th className="py-3.5 px-4">Owner Profile</th>
@@ -218,34 +218,34 @@ export default function AdminFilesPage() {
                   <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-border/60">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
+                    <td colSpan={7} className="py-12 text-center text-subtle">
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-accent-text mb-2" />
                       Loading global files...
                     </td>
                   </tr>
                 ) : filteredFiles.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-500">
+                    <td colSpan={7} className="py-12 text-center text-subtle">
                       No files stored yet.
                     </td>
                   </tr>
                 ) : (
                   filteredFiles.map((file) => (
-                    <tr key={file.id} className="hover:bg-zinc-800/40 transition-colors group">
+                    <tr key={file.id} className="hover:bg-surface-secondary/40 transition-colors group">
                       {/* Filename & R2 Key */}
                       <td className="py-4 px-4 sm:px-6">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-secondary border border-border-strong/60 flex-shrink-0">
                             {renderFileIcon(file)}
                           </div>
                           <div className="min-w-0 max-w-[200px] sm:max-w-[260px]">
-                            <p className="font-semibold text-white truncate group-hover:text-[#2997ff] transition-colors">
+                            <p className="font-semibold text-white truncate group-hover:text-accent-text transition-colors">
                               {file.filename}
                             </p>
-                            <p className="font-mono text-[10px] text-zinc-500 truncate">
+                            <p className="font-mono text-[10px] text-subtle truncate">
                               {file.r2ObjectKey}
                             </p>
                           </div>
@@ -256,10 +256,10 @@ export default function AdminFilesPage() {
                       <td className="py-4 px-4">
                         <Link
                           href={`/admin/users/${file.userId}`}
-                          className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-[#2997ff] transition-colors group/user"
+                          className="inline-flex items-center gap-1.5 text-foreground/80 hover:text-accent-text transition-colors group/user"
                           title="Inspect user profile"
                         >
-                          <User className="h-3.5 w-3.5 text-zinc-500 group-hover/user:text-[#2997ff]" />
+                          <User className="h-3.5 w-3.5 text-subtle group-hover/user:text-accent-text" />
                           <span className="truncate max-w-[140px] text-xs font-semibold">
                             {file.userEmail || "User Profile"}
                           </span>
@@ -267,26 +267,26 @@ export default function AdminFilesPage() {
                       </td>
 
                       {/* Size */}
-                      <td className="py-4 px-4 text-zinc-200 font-semibold whitespace-nowrap">
+                      <td className="py-4 px-4 text-foreground font-semibold whitespace-nowrap">
                         {formatBytes(file.size)}
                       </td>
 
                       {/* MIME */}
                       <td className="py-4 px-4">
-                        <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-mono text-zinc-400">
+                        <span className="rounded-full bg-surface-secondary px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
                           {file.mimeType}
                         </span>
                       </td>
 
                       {/* Uploaded */}
-                      <td className="py-4 px-4 text-[11px] text-zinc-400 whitespace-nowrap">
+                      <td className="py-4 px-4 text-[11px] text-muted-foreground whitespace-nowrap">
                         {formatRelativeTime(file.createdAt)}
                       </td>
 
                       {/* Shares / Downloads */}
-                      <td className="py-4 px-4 text-zinc-300">
+                      <td className="py-4 px-4 text-foreground/80">
                         <div className="flex items-center gap-2 text-[11px]">
-                          <span className="text-emerald-400 font-medium">
+                          <span className="text-success font-medium">
                             {file.activeSharesCount || 0} active
                           </span>
                           <span>•</span>
@@ -302,7 +302,7 @@ export default function AdminFilesPage() {
                             size="sm"
                             onClick={() => handleGenerateDownload(file)}
                             title="Generate Direct Admin Download Link"
-                            className="h-8 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 text-xs gap-1 rounded-lg"
+                            className="h-8 text-accent-text hover:text-accent-text hover:bg-accent-hover/10 text-xs gap-1 rounded-2xl"
                           >
                             <Download className="h-3.5 w-3.5" />
                             <span className="hidden sm:inline">Download</span>
@@ -313,7 +313,7 @@ export default function AdminFilesPage() {
                             size="sm"
                             onClick={() => setSelectedFileForDelete(file)}
                             title="Delete File from R2"
-                            className="h-8 w-8 p-0 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg"
+                            className="h-8 w-8 p-0 text-subtle hover:text-danger hover:bg-danger/10 rounded-2xl"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
@@ -333,16 +333,16 @@ export default function AdminFilesPage() {
         open={Boolean(downloadLinkModal)}
         onOpenChange={(open) => !open && setDownloadLinkModal(null)}
       >
-        <DialogContent className="max-w-lg rounded-3xl border border-zinc-800 bg-zinc-950 p-6 space-y-4">
+        <DialogContent className="max-w-lg rounded-3xl border border-border bg-background p-6 space-y-4">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-              <Download className="h-4 w-4 text-sky-400" />
+              <Download className="h-4 w-4 text-accent-text" />
               <span>Admin Presigned Download Link</span>
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-3 py-1">
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-muted-foreground">
               Generated direct R2 signed URL for <strong className="text-white">{downloadLinkModal?.filename}</strong> (Valid for 60 minutes).
             </p>
 
@@ -350,7 +350,7 @@ export default function AdminFilesPage() {
               <Input
                 readOnly
                 value={downloadLinkModal?.url || ""}
-                className="bg-zinc-900 font-mono text-[11px] text-zinc-300 rounded-xl"
+                className="bg-surface font-mono text-[11px] text-foreground/80 rounded-xl"
               />
               <Button
                 variant="outline"
@@ -358,7 +358,7 @@ export default function AdminFilesPage() {
                 onClick={handleCopyLink}
                 className="gap-1.5 h-10 flex-shrink-0 rounded-xl"
               >
-                {copied ? <Check className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4" />}
+                {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                 <span>{copied ? "Copied" : "Copy"}</span>
               </Button>
             </div>
@@ -372,7 +372,7 @@ export default function AdminFilesPage() {
               href={downloadLinkModal?.url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#0071e3] px-4 py-2 text-xs font-semibold text-white hover:bg-[#0077ed] transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-accent-hover transition-colors"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               <span>Open & Download</span>
@@ -386,15 +386,15 @@ export default function AdminFilesPage() {
         open={Boolean(selectedFileForDelete)}
         onOpenChange={(open) => !open && setSelectedFileForDelete(null)}
       >
-        <DialogContent className="max-w-md rounded-3xl border border-rose-500/30 bg-zinc-950 p-6 space-y-4">
+        <DialogContent className="max-w-md rounded-3xl border border-danger/30 bg-background p-6 space-y-4">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-rose-400 flex items-center gap-2">
+            <DialogTitle className="text-base font-bold text-danger flex items-center gap-2">
               <Trash2 className="h-4 w-4" />
               <span>Confirm Delete Object</span>
             </DialogTitle>
           </DialogHeader>
 
-          <p className="text-xs text-zinc-300">
+          <p className="text-xs text-foreground/80">
             Are you sure you want to permanently delete <strong className="text-white">{selectedFileForDelete?.filename}</strong>? This will purge the object from secure cloud storage and invalidate all associated share links.
           </p>
 

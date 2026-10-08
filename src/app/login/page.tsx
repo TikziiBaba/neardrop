@@ -24,8 +24,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-          <Loader2 className="h-7 w-7 animate-spin text-[#0071e3]" />
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <Loader2 className="h-7 w-7 animate-spin text-accent-text" />
         </div>
       }
     >
@@ -136,26 +136,26 @@ function LoginForm() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 sm:p-8 bg-zinc-950 text-zinc-100 select-none">
+    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center p-4 sm:p-8 bg-background text-foreground select-none">
       {/* Background Subtle Gradient */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-b from-[#0071e3]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-b from-accent/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-[420px] space-y-6">
         {/* Apple ID Brand Avatar & Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-block group">
-            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#43a047] p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center text-[#0071e3]">
+            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-accent to-success p-0.5 shadow-lg shadow-accent/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full rounded-full bg-surface flex items-center justify-center text-accent-text">
                 <ShieldCheck className="h-8 w-8" />
               </div>
             </div>
           </Link>
 
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="display-title">
               {isTr ? "NearDrop ID ile Giriş Yapın" : "Sign in with NearDrop ID"}
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xs mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
               {isTr
                 ? "Tüm transferlerinizi yönetin ve güvenli bulut kotalarınıza erişin."
                 : "Manage your transfers and access your cloud storage."}
@@ -164,16 +164,16 @@ function LoginForm() {
         </div>
 
         {/* Apple ID Container Box */}
-        <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5">
+        <div className="rounded-3xl border border-border bg-surface/90 p-6 sm:p-8 shadow-2xl backdrop-blur-xl space-y-5">
           {error && (
-            <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 space-y-2 animate-in fade-in">
+            <div className="p-3.5 rounded-2xl bg-danger/10 border border-danger/20 text-xs text-danger space-y-2 animate-in fade-in">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
+                <AlertCircle className="h-4 w-4 flex-shrink-0 text-danger" />
                 <span className="font-medium">{error}</span>
               </div>
               {showResend && (
-                <div className="pt-2 border-t border-red-500/20 space-y-2">
-                  <p className="text-[11px] text-amber-300/90 leading-relaxed bg-amber-500/10 border border-amber-500/20 p-2.5 rounded-xl">
+                <div className="pt-2 border-t border-danger/20 space-y-2">
+                  <p className="text-[11px] text-warning/90 leading-relaxed bg-warning/10 border border-warning/20 p-2.5 rounded-xl">
                     {isTr
                       ? "⚠️ E-postayı bulamadıysanız lütfen Spam / İstenmeyen kutunuzu kontrol edin veya bağlantıyı tekrar gönderin."
                       : "⚠️ If you cannot find the email, please check your Spam / Junk folder or resend the link."}
@@ -183,7 +183,7 @@ function LoginForm() {
                       type="button"
                       onClick={handleResendEmail}
                       disabled={isResending || cooldown > 0}
-                      className="text-xs font-semibold text-[#0071e3] hover:underline disabled:opacity-50 cursor-pointer"
+                      className="text-xs font-semibold text-accent-text hover:underline disabled:opacity-50 cursor-pointer"
                     >
                       {isResending ? <Loader2 className="h-3 w-3 animate-spin inline mr-1" /> : null}
                       <span>{cooldown > 0 ? (isTr ? `Tekrar gönder (${cooldown}s)` : `Resend (${cooldown}s)`) : (isTr ? "Bağlantıyı Tekrar Gönder" : "Resend Link")}</span>
@@ -194,7 +194,7 @@ function LoginForm() {
                         href={getEmailProviderUrl(email)!}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] font-semibold text-emerald-400 hover:underline inline-flex items-center gap-1"
+                        className="text-[11px] font-semibold text-success hover:underline inline-flex items-center gap-1"
                       >
                         <span>{isTr ? "Gelen Kutusu" : "Inbox"}</span>
                         <ExternalLink className="h-3 w-3" />
@@ -208,20 +208,20 @@ function LoginForm() {
 
           {/* Apple ID Grouped Inputs */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="rounded-2xl border border-zinc-800 overflow-hidden focus-within:border-[#0071e3] focus-within:ring-2 focus-within:ring-[#0071e3]/20 transition-all bg-zinc-950/70">
+            <div className="rounded-2xl border border-border overflow-hidden focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20 transition-all bg-background/70">
               {/* Email Input */}
-              <div className="relative border-b border-zinc-800/80 p-3">
-                <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
+              <div className="relative border-b border-border/80 p-3">
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">
                   {isTr ? "NearDrop ID (E-posta)" : "NearDrop ID (Email)"}
                 </label>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <Mail className="h-4 w-4 text-zinc-400 flex-shrink-0" />
+                  <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <input
                     type="email"
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none font-medium"
+                    className="w-full bg-transparent text-sm text-white placeholder:text-subtle outline-none font-medium"
                     required
                   />
                 </div>
@@ -230,30 +230,30 @@ function LoginForm() {
               {/* Password Input */}
               <div className="relative p-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider block">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider block">
                     {isTr ? "Parola" : "Password"}
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-[11px] text-[#0071e3] hover:underline font-medium"
+                    className="text-[11px] text-accent-text hover:underline font-medium"
                   >
                     {isTr ? "Unuttunuz mu?" : "Forgot?"}
                   </Link>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <Lock className="h-4 w-4 text-zinc-400 flex-shrink-0" />
+                  <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none font-medium"
+                    className="w-full bg-transparent text-sm text-white placeholder:text-subtle outline-none font-medium"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-zinc-400 hover:text-white transition-colors p-1"
+                    className="text-muted-foreground hover:text-white transition-colors p-1"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -265,7 +265,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 rounded-full bg-[#0071e3] py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-[#0077ed] active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 rounded-full bg-accent py-3 text-sm font-semibold text-white shadow-md shadow-accent/20 hover:bg-accent-hover active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer"
             >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -280,8 +280,8 @@ function LoginForm() {
 
           {/* Divider */}
           <div className="relative flex items-center justify-center py-1">
-            <div className="w-full border-t border-zinc-800" />
-            <span className="absolute bg-zinc-900 px-3 text-[11px] font-medium text-zinc-400">
+            <div className="w-full border-t border-border" />
+            <span className="absolute bg-surface px-3 text-[11px] font-medium text-muted-foreground">
               {isTr ? "veya" : "or continue with"}
             </span>
           </div>
@@ -292,7 +292,7 @@ function LoginForm() {
               type="button"
               onClick={() => handleSocialLogin("google")}
               disabled={Boolean(isSocialLoading)}
-              className="flex items-center justify-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 py-2.5 px-4 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 active:scale-95 transition-all shadow-sm cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-full border border-border bg-surface py-2.5 px-4 text-xs font-semibold text-foreground hover:bg-surface-secondary active:scale-95 transition-all shadow-sm cursor-pointer"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -319,9 +319,9 @@ function LoginForm() {
               type="button"
               onClick={() => handleSocialLogin("github")}
               disabled={Boolean(isSocialLoading)}
-              className="flex items-center justify-center gap-2 rounded-full border border-zinc-800 bg-zinc-900 py-2.5 px-4 text-xs font-semibold text-zinc-200 hover:bg-zinc-800 active:scale-95 transition-all shadow-sm cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-full border border-border bg-surface py-2.5 px-4 text-xs font-semibold text-foreground hover:bg-surface-secondary active:scale-95 transition-all shadow-sm cursor-pointer"
             >
-              <svg className="h-4 w-4 fill-current text-zinc-200" viewBox="0 0 24 24">
+              <svg className="h-4 w-4 fill-current text-foreground" viewBox="0 0 24 24">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
               <span>{isSocialLoading === "github" ? "..." : "GitHub"}</span>
@@ -331,11 +331,11 @@ function LoginForm() {
 
         {/* Footer Create Account Link */}
         <div className="text-center space-y-4">
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-muted-foreground">
             {isTr ? "NearDrop ID'niz yok mu?" : "Don't have a NearDrop ID?"}{" "}
             <Link
               href="/register"
-              className="text-[#0071e3] font-semibold hover:underline inline-flex items-center gap-0.5"
+              className="text-accent-text font-semibold hover:underline inline-flex items-center gap-0.5"
             >
               <span>{isTr ? "Şimdi oluşturun" : "Create yours now"}</span>
               <span className="text-sm leading-none">›</span>
@@ -343,8 +343,8 @@ function LoginForm() {
           </p>
 
           {/* Privacy Note */}
-          <div className="pt-2 text-[11px] text-zinc-500 max-w-xs mx-auto flex items-center justify-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+          <div className="pt-2 text-[11px] text-subtle max-w-xs mx-auto flex items-center justify-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-success flex-shrink-0" />
             <span>
               {isTr
                 ? "NearDrop ID bilgileriniz yalnızca güvenli oturum açma amacıyla kullanılır."

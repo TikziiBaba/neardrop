@@ -123,17 +123,17 @@ export default function StoragePage() {
     const cat = getFileCategory(file.mimeType, file.filename);
     switch (cat) {
       case "archive":
-        return <FileArchive className="h-4 w-4 text-amber-400" />;
+        return <FileArchive className="h-4 w-4 text-warning" />;
       case "image":
-        return <FileImage className="h-4 w-4 text-emerald-400" />;
+        return <FileImage className="h-4 w-4 text-success" />;
       case "video":
-        return <FileVideo className="h-4 w-4 text-purple-400" />;
+        return <FileVideo className="h-4 w-4 text-file-video" />;
       case "audio":
-        return <FileAudio className="h-4 w-4 text-pink-400" />;
+        return <FileAudio className="h-4 w-4 text-file-audio" />;
       case "code":
-        return <FileCode className="h-4 w-4 text-cyan-400" />;
+        return <FileCode className="h-4 w-4 text-accent-text" />;
       default:
-        return <FileText className="h-4 w-4 text-sky-400" />;
+        return <FileText className="h-4 w-4 text-accent-text" />;
     }
   };
 
@@ -143,13 +143,13 @@ export default function StoragePage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>Storage & Analytics</span>
               <Badge variant="sky" className="text-xs">
                 {user?.subscriptionTier ? user.subscriptionTier.toUpperCase() : "FREE"}
               </Badge>
             </h1>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Live capacity breakdown, file categories, and cloud quota monitoring.
             </p>
           </div>
@@ -157,12 +157,12 @@ export default function StoragePage() {
           <div className="flex items-center gap-2.5">
             <Link href="/pricing">
               <Button variant="outline" size="default" className="gap-2.5">
-                <Zap className="h-4 w-4 text-amber-400" />
+                <Zap className="h-4 w-4 text-warning" />
                 <span>Upgrade Plan</span>
               </Button>
             </Link>
             <Link href="/files">
-              <Button variant="primary" size="default" className="gap-2.5 shadow-lg shadow-sky-500/25">
+              <Button variant="primary" size="default" className="gap-2.5 shadow-lg shadow-accent/25">
                 <FolderOpen className="h-4 w-4" />
                 <span>Browse Files</span>
               </Button>
@@ -175,27 +175,27 @@ export default function StoragePage() {
         {/* ========================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Usage Summary */}
-          <div className="lg:col-span-2 rounded-3xl border border-zinc-800/90 bg-gradient-to-br from-zinc-900/90 via-zinc-900/60 to-zinc-950 p-6 sm:p-8 backdrop-blur-2xl space-y-6 shadow-2xl">
+          <div className="lg:col-span-2 rounded-3xl border border-border/90 bg-gradient-to-br from-surface/90 via-surface/60 to-background p-6 sm:p-8 backdrop-blur-2xl space-y-6 shadow-2xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Total Allocated Capacity
                 </span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl sm:text-4xl font-extrabold text-white">
                     {formatBytes(stats.usedBytes)}
                   </span>
-                  <span className="text-sm text-zinc-500 font-medium">
+                  <span className="text-sm text-subtle font-medium">
                     / {formatBytes(stats.quotaBytes)}
                   </span>
                 </div>
               </div>
 
               <div className="text-left sm:text-right space-y-0.5">
-                <span className="text-xs font-semibold text-emerald-400">
+                <span className="text-xs font-semibold text-success">
                   {formatBytes(remainingBytes)} Free
                 </span>
-                <p className="text-[11px] text-zinc-500 font-mono">
+                <p className="text-[11px] text-subtle font-mono">
                   {quotaPercent}% In Use • {files.length} Total Files
                 </p>
               </div>
@@ -203,7 +203,7 @@ export default function StoragePage() {
 
             {/* Custom Multi-Color Stacked Bar */}
             <div className="space-y-2">
-              <div className="h-3.5 w-full rounded-full bg-zinc-950 overflow-hidden flex p-0.5 border border-zinc-800">
+              <div className="h-3.5 w-full rounded-full bg-background overflow-hidden flex p-0.5 border border-border">
                 {categoryBreakdown.map((cat) => (
                   <div
                     key={cat.key}
@@ -223,22 +223,22 @@ export default function StoragePage() {
               {categoryBreakdown.map((cat) => (
                 <div
                   key={cat.key}
-                  className="rounded-2xl border border-zinc-800/80 bg-zinc-950/60 p-3 space-y-1 hover:border-zinc-700/60 transition-colors"
+                  className="rounded-2xl border border-border/80 bg-background/60 p-3 space-y-1 hover:border-border-strong/60 transition-colors"
                 >
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ backgroundColor: cat.color }} />
                     <span className="truncate font-medium">{cat.label}</span>
                   </div>
                   <p className="font-bold text-xs text-white">{formatBytes(cat.bytes)}</p>
-                  <p className="text-[10px] text-zinc-500 font-mono">{cat.count} files ({cat.percent}%)</p>
+                  <p className="text-[10px] text-subtle font-mono">{cat.count} files ({cat.percent}%)</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* SVG Donut Breakdown */}
-          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/60 p-6 backdrop-blur-2xl flex flex-col items-center justify-center space-y-4 shadow-2xl">
-            <h3 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider self-start">
+          <div className="rounded-3xl border border-border/90 bg-surface/60 p-6 backdrop-blur-2xl flex flex-col items-center justify-center space-y-4 shadow-2xl">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider self-start">
               Category Distribution
             </h3>
 
@@ -272,11 +272,11 @@ export default function StoragePage() {
 
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span className="text-2xl font-black text-white">{quotaPercent}%</span>
-                <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Used</span>
+                <span className="text-[10px] text-subtle uppercase tracking-wider">Used</span>
               </div>
             </div>
 
-            <p className="text-[11px] text-zinc-500 text-center max-w-xs">
+            <p className="text-[11px] text-subtle text-center max-w-xs">
               Yüksek dayanıklılığa ve hıza sahip küresel güvenli bulut depolama.
             </p>
           </div>
@@ -287,14 +287,14 @@ export default function StoragePage() {
         {/* ========================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* 14-Day Activity Sparkline */}
-          <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/60 p-6 backdrop-blur-2xl space-y-4 shadow-2xl">
+          <div className="rounded-3xl border border-border/90 bg-surface/60 p-6 backdrop-blur-2xl space-y-4 shadow-2xl">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Activity className="h-4 w-4 text-sky-400" />
+                  <Activity className="h-4 w-4 text-accent-text" />
                   <span>Recent Upload Activity</span>
                 </h3>
-                <p className="text-xs text-zinc-400">Activity volume over the past 14 days</p>
+                <p className="text-xs text-muted-foreground">Activity volume over the past 14 days</p>
               </div>
               <Badge variant="outline" className="text-[10px] font-mono">
                 14 Days
@@ -309,10 +309,10 @@ export default function StoragePage() {
                   <div key={i} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
                     <div
                       style={{ height: `${heightPercent}%` }}
-                      className="w-full rounded-md bg-gradient-to-t from-sky-600 to-sky-400 group-hover:from-sky-500 group-hover:to-sky-300 transition-all cursor-pointer relative"
+                      className="w-full rounded-xl bg-gradient-to-t from-accent to-accent-text group-hover:from-accent group-hover:to-accent-text transition-all cursor-pointer relative"
                       title={`${d.fullDate}: ${d.count} files`}
                     />
-                    <span className="text-[9px] text-zinc-500 group-hover:text-zinc-300 font-mono">
+                    <span className="text-[9px] text-subtle group-hover:text-foreground/80 font-mono">
                       {d.date}
                     </span>
                   </div>
@@ -322,35 +322,35 @@ export default function StoragePage() {
           </div>
 
           {/* Quick Storage Advisory Card */}
-          <div className="rounded-3xl border border-zinc-800/90 bg-gradient-to-br from-zinc-900/80 via-zinc-950 to-zinc-900/80 p-6 backdrop-blur-2xl space-y-4 shadow-2xl flex flex-col justify-between">
+          <div className="rounded-3xl border border-border/90 bg-gradient-to-br from-surface/80 via-background to-surface/80 p-6 backdrop-blur-2xl space-y-4 shadow-2xl flex flex-col justify-between">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <div className="w-8 h-8 rounded-xl bg-warning/15 border border-warning/30 flex items-center justify-center text-warning">
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <h3 className="text-sm font-bold text-white">Storage Recommendations</h3>
               </div>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {quotaPercent > 80
                   ? "Your cloud storage is nearly full. Consider archiving or deleting older heavy files."
                   : "Your cloud storage is healthy. All files are encrypted at rest with rolling SHA-256 integrity."}
               </p>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-zinc-800/80">
-              <div className="flex items-center justify-between text-xs text-zinc-300">
-                <span className="flex items-center gap-1.5 text-zinc-400">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="space-y-2 pt-2 border-t border-border/80">
+              <div className="flex items-center justify-between text-xs text-foreground/80">
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-success" />
                   SHA-256 Checksums
                 </span>
-                <span className="text-emerald-400 font-semibold font-mono">Active</span>
+                <span className="text-success font-semibold font-mono">Active</span>
               </div>
-              <div className="flex items-center justify-between text-xs text-zinc-300">
-                <span className="flex items-center gap-1.5 text-zinc-400">
-                  <ShieldCheck className="h-3.5 w-3.5 text-sky-400" />
+              <div className="flex items-center justify-between text-xs text-foreground/80">
+                <span className="flex items-center gap-1.5 text-muted-foreground">
+                  <ShieldCheck className="h-3.5 w-3.5 text-accent-text" />
                   Multi-Region Cloud Redundancy
                 </span>
-                <span className="text-sky-400 font-semibold font-mono">Active</span>
+                <span className="text-accent-text font-semibold font-mono">Active</span>
               </div>
             </div>
           </div>
@@ -359,44 +359,44 @@ export default function StoragePage() {
         {/* ========================================================= */}
         {/* 3. LARGEST FILES CLEANUP ADVISOR                          */}
         {/* ========================================================= */}
-        <div className="rounded-3xl border border-zinc-800/90 bg-zinc-900/60 p-6 backdrop-blur-2xl space-y-4 shadow-2xl">
+        <div className="rounded-3xl border border-border/90 bg-surface/60 p-6 backdrop-blur-2xl space-y-4 shadow-2xl">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <HardDrive className="h-4 w-4 text-amber-400" />
+                <HardDrive className="h-4 w-4 text-warning" />
                 <span>Largest Files</span>
               </h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Top heavy files that consume the most cloud quota.
               </p>
             </div>
             <Link href="/files">
-              <Button variant="ghost" size="sm" className="text-xs text-sky-400 hover:text-white">
+              <Button variant="ghost" size="sm" className="text-xs text-accent-text hover:text-white">
                 View All Files
               </Button>
             </Link>
           </div>
 
           {largestFiles.length === 0 ? (
-            <div className="py-8 text-center text-xs text-zinc-500">
+            <div className="py-8 text-center text-xs text-subtle">
               No files uploaded yet.
             </div>
           ) : (
-            <div className="divide-y divide-zinc-800/60">
+            <div className="divide-y divide-border/60">
               {largestFiles.map((file) => (
                 <div
                   key={file.id}
                   className="flex items-center justify-between py-3 group hover:bg-white/[0.02] px-2 rounded-xl transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 rounded-2xl bg-surface-secondary flex items-center justify-center flex-shrink-0">
                       {renderFileIcon(file)}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs font-semibold text-white truncate max-w-xs sm:max-w-md">
                         {file.filename.split("/").pop() || file.filename}
                       </p>
-                      <p className="text-[10px] text-zinc-500 font-mono">
+                      <p className="text-[10px] text-subtle font-mono">
                         {formatBytes(file.size)} • {formatRelativeTime(file.createdAt)}
                       </p>
                     </div>
@@ -405,14 +405,14 @@ export default function StoragePage() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setSelectedFileForShare(file)}
-                      className="p-1.5 text-zinc-400 hover:text-sky-400 rounded-lg hover:bg-sky-500/10 transition-colors"
+                      className="p-1.5 text-muted-foreground hover:text-accent-text rounded-2xl hover:bg-accent-hover/10 transition-colors"
                       title="Share"
                     >
                       <Share2 className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => setSelectedFileForDelete(file)}
-                      className="p-1.5 text-zinc-400 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors"
+                      className="p-1.5 text-muted-foreground hover:text-danger rounded-2xl hover:bg-danger/10 transition-colors"
                       title="Delete"
                     >
                       <Trash2 className="h-3.5 w-3.5" />

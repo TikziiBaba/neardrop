@@ -465,17 +465,17 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
   const renderCategoryIcon = () => {
     switch (category) {
       case "video":
-        return <FileVideo className="h-4 w-4 text-purple-400" />;
+        return <FileVideo className="h-4 w-4 text-file-video" />;
       case "image":
-        return <FileImage className="h-4 w-4 text-emerald-400" />;
+        return <FileImage className="h-4 w-4 text-success" />;
       case "audio":
-        return <FileAudio className="h-4 w-4 text-pink-400" />;
+        return <FileAudio className="h-4 w-4 text-file-audio" />;
       case "code":
-        return <FileCode className="h-4 w-4 text-cyan-400" />;
+        return <FileCode className="h-4 w-4 text-accent-text" />;
       case "archive":
-        return <FileArchive className="h-4 w-4 text-amber-400" />;
+        return <FileArchive className="h-4 w-4 text-warning" />;
       default:
-        return <FileText className="h-4 w-4 text-[#0071e3]" />;
+        return <FileText className="h-4 w-4 text-accent-text" />;
     }
   };
 
@@ -484,10 +484,10 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       return (
         <div className="flex flex-col items-center justify-center h-full gap-4">
           <div className="relative">
-            <div className="absolute inset-0 rounded-full bg-sky-500/20 blur-xl animate-pulse" />
-            <Loader2 className="h-10 w-10 text-sky-400 animate-spin relative z-10" />
+            <div className="absolute inset-0 rounded-full bg-accent/20 blur-xl animate-pulse" />
+            <Loader2 className="h-10 w-10 text-accent-text animate-spin relative z-10" />
           </div>
-          <p className="text-sm text-zinc-400 font-medium">Dosya açılıyor...</p>
+          <p className="text-sm text-muted-foreground font-medium">Dosya açılıyor...</p>
         </div>
       );
     }
@@ -495,11 +495,11 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     if (error) {
       return (
         <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-6">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-500/10 border border-rose-500/20">
-            <X className="h-8 w-8 text-rose-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-danger/10 border border-danger/20">
+            <X className="h-8 w-8 text-danger" />
           </div>
-          <p className="text-sm text-rose-300 font-medium">Failed to load preview</p>
-          <p className="text-xs text-zinc-500 max-w-sm">{error}</p>
+          <p className="text-sm text-danger font-medium">Failed to load preview</p>
+          <p className="text-xs text-subtle max-w-sm">{error}</p>
           <Button variant="outline" size="sm" onClick={handleDownload} className="mt-2 gap-1.5">
             <Download className="h-3.5 w-3.5" />
             <span>Dosyayı İndir</span>
@@ -525,41 +525,41 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         >
           {/* Zoom Controls Toolbar */}
           <div
-            className="absolute top-4 right-4 z-30 flex items-center gap-1 bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/60 rounded-2xl p-1.5 shadow-2xl"
+            className="absolute top-4 right-4 z-30 flex items-center gap-1 bg-surface/90 backdrop-blur-xl border border-border-strong/60 rounded-2xl p-1.5 shadow-2xl"
             onMouseDown={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setImageZoom((z) => Math.max(0.1, parseFloat((z - 0.25).toFixed(2))))}
-              className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-white rounded-xl hover:bg-surface-secondary transition-colors"
               title="Uzaklaştır (Tekerlek aşağı)"
             >
               <ZoomOut className="h-4 w-4" />
             </button>
             <button
               onClick={() => { setImageZoom(1); setImagePan({ x: 0, y: 0 }); }}
-              className="px-2 py-1 text-xs text-zinc-300 font-mono hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+              className="px-2 py-1 text-xs text-foreground/80 font-mono hover:text-white rounded-2xl hover:bg-surface-secondary transition-colors"
               title="%100 Görünüme Sıfırla"
             >
               {Math.round(imageZoom * 100)}%
             </button>
             <button
               onClick={() => setImageZoom((z) => Math.min(10, parseFloat((z + 0.25).toFixed(2))))}
-              className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-white rounded-xl hover:bg-surface-secondary transition-colors"
               title="Yakınlaştır (Tekerlek yukarı)"
             >
               <ZoomIn className="h-4 w-4" />
             </button>
-            <div className="w-px h-5 bg-zinc-700/60 mx-1" />
+            <div className="w-px h-5 bg-surface-tertiary/60 mx-1" />
             <button
               onClick={() => setImageRotation((r) => (r + 90) % 360)}
-              className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-white rounded-xl hover:bg-surface-secondary transition-colors"
               title="90° Döndür"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
             <button
               onClick={() => { setImageZoom(1); setImageRotation(0); setImagePan({ x: 0, y: 0 }); }}
-              className="p-1.5 text-zinc-400 hover:text-white rounded-xl hover:bg-zinc-800 transition-colors"
+              className="p-1.5 text-muted-foreground hover:text-white rounded-xl hover:bg-surface-secondary transition-colors"
               title="Konumu ve Yakınlaştırmayı Sıfırla"
             >
               <Maximize2 className="h-4 w-4" />
@@ -567,7 +567,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           </div>
 
           {/* Canvas Navigation Hint */}
-          <div className="absolute bottom-4 left-4 z-20 pointer-events-none px-3 py-1.5 rounded-xl bg-zinc-900/80 backdrop-blur-md border border-zinc-800 text-[11px] text-zinc-400 flex items-center gap-2">
+          <div className="absolute bottom-4 left-4 z-20 pointer-events-none px-3 py-1.5 rounded-xl bg-surface/80 backdrop-blur-md border border-border text-[11px] text-muted-foreground flex items-center gap-2">
             <span>🖐️ Sürükle (Pan)</span>
             <span>•</span>
             <span>🔍 Tekerlek (Zoom)</span>
@@ -590,7 +590,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           <img
             src={previewUrl}
             alt={displayName}
-            className="max-w-full max-h-full object-contain relative z-10 select-none shadow-2xl rounded-sm"
+            className="max-w-full max-h-full object-contain relative z-10 select-none shadow-2xl rounded-xl"
             style={{
               transform: `translate3d(${imagePan.x}px, ${imagePan.y}px, 0) scale(${imageZoom}) rotate(${imageRotation}deg)`,
               transition: isDragging ? "none" : "transform 0.15s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -615,15 +615,15 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       const colCount = spreadsheetGrid[0]?.length || 5;
 
       return (
-        <div className="flex flex-col h-full w-full bg-zinc-950">
+        <div className="flex flex-col h-full w-full bg-background">
           {/* Spreadsheet Header Toolbar */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800 flex-shrink-0">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-surface/95 border-b border-border flex-shrink-0">
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="text-[10px] font-mono text-emerald-400 border-emerald-500/30">
+              <Badge variant="secondary" className="text-[10px] font-mono text-success border-success/30">
                 <FileSpreadsheet className="h-3 w-3 mr-1 inline" />
                 {ext.toUpperCase()} TABLOSU
               </Badge>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-muted-foreground">
                 {spreadsheetGrid.length} satır • {colCount} sütun
               </span>
               {hasChanges && (
@@ -638,7 +638,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleAddSpreadsheetRow}
-                className="text-xs h-7 gap-1 border-zinc-700 hover:bg-zinc-800"
+                className="text-xs h-7 gap-1 border-border-strong hover:bg-surface-secondary"
               >
                 <Plus className="h-3 w-3" />
                 <span>Satır Ekle</span>
@@ -647,7 +647,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleAddSpreadsheetCol}
-                className="text-xs h-7 gap-1 border-zinc-700 hover:bg-zinc-800"
+                className="text-xs h-7 gap-1 border-border-strong hover:bg-surface-secondary"
               >
                 <Plus className="h-3 w-3" />
                 <span>Sütun Ekle</span>
@@ -656,7 +656,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleStartEditing}
-                className="text-xs h-7 gap-1 border-zinc-700 hover:bg-zinc-800"
+                className="text-xs h-7 gap-1 border-border-strong hover:bg-surface-secondary"
                 title="Düz Metin / Kod Olarak Düzenle"
               >
                 <CodeIcon className="h-3.5 w-3.5" />
@@ -668,7 +668,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   size="sm"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="text-xs h-7 gap-1 bg-emerald-600 hover:bg-emerald-500"
+                  className="text-xs h-7 gap-1 bg-success hover:bg-success/90"
                 >
                   {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
                   <span>Kaydet</span>
@@ -678,28 +678,28 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           </div>
 
           {/* Cell Formula / Info Bar */}
-          <div className="flex items-center gap-3 px-4 py-1.5 bg-zinc-900/60 border-b border-zinc-800/80 text-xs">
-            <div className="font-mono font-semibold text-sky-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700/60 min-w-[3rem] text-center">
+          <div className="flex items-center gap-3 px-4 py-1.5 bg-surface/60 border-b border-border/80 text-xs">
+            <div className="font-mono font-semibold text-accent-text bg-surface-secondary px-2 py-0.5 rounded border border-border-strong/60 min-w-[3rem] text-center">
               {selectedCell ? `${getColumnLetter(selectedCell.c)}${selectedCell.r + 1}` : "A1"}
             </div>
-            <div className="text-zinc-400 font-mono text-[11px] truncate flex-1">
-              Değer: <span className="text-zinc-200">{selectedCell ? spreadsheetGrid[selectedCell.r]?.[selectedCell.c] || "" : spreadsheetGrid[0]?.[0] || ""}</span>
+            <div className="text-muted-foreground font-mono text-[11px] truncate flex-1">
+              Değer: <span className="text-foreground">{selectedCell ? spreadsheetGrid[selectedCell.r]?.[selectedCell.c] || "" : spreadsheetGrid[0]?.[0] || ""}</span>
             </div>
           </div>
 
           {/* Interactive Spreadsheet Grid */}
-          <div className="flex-1 overflow-auto bg-zinc-950 p-2">
-            <div className="border border-zinc-800 rounded-xl overflow-hidden shadow-2xl bg-zinc-900/40 inline-block min-w-full">
+          <div className="flex-1 overflow-auto bg-background p-2">
+            <div className="border border-border rounded-xl overflow-hidden shadow-2xl bg-surface/40 inline-block min-w-full">
               <table className="w-full text-xs text-left border-collapse font-sans">
                 <thead>
-                  <tr className="bg-zinc-900 border-b border-zinc-800 select-none">
-                    <th className="px-2 py-2 text-[10px] text-zinc-500 bg-zinc-900/90 border-r border-zinc-800 text-center w-12 sticky left-0 z-20">
+                  <tr className="bg-surface border-b border-border select-none">
+                    <th className="px-2 py-2 text-[10px] text-subtle bg-surface/90 border-r border-border text-center w-12 sticky left-0 z-20">
                       #
                     </th>
                     {Array.from({ length: colCount }).map((_, cIdx) => (
                       <th
                         key={cIdx}
-                        className="px-3 py-2 text-center text-[11px] font-semibold text-zinc-400 border-r border-zinc-800/80 bg-zinc-900 min-w-[120px]"
+                        className="px-3 py-2 text-center text-[11px] font-semibold text-muted-foreground border-r border-border/80 bg-surface min-w-[120px]"
                       >
                         {getColumnLetter(cIdx)}
                       </th>
@@ -710,10 +710,10 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   {spreadsheetGrid.map((row, rIdx) => (
                     <tr
                       key={rIdx}
-                      className="border-b border-zinc-800/50 hover:bg-sky-500/5 transition-colors"
+                      className="border-b border-border/50 hover:bg-accent-hover/5 transition-colors"
                     >
                       {/* Row Index Header */}
-                      <td className="px-2 py-1 text-[10px] text-zinc-500 bg-zinc-900/90 border-r border-zinc-800 select-none text-center font-mono sticky left-0 z-10">
+                      <td className="px-2 py-1 text-[10px] text-subtle bg-surface/90 border-r border-border select-none text-center font-mono sticky left-0 z-10">
                         {rIdx + 1}
                       </td>
                       {/* Editable Cells */}
@@ -724,8 +724,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                           <td
                             key={cIdx}
                             onClick={() => setSelectedCell({ r: rIdx, c: cIdx })}
-                            className={`p-0 border-r border-zinc-800/40 relative ${
-                              isSelected ? "ring-2 ring-sky-500 z-10" : ""
+                            className={`p-0 border-r border-border/40 relative ${
+                              isSelected ? "ring-2 ring-accent z-10" : ""
                             }`}
                           >
                             <input
@@ -733,7 +733,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                               value={cellVal}
                               onChange={(e) => handleCellChange(rIdx, cIdx, e.target.value)}
                               onFocus={() => setSelectedCell({ r: rIdx, c: cIdx })}
-                              className="w-full bg-transparent px-2.5 py-1.5 text-xs text-zinc-100 outline-none font-sans hover:bg-zinc-800/40 focus:bg-zinc-900 transition-colors"
+                              className="w-full bg-transparent px-2.5 py-1.5 text-xs text-foreground outline-none font-sans hover:bg-surface-secondary/40 focus:bg-surface transition-colors"
                             />
                           </td>
                         );
@@ -751,15 +751,15 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     // ─── 3. Word Document (.docx / .doc) Native Document Sheet ───
     if (isWordDoc && parsedDocx && !isEditing) {
       return (
-        <div className="flex flex-col h-full w-full bg-zinc-950">
+        <div className="flex flex-col h-full w-full bg-background">
           {/* Word Header Toolbar */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800 flex-shrink-0">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-surface/95 border-b border-border flex-shrink-0">
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className="text-[10px] font-mono text-sky-400 border-sky-500/30">
+              <Badge variant="secondary" className="text-[10px] font-mono text-accent-text border-accent/30">
                 <Type className="h-3 w-3 mr-1 inline" />
                 WORD BELGESİ
               </Badge>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-muted-foreground">
                 {parsedDocx.paragraphs.length} paragraf / bölüm
               </span>
             </div>
@@ -769,7 +769,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 variant="primary"
                 size="sm"
                 onClick={handleStartEditing}
-                className="text-xs h-7 gap-1 bg-sky-600 hover:bg-sky-500"
+                className="text-xs h-7 gap-1 bg-accent hover:bg-accent-hover"
               >
                 <Pencil className="h-3.5 w-3.5" />
                 <span>Belgeyi Düzenle</span>
@@ -778,7 +778,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleDownload}
-                className="text-xs h-7 gap-1 border-zinc-700"
+                className="text-xs h-7 gap-1 border-border-strong"
               >
                 <Download className="h-3.5 w-3.5" />
                 <span>İndir</span>
@@ -787,18 +787,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
           </div>
 
           {/* Paper Document Layout */}
-          <div className="flex-1 overflow-auto bg-zinc-950 p-6 flex justify-center">
-            <div className="w-full max-w-3xl bg-zinc-900 border border-zinc-800 rounded-2xl p-8 sm:p-12 shadow-2xl space-y-4 text-zinc-100 font-sans leading-relaxed select-text min-h-full">
+          <div className="flex-1 overflow-auto bg-background p-6 flex justify-center">
+            <div className="w-full max-w-3xl bg-surface border border-border rounded-2xl p-8 sm:p-12 shadow-2xl space-y-4 text-foreground font-sans leading-relaxed select-text min-h-full">
               {parsedDocx.paragraphs.map((p, idx) => {
                 if (p.isTable && p.tableRows) {
                   return (
-                    <div key={idx} className="my-4 overflow-x-auto border border-zinc-800 rounded-xl">
+                    <div key={idx} className="my-4 overflow-x-auto border border-border rounded-xl">
                       <table className="w-full text-xs border-collapse">
                         <tbody>
                           {p.tableRows.map((tr, rIdx) => (
-                            <tr key={rIdx} className="border-b border-zinc-800 hover:bg-zinc-800/40">
+                            <tr key={rIdx} className="border-b border-border hover:bg-surface-secondary/40">
                               {tr.map((td, cIdx) => (
-                                <td key={cIdx} className="px-3 py-2 border-r border-zinc-800">
+                                <td key={cIdx} className="px-3 py-2 border-r border-border">
                                   {td}
                                 </td>
                               ))}
@@ -814,7 +814,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   return (
                     <h2
                       key={idx}
-                      className="text-xl font-bold text-white tracking-tight pt-3 border-b border-zinc-800 pb-1"
+                      className="text-xl font-bold text-white tracking-tight pt-3 border-b border-border pb-1"
                     >
                       {p.text}
                     </h2>
@@ -823,7 +823,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
                 if (p.isBullet) {
                   return (
-                    <li key={idx} className="ml-4 text-sm text-zinc-300 list-disc">
+                    <li key={idx} className="ml-4 text-sm text-foreground/80 list-disc">
                       {p.text}
                     </li>
                   );
@@ -832,7 +832,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 return (
                   <p
                     key={idx}
-                    className={`text-sm ${p.isBold ? "font-semibold text-white" : "text-zinc-300"}`}
+                    className={`text-sm ${p.isBold ? "font-semibold text-white" : "text-foreground/80"}`}
                   >
                     {p.text}
                   </p>
@@ -847,18 +847,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     // ─── 4. HTML / Markdown Live Preview Mode ───
     if (showLivePreview && (isHtml || isMarkdown) && !isEditing) {
       return (
-        <div className="flex flex-col h-full w-full bg-zinc-950">
-          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800 flex-shrink-0">
+        <div className="flex flex-col h-full w-full bg-background">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-surface/95 border-b border-border flex-shrink-0">
             <div className="flex items-center gap-2">
-              <Eye className="h-4 w-4 text-sky-400" />
-              <span className="text-xs text-zinc-300 font-semibold">CANLI ÖNİZLEME ({ext.toUpperCase()})</span>
+              <Eye className="h-4 w-4 text-accent-text" />
+              <span className="text-xs text-foreground/80 font-semibold">CANLI ÖNİZLEME ({ext.toUpperCase()})</span>
             </div>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowLivePreview(false)}
-                className="text-xs h-7 gap-1 border-zinc-700"
+                className="text-xs h-7 gap-1 border-border-strong"
               >
                 <CodeIcon className="h-3.5 w-3.5" />
                 <span>Kodu Göster</span>
@@ -867,7 +867,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 variant="primary"
                 size="sm"
                 onClick={handleStartEditing}
-                className="text-xs h-7 gap-1 bg-sky-600 hover:bg-sky-500"
+                className="text-xs h-7 gap-1 bg-accent hover:bg-accent-hover"
               >
                 <Pencil className="h-3.5 w-3.5" />
                 <span>Düzenle</span>
@@ -883,7 +883,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 title="Live HTML Preview"
               />
             ) : (
-              <div className="prose max-w-3xl mx-auto text-zinc-900 p-6 whitespace-pre-wrap font-sans">
+              <div className="prose max-w-3xl mx-auto text-background p-6 whitespace-pre-wrap font-sans">
                 {textContent || editContent}
               </div>
             )}
@@ -901,14 +901,14 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       const matchesSearch = searchQuery.trim().length > 0;
 
       return (
-        <div className="flex flex-col h-full w-full bg-zinc-950">
+        <div className="flex flex-col h-full w-full bg-background">
           {/* Header Action Bar */}
-          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/95 border-b border-zinc-800/80 backdrop-blur-md flex-shrink-0">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-surface/95 border-b border-border/80 backdrop-blur-md flex-shrink-0">
             <div className="flex items-center gap-3 flex-wrap">
               <Badge variant="secondary" className="text-[10px] font-mono font-semibold">
                 {lang}
               </Badge>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-muted-foreground">
                 {lines.length} satır • {formatBytes(isEditing ? new Blob([editContent]).size : file.size)}
               </span>
               {isEditing && (
@@ -926,7 +926,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               {(isHtml || isMarkdown) && !isEditing && (
                 <button
                   onClick={() => setShowLivePreview(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 rounded-xl transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-accent-text bg-accent/10 hover:bg-accent-hover/20 border border-accent/30 rounded-xl transition-colors"
                   title="Canlı Render Önizlemesi"
                 >
                   <Eye className="h-3.5 w-3.5" />
@@ -938,7 +938,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               {isSpreadsheet && !isEditing && (
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-success bg-success/10 hover:bg-success/20 border border-success/30 rounded-xl transition-colors"
                   title="Tablo Görünümüne Dön"
                 >
                   <TableIcon className="h-3.5 w-3.5" />
@@ -951,8 +951,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 onClick={() => setWordWrap((w) => !w)}
                 className={`p-1.5 text-xs rounded-xl border transition-colors ${
                   wordWrap
-                    ? "text-sky-400 bg-sky-500/10 border-sky-500/30"
-                    : "text-zinc-400 hover:text-white bg-zinc-800/80 border-zinc-700/50"
+                    ? "text-accent-text bg-accent/10 border-accent/30"
+                    : "text-muted-foreground hover:text-white bg-surface-secondary/80 border-border-strong/50"
                 }`}
                 title="Satır Kaydırma (Word Wrap)"
               >
@@ -964,8 +964,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 onClick={() => setShowSearch((s) => !s)}
                 className={`p-1.5 text-xs rounded-xl border transition-colors ${
                   showSearch
-                    ? "text-sky-400 bg-sky-500/10 border-sky-500/30"
-                    : "text-zinc-400 hover:text-white bg-zinc-800/80 border-zinc-700/50"
+                    ? "text-accent-text bg-accent/10 border-accent/30"
+                    : "text-muted-foreground hover:text-white bg-surface-secondary/80 border-border-strong/50"
                 }`}
                 title="Ara (Ctrl+F)"
               >
@@ -980,8 +980,8 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                     disabled={isSaving || !hasChanges}
                     className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl font-semibold border transition-all ${
                       hasChanges && !isSaving
-                        ? "text-white bg-emerald-600 hover:bg-emerald-500 border-emerald-500 shadow-lg shadow-emerald-500/20"
-                        : "text-zinc-500 bg-zinc-800/80 border-zinc-700/50 cursor-not-allowed"
+                        ? "text-white bg-success hover:bg-success/90 border-success shadow-lg shadow-success/20"
+                        : "text-subtle bg-surface-secondary/80 border-border-strong/50 cursor-not-allowed"
                     }`}
                     title="Kaydet (Ctrl+S)"
                   >
@@ -995,7 +995,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   {/* Cancel */}
                   <button
                     onClick={handleDiscardChanges}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-zinc-400 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/50 rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-white bg-surface-secondary/80 hover:bg-surface-tertiary/80 border border-border-strong/50 rounded-xl transition-colors"
                     title="Değişiklikleri İptal Et"
                   >
                     <Undo2 className="h-3.5 w-3.5" />
@@ -1007,7 +1007,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   {/* Edit Button */}
                   <button
                     onClick={handleStartEditing}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 border border-sky-500/40 rounded-xl shadow-lg shadow-sky-500/20 transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-accent hover:bg-accent-hover border border-accent/40 rounded-xl shadow-lg shadow-accent/20 transition-all"
                     title="Dosyayı Düzenle"
                   >
                     <Pencil className="h-3.5 w-3.5" />
@@ -1016,11 +1016,11 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                   {/* Copy */}
                   <button
                     onClick={handleCopyCode}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-zinc-400 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/50 rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-white bg-surface-secondary/80 hover:bg-surface-tertiary/80 border border-border-strong/50 rounded-xl transition-colors"
                     title="Kopyala"
                   >
                     {copied ? (
-                      <Check className="h-3.5 w-3.5 text-emerald-400" />
+                      <Check className="h-3.5 w-3.5 text-success" />
                     ) : (
                       <Copy className="h-3.5 w-3.5" />
                     )}
@@ -1031,7 +1031,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                     href={previewUrl || "#"}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-zinc-400 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/50 rounded-xl transition-colors"
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-muted-foreground hover:text-white bg-surface-secondary/80 hover:bg-surface-tertiary/80 border border-border-strong/50 rounded-xl transition-colors"
                     title="Ham Dosyayı Aç"
                   >
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -1044,27 +1044,27 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
 
           {/* Search Sub-bar */}
           {showSearch && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border-b border-zinc-800 flex-shrink-0 animate-in slide-in-from-top-2 duration-150">
-              <Search className="h-4 w-4 text-zinc-500" />
+            <div className="flex items-center gap-2 px-4 py-2 bg-surface border-b border-border flex-shrink-0 animate-in slide-in-from-top-2 duration-150">
+              <Search className="h-4 w-4 text-subtle" />
               <input
                 type="text"
                 placeholder="Dosya içinde ara..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-zinc-800/80 border border-zinc-700/60 rounded-lg px-3 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                className="flex-1 bg-surface-secondary/80 border border-border-strong/60 rounded-2xl px-3 py-1 text-xs text-foreground placeholder-subtle focus:outline-none focus:ring-1 focus:ring-accent"
                 autoFocus
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
-                  className="text-xs text-zinc-400 hover:text-white p-1"
+                  className="text-xs text-muted-foreground hover:text-white p-1"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
               )}
               <button
                 onClick={() => setShowSearch(false)}
-                className="text-xs text-zinc-400 hover:text-white px-2 py-1"
+                className="text-xs text-muted-foreground hover:text-white px-2 py-1"
               >
                 Kapat
               </button>
@@ -1078,9 +1078,9 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               {/* Line numbers gutter */}
               <div
                 ref={gutterRef}
-                className="flex-shrink-0 bg-zinc-950 border-r border-zinc-800/60 overflow-hidden select-none pointer-events-none py-3"
+                className="flex-shrink-0 bg-background border-r border-border/60 overflow-hidden select-none pointer-events-none py-3"
               >
-                <div className="font-mono text-[13px] leading-[1.6] text-zinc-600 text-right">
+                <div className="font-mono text-[13px] leading-[1.6] text-subtle/80 text-right">
                   {editContent.split("\n").map((_, i) => (
                     <div key={i} className="px-3" style={{ minWidth: `${lineDigits + 2}ch` }}>
                       {i + 1}
@@ -1095,7 +1095,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 onScroll={handleEditorScroll}
-                className={`flex-1 bg-zinc-950 text-zinc-100 font-mono text-[13px] leading-[1.6] px-4 py-3 resize-none outline-none border-none ${
+                className={`flex-1 bg-background text-foreground font-mono text-[13px] leading-[1.6] px-4 py-3 resize-none outline-none border-none ${
                   wordWrap ? "whitespace-pre-wrap break-words" : "whitespace-pre overflow-x-auto"
                 }`}
                 spellCheck={false}
@@ -1144,17 +1144,17 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                       <tr
                         key={i}
                         className={`transition-colors ${
-                          isMatch ? "bg-amber-500/20 font-medium" : "hover:bg-sky-500/5"
+                          isMatch ? "bg-warning/20 font-medium" : "hover:bg-accent-hover/5"
                         }`}
                       >
                         <td
-                          className="sticky left-0 text-right px-3 py-0 select-none text-zinc-600 bg-zinc-950 border-r border-zinc-800/40 align-top"
+                          className="sticky left-0 text-right px-3 py-0 select-none text-subtle/80 bg-background border-r border-border/40 align-top"
                           style={{ minWidth: `${lineDigits + 2}ch` }}
                         >
                           {i + 1}
                         </td>
                         <td
-                          className={`px-4 py-0 text-zinc-200 ${
+                          className={`px-4 py-0 text-foreground ${
                             wordWrap ? "whitespace-pre-wrap break-words" : "whitespace-pre overflow-x-auto"
                           }`}
                         >
@@ -1174,9 +1174,9 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     // ─── 6. Video Preview (with PiP and Speed Controls) ───
     if (isVideo && previewUrl) {
       return (
-        <div className="flex flex-col items-center justify-center h-full w-full p-4 sm:p-8 bg-zinc-950/80 relative overflow-hidden">
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/10 via-zinc-950/40 to-zinc-950" />
-          <div className="relative z-10 max-w-5xl w-full max-h-[82vh] flex flex-col items-center justify-center rounded-2xl overflow-hidden border border-zinc-800/80 bg-black/90 shadow-2xl shadow-purple-500/5">
+        <div className="flex flex-col items-center justify-center h-full w-full p-4 sm:p-8 bg-background/80 relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-file-video/10 via-background/40 to-background" />
+          <div className="relative z-10 max-w-5xl w-full max-h-[82vh] flex flex-col items-center justify-center rounded-2xl overflow-hidden border border-border/80 bg-black/90 shadow-2xl shadow-file-video/5">
             <video
               src={previewUrl}
               controls
@@ -1196,18 +1196,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       return (
         <div className="flex flex-col items-center justify-center h-full w-full max-w-xl mx-auto px-6 py-12 gap-8 select-none">
           <div className="relative">
-            <div className="absolute inset-0 rounded-3xl bg-pink-500/20 blur-3xl animate-pulse" />
-            <div className="relative flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 shadow-2xl">
-              <FileAudio className="h-12 w-12 text-pink-400" />
+            <div className="absolute inset-0 rounded-3xl bg-file-audio/20 blur-3xl animate-pulse" />
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-file-audio/10 to-file-video/10 border border-file-audio/20 shadow-2xl">
+              <FileAudio className="h-12 w-12 text-file-audio" />
             </div>
           </div>
 
           <div className="text-center space-y-1">
             <h4 className="font-bold text-white text-lg truncate max-w-md">{displayName}</h4>
-            <p className="text-xs text-zinc-400">{formatBytes(file.size)}</p>
+            <p className="text-xs text-muted-foreground">{formatBytes(file.size)}</p>
           </div>
 
-          <div className="w-full bg-zinc-900/80 rounded-2xl p-5 border border-zinc-800/80 backdrop-blur-xl space-y-4 shadow-2xl">
+          <div className="w-full bg-surface/80 rounded-2xl p-5 border border-border/80 backdrop-blur-xl space-y-4 shadow-2xl">
             <audio
               src={previewUrl}
               controls
@@ -1224,15 +1224,15 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     // ─── 8. PDF Preview (Native browser iframe with toolbar) ───
     if (isPdf && previewUrl) {
       return (
-        <div className="flex flex-col h-full w-full bg-zinc-950">
-          <div className="flex items-center justify-between px-4 py-2.5 bg-zinc-900/90 border-b border-zinc-800 flex-shrink-0">
-            <span className="text-xs text-zinc-400 font-medium truncate">{displayName}</span>
+        <div className="flex flex-col h-full w-full bg-background">
+          <div className="flex items-center justify-between px-4 py-2.5 bg-surface/90 border-b border-border flex-shrink-0">
+            <span className="text-xs text-muted-foreground font-medium truncate">{displayName}</span>
             <div className="flex items-center gap-2">
               <a
                 href={previewUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs bg-zinc-800 hover:bg-zinc-700 text-white transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-2xl text-xs bg-surface-secondary hover:bg-surface-tertiary text-white transition-colors"
               >
                 <span>Ayrı Sekmede Aç</span>
                 <ExternalLink className="h-3 w-3" />
@@ -1252,18 +1252,18 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     return (
       <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-6">
         <div className="relative">
-          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-sky-500/10 to-indigo-500/10 blur-3xl" />
-          <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-zinc-800/80 border border-zinc-700/60 shadow-xl">
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-accent/10 to-accent/10 blur-3xl" />
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-3xl bg-surface-secondary/80 border border-border-strong/60 shadow-xl">
             {renderCategoryIcon()}
           </div>
         </div>
         <div className="space-y-1.5">
           <h4 className="font-semibold text-white text-lg">{displayName}</h4>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-muted-foreground">
             {formatBytes(file.size)} • {file.mimeType}
           </p>
         </div>
-        <p className="text-xs text-zinc-500 max-w-sm">
+        <p className="text-xs text-subtle max-w-sm">
           This binary file type cannot be previewed directly. You can download and open it on your device.
         </p>
         <Button variant="primary" size="default" onClick={handleDownload} className="gap-2">
@@ -1291,15 +1291,15 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
       {/* Modal Container */}
       <div className="relative z-[61] flex flex-col h-full w-full animate-in fade-in duration-200">
         {/* Top Header Bar */}
-        <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-zinc-950/90 border-b border-zinc-800/60 backdrop-blur-xl flex-shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-background/90 border-b border-border/60 backdrop-blur-xl flex-shrink-0">
           {/* Left: File Info */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800/80 border border-zinc-700/50 flex-shrink-0">
+            <div className="flex h-8 w-8 items-center justify-center rounded-2xl bg-surface-secondary/80 border border-border-strong/50 flex-shrink-0">
               {renderCategoryIcon()}
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-sm text-white truncate">{displayName}</h3>
-              <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                 <span>{formatBytes(file.size)}</span>
                 <span>•</span>
                 <Badge variant="secondary" className="text-[10px] py-0 font-mono">
@@ -1321,7 +1321,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               variant="ghost"
               size="sm"
               onClick={handleDownload}
-              className="text-zinc-400 hover:text-white h-8 w-8 p-0"
+              className="text-muted-foreground hover:text-white h-8 w-8 p-0"
               title="İndir"
             >
               <Download className="h-4 w-4" />
@@ -1330,7 +1330,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => { onClose(); onShare(file); }}
-              className="text-zinc-400 hover:text-sky-400 h-8 w-8 p-0"
+              className="text-muted-foreground hover:text-accent-text h-8 w-8 p-0"
               title="Paylaş"
             >
               <Share2 className="h-4 w-4" />
@@ -1339,12 +1339,12 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
               variant="ghost"
               size="sm"
               onClick={() => { onClose(); onDelete(file); }}
-              className="text-zinc-400 hover:text-rose-400 h-8 w-8 p-0"
+              className="text-muted-foreground hover:text-danger h-8 w-8 p-0"
               title="Sil"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
-            <div className="w-px h-5 bg-zinc-800 mx-1" />
+            <div className="w-px h-5 bg-surface-secondary mx-1" />
             <button
               onClick={() => {
                 if (isEditing && hasChanges) {
@@ -1353,7 +1353,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
                 }
                 onClose();
               }}
-              className="flex items-center justify-center h-8 w-8 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="flex items-center justify-center h-8 w-8 rounded-2xl text-muted-foreground hover:text-white hover:bg-surface-secondary transition-colors"
               title="Kapat (Esc)"
             >
               <X className="h-5 w-5" />
@@ -1362,7 +1362,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
         </div>
 
         {/* Preview Area */}
-        <div className="flex-1 overflow-hidden bg-zinc-950">
+        <div className="flex-1 overflow-hidden bg-background">
           {renderPreviewContent()}
         </div>
       </div>

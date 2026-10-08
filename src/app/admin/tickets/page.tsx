@@ -59,31 +59,31 @@ export default function AdminTicketsPage() {
     switch (status) {
       case "open":
         return (
-          <span className="rounded-md bg-sky-500/10 px-2 py-0.5 text-[10px] font-bold text-sky-400 border border-sky-500/20">
+          <span className="rounded-full bg-accent/10 px-2 py-0.5 text-[10px] font-bold text-accent-text border border-accent/20">
             Open
           </span>
         );
       case "in_progress":
         return (
-          <span className="rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/20">
+          <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-bold text-warning border border-warning/20">
             In Progress
           </span>
         );
       case "waiting_customer":
         return (
-          <span className="rounded-full bg-[#0071e3]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#2997ff] border border-[#0071e3]/30">
+          <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-[10px] font-bold text-accent-text border border-accent/30">
             Awaiting User
           </span>
         );
       case "resolved":
         return (
-          <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
+          <span className="rounded-full bg-success/15 px-2.5 py-0.5 text-[10px] font-bold text-success border border-success/30">
             Resolved
           </span>
         );
       case "closed":
         return (
-          <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium text-[#86868b]">
+          <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium text-muted-foreground">
             Closed
           </span>
         );
@@ -96,20 +96,20 @@ export default function AdminTicketsPage() {
     switch (priority) {
       case "urgent":
         return (
-          <span className="rounded-full bg-rose-500/15 px-2.5 py-0.5 text-[10px] font-bold text-rose-400 border border-rose-500/30">
+          <span className="rounded-full bg-danger/15 px-2.5 py-0.5 text-[10px] font-bold text-danger border border-danger/30">
             Urgent
           </span>
         );
       case "high":
         return (
-          <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/30">
+          <span className="rounded-full bg-warning/15 px-2.5 py-0.5 text-[10px] font-bold text-warning border border-warning/30">
             High
           </span>
         );
       case "medium":
-        return <span className="text-sky-400 font-semibold text-xs">Medium</span>;
+        return <span className="text-accent-text font-semibold text-xs">Medium</span>;
       default:
-        return <span className="text-[#86868b] text-xs">Low</span>;
+        return <span className="text-muted-foreground text-xs">Low</span>;
     }
   };
 
@@ -126,13 +126,13 @@ export default function AdminTicketsPage() {
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>Support Ticket Inbox</span>
-              <span className="rounded-full bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
+              <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent-text border border-accent/30">
                 {tickets.length} Active Inquiries
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-[#86868b] mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Review and respond to customer tickets, storage inquiries, and technical requests.
             </p>
           </div>
@@ -142,23 +142,23 @@ export default function AdminTicketsPage() {
             size="sm"
             onClick={fetchTickets}
             disabled={loading}
-            className="gap-2 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-[#a1a1a6] hover:bg-white/[0.08] hover:text-white"
+            className="gap-2 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08] hover:text-white"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-accent-text" : ""}`} />
             <span>Refresh Inbox</span>
           </Button>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#16161a] p-3 rounded-2xl border border-white/[0.08]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface-secondary p-3 rounded-2xl border border-white/[0.08]">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search tickets by title, customer name, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs bg-[#0e0e11] border border-white/[0.08] rounded-xl text-white placeholder:text-[#6e6e73] outline-none"
+              className="w-full pl-10 pr-4 py-2 text-xs bg-surface border border-white/[0.08] rounded-xl text-white placeholder:text-subtle outline-none"
             />
           </div>
 
@@ -171,8 +171,8 @@ export default function AdminTicketsPage() {
                 onClick={() => setStatusFilter(st)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-semibold capitalize transition-colors whitespace-nowrap ${
                   statusFilter === st
-                    ? "bg-[#0071e3] text-white shadow-md shadow-blue-500/20"
-                    : "bg-[#0e0e11] text-[#86868b] hover:text-white border border-white/[0.08]"
+                    ? "bg-accent text-white shadow-md shadow-accent/20"
+                    : "bg-surface text-muted-foreground hover:text-white border border-white/[0.08]"
                 }`}
               >
                 {st.replace("_", " ")}
@@ -182,10 +182,10 @@ export default function AdminTicketsPage() {
         </div>
 
         {/* Tickets Table */}
-        <div className="rounded-3xl border border-white/[0.08] bg-[#16161a] overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-white/[0.08] bg-surface-secondary overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 bg-zinc-950/60 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <thead className="border-b border-border bg-background/60 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">Subject / Ticket</th>
                   <th className="py-3.5 px-4">Customer</th>
@@ -196,17 +196,17 @@ export default function AdminTicketsPage() {
                   <th className="py-3.5 px-4 sm:px-6 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-border/60">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-[#86868b]">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
+                    <td colSpan={7} className="py-12 text-center text-muted-foreground">
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-accent-text mb-2" />
                       Loading staff inbox...
                     </td>
                   </tr>
                 ) : filteredTickets.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-[#86868b]">
+                    <td colSpan={7} className="py-12 text-center text-muted-foreground">
                       No support tickets found for the selected filter.
                     </td>
                   </tr>
@@ -219,10 +219,10 @@ export default function AdminTicketsPage() {
                     >
                       <td className="py-4 px-4 sm:px-6">
                         <div className="min-w-0 max-w-[240px] sm:max-w-[300px]">
-                          <p className="font-semibold text-white truncate group-hover:text-[#2997ff] transition-colors">
+                          <p className="font-semibold text-white truncate group-hover:text-accent-text transition-colors">
                             {t.title}
                           </p>
-                          <p className="font-mono text-[10px] text-[#86868b] truncate">
+                          <p className="font-mono text-[10px] text-muted-foreground truncate">
                             {t.id}
                           </p>
                         </div>
@@ -230,12 +230,12 @@ export default function AdminTicketsPage() {
 
                       <td className="py-4 px-4">
                         <div className="min-w-0">
-                          <p className="font-semibold text-[#f5f5f7] truncate">{t.userName}</p>
-                          <p className="text-[10px] text-[#86868b] truncate">{t.userEmail}</p>
+                          <p className="font-semibold text-foreground truncate">{t.userName}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{t.userEmail}</p>
                         </div>
                       </td>
 
-                      <td className="py-4 px-4 capitalize text-[#a1a1a6] font-medium">
+                      <td className="py-4 px-4 capitalize text-muted-foreground font-medium">
                         {t.department}
                       </td>
 
@@ -247,7 +247,7 @@ export default function AdminTicketsPage() {
                         {getStatusBadge(t.status)}
                       </td>
 
-                      <td className="py-4 px-4 text-[11px] text-[#86868b] whitespace-nowrap">
+                      <td className="py-4 px-4 text-[11px] text-muted-foreground whitespace-nowrap">
                         {formatRelativeTime(t.updatedAt)}
                       </td>
 
@@ -256,7 +256,7 @@ export default function AdminTicketsPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-xs h-8 text-[#2997ff] hover:text-blue-300 hover:bg-[#0071e3]/10 gap-1 rounded-full"
+                            className="text-xs h-8 text-accent-text hover:text-accent-text hover:bg-accent/10 gap-1 rounded-full"
                           >
                             <span>Respond</span>
                             <ChevronRight className="h-3.5 w-3.5" />

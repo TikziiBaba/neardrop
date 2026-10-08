@@ -57,13 +57,13 @@ export function Dialog({
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
             className={cn(
-              "relative z-50 w-full max-w-lg rounded-2xl border border-zinc-800 bg-zinc-900/95 p-6 text-zinc-100 shadow-2xl backdrop-blur-xl",
+              "relative z-50 w-full max-w-lg rounded-2xl border border-border bg-surface/95 p-6 text-foreground shadow-2xl backdrop-blur-xl",
               className
             )}
           >
             <button
               onClick={() => onOpenChange(false)}
-              className="absolute right-4 top-4 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition-colors"
+              className="absolute right-4 top-4 rounded-2xl p-1.5 text-muted-foreground hover:bg-surface-secondary hover:text-foreground transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
@@ -72,7 +72,7 @@ export function Dialog({
               <div className="mb-4">
                 <h3 className="text-lg font-semibold tracking-tight text-white">{title}</h3>
                 {description && (
-                  <p className="mt-1 text-xs text-zinc-400 leading-relaxed">{description}</p>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{description}</p>
                 )}
               </div>
             )}
@@ -126,7 +126,7 @@ export function DialogDescription({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <p className={cn("text-xs text-zinc-400", className)}>{children}</p>;
+  return <p className={cn("text-xs text-muted-foreground", className)}>{children}</p>;
 }
 
 export function DialogFooter({
@@ -139,7 +139,7 @@ export function DialogFooter({
   return (
     <div
       className={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-3 border-t border-zinc-800/80",
+        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-3 border-t border-border/80",
         className
       )}
     >

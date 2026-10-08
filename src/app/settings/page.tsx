@@ -151,8 +151,8 @@ export default function SettingsPage() {
       <div className="space-y-6 max-w-4xl">
         {/* Header */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Account Settings</h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+          <h1 className="page-title">Account Settings</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Manage your personal profile, subscription tier, default share parameters, and security sessions.
           </p>
         </div>
@@ -184,38 +184,38 @@ export default function SettingsPage() {
 
           {/* 1. Profile Tab */}
           <TabsContent value="profile" className="space-y-6">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
+            <div className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-8 space-y-6 apple-card">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold text-white">Profile Information</h3>
                 {user?.role === "admin" ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-2.5 py-0.5 text-xs font-bold text-purple-400 border border-purple-500/20">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-bold text-accent-text border border-accent/20">
                     <ShieldCheck className="h-3.5 w-3.5" />
                     Administrator
                   </span>
                 ) : user?.role === "moderator" ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-sky-500/10 px-2.5 py-0.5 text-xs font-bold text-sky-400 border border-sky-500/20">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-bold text-accent-text border border-accent/20">
                     Staff / Support
                   </span>
                 ) : user?.role === "premium" ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2.5 py-0.5 text-xs font-bold text-emerald-400 border border-emerald-500/20">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-bold text-success border border-success/20">
                     <Zap className="h-3.5 w-3.5" />
                     Premium Member
                   </span>
                 ) : (
-                  <span className="rounded-md bg-zinc-800 px-2.5 py-0.5 text-xs font-medium text-zinc-400">
+                  <span className="rounded-full bg-surface-secondary px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                     Standard Member
                   </span>
                 )}
               </div>
 
               {/* Avatar File Uploader */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-2xl bg-background/60 border border-border/80">
                 <div className="relative group flex-shrink-0">
                   <UserAvatar
                     src={avatarUrl || user?.avatarUrl}
                     user={user}
                     size="2xl"
-                    className="ring-2 ring-purple-500/40"
+                    className="ring-2 ring-accent/40"
                   />
                   {isUploadingAvatar && (
                     <div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center text-[10px] text-white font-bold">
@@ -227,7 +227,7 @@ export default function SettingsPage() {
                 <div className="space-y-2">
                   <div>
                     <h4 className="text-xs font-bold text-white">Avatar Photo</h4>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-muted-foreground">
                       Upload a PNG, JPG, or WEBP photo directly from your device (Max 5 MB).
                     </p>
                   </div>
@@ -248,9 +248,9 @@ export default function SettingsPage() {
                         fileInputRef.current?.click();
                       }}
                       disabled={isUploadingAvatar}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none disabled:opacity-50"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-foreground hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none disabled:opacity-50"
                     >
-                      <Upload className="h-3.5 w-3.5 text-sky-400" />
+                      <Upload className="h-3.5 w-3.5 text-accent-text" />
                       <span>{isUploadingAvatar ? "Uploading..." : "Upload New Photo"}</span>
                     </button>
                   </div>
@@ -259,27 +259,27 @@ export default function SettingsPage() {
 
               <form onSubmit={handleSaveProfile} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">Display Name</label>
+                  <label className="text-xs font-semibold text-foreground/80">Display Name</label>
                   <Input
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="rounded-xl text-xs bg-zinc-950/60"
+                    className="rounded-xl text-xs bg-background/60"
                     required
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-zinc-300">Email Address</label>
+                    <label className="text-xs font-semibold text-foreground/80">Email Address</label>
                     {user?.isEmailVerified ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-success bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
                         <CheckCircle2 className="h-3 w-3" />
                         Verified
                       </span>
                     ) : (
                       <Link
                         href={`/verify-email?email=${encodeURIComponent(user?.email || "")}`}
-                        className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20 hover:bg-amber-500/20 transition-colors"
+                        className="inline-flex items-center gap-1 text-[10px] font-bold text-warning bg-warning/10 px-2 py-0.5 rounded-full border border-warning/20 hover:bg-warning/20 transition-colors"
                       >
                         <AlertCircle className="h-3 w-3" />
                         Unverified • Verify Now
@@ -289,7 +289,7 @@ export default function SettingsPage() {
                   <Input
                     value={email}
                     disabled
-                    className="rounded-xl text-xs bg-zinc-950/40 text-zinc-400 cursor-not-allowed"
+                    className="rounded-xl text-xs bg-background/40 text-muted-foreground cursor-not-allowed"
                   />
                 </div>
 
@@ -298,7 +298,7 @@ export default function SettingsPage() {
                   variant="primary"
                   size="default"
                   disabled={isSaving}
-                  className="rounded-xl text-xs gap-2 shadow-md shadow-sky-500/20"
+                  className="rounded-xl text-xs gap-2 shadow-md shadow-accent/20"
                 >
                   <Save className="h-3.5 w-3.5" />
                   <span>{isSaving ? "Saving..." : "Save Profile"}</span>
@@ -309,49 +309,49 @@ export default function SettingsPage() {
 
           {/* 2. Subscription & Plans Tab */}
           <TabsContent value="subscription" className="space-y-6">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
+            <div className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-8 space-y-6 apple-card">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-white">Current Subscription Tier</h3>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-muted-foreground">
                     Manage your storage quota, active plan entitlements, and upgrades.
                   </p>
                 </div>
 
-                <span className="rounded-full bg-sky-500/15 px-3 py-1 text-xs font-bold text-sky-400 border border-sky-500/30 uppercase tracking-wider">
+                <span className="rounded-full bg-accent/15 px-3 py-1 text-xs font-bold text-accent-text border border-accent/30 uppercase tracking-wider">
                   {user?.subscriptionTier ? `${user.subscriptionTier.toUpperCase()} PLAN` : "FREE STARTER"}
                 </span>
               </div>
 
               {/* Storage bar */}
-              <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/50 p-5 space-y-3">
+              <div className="rounded-2xl border border-border/80 bg-background/50 p-5 space-y-3">
                 <div className="flex justify-between items-center text-xs">
                   <div className="flex items-center gap-2">
-                    <HardDrive className="h-4 w-4 text-sky-400" />
+                    <HardDrive className="h-4 w-4 text-accent-text" />
                     <span className="font-bold text-white">Total Quota</span>
-                    <span className="text-zinc-400 font-mono">
+                    <span className="text-muted-foreground font-mono">
                       ({formatBytes(user?.usedBytes || 0)} / {formatBytes(user?.quotaBytes || 2147483648)})
                     </span>
                   </div>
-                  <span className="font-bold text-sky-400">{usagePercent}% Used</span>
+                  <span className="font-bold text-accent-text">{usagePercent}% Used</span>
                 </div>
 
-                <div className="h-2 w-full rounded-full bg-zinc-800 overflow-hidden">
+                <div className="h-2 w-full rounded-full bg-surface-secondary overflow-hidden">
                   <div
                     style={{ width: `${usagePercent}%` }}
-                    className="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500 transition-all"
+                    className="h-full rounded-full bg-gradient-to-r from-accent-text to-accent transition-all"
                   />
                 </div>
               </div>
 
               {/* Upgrade CTA banner */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-sky-950/40 via-zinc-900 to-zinc-950 border border-sky-500/30">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl bg-gradient-to-r from-accent/40 via-surface to-background border border-accent/30">
                 <div className="space-y-1">
                   <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+                    <Sparkles className="h-3.5 w-3.5 text-accent-text" />
                     <span>Expand to 100 GB, 500 GB, or 2 TB Storage</span>
                   </h4>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-muted-foreground">
                     Unlock permanent link lifetimes, cryptographic passwords, and 24/7 dedicated support.
                   </p>
                 </div>
@@ -360,7 +360,7 @@ export default function SettingsPage() {
                   <Button
                     variant="primary"
                     size="sm"
-                    className="text-xs rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-bold shadow-md shadow-sky-500/20 gap-1.5"
+                    className="text-xs rounded-xl bg-accent hover:bg-accent-hover text-black font-bold shadow-md shadow-accent/20 gap-1.5"
                   >
                     <span>View Pricing Plans</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -372,12 +372,12 @@ export default function SettingsPage() {
 
           {/* 3. Storage Defaults Tab */}
           <TabsContent value="storage" className="space-y-6">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
+            <div className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-8 space-y-6 apple-card">
               <h3 className="text-sm font-bold text-white">Default Sharing Parameters</h3>
 
               <div className="space-y-4 max-w-md">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">
+                  <label className="text-xs font-semibold text-foreground/80">
                     Default Link Lifespan (Hours)
                   </label>
                   <Input
@@ -386,15 +386,15 @@ export default function SettingsPage() {
                     onChange={(e) => setDefaultExpiry(Number(e.target.value))}
                     min={1}
                     max={720}
-                    className="rounded-xl text-xs bg-zinc-950/60"
+                    className="rounded-xl text-xs bg-background/60"
                   />
-                  <p className="text-[10px] text-zinc-500">
+                  <p className="text-[10px] text-subtle">
                     Newly uploaded share links will automatically expire after this duration.
                   </p>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">
+                  <label className="text-xs font-semibold text-foreground/80">
                     Default Max Downloads Limit
                   </label>
                   <Input
@@ -403,20 +403,20 @@ export default function SettingsPage() {
                     onChange={(e) => setDefaultMaxDl(Number(e.target.value))}
                     min={1}
                     max={1000}
-                    className="rounded-xl text-xs bg-zinc-950/60"
+                    className="rounded-xl text-xs bg-background/60"
                   />
-                  <p className="text-[10px] text-zinc-500">
+                  <p className="text-[10px] text-subtle">
                     Default cap on how many times a newly created link can be downloaded.
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-zinc-800/80">
+                <div className="flex items-center justify-between pt-3 border-t border-border/80">
                   <div className="space-y-0.5">
                     <p className="text-xs font-semibold text-white flex items-center gap-1.5">
-                      <Volume2 className="h-3.5 w-3.5 text-pink-400" />
+                      <Volume2 className="h-3.5 w-3.5 text-accent-text" />
                       <span>Audio & Haptic Feedback</span>
                     </p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-muted-foreground">
                       Play subtle Apple-style sound effects on file upload, completion, and interactions.
                     </p>
                   </div>
@@ -447,24 +447,24 @@ export default function SettingsPage() {
 
           {/* 4. Notifications Tab */}
           <TabsContent value="notifications" className="space-y-6">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
+            <div className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-8 space-y-6 apple-card">
               <h3 className="text-sm font-bold text-white">Email & Activity Alerts</h3>
 
               <div className="space-y-5">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <p className="text-xs font-semibold text-white">Download Notifications</p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-muted-foreground">
                       Receive an alert when someone downloads one of your shared links.
                     </p>
                   </div>
                   <Switch checked={emailOnDl} onCheckedChange={setEmailOnDl} />
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-zinc-800/80">
+                <div className="flex items-center justify-between pt-3 border-t border-border/80">
                   <div className="space-y-0.5">
                     <p className="text-xs font-semibold text-white">Link Expiration Warning</p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-muted-foreground">
                       Get notified when a shared link is about to expire.
                     </p>
                   </div>
@@ -481,14 +481,14 @@ export default function SettingsPage() {
 
           {/* 6. Security Tab */}
           <TabsContent value="security" className="space-y-6">
-            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/60 p-6 sm:p-8 space-y-6 apple-card">
+            <div className="rounded-3xl border border-border bg-surface/60 p-6 sm:p-8 space-y-6 apple-card">
               <h3 className="text-sm font-bold text-white">Security & Support</h3>
 
               <div className="space-y-4">
-                <div className="p-4 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-background border border-border flex items-center justify-between">
                   <div className="space-y-0.5">
                     <p className="text-xs font-semibold text-white">Support & Assistance</p>
-                    <p className="text-[11px] text-zinc-400">
+                    <p className="text-[11px] text-muted-foreground">
                       Open a support ticket for technical or account inquiries.
                     </p>
                   </div>
@@ -499,12 +499,12 @@ export default function SettingsPage() {
                   </Link>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 space-y-2">
-                  <div className="flex items-center gap-2 text-rose-400 font-semibold text-xs">
+                <div className="p-4 rounded-2xl bg-danger/10 border border-danger/20 space-y-2">
+                  <div className="flex items-center gap-2 text-danger font-semibold text-xs">
                     <AlertTriangle className="h-4 w-4" />
                     <span>Danger Zone</span>
                   </div>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-muted-foreground">
                     Permanently delete your account and all associated files stored in your cloud storage.
                   </p>
                   <Button variant="destructive" size="sm" className="mt-2 text-xs rounded-xl">

@@ -131,7 +131,7 @@ export default function AdminTicketDetailPage() {
     return (
       <AdminLayout>
         <div className="flex h-[60vh] items-center justify-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-[#0071e3]" />
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-accent-text" />
         </div>
       </AdminLayout>
     );
@@ -141,7 +141,7 @@ export default function AdminTicketDetailPage() {
     return (
       <AdminLayout>
         <div className="p-8 text-center space-y-4">
-          <p className="text-zinc-400">Support ticket not found.</p>
+          <p className="text-muted-foreground">Support ticket not found.</p>
           <Link href="/admin/tickets">
             <Button variant="outline" size="sm">
               Return to Tickets
@@ -159,7 +159,7 @@ export default function AdminTicketDetailPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/admin/tickets"
-            className="inline-flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/60 px-3.5 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface/60 px-3.5 py-1.5 text-xs font-semibold text-foreground/80 hover:text-white hover:bg-surface-secondary transition-colors shadow-sm"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back to All Tickets</span>
@@ -177,29 +177,29 @@ export default function AdminTicketDetailPage() {
         </div>
 
         {/* Ticket Header & Status Manager */}
-        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] p-6 sm:p-7 space-y-5 apple-card">
+        <div className="rounded-3xl border border-border bg-surface-secondary p-6 sm:p-7 space-y-5 apple-card">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="rounded-md bg-[#0071e3]/15 px-2 py-0.5 text-[10px] font-bold text-[#2997ff] border border-[#0071e3]/30 capitalize">
+                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent-text border border-accent/30 capitalize">
                   {ticket.status.replace("_", " ")}
                 </span>
-                <span className="rounded-md bg-zinc-800 px-2 py-0.5 text-[10px] font-semibold text-zinc-400 capitalize">
+                <span className="rounded-full bg-surface-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground capitalize">
                   {ticket.department}
                 </span>
-                <span className="text-[11px] text-zinc-400 capitalize">
+                <span className="text-[11px] text-muted-foreground capitalize">
                   Priority: <strong className="text-white">{ticket.priority}</strong>
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+              <h1 className="page-title-sm">
                 {ticket.title}
               </h1>
-              <p className="text-xs text-zinc-400 flex items-center gap-2">
-                <span>Customer: <strong className="text-zinc-200">{ticket.userName}</strong> ({ticket.userEmail})</span>
+              <p className="text-xs text-muted-foreground flex items-center gap-2">
+                <span>Customer: <strong className="text-foreground">{ticket.userName}</strong> ({ticket.userEmail})</span>
                 <span>•</span>
                 <Link
                   href={`/admin/users/${ticket.userId}`}
-                  className="text-[#2997ff] hover:text-[#0071e3] inline-flex items-center gap-1 font-semibold"
+                  className="text-accent-text hover:text-accent-text inline-flex items-center gap-1 font-semibold"
                 >
                   <span>Inspect Profile</span>
                   <ExternalLink className="h-3 w-3" />
@@ -212,7 +212,7 @@ export default function AdminTicketDetailPage() {
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value as any)}
-                className="h-9 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#0071e3]"
+                className="h-9 rounded-xl border border-border bg-background px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-accent"
               >
                 <option value="open">Open</option>
                 <option value="in_progress">In Progress</option>
@@ -224,7 +224,7 @@ export default function AdminTicketDetailPage() {
               <select
                 value={selectedPriority}
                 onChange={(e) => setSelectedPriority(e.target.value as any)}
-                className="h-9 rounded-xl border border-zinc-800 bg-zinc-950 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#0071e3]"
+                className="h-9 rounded-xl border border-border bg-background px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-accent"
               >
                 <option value="low">Low Priority</option>
                 <option value="medium">Medium Priority</option>
@@ -237,7 +237,7 @@ export default function AdminTicketDetailPage() {
                 size="sm"
                 onClick={handleUpdateStatus}
                 disabled={isSavingStatus}
-                className="h-9 text-xs bg-[#0071e3] hover:bg-[#0077ed] text-white rounded-xl gap-1 font-medium"
+                className="h-9 text-xs bg-accent hover:bg-accent-hover text-white rounded-xl gap-1 font-medium"
               >
                 <Save className="h-3.5 w-3.5" />
                 <span>Save Status</span>
@@ -256,15 +256,15 @@ export default function AdminTicketDetailPage() {
                 key={msg.id}
                 className={`flex gap-3.5 ${
                   isStaff
-                    ? "bg-[#0071e3]/10 border-[#0071e3]/20"
-                    : "bg-[#16161a] border-zinc-800"
+                    ? "bg-accent/10 border-accent/20"
+                    : "bg-surface-secondary border-border"
                 } rounded-3xl border p-5 sm:p-6 transition-all apple-card`}
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-surface-secondary border border-border-strong/60 flex-shrink-0">
                   {isStaff ? (
-                    <ShieldCheck className="h-5 w-5 text-[#2997ff]" />
+                    <ShieldCheck className="h-5 w-5 text-accent-text" />
                   ) : (
-                    <User className="h-5 w-5 text-sky-400" />
+                    <User className="h-5 w-5 text-accent-text" />
                   )}
                 </div>
 
@@ -273,17 +273,17 @@ export default function AdminTicketDetailPage() {
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-xs text-white">{msg.senderName}</span>
                       {isStaff && (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-[#0071e3]/20 px-2 py-0.5 text-[10px] font-bold text-[#2997ff] border border-[#0071e3]/30">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-bold text-accent-text border border-accent/30">
                           Staff / Support
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] text-zinc-500">
+                    <span className="text-[11px] text-subtle">
                       {formatRelativeTime(msg.createdAt)}
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-xs sm:text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                     {msg.message}
                   </p>
                 </div>
@@ -296,14 +296,14 @@ export default function AdminTicketDetailPage() {
         {/* Staff Response Form */}
         <form
           onSubmit={handleSendStaffReply}
-          className="rounded-3xl border border-[#0071e3]/30 bg-[#16161a] p-5 space-y-3 apple-card"
+          className="rounded-3xl border border-accent/30 bg-surface-secondary p-5 space-y-3 apple-card"
         >
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-white flex items-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-[#2997ff]" />
+              <ShieldCheck className="h-4 w-4 text-accent-text" />
               <span>Official Staff Response</span>
             </label>
-            <span className="text-[11px] text-zinc-400">
+            <span className="text-[11px] text-muted-foreground">
               Posting will notify customer and update ticket status.
             </span>
           </div>
@@ -313,7 +313,7 @@ export default function AdminTicketDetailPage() {
             onChange={(e) => setReplyText(e.target.value)}
             rows={5}
             placeholder="Type your response to the customer..."
-            className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 p-4 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-[#0071e3] resize-none"
+            className="w-full rounded-2xl border border-border bg-background/80 p-4 text-xs text-white placeholder-subtle focus:outline-none focus:ring-1 focus:ring-accent resize-none"
             required
           />
 
@@ -322,7 +322,7 @@ export default function AdminTicketDetailPage() {
               type="submit"
               variant="primary"
               disabled={isSending}
-              className="text-xs rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white gap-2 font-bold px-6 shadow-md shadow-[#0071e3]/20"
+              className="text-xs rounded-xl bg-accent hover:bg-accent-hover text-white gap-2 font-bold px-6 shadow-md shadow-accent/20"
             >
               <Send className="h-3.5 w-3.5" />
               <span>{isSending ? "Publishing..." : "Send Staff Response"}</span>

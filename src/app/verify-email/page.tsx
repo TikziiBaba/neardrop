@@ -137,28 +137,28 @@ function VerifyEmailContent() {
   const emailProviderUrl = getEmailProviderUrl(email);
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative bg-zinc-950 text-zinc-100 select-none">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 relative text-foreground select-none">
       {/* Background Soft Ambient Glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] bg-gradient-to-b from-[#0071e3]/15 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[450px] bg-gradient-to-b from-accent/15 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-lg space-y-6">
         {/* Brand header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-block group">
-            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-[#0071e3] to-[#43a047] p-0.5 shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center text-[#0071e3]">
+            <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-tr from-accent to-success p-0.5 shadow-lg shadow-accent/20 group-hover:scale-105 transition-transform duration-300">
+              <div className="w-full h-full rounded-full bg-surface flex items-center justify-center text-accent-text">
                 <ShieldCheck className="h-8 w-8" />
               </div>
             </div>
           </Link>
 
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            <h1 className="display-title">
               {isSuccess
                 ? isTr ? "E-posta Başarıyla Doğrulandı" : "Email Successfully Verified"
                 : isTr ? "E-posta Doğrulaması Gerekiyor" : "Email Verification Required"}
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-sm mx-auto">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
               {isSuccess
                 ? isTr
                   ? "NearDrop hesabınız başarıyla aktifleştirildi. Paneliniz kullanıma hazır!"
@@ -171,11 +171,11 @@ function VerifyEmailContent() {
         </div>
 
         {/* Card */}
-        <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6">
+        <div className="rounded-3xl border border-border bg-surface/90 p-6 sm:p-8 shadow-2xl backdrop-blur-2xl space-y-6">
           {/* Success State */}
           {isSuccess ? (
             <div className="text-center space-y-5 py-4 animate-in zoom-in-95 duration-300">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 mx-auto shadow-lg shadow-emerald-500/15">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 border border-success/30 text-success mx-auto shadow-lg shadow-success/15">
                 <CheckCircle2 className="h-8 w-8" />
               </div>
 
@@ -183,7 +183,7 @@ function VerifyEmailContent() {
                 <h3 className="text-base font-bold text-white">
                   {isTr ? "Hesabınız Doğrulandı" : "Account Verified"}
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   {isTr
                     ? "Dosyalarınızı güvenle yükleyebilir, şifreleyebilir ve dilediğiniz gibi paylaşabilirsiniz."
                     : "You can now upload, encrypt, and share your files seamlessly."}
@@ -192,7 +192,7 @@ function VerifyEmailContent() {
 
               <div className="pt-2">
                 <Link href="/dashboard" className="block w-full">
-                  <Button className="w-full gap-2 rounded-full font-bold py-3 bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-lg shadow-blue-500/25 cursor-pointer">
+                  <Button className="w-full gap-2 rounded-full font-bold py-3 bg-accent hover:bg-accent-hover text-white shadow-lg shadow-accent/25 cursor-pointer">
                     <span>{isTr ? "Panele Git" : "Go to Dashboard"}</span>
                     <ArrowRight className="h-4 w-4" />
                   </Button>
@@ -204,16 +204,16 @@ function VerifyEmailContent() {
             <div className="space-y-5 animate-in fade-in duration-200">
               {/* Error banner */}
               {errorMessage && (
-                <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
+                <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-danger/10 border border-danger/20 text-xs text-danger">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-danger" />
                   <span>{errorMessage}</span>
                 </div>
               )}
 
               {/* Email Address & Quick Webmail Shortcut */}
-              <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 space-y-3">
+              <div className="rounded-2xl border border-border bg-background/70 p-4 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-zinc-400">{isTr ? "Doğrulanan E-posta:" : "Target Email:"}</span>
+                  <span className="text-muted-foreground">{isTr ? "Doğrulanan E-posta:" : "Target Email:"}</span>
                   <span className="font-semibold text-white font-mono truncate max-w-[220px]">
                     {email || (isTr ? "Belirtilen e-posta" : "Pending email")}
                   </span>
@@ -224,7 +224,7 @@ function VerifyEmailContent() {
                     href={emailProviderUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-[#0071e3] to-[#0077ed] hover:from-blue-500 hover:to-blue-600 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all cursor-pointer"
+                    className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-accent to-accent-hover hover:from-accent hover:to-accent text-white font-bold text-xs shadow-lg shadow-accent/20 transition-all cursor-pointer"
                   >
                     <span>{isTr ? "Gelen Kutusunu Aç" : "Open Email Inbox"}</span>
                     <ExternalLink className="h-3.5 w-3.5" />
@@ -233,12 +233,12 @@ function VerifyEmailContent() {
               </div>
 
               {/* OTP Code Form with Exactly 6 Button-Like Digit Cells */}
-              <form onSubmit={handleOtpVerify} className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5 space-y-4">
+              <form onSubmit={handleOtpVerify} className="rounded-2xl border border-border bg-background/70 p-5 space-y-4">
                 <div className="text-center space-y-1">
-                  <label className="text-xs font-semibold text-zinc-200 block">
+                  <label className="text-xs font-semibold text-foreground block">
                     {isTr ? "Güvenlik Onay Kodu (6 Haneli)" : "Security Verification Code (6 Digits)"}
                   </label>
-                  <p className="text-[11px] text-zinc-400">
+                  <p className="text-[11px] text-muted-foreground">
                     {isTr
                       ? "E-postanıza gelen 6 haneli güvenlik kodunu girin."
                       : "Enter the 6-digit verification code received in your email."}
@@ -275,10 +275,10 @@ function VerifyEmailContent() {
                           key={idx}
                           className={`w-11 h-14 sm:w-12 sm:h-16 rounded-2xl border flex items-center justify-center font-mono text-2xl sm:text-3xl font-bold transition-all select-none ${
                             digit
-                              ? "border-blue-500 bg-zinc-900 text-white shadow-lg shadow-blue-500/10 ring-1 ring-blue-500/30"
+                              ? "border-accent bg-surface text-white shadow-lg shadow-accent/10 ring-1 ring-accent/30"
                               : isCurrent
-                              ? "border-blue-500 bg-zinc-900/90 text-white ring-2 ring-blue-500/30 animate-pulse"
-                              : "border-zinc-800 bg-zinc-950/80 text-zinc-500 hover:border-zinc-700 hover:bg-zinc-900/40"
+                              ? "border-accent bg-surface/90 text-white ring-2 ring-accent/30 animate-pulse"
+                              : "border-border bg-background/80 text-subtle hover:border-border-strong hover:bg-surface/40"
                           }`}
                         >
                           {digit}
@@ -291,24 +291,24 @@ function VerifyEmailContent() {
                 <Button
                   type="submit"
                   disabled={!canSubmitOtp}
-                  className="w-full py-3 rounded-full text-xs font-bold gap-2 bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/20 cursor-pointer disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                  className="w-full py-3 rounded-full text-xs font-bold gap-2 bg-accent hover:bg-accent-hover text-white shadow-md shadow-accent/20 cursor-pointer disabled:opacity-40 transition-all hover:scale-[1.01] active:scale-[0.99]"
                 >
                   {isVerifyingOtp ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                    <ShieldCheck className="h-4 w-4 text-success" />
                   )}
                   <span>{isTr ? "Kodu Doğrula ve Başla" : "Verify Code & Continue"}</span>
                 </Button>
               </form>
 
               {/* Spam Folder Warning Reminder */}
-              <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 space-y-1.5 text-left">
-                <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
+              <div className="rounded-2xl border border-warning/25 bg-warning/10 p-4 space-y-1.5 text-left">
+                <div className="flex items-center gap-2 text-xs font-semibold text-warning">
                   <AlertCircle className="h-4 w-4 flex-shrink-0" />
                   <span>{isTr ? "E-posta Gelen Kutunuzda Yok mu? Spam Kutusunu Kontrol Edin!" : "Email Missing? Check Spam Folder!"}</span>
                 </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
+                <p className="text-xs text-foreground/80 leading-relaxed">
                   {isTr
                     ? "Doğrulama e-postası bazen sağlayıcınız (Gmail, Outlook vb.) tarafından Spam (İstenmeyen / Gereksiz) klasörüne yönlendirilebilir. Lütfen spam kutunuzu mutlaka kontrol edin."
                     : "Verification emails may sometimes be delivered to your Spam, Junk, or Promotions folder. Please make sure to check all mailbox folders."}
@@ -316,13 +316,13 @@ function VerifyEmailContent() {
               </div>
 
               {/* Resend Link Section */}
-              <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-xs">
-                <span className="text-zinc-400">{isTr ? "Kod ulaşmadı mı?" : "Didn't receive code?"}</span>
+              <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">{isTr ? "Kod ulaşmadı mı?" : "Didn't receive code?"}</span>
                 <button
                   type="button"
                   onClick={handleResend}
                   disabled={isResending || cooldown > 0 || !email}
-                  className="inline-flex items-center gap-1.5 font-semibold text-[#0071e3] hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                  className="inline-flex items-center gap-1.5 font-semibold text-accent-text hover:underline disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   <RefreshCw className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`} />
                   <span>
@@ -337,8 +337,8 @@ function VerifyEmailContent() {
         </div>
 
         {/* Footer info */}
-        <div className="flex items-center justify-center gap-2 text-[11px] text-zinc-500">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
+        <div className="flex items-center justify-center gap-2 text-[11px] text-subtle">
+          <ShieldCheck className="h-3.5 w-3.5 text-success" />
           <span>{isTr ? "NearDrop Güvenli Bulut Mimarisi" : "NearDrop Secure Cloud Architecture"}</span>
         </div>
       </div>
@@ -350,8 +350,8 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-zinc-950">
-          <Loader2 className="h-8 w-8 animate-spin text-[#0071e3]" />
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-accent-text" />
         </div>
       }
     >

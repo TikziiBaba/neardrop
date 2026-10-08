@@ -113,27 +113,27 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
         onDrop={handleDrop}
         className={`group relative overflow-hidden rounded-3xl border transition-all duration-300 ${
           isDragging
-            ? "border-[#0071e3] bg-blue-50/80 scale-[1.01] shadow-2xl shadow-blue-500/20 ring-2 ring-[#0071e3]/40"
-            : "border-[#d4d4d8] bg-white/90 hover:border-[#0071e3]/60 hover:bg-white backdrop-blur-xl shadow-lg shadow-black/[0.03] dark:border-zinc-800/80 dark:bg-zinc-900/40"
+            ? "border-accent bg-accent-text/15 scale-[1.01] shadow-2xl shadow-accent/20 ring-2 ring-accent/40"
+            : "border-border-strong bg-white/90 hover:border-accent/60 hover:bg-white backdrop-blur-xl shadow-lg shadow-black/[0.03] dark:border-border/80 dark:bg-surface/40"
         } ${compact ? "p-6" : "p-8 sm:p-12 text-center"}`}
       >
         {/* Ambient liquid glow background */}
-        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[28rem] rounded-full bg-gradient-to-b from-blue-500/10 via-sky-500/5 to-transparent blur-3xl group-hover:from-blue-500/20 transition-all duration-500" />
+        <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[28rem] rounded-full bg-gradient-to-b from-accent/10 via-accent/5 to-transparent blur-3xl group-hover:from-accent/20 transition-all duration-500" />
 
         <div className="relative z-10 flex flex-col items-center justify-center space-y-5">
           {/* Multi-layered Apple Squircle Icon Container */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute inset-0 rounded-2xl bg-blue-500/20 blur-xl group-hover:blur-2xl transition-all duration-300" />
-            <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-b from-[#0071e3] to-[#005bb5] text-white shadow-xl shadow-blue-500/25 border border-white/20 transition-transform duration-300 group-hover:scale-105">
+            <div className="absolute inset-0 rounded-2xl bg-accent/20 blur-xl group-hover:blur-2xl transition-all duration-300" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-b from-accent to-accent text-white shadow-xl shadow-accent/25 border border-white/20 transition-transform duration-300 group-hover:scale-105">
               <UploadCloud className="h-9 w-9 text-white group-hover:-translate-y-0.5 transition-transform duration-300" />
             </div>
           </div>
 
           <div className="space-y-1.5 max-w-md mx-auto">
-            <h3 className="text-base sm:text-lg font-bold tracking-tight text-[#09090b] dark:text-white">
+            <h3 className="text-base sm:text-lg font-bold tracking-tight text-background dark:text-white">
               {isDragging ? t.dropzone.dropHere : t.dropzone.dragDropHint}
             </h3>
-            <p className="text-xs text-[#27272a] dark:text-zinc-400 font-normal leading-relaxed">
+            <p className="text-xs text-surface-tertiary dark:text-muted-foreground font-normal leading-relaxed">
               {t.dropzone.r2Description}
             </p>
           </div>
@@ -147,9 +147,9 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                 SoundManager.play("click");
                 fileInputRef.current?.click();
               }}
-              className="group/btn relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-[#0071e3] to-[#0077ed] hover:from-[#0077ed] hover:to-[#005bb5] shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
+              className="group/btn relative inline-flex items-center gap-2.5 px-6 py-3 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-accent to-accent-hover hover:from-accent-hover hover:to-accent shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/40 hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
             >
-              <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-white/20 text-white">
+              <div className="flex h-5 w-5 items-center justify-center rounded-2xl bg-white/20 text-white">
                 <UploadCloud className="h-3.5 w-3.5 group-hover/btn:-translate-y-0.5 transition-transform" />
               </div>
               <span className="tracking-wide">{t.dropzone.chooseFiles}</span>
@@ -163,33 +163,33 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                 SoundManager.play("click");
                 folderInputRef.current?.click();
               }}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold text-xs text-[#09090b] dark:text-zinc-200 bg-white hover:bg-blue-50/60 border border-[#d4d4d8] hover:border-[#0071e3] hover:text-[#0071e3] shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl font-semibold text-xs text-background dark:text-foreground bg-white hover:bg-accent-text/10 border border-border-strong hover:border-accent hover:text-accent-text shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none"
             >
-              <FolderUp className="h-4 w-4 text-[#0071e3]" />
+              <FolderUp className="h-4 w-4 text-accent-text" />
               <span>{t.dropzone.uploadFolder}</span>
             </button>
           </div>
 
           {/* Security & All Formats Supported Banner */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/25 text-emerald-800 dark:text-emerald-400 text-[11px] font-semibold shadow-sm">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-success/20 dark:bg-success/10 border border-success dark:border-success/25 text-success dark:text-success text-[11px] font-semibold shadow-sm">
+            <ShieldCheck className="h-3.5 w-3.5 text-success dark:text-success flex-shrink-0" />
             <span>{t.dropzone.allFormatsSupported}</span>
             <span className="opacity-40">•</span>
-            <span className="text-emerald-700 dark:text-emerald-300">{t.dropzone.securityScanActive}</span>
+            <span className="text-success dark:text-success">{t.dropzone.securityScanActive}</span>
           </div>
 
           {/* Feature Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-[#27272a] dark:text-zinc-400 pt-1 font-semibold">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-surface-tertiary dark:text-muted-foreground pt-1 font-semibold">
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-success" />
               <span>{t.dropzone.encrypted}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0071e3]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
               <span>{t.dropzone.directStreaming}</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-file-video" />
               <span>{t.dropzone.unlimitedSpeed}</span>
             </span>
           </div>
@@ -238,12 +238,12 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
 
         return (
           <div className="space-y-2.5 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between text-xs font-semibold text-zinc-300 px-1">
+            <div className="flex items-center justify-between text-xs font-semibold text-foreground/80 px-1">
               <span className="flex items-center gap-2">
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-sky-400" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-accent-text" />
                 <span>{t.dropzone.uploading} ({activeTransfers.length})</span>
               </span>
-              <span className="text-zinc-400 text-[11px] font-normal">{t.dropzone.streamingToR2}</span>
+              <span className="text-muted-foreground text-[11px] font-normal">{t.dropzone.streamingToR2}</span>
             </div>
 
             <div className="space-y-2">
@@ -260,40 +260,40 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                 return (
                   <div
                     key={`folder-${folderName}`}
-                    className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3.5 shadow-md space-y-2.5"
+                    className="rounded-2xl border border-border bg-surface/90 p-3.5 shadow-md space-y-2.5"
                   >
                     <div className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 flex-shrink-0">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10 border border-accent/25 text-accent-text flex-shrink-0">
                           <FolderUp className="h-4 w-4" />
                         </div>
                         <div className="min-w-0">
                           <span className="font-semibold text-white truncate block max-w-xs">{folderName}</span>
-                          <span className="text-[10px] text-zinc-400 font-mono">
+                          <span className="text-[10px] text-muted-foreground font-mono">
                             {completedFiles}/{totalFiles} dosya tamamlandı
                           </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-3 flex-shrink-0">
-                        <span className="rounded-md bg-sky-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-sky-400">
+                        <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[11px] font-bold text-accent-text">
                           %{folderProgress}
                         </span>
                       </div>
                     </div>
 
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-surface-secondary">
                       <div
-                        className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 transition-all duration-200"
+                        className="h-full bg-gradient-to-r from-accent-text via-accent to-accent transition-all duration-200"
                         style={{ width: `${folderProgress}%` }}
                       />
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
                       <span>
                         {formatBytes(transferredBytes)} / {formatBytes(totalBytes)}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-sky-400 font-medium">{formatSpeed(folderSpeed)}</span>
+                        <span className="text-accent-text font-medium">{formatSpeed(folderSpeed)}</span>
                       </div>
                     </div>
                   </div>
@@ -304,20 +304,20 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
               {standaloneActive.map((item) => (
                 <div
                   key={item.id}
-                  className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-3.5 shadow-md space-y-2.5"
+                  className="rounded-2xl border border-border bg-surface/90 p-3.5 shadow-md space-y-2.5"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <FileText className="h-4 w-4 text-sky-400 flex-shrink-0" />
+                      <FileText className="h-4 w-4 text-accent-text flex-shrink-0" />
                       <span className="font-semibold text-white truncate max-w-xs">{item.filename}</span>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="rounded-md bg-sky-500/20 px-2 py-0.5 font-mono text-[11px] font-bold text-sky-400">
+                      <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[11px] font-bold text-accent-text">
                         %{item.progress}
                       </span>
                       <button
                         onClick={() => cancelTransfer(item.id)}
-                        className="p-1 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-md transition-colors"
+                        className="p-1 text-subtle hover:text-danger hover:bg-danger/10 rounded-xl transition-colors"
                         title={t.dropzone.cancel}
                       >
                         <X className="h-3.5 w-3.5" />
@@ -325,19 +325,19 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                     </div>
                   </div>
 
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-surface-secondary">
                     <div
-                      className="h-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-500 transition-all duration-200"
+                      className="h-full bg-gradient-to-r from-accent-text via-accent to-accent transition-all duration-200"
                       style={{ width: `${item.progress}%` }}
                     />
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 font-mono">
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono">
                     <span>
                       {formatBytes(item.transferredBytes)} / {formatBytes(item.size)}
                     </span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sky-400 font-medium">{formatSpeed(item.speed)}</span>
+                      <span className="text-accent-text font-medium">{formatSpeed(item.speed)}</span>
                       {item.eta !== undefined && (
                         <>
                           <span>•</span>
@@ -356,17 +356,17 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
       {/* Guest Transfer Choice Modal */}
       {showGuestChoice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-[32px] border border-white/[0.12] bg-[#161617] p-6 sm:p-8 shadow-2xl space-y-6 text-left">
+          <div className="relative w-full max-w-md rounded-3xl border border-white/[0.12] bg-surface-secondary p-6 sm:p-8 shadow-2xl space-y-6 text-left">
             <button
               onClick={() => setShowGuestChoice(false)}
-              className="absolute top-5 right-5 text-zinc-400 hover:text-white p-1 rounded-full hover:bg-white/[0.08] transition-colors"
+              className="absolute top-5 right-5 text-muted-foreground hover:text-white p-1 rounded-full hover:bg-white/[0.08] transition-colors"
               aria-label="Kapat"
             >
               <X className="h-4 w-4" />
             </button>
 
             <div className="space-y-1.5">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-[#0071e3]">
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-accent-text">
                 {locale === "tr" ? "NearDrop Transfer Seçenekleri" : "NearDrop Transfer Modes"}
               </span>
               <h3 className="text-xl font-bold text-white tracking-tight">
@@ -381,10 +381,10 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
               <Link
                 href="/transfers"
                 onClick={() => setShowGuestChoice(false)}
-                className="block p-4 sm:p-5 rounded-2xl border border-[#0071e3]/30 bg-[#0071e3]/10 hover:bg-[#0071e3]/20 hover:border-[#0071e3]/50 transition-all group cursor-pointer"
+                className="block p-4 sm:p-5 rounded-2xl border border-accent/30 bg-accent/10 hover:bg-accent/20 hover:border-accent/50 transition-all group cursor-pointer"
               >
                 <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-[#0071e3] text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/30 group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center shrink-0 shadow-md shadow-accent/30 group-hover:scale-105 transition-transform">
                     <Zap className="h-5 w-5" />
                   </div>
                   <div>
@@ -392,11 +392,11 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
                       <span className="text-sm font-bold text-white">
                         {locale === "tr" ? "Eşler Arası (P2P) Aktar" : "Direct P2P Streaming"}
                       </span>
-                      <span className="text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
+                      <span className="text-[10px] font-semibold bg-success/20 text-success px-2 py-0.5 rounded-full border border-success/30">
                         {locale === "tr" ? "Hesapsız · Sınırsız Hız" : "No Account · Unlimited"}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-300 mt-1 leading-relaxed">
+                    <p className="text-xs text-foreground/80 mt-1 leading-relaxed">
                       {locale === "tr"
                         ? "Dosyalar sunucuya yüklenmez. Cihazınızdan doğrudan alıcının tarayıcısına akar."
                         : "Files never touch our servers. Stream directly from your browser to recipient."}
@@ -409,22 +409,22 @@ export const DropZone: React.FC<DropZoneProps> = ({ compact = false, onUploadSta
               <Link
                 href="/register?redirect=/dashboard"
                 onClick={() => setShowGuestChoice(false)}
-                className="block p-4 sm:p-5 rounded-2xl border border-white/[0.08] bg-zinc-900/80 hover:bg-zinc-800/80 hover:border-white/[0.16] transition-all group cursor-pointer"
+                className="block p-4 sm:p-5 rounded-2xl border border-white/[0.08] bg-surface/80 hover:bg-surface-secondary/80 hover:border-white/[0.16] transition-all group cursor-pointer"
               >
                 <div className="flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <UploadCloud className="h-5 w-5 text-sky-400" />
+                  <div className="w-10 h-10 rounded-xl bg-surface-secondary text-foreground/80 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                    <UploadCloud className="h-5 w-5 text-accent-text" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-bold text-white">
                         {locale === "tr" ? "Buluta Yükle & Link Al" : "Upload to Cloud & Get Link"}
                       </span>
-                      <span className="text-[10px] font-semibold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">
+                      <span className="text-[10px] font-semibold bg-accent/20 text-accent-text px-2 py-0.5 rounded-full border border-accent/30">
                         {locale === "tr" ? "Ücretsiz Hesap" : "Free Account"}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                       {locale === "tr"
                         ? "Süreli ve şifreli indirme bağlantısı oluşturun. 10 saniyede ücretsiz kaydolun."
                         : "Create an expiring, password-protected link with a free 10-second sign-up."}

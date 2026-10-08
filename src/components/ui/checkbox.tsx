@@ -39,8 +39,8 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   };
 
   const sizeStyles = {
-    sm: "h-4 w-4 rounded-md",
-    default: "h-5 w-5 rounded-lg",
+    sm: "h-4 w-4 rounded-xl",
+    default: "h-5 w-5 rounded-2xl",
     lg: "h-6 w-6 rounded-xl",
   }[size];
 
@@ -60,8 +60,8 @@ export const Checkbox: React.FC<CheckboxProps> = ({
       onClick={handleClick}
       className={`relative inline-flex items-center justify-center transition-all duration-200 select-none flex-shrink-0 cursor-pointer ${sizeStyles} ${
         checked
-          ? "bg-gradient-to-tr from-sky-500 via-sky-400 to-blue-600 text-white shadow-lg shadow-sky-500/30 ring-1 ring-white/40 scale-[1.04]"
-          : "bg-zinc-900/90 border border-zinc-700/80 hover:border-sky-400/60 hover:bg-zinc-800/90 hover:scale-105 shadow-inner"
+          ? "bg-gradient-to-tr from-accent via-accent-text to-accent text-white shadow-lg shadow-accent/30 ring-1 ring-white/40 scale-[1.04]"
+          : "bg-surface/90 border border-border-strong/80 hover:border-accent-text/60 hover:bg-surface-secondary/90 hover:scale-105 shadow-inner"
       } ${disabled ? "opacity-40 cursor-not-allowed" : ""} ${className}`}
     >
       {/* Liquid specular edge */}

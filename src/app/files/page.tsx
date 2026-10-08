@@ -283,17 +283,17 @@ export default function FilesPage() {
 
     switch (cat) {
       case "archive":
-        return <FileArchive className={`${sizeClasses} text-amber-400`} />;
+        return <FileArchive className={`${sizeClasses} text-warning`} />;
       case "image":
-        return <FileImage className={`${sizeClasses} text-emerald-400`} />;
+        return <FileImage className={`${sizeClasses} text-success`} />;
       case "video":
-        return <FileVideo className={`${sizeClasses} text-purple-400`} />;
+        return <FileVideo className={`${sizeClasses} text-file-video`} />;
       case "audio":
-        return <FileAudio className={`${sizeClasses} text-pink-400`} />;
+        return <FileAudio className={`${sizeClasses} text-file-audio`} />;
       case "code":
-        return <FileCode className={`${sizeClasses} text-cyan-400`} />;
+        return <FileCode className={`${sizeClasses} text-accent-text`} />;
       default:
-        return <FileText className={`${sizeClasses} text-sky-400`} />;
+        return <FileText className={`${sizeClasses} text-accent-text`} />;
     }
   };
 
@@ -426,12 +426,12 @@ export default function FilesPage() {
       >
         {/* Drag Overlay */}
         {isDragging && (
-          <div className="absolute inset-0 z-40 rounded-3xl border-2 border-dashed border-sky-400 bg-sky-950/85 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-200">
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-sky-500/20 text-sky-400 border border-sky-500/40 mb-4 shadow-xl shadow-sky-500/20">
+          <div className="absolute inset-0 z-40 rounded-3xl border-2 border-dashed border-accent-text bg-accent/10 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-200">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-accent/20 text-accent-text border border-accent/40 mb-4 shadow-xl shadow-accent/20">
               <UploadCloud className="h-10 w-10 animate-bounce" />
             </div>
             <h3 className="text-xl font-bold text-white tracking-tight">{t.filesPage.dropHere}</h3>
-            <p className="text-xs text-sky-200 mt-1 max-w-sm">
+            <p className="text-xs text-accent-text mt-1 max-w-sm">
               {currentFolderPath
                 ? `Uploading directly into "${currentFolderPath}"`
                 : t.filesPage.dropDesc}
@@ -461,13 +461,13 @@ export default function FilesPage() {
         {/* Top Action Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>{t.filesPage.title}</span>
               <Badge variant="secondary" className="text-xs">
                 {files.length} {t.filesPage.files}
               </Badge>
             </h1>
-            <p className="text-xs text-zinc-400 mt-0.5">{t.filesPage.subtitle}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{t.filesPage.subtitle}</p>
           </div>
 
           <div className="flex items-center gap-2.5 self-start sm:self-auto">
@@ -477,9 +477,9 @@ export default function FilesPage() {
                 SoundManager.play("click");
                 folderInputRef.current?.click();
               }}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-foreground hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
             >
-              <FolderUp className="h-4 w-4 text-sky-400" />
+              <FolderUp className="h-4 w-4 text-accent-text" />
               <span>{t.filesPage.uploadFolder}</span>
             </button>
 
@@ -489,7 +489,7 @@ export default function FilesPage() {
                 SoundManager.play("click");
                 fileInputRef.current?.click();
               }}
-              className="group/btn relative inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-lg shadow-sky-500/25 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+              className="group/btn relative inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-accent via-accent-text to-accent hover:from-accent-text hover:to-accent shadow-lg shadow-accent/25 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
             >
               <UploadCloud className="h-4 w-4 group-hover/btn:-translate-y-0.5 transition-transform" />
               <span>{t.filesPage.uploadFiles}</span>
@@ -501,7 +501,7 @@ export default function FilesPage() {
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Search bar */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-subtle" />
             <Input
               type="text"
               placeholder={t.filesPage.searchPlaceholder}
@@ -512,7 +512,7 @@ export default function FilesPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-white"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -525,7 +525,7 @@ export default function FilesPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="h-10 rounded-xl border border-zinc-800 bg-zinc-900/80 px-3 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="h-10 rounded-xl border border-border bg-surface/80 px-3 text-xs text-foreground/80 focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <option value="name">Sort by Name</option>
               <option value="date">Sort by Date</option>
@@ -533,11 +533,11 @@ export default function FilesPage() {
             </select>
 
             {/* List / Grid Switcher */}
-            <div className="flex items-center rounded-xl border border-zinc-800 bg-zinc-900/80 p-1">
+            <div className="flex items-center rounded-xl border border-border bg-surface/80 p-1">
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-1.5 rounded-lg transition-colors ${
-                  viewMode === "list" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                className={`p-1.5 rounded-2xl transition-colors ${
+                  viewMode === "list" ? "bg-surface-secondary text-white" : "text-subtle hover:text-foreground/80"
                 }`}
                 title="List View"
               >
@@ -545,8 +545,8 @@ export default function FilesPage() {
               </button>
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-1.5 rounded-lg transition-colors ${
-                  viewMode === "grid" ? "bg-zinc-800 text-white" : "text-zinc-500 hover:text-zinc-300"
+                className={`p-1.5 rounded-2xl transition-colors ${
+                  viewMode === "grid" ? "bg-surface-secondary text-white" : "text-subtle hover:text-foreground/80"
                 }`}
                 title="Grid View"
               >
@@ -564,8 +564,8 @@ export default function FilesPage() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`whitespace-nowrap px-3.5 py-1.5 rounded-xl text-xs font-medium border transition-all ${
                 selectedCategory === cat.id
-                  ? "border-sky-500/30 bg-sky-500/15 text-sky-400 font-semibold"
-                  : "border-zinc-800/80 bg-zinc-900/50 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                  ? "border-accent/30 bg-accent/15 text-accent-text font-semibold"
+                  : "border-border/80 bg-surface/50 text-muted-foreground hover:border-border-strong hover:text-foreground"
               }`}
             >
               {cat.label}
@@ -575,22 +575,22 @@ export default function FilesPage() {
 
         {/* GitHub / Finder-Style Breadcrumb Navigation Bar */}
         {!isSearching && (
-          <div className="flex items-center justify-between rounded-2xl border border-zinc-800/80 bg-zinc-900/60 px-4 py-2.5 backdrop-blur-md">
+          <div className="flex items-center justify-between rounded-2xl border border-border/80 bg-surface/60 px-4 py-2.5 backdrop-blur-md">
             <div className="flex items-center gap-1.5 overflow-x-auto text-xs scrollbar-none py-0.5">
               {breadcrumbs.map((crumb, idx) => {
                 const isLast = idx === breadcrumbs.length - 1;
                 return (
                   <React.Fragment key={crumb.path || "root"}>
-                    {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-zinc-600 flex-shrink-0" />}
+                    {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-subtle/80 flex-shrink-0" />}
                     <button
                       onClick={() => setCurrentFolderPath(crumb.path)}
-                      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-colors whitespace-nowrap ${
+                      className={`flex items-center gap-1.5 px-2 py-1 rounded-2xl transition-colors whitespace-nowrap ${
                         isLast
-                          ? "font-semibold text-white bg-zinc-800/80 shadow-sm"
-                          : "text-zinc-400 hover:text-sky-300 hover:bg-zinc-800/50"
+                          ? "font-semibold text-white bg-surface-secondary/80 shadow-sm"
+                          : "text-muted-foreground hover:text-accent-text hover:bg-surface-secondary/50"
                       }`}
                     >
-                      {idx === 0 ? <Home className="h-3.5 w-3.5 text-sky-400" /> : <Folder className="h-3.5 w-3.5 text-sky-400/80" />}
+                      {idx === 0 ? <Home className="h-3.5 w-3.5 text-accent-text" /> : <Folder className="h-3.5 w-3.5 text-accent-text/80" />}
                       <span>{crumb.name}</span>
                     </button>
                   </React.Fragment>
@@ -615,7 +615,7 @@ export default function FilesPage() {
                       latestCreatedAt: currentFiles[0]?.createdAt || new Date().toISOString(),
                     });
                   }}
-                  className="text-xs text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 border-sky-500/30 h-7 px-2 gap-1"
+                  className="text-xs text-accent-text hover:text-accent-text hover:bg-accent-hover/10 border-accent/30 h-7 px-2 gap-1"
                 >
                   <Share2 className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Share Folder</span>
@@ -625,9 +625,9 @@ export default function FilesPage() {
                   variant="ghost"
                   size="sm"
                   onClick={navigateUp}
-                  className="text-xs text-zinc-400 hover:text-white h-7 px-2 gap-1"
+                  className="text-xs text-muted-foreground hover:text-white h-7 px-2 gap-1"
                 >
-                  <CornerLeftUp className="h-3.5 w-3.5 text-sky-400" />
+                  <CornerLeftUp className="h-3.5 w-3.5 text-accent-text" />
                   <span className="hidden sm:inline">{t.filesPage.goUp}</span>
                 </Button>
               </div>
@@ -637,9 +637,9 @@ export default function FilesPage() {
 
         {/* Search Mode Active Banner */}
         {isSearching && (
-          <div className="flex items-center justify-between rounded-2xl border border-sky-500/20 bg-sky-500/10 px-4 py-2.5 text-xs text-sky-300">
+          <div className="flex items-center justify-between rounded-2xl border border-accent/20 bg-accent/10 px-4 py-2.5 text-xs text-accent-text">
             <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-sky-400" />
+              <Sparkles className="h-4 w-4 text-accent-text" />
               <span>
                 {t.filesPage.searchingInAllFolders}: <strong className="text-white">&ldquo;{searchQuery}&rdquo;</strong> ({filteredFiles.length} results)
               </span>
@@ -655,13 +655,13 @@ export default function FilesPage() {
 
         {/* Empty State */}
         {totalCurrentItems === 0 ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/30 p-12 text-center space-y-4">
-            <FolderOpen className="h-12 w-12 text-zinc-600 mx-auto" />
+          <div className="rounded-3xl border border-border bg-surface/30 p-12 text-center space-y-4">
+            <FolderOpen className="h-12 w-12 text-subtle/80 mx-auto" />
             <div className="space-y-1 max-w-sm mx-auto">
-              <h3 className="text-sm font-semibold text-zinc-300">
+              <h3 className="text-sm font-semibold text-foreground/80">
                 {currentFolderPath ? t.filesPage.emptyFolder : t.filesPage.noFilesFound}
               </h3>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-subtle">
                 {isSearching
                   ? t.filesPage.noFilesMatchSearch
                   : t.filesPage.noFilesFoundDesc}
@@ -674,7 +674,7 @@ export default function FilesPage() {
                   SoundManager.play("click");
                   fileInputRef.current?.click();
                 }}
-                className="group/btn relative inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-sky-500 via-sky-400 to-blue-600 hover:from-sky-400 hover:to-blue-500 shadow-lg shadow-sky-500/25 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+                className="group/btn relative inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-xs text-white bg-gradient-to-r from-accent via-accent-text to-accent hover:from-accent-text hover:to-accent shadow-lg shadow-accent/25 ring-1 ring-white/30 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
               >
                 <UploadCloud className="h-4 w-4 group-hover/btn:-translate-y-0.5 transition-transform" />
                 <span>{t.filesPage.uploadFiles}</span>
@@ -685,9 +685,9 @@ export default function FilesPage() {
                   SoundManager.play("click");
                   folderInputRef.current?.click();
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-zinc-200 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-xs text-foreground hover:text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer select-none"
               >
-                <FolderUp className="h-4 w-4 text-sky-400" />
+                <FolderUp className="h-4 w-4 text-accent-text" />
                 <span>{t.filesPage.uploadFolder}</span>
               </button>
             </div>
@@ -696,19 +696,19 @@ export default function FilesPage() {
           /* ========================================================= */
           /* LIST VIEW (GitHub Style)                                  */
           /* ========================================================= */
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden divide-y divide-zinc-800/60">
+          <div className="rounded-2xl border border-border bg-surface/60 overflow-hidden divide-y divide-border/60">
             {/* Go Up Parent Row if nested */}
             {!isSearching && currentFolderPath && (
               <div
                 onClick={navigateUp}
-                className="flex items-center gap-3.5 p-3 sm:px-4 hover:bg-zinc-800/40 transition-colors cursor-pointer text-xs font-semibold text-zinc-400 hover:text-white group"
+                className="flex items-center gap-3.5 p-3 sm:px-4 hover:bg-surface-secondary/40 transition-colors cursor-pointer text-xs font-semibold text-muted-foreground hover:text-white group"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-800/80 border border-zinc-700/50 group-hover:border-sky-500/40 transition-colors">
-                  <CornerLeftUp className="h-4 w-4 text-sky-400" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-secondary/80 border border-border-strong/50 group-hover:border-accent/40 transition-colors">
+                  <CornerLeftUp className="h-4 w-4 text-accent-text" />
                 </div>
                 <div className="flex items-center gap-2">
                   <span>..</span>
-                  <span className="text-[11px] font-normal text-zinc-500 group-hover:text-zinc-400">({t.filesPage.goUp})</span>
+                  <span className="text-[11px] font-normal text-subtle group-hover:text-muted-foreground">({t.filesPage.goUp})</span>
                 </div>
               </div>
             )}
@@ -717,18 +717,18 @@ export default function FilesPage() {
             {directFolders.map((folder) => (
               <div
                 key={folder.fullPath}
-                className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-sky-500/5 transition-colors group cursor-pointer"
+                className="flex items-center justify-between p-3.5 sm:p-4 hover:bg-accent-hover/5 transition-colors group cursor-pointer"
                 onClick={() => setCurrentFolderPath(folder.fullPath)}
               >
                 <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 shadow-sm group-hover:scale-105 group-hover:bg-sky-500/20 transition-all flex-shrink-0">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 border border-accent/25 text-accent-text shadow-sm group-hover:scale-105 group-hover:bg-accent-hover/20 transition-all flex-shrink-0">
                     <Folder className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 truncate">
-                    <p className="font-semibold text-xs sm:text-sm text-zinc-100 truncate group-hover:text-sky-300 transition-colors">
+                    <p className="font-semibold text-xs sm:text-sm text-foreground truncate group-hover:text-accent-text transition-colors">
                       {folder.name}
                     </p>
-                    <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
+                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
                       <span>
                         {folder.filesCount} {folder.filesCount === 1 ? t.filesPage.item : t.filesPage.items}
                       </span>
@@ -746,10 +746,10 @@ export default function FilesPage() {
                       e.stopPropagation();
                       handleDownloadFolder(folder);
                     }}
-                    className={`p-1.5 rounded-lg transition-colors ${
+                    className={`p-1.5 rounded-2xl transition-colors ${
                       downloadingFolder === folder.fullPath
-                        ? "text-sky-400 animate-pulse"
-                        : "text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+                        ? "text-accent-text animate-pulse"
+                        : "text-muted-foreground hover:text-success hover:bg-success/10"
                     }`}
                     title="Download as ZIP"
                     disabled={downloadingFolder === folder.fullPath}
@@ -761,7 +761,7 @@ export default function FilesPage() {
                       e.stopPropagation();
                       setSelectedFolderForShare(folder);
                     }}
-                    className="p-1.5 text-zinc-400 hover:text-sky-400 rounded-lg hover:bg-sky-500/10 transition-colors"
+                    className="p-1.5 text-muted-foreground hover:text-accent-text rounded-2xl hover:bg-accent-hover/10 transition-colors"
                     title="Share Folder"
                   >
                     <Share2 className="h-4 w-4" />
@@ -771,12 +771,12 @@ export default function FilesPage() {
                       e.stopPropagation();
                       setFolderToDelete(folder);
                     }}
-                    className="p-1.5 text-zinc-500 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors"
+                    className="p-1.5 text-subtle hover:text-danger rounded-2xl hover:bg-danger/10 transition-colors"
                     title="Delete Folder"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
-                  <ChevronRight className="h-4 w-4 text-zinc-600 group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all" />
+                  <ChevronRight className="h-4 w-4 text-subtle/80 group-hover:text-accent-text group-hover:translate-x-0.5 transition-all" />
                 </div>
               </div>
             ))}
@@ -791,7 +791,7 @@ export default function FilesPage() {
                 <div
                   key={file.id}
                   className={`flex items-center justify-between p-3.5 sm:p-4 transition-colors group ${
-                    isSelected ? "bg-sky-500/10 border-l-2 border-sky-400" : "hover:bg-zinc-800/40"
+                    isSelected ? "bg-accent/10 border-l-2 border-accent-text" : "hover:bg-surface-secondary/40"
                   }`}
                 >
                   <div className="flex items-center gap-3 mr-2">
@@ -810,7 +810,7 @@ export default function FilesPage() {
                       }
                     }}
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary border border-border-strong/60 flex-shrink-0">
                       {renderFileIcon(file)}
                     </div>
                     <div className="min-w-0 truncate">
@@ -822,24 +822,24 @@ export default function FilesPage() {
                               setSearchQuery("");
                               setCurrentFolderPath(dir);
                             }}
-                            className="flex items-center gap-1 text-[11px] font-mono text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 px-1.5 py-0.5 rounded flex-shrink-0 transition-colors"
+                            className="flex items-center gap-1 text-[11px] font-mono text-accent-text bg-accent/10 hover:bg-accent-hover/20 px-1.5 py-0.5 rounded flex-shrink-0 transition-colors"
                           >
                             <Folder className="h-3 w-3" />
                             {dir}/
                           </span>
                         )}
-                        <p className={`font-semibold text-xs sm:text-sm text-zinc-100 truncate transition-colors ${isMedia ? "group-hover:text-sky-300" : ""}`}>
+                        <p className={`font-semibold text-xs sm:text-sm text-foreground truncate transition-colors ${isMedia ? "group-hover:text-accent-text" : ""}`}>
                           {isSearching ? name : file.filename.split("/").pop() || file.filename}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
+                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
                         <span>{formatBytes(file.size)}</span>
                         <span>•</span>
                         <span>{formatRelativeTime(file.createdAt)}</span>
                         {(file.activeSharesCount || 0) > 0 && (
                           <>
                             <span>•</span>
-                            <span className="text-emerald-400 font-medium">{file.activeSharesCount} share</span>
+                            <span className="text-success font-medium">{file.activeSharesCount} share</span>
                           </>
                         )}
                       </div>
@@ -852,7 +852,7 @@ export default function FilesPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedFileForShare(file)}
-                      className="text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1.5 text-xs h-8"
+                      className="text-accent-text hover:text-accent-text hover:bg-accent-hover/10 gap-1.5 text-xs h-8"
                     >
                       <Share2 className="h-3.5 w-3.5" />
                       <span className="hidden sm:inline">Share</span>
@@ -862,7 +862,7 @@ export default function FilesPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDownloadFile(file)}
-                      className="text-zinc-400 hover:text-white h-8 w-8 p-0"
+                      className="text-muted-foreground hover:text-white h-8 w-8 p-0"
                       title="Download"
                     >
                       <Download className="h-4 w-4" />
@@ -872,7 +872,7 @@ export default function FilesPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedFileForRename(file)}
-                      className="text-zinc-400 hover:text-white h-8 w-8 p-0"
+                      className="text-muted-foreground hover:text-white h-8 w-8 p-0"
                       title="Rename"
                     >
                       <Edit2 className="h-3.5 w-3.5" />
@@ -882,7 +882,7 @@ export default function FilesPage() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedFileForDelete(file)}
-                      className="text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 h-8 w-8 p-0"
+                      className="text-muted-foreground hover:text-danger hover:bg-danger/10 h-8 w-8 p-0"
                       title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -900,7 +900,7 @@ export default function FilesPage() {
             {/* 1. Folders Grid Section */}
             {directFolders.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
                   {t.filesPage.folders} ({directFolders.length})
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -908,10 +908,10 @@ export default function FilesPage() {
                     <div
                       key={folder.fullPath}
                       onClick={() => setCurrentFolderPath(folder.fullPath)}
-                      className="rounded-2xl border border-zinc-800/90 bg-zinc-900/60 p-4 space-y-3 hover:border-sky-500/40 hover:bg-zinc-900/90 transition-all group cursor-pointer shadow-md flex flex-col justify-between"
+                      className="rounded-2xl border border-border/90 bg-surface/60 p-4 space-y-3 hover:border-accent/40 hover:bg-surface/90 transition-all group cursor-pointer shadow-md flex flex-col justify-between"
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-500/10 border border-sky-500/25 text-sky-400 group-hover:scale-105 transition-transform">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10 border border-accent/25 text-accent-text group-hover:scale-105 transition-transform">
                           <Folder className="h-6 w-6" />
                         </div>
                         <Badge variant="secondary" className="text-[10px]">
@@ -920,15 +920,15 @@ export default function FilesPage() {
                       </div>
 
                       <div>
-                        <h4 className="font-semibold text-sm text-white truncate group-hover:text-sky-300 transition-colors">
+                        <h4 className="font-semibold text-sm text-white truncate group-hover:text-accent-text transition-colors">
                           {folder.name}
                         </h4>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
                           {formatBytes(folder.totalBytes)} • {formatRelativeTime(folder.latestCreatedAt)}
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60 text-xs text-sky-400 font-medium">
+                      <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs text-accent-text font-medium">
                         <span className="flex items-center gap-1 group-hover:underline">
                           Open folder <ChevronRight className="h-3.5 w-3.5" />
                         </span>
@@ -940,8 +940,8 @@ export default function FilesPage() {
                             }}
                             className={`p-1 rounded transition-colors ${
                               downloadingFolder === folder.fullPath
-                                ? "text-sky-400 animate-pulse"
-                                : "text-zinc-400 hover:text-emerald-400"
+                                ? "text-accent-text animate-pulse"
+                                : "text-muted-foreground hover:text-success"
                             }`}
                             title="Download as ZIP"
                             disabled={downloadingFolder === folder.fullPath}
@@ -953,7 +953,7 @@ export default function FilesPage() {
                               e.stopPropagation();
                               setSelectedFolderForShare(folder);
                             }}
-                            className="p-1 text-zinc-400 hover:text-sky-400 rounded transition-colors"
+                            className="p-1 text-muted-foreground hover:text-accent-text rounded transition-colors"
                             title="Share Folder"
                           >
                             <Share2 className="h-3.5 w-3.5" />
@@ -963,7 +963,7 @@ export default function FilesPage() {
                               e.stopPropagation();
                               setFolderToDelete(folder);
                             }}
-                            className="p-1 text-zinc-500 hover:text-rose-400 rounded transition-colors"
+                            className="p-1 text-subtle hover:text-danger rounded transition-colors"
                             title="Delete Folder"
                           >
                             <Trash2 className="h-3.5 w-3.5" />
@@ -980,7 +980,7 @@ export default function FilesPage() {
             {directFiles.length > 0 && (
               <div className="space-y-3">
                 {directFolders.length > 0 && (
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1">
+                  <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
                     {t.filesPage.files} ({directFiles.length})
                   </h3>
                 )}
@@ -992,7 +992,7 @@ export default function FilesPage() {
                     return (
                       <div
                         key={file.id}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 space-y-3 hover:border-zinc-700 transition-all group flex flex-col justify-between"
+                        className="rounded-2xl border border-border bg-surface/60 p-4 space-y-3 hover:border-border-strong transition-all group flex flex-col justify-between"
                       >
                         <div
                           className={`space-y-3 ${isMedia ? "cursor-pointer" : "cursor-default"}`}
@@ -1010,7 +1010,7 @@ export default function FilesPage() {
                                 size="sm"
                                 ariaLabel={`Select ${file.filename}`}
                               />
-                              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-zinc-800 border border-zinc-700/60">
+                              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-secondary border border-border-strong/60">
                                 {renderFileIcon(file, true)}
                               </div>
                             </div>
@@ -1022,26 +1022,26 @@ export default function FilesPage() {
                           </div>
                           <div>
                             {isSearching && dir && (
-                              <div className="flex items-center gap-1 text-[10px] font-mono text-sky-400 truncate mb-1">
+                              <div className="flex items-center gap-1 text-[10px] font-mono text-accent-text truncate mb-1">
                                 <Folder className="h-3 w-3 flex-shrink-0" />
                                 <span className="truncate">{dir}</span>
                               </div>
                             )}
-                            <h4 className={`font-semibold text-xs text-white truncate transition-colors ${isMedia ? "group-hover:text-sky-300" : ""}`}>
+                            <h4 className={`font-semibold text-xs text-white truncate transition-colors ${isMedia ? "group-hover:text-accent-text" : ""}`}>
                               {isSearching ? name : file.filename.split("/").pop() || file.filename}
                             </h4>
-                            <p className="text-[11px] text-zinc-400 mt-0.5">
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
                               {formatBytes(file.size)} • {formatRelativeTime(file.createdAt)}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 border-t border-zinc-800/60">
+                        <div className="flex items-center justify-between pt-2 border-t border-border/60">
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setSelectedFileForShare(file)}
-                            className="text-sky-400 hover:text-sky-300 text-xs h-8 px-2 gap-1"
+                            className="text-accent-text hover:text-accent-text text-xs h-8 px-2 gap-1"
                           >
                             <Share2 className="h-3.5 w-3.5" />
                             <span>Share</span>
@@ -1049,14 +1049,14 @@ export default function FilesPage() {
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => handleDownloadFile(file)}
-                              className="p-1.5 text-zinc-400 hover:text-white rounded-lg hover:bg-zinc-800 transition-colors"
+                              className="p-1.5 text-muted-foreground hover:text-white rounded-2xl hover:bg-surface-secondary transition-colors"
                               title="Download"
                             >
                               <Download className="h-3.5 w-3.5" />
                             </button>
                             <button
                               onClick={() => setSelectedFileForDelete(file)}
-                              className="p-1.5 text-zinc-400 hover:text-rose-400 rounded-lg hover:bg-rose-500/10 transition-colors"
+                              className="p-1.5 text-muted-foreground hover:text-danger rounded-2xl hover:bg-danger/10 transition-colors"
                               title="Delete"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -1082,8 +1082,8 @@ export default function FilesPage() {
           description={`Are you sure you want to delete folder "${folderToDelete.name}" and all ${folderToDelete.filesCount} files inside it? This action cannot be undone.`}
         >
           <div className="space-y-4 pt-2">
-            <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <Trash2 className="h-4 w-4 text-rose-400 flex-shrink-0" />
+            <div className="rounded-xl border border-danger/20 bg-danger/10 p-3 text-xs text-danger flex items-center gap-2">
+              <Trash2 className="h-4 w-4 text-danger flex-shrink-0" />
               <span>All files inside this folder path will be permanently deleted from secure cloud storage and database.</span>
             </div>
             <div className="flex justify-end gap-2">

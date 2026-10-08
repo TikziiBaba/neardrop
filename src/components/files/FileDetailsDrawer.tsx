@@ -49,17 +49,17 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
   const renderIcon = () => {
     switch (category) {
       case "archive":
-        return <FileArchive className="h-10 w-10 text-amber-400" />;
+        return <FileArchive className="h-10 w-10 text-warning" />;
       case "image":
-        return <FileImage className="h-10 w-10 text-emerald-400" />;
+        return <FileImage className="h-10 w-10 text-success" />;
       case "video":
-        return <FileVideo className="h-10 w-10 text-purple-400" />;
+        return <FileVideo className="h-10 w-10 text-file-video" />;
       case "audio":
-        return <FileAudio className="h-10 w-10 text-pink-400" />;
+        return <FileAudio className="h-10 w-10 text-file-audio" />;
       case "code":
-        return <FileCode className="h-10 w-10 text-cyan-400" />;
+        return <FileCode className="h-10 w-10 text-accent-text" />;
       default:
-        return <FileText className="h-10 w-10 text-sky-400" />;
+        return <FileText className="h-10 w-10 text-accent-text" />;
     }
   };
 
@@ -81,27 +81,27 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
       />
 
       {/* Drawer Card */}
-      <div className="relative z-50 flex h-full w-full max-w-md flex-col justify-between border-l border-zinc-800 bg-zinc-950 p-6 shadow-2xl animate-in slide-in-from-right duration-200">
+      <div className="relative z-50 flex h-full w-full max-w-md flex-col justify-between border-l border-border bg-background p-6 shadow-2xl animate-in slide-in-from-right duration-200">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-zinc-800/80 pb-4">
+          <div className="flex items-center justify-between border-b border-border/80 pb-4">
             <h3 className="text-sm font-semibold text-white">File Information</h3>
             <button
               onClick={onClose}
-              className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors"
+              className="rounded-2xl p-1.5 text-muted-foreground hover:bg-surface hover:text-white transition-colors"
             >
               <X className="h-4 w-4" />
             </button>
           </div>
 
           {/* File Card Header */}
-          <div className="flex items-start gap-4 rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-800/80 border border-zinc-700/50 flex-shrink-0">
+          <div className="flex items-start gap-4 rounded-2xl border border-border bg-surface/60 p-4">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-secondary/80 border border-border-strong/50 flex-shrink-0">
               {renderIcon()}
             </div>
             <div className="min-w-0 flex-1 space-y-1">
               <h4 className="font-semibold text-sm text-white break-words">{file.filename}</h4>
-              <p className="text-xs text-zinc-400">{formatBytes(file.size)}</p>
+              <p className="text-xs text-muted-foreground">{formatBytes(file.size)}</p>
               <Badge variant="secondary" className="text-[10px] uppercase tracking-wider">
                 {file.mimeType.split("/")[1] || "File"}
               </Badge>
@@ -110,63 +110,63 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
 
           {/* Details List */}
           <div className="space-y-3.5 text-xs">
-            <div className="flex items-center justify-between py-2 border-b border-zinc-900">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                <Calendar className="h-3.5 w-3.5 text-zinc-500" />
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-subtle" />
                 <span>Uploaded</span>
               </span>
-              <span className="font-medium text-zinc-200">{formatDate(file.createdAt)}</span>
+              <span className="font-medium text-foreground">{formatDate(file.createdAt)}</span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-zinc-900">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                <Download className="h-3.5 w-3.5 text-zinc-500" />
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Download className="h-3.5 w-3.5 text-subtle" />
                 <span>Total Downloads</span>
               </span>
-              <span className="font-medium text-zinc-200">{file.downloadsCount || 0} times</span>
+              <span className="font-medium text-foreground">{file.downloadsCount || 0} times</span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-zinc-900">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                <Share2 className="h-3.5 w-3.5 text-zinc-500" />
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Share2 className="h-3.5 w-3.5 text-subtle" />
                 <span>Active Shares</span>
               </span>
-              <span className="font-medium text-zinc-200">
+              <span className="font-medium text-foreground">
                 {(file.activeSharesCount || 0) > 0 ? (
                   <Badge variant="success">{file.activeSharesCount} active</Badge>
                 ) : (
-                  <span className="text-zinc-500">Not shared</span>
+                  <span className="text-subtle">Not shared</span>
                 )}
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-zinc-900">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-success" />
                 <span>Security Scan</span>
               </span>
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full">
-                <ShieldCheck className="h-3 w-3 text-emerald-400" />
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-success bg-success/10 border border-success/25 px-2 py-0.5 rounded-full">
+                <ShieldCheck className="h-3 w-3 text-success" />
                 <span>Verified Clean</span>
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 border-b border-zinc-900">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                <HardDrive className="h-3.5 w-3.5 text-zinc-500" />
+            <div className="flex items-center justify-between py-2 border-b border-border/60">
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <HardDrive className="h-3.5 w-3.5 text-subtle" />
                 <span>Storage Key</span>
               </span>
-              <span className="font-mono text-[10px] text-zinc-400 truncate max-w-[200px]">
+              <span className="font-mono text-[10px] text-muted-foreground truncate max-w-[200px]">
                 {file.r2ObjectKey}
               </span>
             </div>
 
             <div className="space-y-1 py-2">
-              <span className="text-zinc-400 flex items-center gap-1.5">
-                <Hash className="h-3.5 w-3.5 text-zinc-500" />
+              <span className="text-muted-foreground flex items-center gap-1.5">
+                <Hash className="h-3.5 w-3.5 text-subtle" />
                 <span>SHA-256 Checksum</span>
               </span>
-              <p className="font-mono text-[10px] text-zinc-400 bg-zinc-900 p-2 rounded-lg break-all border border-zinc-800">
+              <p className="font-mono text-[10px] text-muted-foreground bg-surface p-2 rounded-2xl break-all border border-border">
                 {file.checksum || "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4"}
               </p>
             </div>
@@ -174,7 +174,7 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-2 pt-6 border-t border-zinc-800">
+        <div className="space-y-2 pt-6 border-t border-border">
           <div className="grid grid-cols-2 gap-2">
             <Button variant="primary" onClick={handleDownload} className="gap-1.5">
               <Download className="h-4 w-4" />
@@ -186,7 +186,7 @@ export const FileDetailsDrawer: React.FC<FileDetailsDrawerProps> = ({
                 onClose();
                 onShare(file);
               }}
-              className="gap-1.5 text-sky-400 border-sky-500/20 hover:bg-sky-500/10"
+              className="gap-1.5 text-accent-text border-accent/20 hover:bg-accent-hover/10"
             >
               <Share2 className="h-4 w-4" />
               <span>Share Link</span>

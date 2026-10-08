@@ -87,7 +87,7 @@ export default function AdminLogsPage() {
   const getActionBadge = (action: string) => {
     if (action.includes("DELETE")) {
       return (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-rose-500/15 px-2 py-0.5 text-[11px] font-bold text-rose-400 border border-rose-500/25">
+        <span className="inline-flex items-center gap-1 rounded-full bg-danger/15 px-2 py-0.5 text-[11px] font-bold text-danger border border-danger/25">
           <Trash2 className="h-3 w-3" />
           {action}
         </span>
@@ -95,7 +95,7 @@ export default function AdminLogsPage() {
     }
     if (action.includes("UPLOAD")) {
       return (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-500/15 px-2 py-0.5 text-[11px] font-bold text-emerald-400 border border-emerald-500/25">
+        <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2 py-0.5 text-[11px] font-bold text-success border border-success/25">
           <UploadCloud className="h-3 w-3" />
           {action}
         </span>
@@ -103,7 +103,7 @@ export default function AdminLogsPage() {
     }
     if (action.includes("SHARE")) {
       return (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-sky-500/15 px-2 py-0.5 text-[11px] font-bold text-sky-400 border border-sky-500/25">
+        <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent-text border border-accent/25">
           <Share2 className="h-3 w-3" />
           {action}
         </span>
@@ -111,14 +111,14 @@ export default function AdminLogsPage() {
     }
     if (action.includes("DOWNLOAD")) {
       return (
-        <span className="inline-flex items-center gap-1 rounded-lg bg-[#0071e3]/15 px-2 py-0.5 text-[11px] font-bold text-[#2997ff] border border-[#0071e3]/25">
+        <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[11px] font-bold text-accent-text border border-accent/25">
           <Download className="h-3 w-3" />
           {action}
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center gap-1 rounded-lg bg-zinc-800 px-2 py-0.5 text-[11px] font-bold text-zinc-300 border border-zinc-700">
+      <span className="inline-flex items-center gap-1 rounded-full bg-surface-secondary px-2 py-0.5 text-[11px] font-bold text-foreground/80 border border-border-strong">
         <Zap className="h-3 w-3" />
         {action}
       </span>
@@ -129,12 +129,12 @@ export default function AdminLogsPage() {
   const getDeviceIcon = (deviceInfo?: string, platform?: string) => {
     const text = `${deviceInfo || ""} ${platform || ""}`.toLowerCase();
     if (text.includes("iphone") || text.includes("android") || text.includes("mobile")) {
-      return <Smartphone className="h-3.5 w-3.5 text-amber-400" />;
+      return <Smartphone className="h-3.5 w-3.5 text-warning" />;
     }
     if (text.includes("mac") || text.includes("windows") || text.includes("linux")) {
-      return <Laptop className="h-3.5 w-3.5 text-sky-400" />;
+      return <Laptop className="h-3.5 w-3.5 text-accent-text" />;
     }
-    return <Globe className="h-3.5 w-3.5 text-zinc-400" />;
+    return <Globe className="h-3.5 w-3.5 text-muted-foreground" />;
   };
 
   // Helper for status badge
@@ -142,21 +142,21 @@ export default function AdminLogsPage() {
     switch (status) {
       case "danger":
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-400 border border-rose-500/20">
+          <span className="inline-flex items-center gap-1 rounded-full bg-danger/10 px-2 py-0.5 text-[10px] font-semibold text-danger border border-danger/20">
             <AlertTriangle className="h-3 w-3" />
             Critical
           </span>
         );
       case "warning":
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400 border border-amber-500/20">
+          <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning border border-warning/20">
             <AlertTriangle className="h-3 w-3" />
             Warning / Deletion
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-semibold text-success border border-success/20">
             <CheckCircle2 className="h-3 w-3" />
             Success
           </span>
@@ -197,13 +197,13 @@ export default function AdminLogsPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>Security & Audit Trail Logs</span>
-              <span className="rounded-md bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-bold text-[#2997ff] border border-[#0071e3]/30">
+              <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent-text border border-accent/30">
                 {logs.length} Records
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Real-time audit log of file uploads, 2-step deletions, share creations, downloads, transfers, IP addresses, and client devices.
             </p>
           </div>
@@ -215,7 +215,7 @@ export default function AdminLogsPage() {
               onClick={exportLogsAsJSON}
               className="gap-1.5 text-xs rounded-xl"
             >
-              <Download className="h-3.5 w-3.5 text-sky-400" />
+              <Download className="h-3.5 w-3.5 text-accent-text" />
               <span>Export JSON</span>
             </Button>
 
@@ -224,7 +224,7 @@ export default function AdminLogsPage() {
               size="sm"
               onClick={fetchLogs}
               disabled={loading}
-              className="gap-2 text-xs rounded-xl bg-[#0071e3] hover:bg-[#0077ed] text-white"
+              className="gap-2 text-xs rounded-xl bg-accent hover:bg-accent-hover text-white"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
               <span>Refresh</span>
@@ -233,7 +233,7 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs border-b border-zinc-800">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs border-b border-border">
           {[
             { id: "all", label: "All Logs", count: logs.length },
             { id: "upload", label: "Uploads", count: logs.filter((l) => l.action.includes("UPLOAD")).length },
@@ -249,12 +249,12 @@ export default function AdminLogsPage() {
               onClick={() => setCategoryFilter(cat.id)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-t-xl font-semibold transition-colors whitespace-nowrap ${
                 categoryFilter === cat.id
-                  ? "bg-zinc-800 text-white border-b-2 border-[#0071e3]"
-                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/40"
+                  ? "bg-surface-secondary text-white border-b-2 border-accent"
+                  : "text-muted-foreground hover:text-foreground hover:bg-surface/40"
               }`}
             >
               <span>{cat.label}</span>
-              <span className="rounded-full bg-zinc-900 px-1.5 py-0.2 text-[10px] text-zinc-400">
+              <span className="rounded-full bg-surface px-1.5 py-0.2 text-[10px] text-muted-foreground">
                 {cat.count}
               </span>
             </button>
@@ -264,12 +264,12 @@ export default function AdminLogsPage() {
         {/* Search & Status Filters */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-subtle" />
             <Input
               placeholder="Search filename, user email, IP address, device, or action..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-[#16161a] border-zinc-800 rounded-xl"
+              className="pl-10 text-xs bg-surface-secondary border-border rounded-xl"
             />
           </div>
 
@@ -286,8 +286,8 @@ export default function AdminLogsPage() {
                 onClick={() => setStatusFilter(st.id)}
                 className={`rounded-xl px-3 py-1.5 text-xs font-medium transition-colors ${
                   statusFilter === st.id
-                    ? "bg-[#0071e3] text-white font-semibold shadow-md shadow-[#0071e3]/20"
-                    : "bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800"
+                    ? "bg-accent text-white font-semibold shadow-md shadow-accent/20"
+                    : "bg-surface text-muted-foreground hover:text-white border border-border"
                 }`}
               >
                 {st.label}
@@ -297,10 +297,10 @@ export default function AdminLogsPage() {
         </div>
 
         {/* Logs Table */}
-        <div className="rounded-3xl border border-zinc-800 bg-[#16161a] overflow-hidden shadow-2xl apple-card">
+        <div className="rounded-3xl border border-border bg-surface-secondary overflow-hidden shadow-2xl apple-card">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-zinc-800 bg-zinc-950/70 text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <thead className="border-b border-border bg-background/70 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">Timestamp</th>
                   <th className="py-3.5 px-4">User</th>
@@ -311,17 +311,17 @@ export default function AdminLogsPage() {
                   <th className="py-3.5 px-4 sm:px-6 text-right">Details</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-border/60">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
+                    <td colSpan={7} className="py-16 text-center text-subtle">
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-accent-text mb-2" />
                       Loading audit logs...
                     </td>
                   </tr>
                 ) : filteredLogs.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-16 text-center text-zinc-500">
+                    <td colSpan={7} className="py-16 text-center text-subtle">
                       No matching audit records found.
                     </td>
                   </tr>
@@ -330,14 +330,14 @@ export default function AdminLogsPage() {
                     <tr
                       key={log.id}
                       onClick={() => setSelectedLog(log)}
-                      className="hover:bg-zinc-800/40 transition-colors cursor-pointer group"
+                      className="hover:bg-surface-secondary/40 transition-colors cursor-pointer group"
                     >
                       {/* Timestamp */}
-                      <td className="py-4 px-4 sm:px-6 text-zinc-400 whitespace-nowrap font-mono text-[11px]">
-                        <div className="font-semibold text-zinc-300">
+                      <td className="py-4 px-4 sm:px-6 text-muted-foreground whitespace-nowrap font-mono text-[11px]">
+                        <div className="font-semibold text-foreground/80">
                           {new Date(log.timestamp).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
                         </div>
-                        <div className="text-[10px] text-zinc-500">
+                        <div className="text-[10px] text-subtle">
                           {formatRelativeTime(log.timestamp)}
                         </div>
                       </td>
@@ -347,7 +347,7 @@ export default function AdminLogsPage() {
                         <div className="font-semibold text-white">
                           {log.userEmail ? log.userEmail.split("@")[0] : "Anonymous / System"}
                         </div>
-                        <div className="text-[10px] text-zinc-500 font-mono">
+                        <div className="text-[10px] text-subtle font-mono">
                           {log.userEmail || log.userId || "-"}
                         </div>
                       </td>
@@ -363,18 +363,18 @@ export default function AdminLogsPage() {
                           <div className="space-y-0.5">
                             <div className="font-medium text-white truncate">{log.fileName}</div>
                             {log.fileSize ? (
-                              <div className="text-[10px] text-zinc-400 font-mono">
+                              <div className="text-[10px] text-muted-foreground font-mono">
                                 {formatBytes(log.fileSize)}
                               </div>
                             ) : null}
                           </div>
                         ) : (
-                          <span className="text-zinc-500 text-[11px]">-</span>
+                          <span className="text-subtle text-[11px]">-</span>
                         )}
                       </td>
 
                       {/* Device & Platform */}
-                      <td className="py-4 px-4 whitespace-nowrap text-zinc-300 text-xs">
+                      <td className="py-4 px-4 whitespace-nowrap text-foreground/80 text-xs">
                         <div className="flex items-center gap-1.5">
                           {getDeviceIcon(log.deviceInfo, log.platform)}
                           <span className="font-medium">{log.deviceInfo || log.platform || "Web / Desktop"}</span>
@@ -382,8 +382,8 @@ export default function AdminLogsPage() {
                       </td>
 
                       {/* IP */}
-                      <td className="py-4 px-4 whitespace-nowrap font-mono text-[11px] text-zinc-400">
-                        <span className="bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800">
+                      <td className="py-4 px-4 whitespace-nowrap font-mono text-[11px] text-muted-foreground">
+                        <span className="bg-background px-2 py-0.5 rounded border border-border">
                           {log.ipAddress || "127.0.0.1"}
                         </span>
                       </td>
@@ -395,7 +395,7 @@ export default function AdminLogsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="h-7 w-7 p-0 rounded-lg text-zinc-400 group-hover:text-white"
+                            className="h-7 w-7 p-0 rounded-2xl text-muted-foreground group-hover:text-white"
                           >
                             <Eye className="h-3.5 w-3.5" />
                           </Button>
@@ -419,40 +419,40 @@ export default function AdminLogsPage() {
           >
             <div className="space-y-4 pt-2 text-xs">
               {/* Summary Card */}
-              <div className="p-4 rounded-2xl bg-zinc-950/80 border border-zinc-800 space-y-3">
+              <div className="p-4 rounded-2xl bg-background/80 border border-border space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-sm text-white">{selectedLog.action}</span>
                   {getStatusBadge(selectedLog.status)}
                 </div>
-                <p className="text-zinc-300 leading-relaxed">{selectedLog.details}</p>
+                <p className="text-foreground/80 leading-relaxed">{selectedLog.details}</p>
               </div>
 
               {/* Grid Properties */}
               <div className="grid grid-cols-2 gap-3 text-[11px]">
-                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">User / Email</span>
+                <div className="p-3 rounded-xl bg-background/40 border border-border/80 space-y-1">
+                  <span className="text-subtle font-semibold block">User / Email</span>
                   <span className="text-white font-mono break-all">{selectedLog.userEmail || selectedLog.userId || "System"}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">Timestamp</span>
+                <div className="p-3 rounded-xl bg-background/40 border border-border/80 space-y-1">
+                  <span className="text-subtle font-semibold block">Timestamp</span>
                   <span className="text-white font-mono">{new Date(selectedLog.timestamp).toLocaleString("en-US")}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">Device & Client</span>
-                  <span className="text-sky-400 font-medium">{selectedLog.deviceInfo || selectedLog.platform || "Web"}</span>
+                <div className="p-3 rounded-xl bg-background/40 border border-border/80 space-y-1">
+                  <span className="text-subtle font-semibold block">Device & Client</span>
+                  <span className="text-accent-text font-medium">{selectedLog.deviceInfo || selectedLog.platform || "Web"}</span>
                 </div>
 
-                <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1">
-                  <span className="text-zinc-500 font-semibold block">IP Address</span>
-                  <span className="text-[#2997ff] font-mono">{selectedLog.ipAddress || "127.0.0.1"}</span>
+                <div className="p-3 rounded-xl bg-background/40 border border-border/80 space-y-1">
+                  <span className="text-subtle font-semibold block">IP Address</span>
+                  <span className="text-accent-text font-mono">{selectedLog.ipAddress || "127.0.0.1"}</span>
                 </div>
 
                 {selectedLog.fileName && (
-                  <div className="p-3 rounded-xl bg-zinc-950/40 border border-zinc-800/80 space-y-1 col-span-2">
-                    <span className="text-zinc-500 font-semibold block">Target File & Size</span>
-                    <span className="text-emerald-400 font-bold font-mono">
+                  <div className="p-3 rounded-xl bg-background/40 border border-border/80 space-y-1 col-span-2">
+                    <span className="text-subtle font-semibold block">Target File & Size</span>
+                    <span className="text-success font-bold font-mono">
                       {selectedLog.fileName} {selectedLog.fileSize ? `(${formatBytes(selectedLog.fileSize)})` : ""}
                     </span>
                   </div>
@@ -462,8 +462,8 @@ export default function AdminLogsPage() {
               {/* Metadata JSON Viewer */}
               {selectedLog.metadata && Object.keys(selectedLog.metadata).length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-[11px] font-semibold text-zinc-400">Technical Metadata (JSON):</span>
-                  <pre className="p-3 rounded-xl bg-zinc-950 font-mono text-[11px] text-zinc-300 border border-zinc-800 overflow-x-auto max-h-40">
+                  <span className="text-[11px] font-semibold text-muted-foreground">Technical Metadata (JSON):</span>
+                  <pre className="p-3 rounded-xl bg-background font-mono text-[11px] text-foreground/80 border border-border overflow-x-auto max-h-40">
                     {JSON.stringify(selectedLog.metadata, null, 2)}
                   </pre>
                 </div>
@@ -477,7 +477,7 @@ export default function AdminLogsPage() {
                   onClick={() => handleCopy(JSON.stringify(selectedLog, null, 2), selectedLog.id)}
                   className="gap-1.5 text-xs rounded-xl"
                 >
-                  {copiedId === selectedLog.id ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                  {copiedId === selectedLog.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
                   <span>Copy JSON</span>
                 </Button>
 

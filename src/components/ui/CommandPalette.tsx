@@ -159,7 +159,7 @@ export const CommandPalette: React.FC = () => {
         id: "action-upload",
         label: "Upload Files",
         sublabel: "Upload to cloud storage",
-        icon: <Upload className="h-4 w-4 text-sky-400" />,
+        icon: <Upload className="h-4 w-4 text-accent-text" />,
         category: "action",
         keywords: ["upload", "yükle", "add"],
         action: () => router.push("/files"),
@@ -168,7 +168,7 @@ export const CommandPalette: React.FC = () => {
         id: "action-signout",
         label: "Sign Out",
         sublabel: user?.email || "",
-        icon: <LogOut className="h-4 w-4 text-red-400" />,
+        icon: <LogOut className="h-4 w-4 text-danger" />,
         category: "action",
         keywords: ["sign out", "logout", "çıkış"],
         action: () => logout(),
@@ -184,7 +184,7 @@ export const CommandPalette: React.FC = () => {
             id: `file-${f.id}`,
             label: f.filename,
             sublabel: formatBytes(f.size),
-            icon: <FileText className="h-4 w-4 text-zinc-400" />,
+            icon: <FileText className="h-4 w-4 text-muted-foreground" />,
             category: "file" as const,
             keywords: [f.filename.toLowerCase()],
             action: () => router.push("/files"),
@@ -289,7 +289,7 @@ export const CommandPalette: React.FC = () => {
             <div className="liquid-glass-elevated rounded-2xl shadow-2xl overflow-hidden">
               {/* Search Input */}
               <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06]">
-                <Search className="h-5 w-5 text-zinc-400 shrink-0" />
+                <Search className="h-5 w-5 text-muted-foreground shrink-0" />
                 <input
                   ref={inputRef}
                   type="text"
@@ -297,11 +297,11 @@ export const CommandPalette: React.FC = () => {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Search files, navigate, run actions..."
-                  className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 outline-none"
+                  className="flex-1 bg-transparent text-sm text-white placeholder:text-subtle outline-none"
                   autoComplete="off"
                   spellCheck={false}
                 />
-                <kbd className="hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-zinc-500 bg-zinc-800/60 rounded border border-zinc-700/50">
+                <kbd className="hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono text-subtle bg-surface-secondary/60 rounded border border-border-strong/50">
                   ESC
                 </kbd>
               </div>
@@ -313,15 +313,15 @@ export const CommandPalette: React.FC = () => {
               >
                 {filtered.length === 0 && (
                   <div className="px-4 py-8 text-center">
-                    <p className="text-sm text-zinc-500">No results found</p>
-                    <p className="text-xs text-zinc-600 mt-1">Try a different search term</p>
+                    <p className="text-sm text-subtle">No results found</p>
+                    <p className="text-xs text-subtle/80 mt-1">Try a different search term</p>
                   </div>
                 )}
 
                 {Object.entries(grouped).map(([category, items]) => (
                   <div key={category}>
                     <div className="px-4 pt-2 pb-1">
-                      <span className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                      <span className="text-[10px] font-semibold text-subtle uppercase tracking-wider">
                         {categoryLabels[category] || category}
                       </span>
                     </div>
@@ -344,26 +344,26 @@ export const CommandPalette: React.FC = () => {
                           }`}
                         >
                           <div
-                            className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ${
+                            className={`flex items-center justify-center w-8 h-8 rounded-2xl shrink-0 ${
                               isSelected
-                                ? "bg-sky-500/20 text-sky-400"
-                                : "bg-zinc-800/60 text-zinc-400"
+                                ? "bg-accent/20 text-accent-text"
+                                : "bg-surface-secondary/60 text-muted-foreground"
                             }`}
                           >
                             {item.icon}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-zinc-200 truncate">
+                            <p className="text-sm font-medium text-foreground truncate">
                               {item.label}
                             </p>
                             {item.sublabel && (
-                              <p className="text-xs text-zinc-500 truncate">
+                              <p className="text-xs text-subtle truncate">
                                 {item.sublabel}
                               </p>
                             )}
                           </div>
                           {isSelected && (
-                            <CornerDownLeft className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                            <CornerDownLeft className="h-3.5 w-3.5 text-subtle shrink-0" />
                           )}
                         </button>
                       );
@@ -373,18 +373,18 @@ export const CommandPalette: React.FC = () => {
               </div>
 
               {/* Footer hints */}
-              <div className="flex items-center justify-between px-4 py-2 border-t border-white/[0.06] text-[10px] text-zinc-500">
+              <div className="flex items-center justify-between px-4 py-2 border-t border-white/[0.06] text-[10px] text-subtle">
                 <div className="flex items-center gap-3">
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1 py-0.5 bg-zinc-800/60 rounded border border-zinc-700/50 font-mono">↑↓</kbd>
+                    <kbd className="px-1 py-0.5 bg-surface-secondary/60 rounded border border-border-strong/50 font-mono">↑↓</kbd>
                     Navigate
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1 py-0.5 bg-zinc-800/60 rounded border border-zinc-700/50 font-mono">↵</kbd>
+                    <kbd className="px-1 py-0.5 bg-surface-secondary/60 rounded border border-border-strong/50 font-mono">↵</kbd>
                     Select
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1 py-0.5 bg-zinc-800/60 rounded border border-zinc-700/50 font-mono">esc</kbd>
+                    <kbd className="px-1 py-0.5 bg-surface-secondary/60 rounded border border-border-strong/50 font-mono">esc</kbd>
                     Close
                   </span>
                 </div>

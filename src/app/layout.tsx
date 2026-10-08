@@ -2,6 +2,12 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Navbar } from "@/components/layout/Navbar";
+import { Scene3D } from "@/components/motion/Scene3D";
+import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+
+// Başlıklar: yumuşak, masalsı serif · Metin: sıcak, yuvarlak sans
+const display = Fraunces({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap", axes: ["SOFT", "opsz"] });
+const sans = Plus_Jakarta_Sans({ subsets: ["latin", "latin-ext"], variable: "--font-sans", display: "swap" });
 
 export const metadata: Metadata = {
   title: "NearDrop — Share files. Simply.",
@@ -30,7 +36,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#0a0918",
   width: "device-width",
   initialScale: 1,
 };
@@ -41,13 +47,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="dark scroll-smooth" suppressHydrationWarning>
+    <html lang="tr" className={`dark scroll-smooth ${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <head>
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased font-sans">
+      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
+        <Scene3D />
         <Providers>
           <div className="flex min-h-screen flex-col">
             <Navbar />

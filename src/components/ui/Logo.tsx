@@ -25,20 +25,13 @@ export function LogoIcon({ size = "md", className = "" }: LogoIconProps) {
 
   return (
     <div
-      className={`relative flex items-center justify-center bg-[#0071e3] text-white shadow-sm transition-transform duration-200 group-hover:scale-105 ${sizeMap[size]} ${className}`}
+      className={`relative flex items-center justify-center bg-gradient-to-br from-accent via-accent-hover to-accent-text text-white shadow-lg shadow-accent/30 ring-1 ring-white/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105 ${sizeMap[size]} ${className}`}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill="currentColor"
-        className={`${svgSizeMap[size]} text-white`}
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Main 4-pointed Sparkle */}
-        <path d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z" />
-        {/* Top-Right Secondary Sparkle */}
-        <path d="M19 3C19 4.8 17.8 6 16 6C17.8 6 19 7.2 19 9C19 7.2 20.2 6 22 6C20.2 6 19 4.8 19 3Z" />
-        {/* Bottom-Left Particle Dot */}
-        <circle cx="5.5" cy="18.5" r="1.5" />
+      {/* Damla + altın hale: "Near" + "Drop" ve göksel kimlik */}
+      <svg viewBox="0 0 24 24" className={svgSizeMap[size]} xmlns="http://www.w3.org/2000/svg" aria-hidden>
+        <ellipse cx="12" cy="4.2" rx="5" ry="1.6" fill="none" stroke="hsl(var(--halo))" strokeWidth="1.6" />
+        <path d="M12 7.2C12 7.2 6.5 13 6.5 16.2C6.5 19.3 9 21.5 12 21.5C15 21.5 17.5 19.3 17.5 16.2C17.5 13 12 7.2 12 7.2Z" fill="white" />
+        <path d="M9.6 16.4C9.6 17.9 10.6 19 12 19.2" stroke="hsl(var(--accent))" strokeWidth="1.3" strokeLinecap="round" fill="none" />
       </svg>
     </div>
   );
@@ -73,12 +66,12 @@ export function Logo({
       {showText && (
         <div className="flex items-center gap-1.5">
           <span
-            className={`tracking-tight text-white transition-colors group-hover:text-blue-400 ${textSizes[size]}`}
+            className={`font-display tracking-tight text-foreground transition-colors group-hover:text-accent-text ${textSizes[size]}`}
           >
-            NearDrop
+            Near<span className="italic text-accent-text">Drop</span>
           </span>
           {badge && (
-            <span className="rounded-full bg-blue-500/10 border border-blue-500/20 px-1.5 py-0.5 text-[10px] font-medium text-blue-400">
+            <span className="rounded-full bg-accent/10 border border-accent/20 px-1.5 py-0.5 text-[10px] font-medium text-accent-text">
               {badge}
             </span>
           )}

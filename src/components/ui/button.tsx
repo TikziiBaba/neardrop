@@ -3,26 +3,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap text-sm font-medium tracking-tight transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0071e3]/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.97] cursor-pointer select-none",
+  // Tüm varyantlar aynı davranır: renk değişimi + basınca hafif küçülme. Zıplama/büyüme yok.
+  "inline-flex items-center justify-center whitespace-nowrap font-semibold tracking-tight transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] cursor-pointer select-none",
   {
     variants: {
       variant: {
-        default:
-          "bg-white text-zinc-950 hover:bg-zinc-200 hover:-translate-y-0.5 hover:scale-[1.01] hover:shadow-lg shadow-sm font-semibold rounded-full",
-        primary:
-          "bg-[#0071e3] hover:bg-[#0077ed] text-white hover:-translate-y-0.5 hover:scale-[1.02] shadow-md shadow-[#0071e3]/25 hover:shadow-xl hover:shadow-[#0071e3]/40 font-semibold rounded-full",
-        destructive:
-          "bg-red-500/15 text-red-300 border border-red-500/30 hover:bg-red-600 hover:text-white hover:-translate-y-0.5 hover:shadow-lg hover:shadow-red-500/25 font-semibold",
-        outline:
-          "border border-zinc-700 bg-zinc-900/90 text-white hover:border-zinc-500 hover:bg-zinc-800 hover:text-white hover:-translate-y-0.5 hover:shadow-md shadow-sm font-semibold",
-        secondary:
-          "bg-zinc-800 text-white border border-zinc-700/80 hover:bg-zinc-700 hover:text-white hover:-translate-y-0.5 hover:shadow-md shadow-sm font-semibold",
-        ghost:
-          "text-zinc-200 hover:text-white hover:bg-zinc-800/80 hover:scale-[1.02] font-semibold",
-        glass:
-          "bg-zinc-900/80 hover:bg-zinc-800 text-white border border-zinc-800 hover:border-zinc-700 hover:text-white backdrop-blur-xl shadow-sm hover:shadow-lg hover:shadow-blue-500/15 hover:-translate-y-0.5 font-semibold",
-        link:
-          "text-sky-400 hover:text-sky-300 underline-offset-4 hover:underline font-semibold p-0 h-auto",
+        default: "bg-foreground text-background hover:bg-foreground/85",
+        primary: "bg-accent text-accent-foreground hover:bg-accent-hover",
+        destructive: "bg-danger/15 text-danger border border-danger/30 hover:bg-danger hover:text-white",
+        outline: "border border-border-strong bg-transparent text-foreground hover:bg-surface-secondary",
+        secondary: "bg-surface-secondary text-foreground border border-border hover:bg-surface-tertiary",
+        ghost: "text-muted-foreground hover:text-foreground hover:bg-surface-secondary",
+        glass: "bg-surface/80 text-foreground border border-border backdrop-blur-xl hover:bg-surface-secondary hover:border-border-strong",
+        link: "text-accent-text underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
         default: "h-11 rounded-full px-6 py-2.5 gap-2.5 text-sm",

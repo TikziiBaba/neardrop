@@ -329,29 +329,29 @@ export default function PublicSharePage() {
     const sizeClasses = large ? "h-8 w-8" : "h-5 w-5";
     switch (cat) {
       case "archive":
-        return <FileArchive className={`${sizeClasses} text-[#ff9500]`} />;
+        return <FileArchive className={`${sizeClasses} text-warning`} />;
       case "image":
-        return <FileImage className={`${sizeClasses} text-[#34c759]`} />;
+        return <FileImage className={`${sizeClasses} text-success`} />;
       case "video":
-        return <FileVideo className={`${sizeClasses} text-[#af52de]`} />;
+        return <FileVideo className={`${sizeClasses} text-file-video`} />;
       case "audio":
-        return <FileAudio className={`${sizeClasses} text-[#ff2d55]`} />;
+        return <FileAudio className={`${sizeClasses} text-file-audio`} />;
       case "code":
-        return <FileCode className={`${sizeClasses} text-[#0071e3]`} />;
+        return <FileCode className={`${sizeClasses} text-accent-text`} />;
       default:
-        return <FileText className={`${sizeClasses} text-[#0071e3]`} />;
+        return <FileText className={`${sizeClasses} text-accent-text`} />;
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-zinc-950 text-white relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-between bg-background text-white relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Top Header */}
       <header className="relative z-10 mx-auto w-full max-w-5xl px-4 py-5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm group-hover:scale-105 transition-transform">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-white shadow-sm group-hover:scale-105 transition-transform">
             <Sparkles className="h-4 w-4" />
           </div>
           <span className="text-base font-semibold text-white tracking-tight">NearDrop</span>
@@ -361,23 +361,23 @@ export default function PublicSharePage() {
       {/* Main Content */}
       <main className="relative z-10 mx-auto w-full max-w-4xl px-4 py-4 flex-1">
         {isLoading ? (
-          <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/80 backdrop-blur-xl p-12 shadow-sm text-center space-y-4 max-w-lg mx-auto">
-            <div className="h-12 w-12 rounded-2xl bg-zinc-800 animate-pulse mx-auto" />
-            <div className="h-4 w-48 bg-zinc-800 animate-pulse rounded mx-auto" />
-            <div className="h-3 w-32 bg-zinc-800/60 animate-pulse rounded mx-auto" />
+          <div className="rounded-3xl border border-border bg-surface/80 backdrop-blur-xl p-12 shadow-sm text-center space-y-4 max-w-lg mx-auto">
+            <div className="h-12 w-12 rounded-2xl bg-surface-secondary animate-pulse mx-auto" />
+            <div className="h-4 w-48 bg-surface-secondary animate-pulse rounded mx-auto" />
+            <div className="h-3 w-32 bg-surface-secondary/60 animate-pulse rounded mx-auto" />
           </div>
         ) : error && !file && !isFolder ? (
           /* Error / Expired View */
-          <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl p-8 shadow-sm text-center space-y-5 animate-in zoom-in-95 duration-200 max-w-lg mx-auto">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-500/10 text-red-400 border border-red-500/20 mx-auto">
+          <div className="rounded-3xl border border-border bg-surface/90 backdrop-blur-xl p-8 shadow-sm text-center space-y-5 animate-in zoom-in-95 duration-200 max-w-lg mx-auto">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-danger/10 text-danger border border-danger/20 mx-auto">
               <AlertCircle className="h-7 w-7" />
             </div>
             <div className="space-y-1.5">
               <h2 className="text-lg font-semibold text-white">{t.publicShare.linkUnavailable}</h2>
-              <p className="text-xs text-zinc-400 leading-relaxed max-w-xs mx-auto">{error}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">{error}</p>
             </div>
             <Link href="/">
-              <Button variant="outline" size="sm" className="gap-2 rounded-full border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800">
+              <Button variant="outline" size="sm" className="gap-2 rounded-full border-border bg-surface text-white hover:bg-surface-secondary">
                 <span>{t.publicShare.goToHome}</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Button>
@@ -389,21 +389,21 @@ export default function PublicSharePage() {
           /* ========================================================= */
           <div className="space-y-5 animate-in fade-in duration-300">
             {/* Header Hero Card */}
-            <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl p-6 sm:p-7 shadow-2xl space-y-5">
+            <div className="rounded-3xl border border-border bg-surface/90 backdrop-blur-xl p-6 sm:p-7 shadow-2xl space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20 shadow-sm flex-shrink-0">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10 text-accent-text border border-accent/20 shadow-sm flex-shrink-0">
                     <Folder className="h-8 w-8" />
                   </div>
                   <div className="space-y-1 min-w-0">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 text-[11px] font-semibold text-blue-400 border border-blue-500/20">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent/10 text-[11px] font-semibold text-accent-text border border-accent/20">
                       <ShieldCheck className="h-3 w-3" />
                       <span>{isTr ? "Paylaşılan Klasör" : "Shared Folder"}</span>
                     </div>
                     <h2 className="text-xl font-semibold text-white tracking-tight truncate">
                       {folderName}
                     </h2>
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <span className="font-semibold text-white">
                         {totalCount} {isTr ? "dosya" : (totalCount === 1 ? "file" : "files")}
                       </span>
@@ -411,7 +411,7 @@ export default function PublicSharePage() {
                       <span>{formatBytes(totalSize)}</span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3 text-blue-400" />
+                        <Clock className="h-3 w-3 text-accent-text" />
                         {formatExpiresIn(share.expiresAt)}
                       </span>
                     </div>
@@ -423,7 +423,7 @@ export default function PublicSharePage() {
                   <Button
                     onClick={handleDownloadAllAsZip}
                     disabled={isZipping || (share.passwordProtected && !password.trim())}
-                    className="gap-2 bg-blue-600 hover:bg-blue-500 text-white rounded-full px-6 py-2.5 font-semibold shadow-lg shadow-blue-500/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    className="gap-2 bg-accent hover:bg-accent-hover text-white rounded-full px-6 py-2.5 font-semibold shadow-lg shadow-accent/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     {isZipping ? (
                       <>
@@ -442,13 +442,13 @@ export default function PublicSharePage() {
 
               {/* Password input bar if protected */}
               {share.passwordProtected && (
-                <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs text-amber-400 font-semibold">
+                <div className="rounded-2xl border border-warning/20 bg-warning/10 p-4 space-y-2">
+                  <div className="flex items-center justify-between text-xs text-warning font-semibold">
                     <span className="flex items-center gap-1.5">
                       <Lock className="h-3.5 w-3.5" />
                       <span>{isTr ? "Şifre Korumalı Klasör" : "Password Protected Folder"}</span>
                     </span>
-                    <span className="text-[11px] font-normal text-zinc-400">
+                    <span className="text-[11px] font-normal text-muted-foreground">
                       {isTr ? "Dosyaları açıp indirmek için şifreyi girin" : "Enter password to unlock and download files"}
                     </span>
                   </div>
@@ -457,21 +457,21 @@ export default function PublicSharePage() {
                     placeholder={isTr ? "Klasör erişim şifresini girin..." : "Enter folder access password..."}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="text-xs bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:border-blue-500"
+                    className="text-xs bg-background/70 border-border text-white placeholder:text-subtle focus:border-accent"
                   />
                 </div>
               )}
 
               {/* ZIP Progress Indicator */}
               {isZipping && zipProgress && (
-                <div className="rounded-2xl border border-blue-500/20 bg-blue-500/10 p-4 space-y-2 animate-in fade-in">
-                  <div className="flex items-center justify-between text-xs text-blue-400 font-semibold">
+                <div className="rounded-2xl border border-accent/20 bg-accent/10 p-4 space-y-2 animate-in fade-in">
+                  <div className="flex items-center justify-between text-xs text-accent-text font-semibold">
                     <span>{zipProgress.statusText}</span>
                     <span>{zipProgress.percent}%</span>
                   </div>
-                  <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                  <div className="w-full bg-surface-secondary rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-blue-500 h-full transition-all duration-300 rounded-full"
+                      className="bg-accent h-full transition-all duration-300 rounded-full"
                       style={{ width: `${zipProgress.percent}%` }}
                     />
                   </div>
@@ -480,8 +480,8 @@ export default function PublicSharePage() {
 
               {/* Error banner if any */}
               {error && (
-                <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
-                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
+                <div className="flex items-center gap-2 p-3 rounded-xl bg-danger/10 border border-danger/20 text-xs text-danger">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0 text-danger" />
                   <span>{error}</span>
                 </div>
               )}
@@ -491,21 +491,21 @@ export default function PublicSharePage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Breadcrumb path */}
               {!isSearching ? (
-                <div className="flex items-center gap-1.5 rounded-full border border-zinc-800 bg-zinc-900/90 px-3.5 py-1.5 overflow-x-auto text-xs scrollbar-none flex-1 shadow-sm">
+                <div className="flex items-center gap-1.5 rounded-full border border-border bg-surface/90 px-3.5 py-1.5 overflow-x-auto text-xs scrollbar-none flex-1 shadow-sm">
                   {breadcrumbs.map((crumb, idx) => {
                     const isLast = idx === breadcrumbs.length - 1;
                     return (
                       <React.Fragment key={crumb.path || "root"}>
-                        {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-zinc-500 flex-shrink-0" />}
+                        {idx > 0 && <ChevronRight className="h-3.5 w-3.5 text-subtle flex-shrink-0" />}
                         <button
                           onClick={() => setCurrentSubPath(crumb.path)}
                           className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-colors whitespace-nowrap ${
                             isLast
-                              ? "font-semibold text-white bg-zinc-800"
-                              : "text-zinc-400 hover:text-white"
+                              ? "font-semibold text-white bg-surface-secondary"
+                              : "text-muted-foreground hover:text-white"
                           }`}
                         >
-                          {idx === 0 ? <Home className="h-3.5 w-3.5 text-blue-400" /> : <Folder className="h-3.5 w-3.5 text-blue-400" />}
+                          {idx === 0 ? <Home className="h-3.5 w-3.5 text-accent-text" /> : <Folder className="h-3.5 w-3.5 text-accent-text" />}
                           <span>{crumb.name}</span>
                         </button>
                       </React.Fragment>
@@ -513,8 +513,8 @@ export default function PublicSharePage() {
                   })}
                 </div>
               ) : (
-                <div className="flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-2 text-xs text-blue-400 flex-1">
-                  <Sparkles className="h-3.5 w-3.5 text-blue-400" />
+                <div className="flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-2 text-xs text-accent-text flex-1">
+                  <Sparkles className="h-3.5 w-3.5 text-accent-text" />
                   <span>{isTr ? "Aranıyor: " : "Searching for "} &ldquo;{searchQuery}&rdquo;</span>
                 </div>
               )}
@@ -522,29 +522,29 @@ export default function PublicSharePage() {
               {/* Search & View Switcher */}
               <div className="flex items-center gap-2 self-end sm:self-auto">
                 <div className="relative w-48 sm:w-56">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder={isTr ? "Klasörde ara..." : "Search in folder..."}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 pr-7 h-9 text-xs rounded-full bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 focus:border-blue-500"
+                    className="pl-8 pr-7 h-9 text-xs rounded-full bg-surface border-border text-white placeholder:text-subtle focus:border-accent"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
                   )}
                 </div>
 
-                <div className="flex items-center rounded-full border border-zinc-800 bg-zinc-900 p-1 shadow-sm">
+                <div className="flex items-center rounded-full border border-border bg-surface p-1 shadow-sm">
                   <button
                     onClick={() => setViewMode("list")}
                     className={`p-1.5 rounded-full transition-colors ${
-                      viewMode === "list" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+                      viewMode === "list" ? "bg-surface-secondary text-white" : "text-muted-foreground hover:text-white"
                     }`}
                     title="List View"
                   >
@@ -553,7 +553,7 @@ export default function PublicSharePage() {
                   <button
                     onClick={() => setViewMode("grid")}
                     className={`p-1.5 rounded-full transition-colors ${
-                      viewMode === "grid" ? "bg-zinc-800 text-white" : "text-zinc-400 hover:text-white"
+                      viewMode === "grid" ? "bg-surface-secondary text-white" : "text-muted-foreground hover:text-white"
                     }`}
                     title="Grid View"
                   >
@@ -565,28 +565,28 @@ export default function PublicSharePage() {
 
             {/* Folder Explorer Content */}
             {directFolders.length === 0 && directFiles.length === 0 ? (
-              <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-12 text-center space-y-3 shadow-sm">
-                <FolderOpen className="h-10 w-10 text-zinc-500 mx-auto" />
+              <div className="rounded-3xl border border-border bg-surface/90 p-12 text-center space-y-3 shadow-sm">
+                <FolderOpen className="h-10 w-10 text-subtle mx-auto" />
                 <h4 className="text-sm font-semibold text-white">{isTr ? "Bu dizin boş" : "This directory is empty"}</h4>
-                <p className="text-xs text-zinc-400">{isTr ? "Dosya veya alt klasör bulunamadı." : "No files or subdirectories found."}</p>
+                <p className="text-xs text-muted-foreground">{isTr ? "Dosya veya alt klasör bulunamadı." : "No files or subdirectories found."}</p>
                 {currentSubPath && (
-                  <Button variant="outline" size="sm" onClick={navigateUp} className="gap-1.5 mt-2 rounded-full border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800">
-                    <CornerLeftUp className="h-3.5 w-3.5 text-blue-400" />
+                  <Button variant="outline" size="sm" onClick={navigateUp} className="gap-1.5 mt-2 rounded-full border-border bg-surface text-white hover:bg-surface-secondary">
+                    <CornerLeftUp className="h-3.5 w-3.5 text-accent-text" />
                     <span>{isTr ? "Üst dizine çık" : "Go up to parent"}</span>
                   </Button>
                 )}
               </div>
             ) : viewMode === "list" ? (
               /* Explorer List View */
-              <div className="rounded-[24px] border border-zinc-800 bg-zinc-900/90 overflow-hidden divide-y divide-zinc-800/80 shadow-sm">
+              <div className="rounded-3xl border border-border bg-surface/90 overflow-hidden divide-y divide-border/80 shadow-sm">
                 {/* Go Up Parent Row */}
                 {!isSearching && currentSubPath && (
                   <div
                     onClick={navigateUp}
-                    className="flex items-center gap-3.5 p-3.5 sm:px-4 hover:bg-zinc-800/50 transition-colors cursor-pointer text-xs font-semibold text-zinc-400 hover:text-white group"
+                    className="flex items-center gap-3.5 p-3.5 sm:px-4 hover:bg-surface-secondary/50 transition-colors cursor-pointer text-xs font-semibold text-muted-foreground hover:text-white group"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 group-hover:border-blue-500/40 transition-colors">
-                      <CornerLeftUp className="h-4 w-4 text-blue-400" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-surface-secondary border border-border-strong/60 group-hover:border-accent/40 transition-colors">
+                      <CornerLeftUp className="h-4 w-4 text-accent-text" />
                     </div>
                     <span>{isTr ? ".. (Üst klasör)" : ".. (Parent folder)"}</span>
                   </div>
@@ -597,22 +597,22 @@ export default function PublicSharePage() {
                   <div
                     key={sub.fullPath}
                     onClick={() => setCurrentSubPath(sub.fullPath)}
-                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-zinc-800/40 transition-colors cursor-pointer group"
+                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-surface-secondary/40 transition-colors cursor-pointer group"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 transition-colors flex-shrink-0">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent/10 text-accent-text border border-accent/20 transition-colors flex-shrink-0">
                         <Folder className="h-4.5 w-4.5" />
                       </div>
                       <div className="min-w-0 truncate">
-                        <p className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-blue-400 transition-colors">
+                        <p className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-accent-text transition-colors">
                           {sub.name}
                         </p>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
                           {sub.filesCount} {isTr ? "dosya" : (sub.filesCount === 1 ? "file" : "files")} • {formatBytes(sub.totalBytes)}
                         </p>
                       </div>
                     </div>
-                    <ChevronRight className="h-4 w-4 text-zinc-500 group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-2" />
+                    <ChevronRight className="h-4 w-4 text-subtle group-hover:text-accent-text group-hover:translate-x-0.5 transition-all flex-shrink-0 ml-2" />
                   </div>
                 ))}
 
@@ -620,17 +620,17 @@ export default function PublicSharePage() {
                 {directFiles.map((f) => (
                   <div
                     key={f.id}
-                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-zinc-800/40 transition-colors group"
+                    className="flex items-center justify-between p-3.5 sm:px-4 hover:bg-surface-secondary/40 transition-colors group"
                   >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60 flex-shrink-0">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-surface-secondary border border-border-strong/60 flex-shrink-0">
                         {renderFileIcon(f)}
                       </div>
                       <div className="min-w-0 truncate">
-                        <p className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-blue-400 transition-colors">
+                        <p className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-accent-text transition-colors">
                           {f.filename.split("/").pop() || f.filename}
                         </p>
-                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
                           {formatBytes(f.size)} • {formatRelativeTime(f.createdAt)}
                         </p>
                       </div>
@@ -641,7 +641,7 @@ export default function PublicSharePage() {
                       size="sm"
                       onClick={() => handleDownloadSingleFile(f.id)}
                       disabled={downloadingFileId === f.id || (share.passwordProtected && !password.trim())}
-                      className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 gap-1.5 text-xs h-8 ml-2 rounded-full flex-shrink-0"
+                      className="text-accent-text hover:text-accent-text hover:bg-accent-hover/10 gap-1.5 text-xs h-8 ml-2 rounded-full flex-shrink-0"
                     >
                       {downloadingFileId === f.id ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -662,23 +662,23 @@ export default function PublicSharePage() {
                       <div
                         key={sub.fullPath}
                         onClick={() => setCurrentSubPath(sub.fullPath)}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3 hover:border-blue-500/40 transition-all group cursor-pointer shadow-sm flex flex-col justify-between"
+                        className="rounded-2xl border border-border bg-surface/90 p-4 space-y-3 hover:border-accent/40 transition-all group cursor-pointer shadow-sm flex flex-col justify-between"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20 group-hover:scale-105 transition-transform">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent-text border border-accent/20 group-hover:scale-105 transition-transform">
                             <Folder className="h-5 w-5" />
                           </div>
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-surface-secondary text-muted-foreground">
                             {sub.filesCount} {isTr ? "dosya" : (sub.filesCount === 1 ? "file" : "files")}
                           </span>
                         </div>
                         <div>
-                          <h4 className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-blue-400 transition-colors">
+                          <h4 className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-accent-text transition-colors">
                             {sub.name}
                           </h4>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">{formatBytes(sub.totalBytes)}</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{formatBytes(sub.totalBytes)}</p>
                         </div>
-                        <div className="flex items-center gap-1 text-[11px] text-blue-400 font-medium pt-2 border-t border-zinc-800">
+                        <div className="flex items-center gap-1 text-[11px] text-accent-text font-medium pt-2 border-t border-border">
                           <span>{isTr ? "Klasörü aç" : "Open directory"}</span>
                           <ChevronRight className="h-3 w-3" />
                         </div>
@@ -692,22 +692,22 @@ export default function PublicSharePage() {
                     {directFiles.map((f) => (
                       <div
                         key={f.id}
-                        className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-4 space-y-3 hover:border-blue-500/40 transition-all group flex flex-col justify-between shadow-sm"
+                        className="rounded-2xl border border-border bg-surface/90 p-4 space-y-3 hover:border-accent/40 transition-all group flex flex-col justify-between shadow-sm"
                       >
                         <div className="flex items-center justify-between">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-800 border border-zinc-700/60">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-secondary border border-border-strong/60">
                             {renderFileIcon(f)}
                           </div>
-                          <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+                          <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-surface-secondary text-muted-foreground">
                             {f.mimeType.split("/")[1] || "File"}
                           </span>
                         </div>
 
                         <div>
-                          <h4 className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-blue-400 transition-colors">
+                          <h4 className="font-semibold text-xs sm:text-sm text-white truncate group-hover:text-accent-text transition-colors">
                             {f.filename.split("/").pop() || f.filename}
                           </h4>
-                          <p className="text-[11px] text-zinc-400 mt-0.5">{formatBytes(f.size)}</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{formatBytes(f.size)}</p>
                         </div>
 
                         <Button
@@ -715,7 +715,7 @@ export default function PublicSharePage() {
                           size="sm"
                           onClick={() => handleDownloadSingleFile(f.id)}
                           disabled={downloadingFileId === f.id || (share.passwordProtected && !password.trim())}
-                          className="w-full text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 gap-1.5 text-xs h-8 pt-1 border-t border-zinc-800 rounded-full"
+                          className="w-full text-accent-text hover:text-accent-text hover:bg-accent-hover/10 gap-1.5 text-xs h-8 pt-1 border-t border-border rounded-full"
                         >
                           {downloadingFileId === f.id ? (
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -735,30 +735,30 @@ export default function PublicSharePage() {
           /* ========================================================= */
           /* SINGLE FILE SHARE VIEW                                    */
           /* ========================================================= */
-          <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 backdrop-blur-xl p-7 sm:p-9 shadow-2xl space-y-6 max-w-lg mx-auto">
+          <div className="rounded-3xl border border-border bg-surface/90 backdrop-blur-xl p-7 sm:p-9 shadow-2xl space-y-6 max-w-lg mx-auto">
             {/* Header: Shared by */}
             <div className="text-center space-y-1">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 text-[11px] font-semibold text-blue-400 border border-blue-500/20 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-[11px] font-semibold text-accent-text border border-accent/20 mb-2">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 <span>{t.publicShare.secureCloudShare}</span>
               </div>
               <h2 className="text-xl font-semibold text-white tracking-tight">
                 {t.publicShare.fileSharedWithYou}
               </h2>
-              <p className="text-xs text-zinc-400">{t.publicShare.encryptedSubtitle}</p>
+              <p className="text-xs text-muted-foreground">{t.publicShare.encryptedSubtitle}</p>
             </div>
 
             {/* File Info Box */}
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-4 sm:p-5 flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-900 border border-zinc-800 shadow-sm flex-shrink-0">
+            <div className="rounded-2xl border border-border bg-background/60 p-4 sm:p-5 flex items-center gap-4">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface border border-border shadow-sm flex-shrink-0">
                 {renderFileIcon(file, true)}
               </div>
               <div className="min-w-0 flex-1 space-y-1">
                 <h3 className="font-semibold text-sm text-white break-words">{file.filename}</h3>
-                <div className="flex items-center gap-2 text-xs text-zinc-400">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="font-semibold text-white">{formatBytes(file.size)}</span>
                   <span>•</span>
-                  <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400">
+                  <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-surface-secondary text-muted-foreground">
                     {file.mimeType.split("/")[1] || "File"}
                   </span>
                 </div>
@@ -766,13 +766,13 @@ export default function PublicSharePage() {
             </div>
 
             {/* Badges / Security indicators */}
-            <div className="flex items-center justify-between text-xs text-zinc-400 px-1 border-t border-b border-zinc-800 py-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground px-1 border-t border-b border-border py-3">
               <span className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-blue-400" />
+                <Clock className="h-3.5 w-3.5 text-accent-text" />
                 <span>{formatExpiresIn(share.expiresAt)}</span>
               </span>
               {share.passwordProtected && (
-                <span className="flex items-center gap-1.5 text-amber-400 font-medium">
+                <span className="flex items-center gap-1.5 text-warning font-medium">
                   <Lock className="h-3.5 w-3.5" />
                   <span>{t.publicShare.passwordProtected}</span>
                 </span>
@@ -783,7 +783,7 @@ export default function PublicSharePage() {
             {share.passwordProtected && !downloadStarted && (
               <div className="space-y-2">
                 <label className="text-xs font-semibold text-white flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-amber-400" />
+                  <Lock className="h-3.5 w-3.5 text-warning" />
                   <span>{t.publicShare.enterPasswordLabel}</span>
                 </label>
                 <Input
@@ -791,35 +791,35 @@ export default function PublicSharePage() {
                   placeholder={t.publicShare.enterPasswordPlaceholder}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="text-xs bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:border-blue-500"
+                  className="text-xs bg-background/70 border-border text-white placeholder:text-subtle focus:border-accent"
                 />
               </div>
             )}
 
             {/* Error banner if unlock failed */}
             {error && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400">
-                <AlertCircle className="h-4 w-4 flex-shrink-0 text-red-400" />
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-danger/10 border border-danger/20 text-xs text-danger">
+                <AlertCircle className="h-4 w-4 flex-shrink-0 text-danger" />
                 <span>{error}</span>
               </div>
             )}
 
             {/* Download CTA Button */}
             {downloadStarted && downloadUrl ? (
-              <div className="space-y-3 p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center animate-in zoom-in-95 duration-150">
-                <CheckCircle2 className="h-7 w-7 text-emerald-400 mx-auto" />
+              <div className="space-y-3 p-5 rounded-2xl bg-success/10 border border-success/20 text-center animate-in zoom-in-95 duration-150">
+                <CheckCircle2 className="h-7 w-7 text-success mx-auto" />
                 <div>
                   <h4 className="text-xs font-semibold text-white">
                     {t.publicShare.downloadInitiated}
                   </h4>
-                  <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     {t.publicShare.browserDidNotStart}
                   </p>
                 </div>
                 <a
                   href={downloadUrl}
                   download={file.filename}
-                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs shadow-sm transition-colors"
+                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-success hover:bg-success/90 text-white font-semibold text-xs shadow-sm transition-colors"
                 >
                   <DownloadCloud className="h-4 w-4" />
                   <span>{t.publicShare.clickToRedownload}</span>
@@ -830,7 +830,7 @@ export default function PublicSharePage() {
                 type="button"
                 onClick={() => handleDownloadSingleFile()}
                 disabled={isUnlocking}
-                className="w-full gap-2 rounded-full bg-blue-600 hover:bg-blue-500 text-white py-3 font-semibold shadow-lg shadow-blue-500/20 text-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full gap-2 rounded-full bg-accent hover:bg-accent-hover text-white py-3 font-semibold shadow-lg shadow-accent/20 text-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
               >
                 <DownloadCloud className="h-5 w-5" />
                 <span>{isUnlocking ? t.publicShare.verifying : t.publicShare.downloadFile}</span>
@@ -838,7 +838,7 @@ export default function PublicSharePage() {
             )}
 
             {/* Checksum verification */}
-            <div className="pt-2 text-center text-[10px] text-zinc-500 font-mono">
+            <div className="pt-2 text-center text-[10px] text-subtle font-mono">
               <span>SHA-256: {file.checksum?.substring(0, 16) || "8f434346648f6b96"}...</span>
             </div>
           </div>
@@ -846,7 +846,7 @@ export default function PublicSharePage() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 py-6 text-center text-xs text-zinc-500">
+      <footer className="relative z-10 py-6 text-center text-xs text-subtle">
         <p>{t.publicShare.footerTagline}</p>
       </footer>
     </div>

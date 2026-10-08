@@ -177,23 +177,23 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         /* Step 2: Share Created Success View */
         <div className="space-y-5 pt-2">
           {/* Target Preview Box */}
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-4 space-y-3">
-            <div className="flex items-center justify-between text-xs text-zinc-400">
+          <div className="rounded-2xl border border-border bg-background p-4 space-y-3">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-2">
                 {isFolder ? (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-2xl bg-accent/10 text-accent-text border border-accent/20">
                     <Folder className="h-4 w-4" />
                   </div>
                 ) : (
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-800 text-zinc-300">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-2xl bg-surface-secondary text-foreground/80">
                     <FileText className="h-4 w-4" />
                   </div>
                 )}
-                <span className="font-semibold text-zinc-200 truncate max-w-[220px]">
+                <span className="font-semibold text-foreground truncate max-w-[220px]">
                   {targetName}
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-[11px] text-emerald-400">
+              <div className="flex items-center gap-1 text-[11px] text-success">
                 <ShieldCheck className="h-3.5 w-3.5" />
                 <span>Protected</span>
               </div>
@@ -203,14 +203,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <Input
                 readOnly
                 value={getFullShareUrl(createdShare.token)}
-                className="bg-zinc-900 font-mono text-xs text-sky-400"
+                className="bg-surface font-mono text-xs text-accent-text"
               />
               <Button
                 variant={copied ? "default" : "primary"}
                 onClick={handleCopy}
                 className="gap-1.5 flex-shrink-0"
               >
-                {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
+                {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
                 <span>{copied ? "Copied" : "Copy"}</span>
               </Button>
             </div>
@@ -248,7 +248,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               href={getFullShareUrl(createdShare.token)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-accent-text hover:text-accent-text transition-colors"
             >
               <span>Preview shared page</span>
               <ExternalLink className="h-3.5 w-3.5" />
@@ -256,20 +256,20 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </div>
 
           {/* QR Code toggle */}
-          <div className="space-y-3 pt-1 border-t border-zinc-800/60">
+          <div className="space-y-3 pt-1 border-t border-border/60">
             <button
               type="button"
               onClick={() => setShowQR(!showQR)}
-              className="flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-white transition-colors"
             >
-              <QrCode className="h-4 w-4 text-sky-400" />
+              <QrCode className="h-4 w-4 text-accent-text" />
               <span>{showQR ? "Hide QR Code" : "Show QR Code for Mobile Scanning"}</span>
             </button>
 
             {showQR && (
-              <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white text-zinc-950 mx-auto max-w-xs animate-in zoom-in-95 duration-200">
+              <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white text-background mx-auto max-w-xs animate-in zoom-in-95 duration-200">
                 <QRCodeSVG value={getFullShareUrl(createdShare.token)} size={160} />
-                <p className="text-[11px] font-medium text-zinc-600 mt-2 text-center">
+                <p className="text-[11px] font-medium text-subtle/80 mt-2 text-center">
                   Scan to explore and download {targetName}
                 </p>
               </div>
@@ -292,13 +292,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
         /* Step 1: Configuration Form */
         <div className="space-y-5 pt-2">
           {/* Target Folder / File Banner */}
-          <div className="flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-950/70 p-3.5">
+          <div className="flex items-center justify-between rounded-2xl border border-border bg-background/70 p-3.5">
             <div className="flex items-center gap-3 min-w-0">
               <div
                 className={`flex h-10 w-10 items-center justify-center rounded-xl border flex-shrink-0 ${
                   isFolder
-                    ? "bg-sky-500/10 border-sky-500/30 text-sky-400"
-                    : "bg-zinc-800 border-zinc-700/60 text-zinc-300"
+                    ? "bg-accent/10 border-accent/30 text-accent-text"
+                    : "bg-surface-secondary border-border-strong/60 text-foreground/80"
                 }`}
               >
                 {isFolder ? <Folder className="h-5 w-5" /> : <FileText className="h-5 w-5" />}
@@ -312,7 +312,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     </Badge>
                   )}
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
+                <p className="text-[11px] text-muted-foreground mt-0.5">
                   {isFolder
                     ? `${folder?.filesCount} files • ${formatBytes(folder?.totalBytes || 0)}`
                     : formatBytes(targetSize)}
@@ -323,12 +323,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
           {/* Free Tier Warning if active link count reached */}
           {isFreeTier && shares.filter((s) => s.isActive).length >= 1 && (
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-warning/10 border border-warning/20 text-xs text-warning">
               <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                <Clock className="h-4 w-4 text-warning flex-shrink-0" />
                 <span>You have reached the 1 active share link limit on the Free plan.</span>
               </div>
-              <Link href="/pricing" className="text-sky-400 hover:underline font-bold whitespace-nowrap ml-2">
+              <Link href="/pricing" className="text-accent-text hover:underline font-bold whitespace-nowrap ml-2">
                 Upgrade to Pro
               </Link>
             </div>
@@ -337,12 +337,12 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           {/* Expiration selection */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-sky-400" />
+              <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-accent-text" />
                 <span>Link Expiration</span>
               </label>
               {isFreeTier && (
-                <span className="text-[10px] text-zinc-400 font-mono">Free: Max 12 Hours</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Free: Max 12 Hours</span>
               )}
             </div>
             <div className="grid grid-cols-5 gap-1.5">
@@ -362,15 +362,15 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                     onClick={() => setExpirationHours(opt.hours)}
                     className={`py-2 px-1 rounded-xl text-xs font-medium border transition-all text-center relative ${
                       isLocked
-                        ? "border-zinc-800/40 bg-zinc-950/40 text-zinc-600 cursor-not-allowed"
+                        ? "border-border/40 bg-background/40 text-subtle/80 cursor-not-allowed"
                         : expirationHours === opt.hours
-                        ? "border-sky-500 bg-sky-500/15 text-sky-400 font-semibold"
-                        : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                        ? "border-accent bg-accent/15 text-accent-text font-semibold"
+                        : "border-border bg-surface/60 text-muted-foreground hover:border-border-strong hover:text-foreground"
                     }`}
                   >
                     <span>{opt.label}</span>
                     {isLocked && (
-                      <span className="block text-[8px] text-purple-400 uppercase font-bold mt-0.5">
+                      <span className="block text-[8px] text-accent-text uppercase font-bold mt-0.5">
                         {opt.minTier}
                       </span>
                     )}
@@ -382,8 +382,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
           {/* Download limit selection */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-              <Download className="h-3.5 w-3.5 text-blue-400" />
+            <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+              <Download className="h-3.5 w-3.5 text-accent-text" />
               <span>Download Limit</span>
             </label>
             <div className="grid grid-cols-4 gap-1.5">
@@ -399,8 +399,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({
                   onClick={() => setDownloadLimit(opt.limit)}
                   className={`py-2 px-1 rounded-xl text-xs font-medium border transition-all text-center ${
                     downloadLimit === opt.limit
-                      ? "border-sky-500 bg-sky-500/15 text-sky-400 font-semibold"
-                      : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200"
+                      ? "border-accent bg-accent/15 text-accent-text font-semibold"
+                      : "border-border bg-surface/60 text-muted-foreground hover:border-border-strong hover:text-foreground"
                   }`}
                 >
                   {opt.label}
@@ -410,13 +410,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           </div>
 
           {/* Burn After Read option */}
-          <div className="flex items-center justify-between p-3 rounded-2xl border border-zinc-800 bg-zinc-950/60">
+          <div className="flex items-center justify-between p-3 rounded-2xl border border-border bg-background/60">
             <div className="space-y-0.5">
-              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-warning" />
                 <span>Burn After Read</span>
               </label>
-              <p className="text-[11px] text-zinc-500">
+              <p className="text-[11px] text-subtle">
                 Link and file will be automatically destroyed after first download.
               </p>
             </div>
@@ -430,17 +430,17 @@ export const ShareModal: React.FC<ShareModalProps> = ({
           {/* Password Protection */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                <Lock className="h-3.5 w-3.5 text-amber-400" />
+              <label className="text-xs font-semibold text-foreground/80 flex items-center gap-1.5">
+                <Lock className="h-3.5 w-3.5 text-warning" />
                 <span>Password Protection (Optional)</span>
               </label>
               {isFreeTier ? (
-                <Link href="/pricing" className="text-[10px] text-purple-400 font-bold hover:underline flex items-center gap-1">
+                <Link href="/pricing" className="text-[10px] text-accent-text font-bold hover:underline flex items-center gap-1">
                   <Crown className="h-3 w-3" />
                   <span>Pro Feature</span>
                 </Link>
               ) : (
-                <span className="text-[10px] text-zinc-500 font-normal">SHA-256 Encrypted</span>
+                <span className="text-[10px] text-subtle font-normal">SHA-256 Encrypted</span>
               )}
             </div>
             <Input
@@ -449,7 +449,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               value={password}
               disabled={isFreeTier}
               onChange={(e) => setPassword(e.target.value)}
-              className={`text-xs ${isFreeTier ? "opacity-60 bg-zinc-950/40 cursor-not-allowed" : ""}`}
+              className={`text-xs ${isFreeTier ? "opacity-60 bg-background/40 cursor-not-allowed" : ""}`}
             />
           </div>
 

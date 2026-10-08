@@ -7,81 +7,81 @@ import { Footer } from "@/components/layout/Footer";
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col justify-between">
+    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between">
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 w-full">
         {/* Back Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-zinc-400 hover:text-[#0071e3] transition-colors mb-8 group"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-accent-text transition-colors mb-8 group"
         >
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           <span>Ana Sayfaya Dön</span>
         </Link>
 
         {/* Content Card */}
-        <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-8 sm:p-12 shadow-2xl backdrop-blur-xl space-y-10">
+        <div className="rounded-3xl border border-border bg-surface/90 p-8 sm:p-12 shadow-2xl backdrop-blur-xl space-y-10">
           {/* Header */}
-          <div className="space-y-3 border-b border-zinc-800 pb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold text-[#0071e3]">
+          <div className="space-y-3 border-b border-border pb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface border border-border text-xs font-semibold text-accent-text">
               <Shield className="h-3.5 w-3.5" />
               <span>Privacy &amp; Security Policy</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">
+            <h1 className="display-title">
               Gizlilik ve Güvenlik Politikası
             </h1>
-            <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-2xl">
+            <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-2xl">
               NearDrop olarak gizliliğinizi ve veri güvenliğinizi her şeyin üzerinde tutuyoruz. Bu politika, bilgilerinizin nasıl korunduğunu açıklamaktadır.
             </p>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-subtle">
               Son Güncelleme: 20 Eylül 2026
             </p>
           </div>
 
           {/* Core Principles Bento Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl border border-zinc-800 bg-zinc-950/60 space-y-2">
-              <div className="h-9 w-9 rounded-xl bg-blue-500/10 text-[#0071e3] flex items-center justify-center">
+            <div className="p-5 rounded-2xl border border-border bg-background/60 space-y-2">
+              <div className="h-9 w-9 rounded-xl bg-accent/10 text-accent-text flex items-center justify-center">
                 <EyeOff className="h-4 w-4" />
               </div>
               <h3 className="text-sm font-semibold text-white">Sıfır Veri Satışı</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Kişisel verilerinizi veya yüklenen dosyalarınızı asla 3. taraflarla paylaşmaz ve reklam amaçlı kullanmayız.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl border border-zinc-800 bg-zinc-950/60 space-y-2">
-              <div className="h-9 w-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+            <div className="p-5 rounded-2xl border border-border bg-background/60 space-y-2">
+              <div className="h-9 w-9 rounded-xl bg-success/10 text-success flex items-center justify-center">
                 <Lock className="h-4 w-4" />
               </div>
               <h3 className="text-sm font-semibold text-white">Uçtan Uca Koruma</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Dosyalarınız modern şifreleme katmanlarıyla (TLS 1.3 / AES-256) aktarılır ve güvenle saklanır.
               </p>
             </div>
 
-            <div className="p-5 rounded-2xl border border-zinc-800 bg-zinc-950/60 space-y-2">
-              <div className="h-9 w-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center">
+            <div className="p-5 rounded-2xl border border-border bg-background/60 space-y-2">
+              <div className="h-9 w-9 rounded-xl bg-accent/10 text-accent-text flex items-center justify-center">
                 <Server className="h-4 w-4" />
               </div>
               <h3 className="text-sm font-semibold text-white">Otomatik İmha</h3>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Süresi dolan veya tek kullanımlık paylaşılan dosyalar sunuculardan kalıcı olarak silinir.
               </p>
             </div>
           </div>
 
           {/* Detailed Sections */}
-          <div className="space-y-8 text-sm sm:text-base leading-relaxed text-zinc-200">
+          <div className="space-y-8 text-sm sm:text-base leading-relaxed text-foreground">
             {/* Section 1 */}
             <section className="space-y-2">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <span className="text-[#0071e3]">1.</span>
+                <span className="text-accent-text">1.</span>
                 Toplanan Bilgiler
               </h2>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Hizmetlerimizi sunabilmek için sadece gerekli minimum veriler toplanır:
               </p>
-              <ul className="list-disc list-inside space-y-2 text-sm text-zinc-400 ml-2">
+              <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground ml-2">
                 <li>
                   <strong className="text-white">Hesap Bilgileri:</strong> E-posta adresi, ad-soyad (Google veya e-posta ile kayıt olunduğunda).
                 </li>
@@ -97,10 +97,10 @@ export default function PrivacyPolicyPage() {
             {/* Section 2 */}
             <section className="space-y-2">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <span className="text-[#0071e3]">2.</span>
+                <span className="text-accent-text">2.</span>
                 Google Kullanıcı Verileri Politikası
               </h2>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Google ile Giriş yapıldığında, NearDrop yalnızca kimlik doğrulama için temel profil bilgilerini (ad, e-posta ve profil fotoğrafı) talep eder. Google Drive veya Gmail gibi diğer verilere asla erişilmez veya talep edilmez.
               </p>
             </section>
@@ -108,10 +108,10 @@ export default function PrivacyPolicyPage() {
             {/* Section 3 */}
             <section className="space-y-2">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <span className="text-[#0071e3]">3.</span>
+                <span className="text-accent-text">3.</span>
                 Veri Saklama ve Güvenlik
               </h2>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 Dosyalarınız izole bulut depolama alanında barındırılır. Veritabanı ve kimlik doğrulama hizmetleri sıkı Satır Düzeyinde Güvenlik (RLS) kurallarıyla korunur; dosyalarınıza sadece sizin izin verdiğiniz kişiler erişebilir.
               </p>
             </section>
@@ -119,16 +119,16 @@ export default function PrivacyPolicyPage() {
             {/* Section 4 */}
             <section className="space-y-2">
               <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-                <span className="text-[#0071e3]">4.</span>
+                <span className="text-accent-text">4.</span>
                 Haklarınız ve İletişim
               </h2>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className="text-muted-foreground text-sm leading-relaxed">
                 KVKK ve GDPR kapsamında hesabınızı silme, yüklenen içerikleri kaldırma veya veri özeti talep etme hakkına sahipsiniz. Tüm sorularınız için destek merkezimize ulaşabilirsiniz.
               </p>
               <div className="pt-2">
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs font-semibold shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent hover:bg-accent-hover text-white text-xs font-semibold shadow-sm transition-colors"
                 >
                   <UserCheck className="h-3.5 w-3.5" />
                   <span>Destek / İletişim</span>

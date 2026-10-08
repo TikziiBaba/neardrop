@@ -54,19 +54,19 @@ export default function SharedPage() {
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>Shared Links</span>
               <Badge variant="secondary" className="text-xs">
                 {shares.length} link{shares.length === 1 ? "" : "s"}
               </Badge>
             </h1>
-            <p className="text-xs text-zinc-400 mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Manage your active share links, track downloads, revoke access, and copy public URLs.
             </p>
           </div>
 
           <Link href="/files">
-            <Button variant="primary" size="default" className="gap-2 shadow-lg shadow-sky-500/25">
+            <Button variant="primary" size="default" className="gap-2 shadow-lg shadow-accent/25">
               <Plus className="h-4 w-4" />
               <span>Create New Share</span>
             </Button>
@@ -75,10 +75,10 @@ export default function SharedPage() {
 
         {/* Shares Table / List */}
         {shares.length === 0 ? (
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900/30 p-12 text-center space-y-3">
-            <Share2 className="h-10 w-10 text-zinc-600 mx-auto" />
-            <h3 className="text-sm font-semibold text-zinc-300">You haven&apos;t shared anything yet</h3>
-            <p className="text-xs text-zinc-500 max-w-sm mx-auto">
+          <div className="rounded-3xl border border-border bg-surface/30 p-12 text-center space-y-3">
+            <Share2 className="h-10 w-10 text-subtle/80 mx-auto" />
+            <h3 className="text-sm font-semibold text-foreground/80">You haven&apos;t shared anything yet</h3>
+            <p className="text-xs text-subtle max-w-sm mx-auto">
               Select any file from your dashboard or files tab to create an expiring, password-protected share link.
             </p>
             <Link href="/files">
@@ -88,7 +88,7 @@ export default function SharedPage() {
             </Link>
           </div>
         ) : (
-          <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 overflow-hidden divide-y divide-zinc-800/60">
+          <div className="rounded-2xl border border-border bg-surface/60 overflow-hidden divide-y divide-border/60">
             {shares.map((share) => {
               const file = files.find((f) => f.id === share.cloudFileId);
               const isFolder = Boolean(share.folderPath || share.isFolder);
@@ -104,14 +104,14 @@ export default function SharedPage() {
               return (
                 <div
                   key={share.id}
-                  className="p-4 sm:p-5 hover:bg-zinc-800/30 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="p-4 sm:p-5 hover:bg-surface-secondary/30 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
                   {/* Left: Info */}
                   <div className="space-y-2 min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <div className="flex items-center gap-2">
                         {isFolder ? (
-                          <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                          <div className="flex h-6 w-6 items-center justify-center rounded-2xl bg-accent/10 text-accent-text border border-accent/20">
                             <Folder className="h-3.5 w-3.5" />
                           </div>
                         ) : null}
@@ -127,7 +127,7 @@ export default function SharedPage() {
                       ) : null}
 
                       {displaySize > 0 && (
-                        <span className="text-xs text-zinc-400">({formatBytes(displaySize)})</span>
+                        <span className="text-xs text-muted-foreground">({formatBytes(displaySize)})</span>
                       )}
 
                       {/* Status Badges */}
@@ -148,13 +148,13 @@ export default function SharedPage() {
                     </div>
 
                     {/* Link info */}
-                    <div className="flex items-center gap-3 text-xs font-mono text-sky-400">
+                    <div className="flex items-center gap-3 text-xs font-mono text-accent-text">
                       <span className="truncate max-w-xs sm:max-w-md">{getFullShareUrl(share.token)}</span>
                       <a
                         href={`/s/${share.token}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-zinc-500 hover:text-sky-300 transition-colors"
+                        className="text-subtle hover:text-accent-text transition-colors"
                         title="Open Public Share Page"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -162,14 +162,14 @@ export default function SharedPage() {
                     </div>
 
                     {/* Metadata Footer */}
-                    <div className="flex items-center gap-4 text-[11px] text-zinc-400 flex-wrap">
+                    <div className="flex items-center gap-4 text-[11px] text-muted-foreground flex-wrap">
                       <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3 text-zinc-500" />
+                        <Clock className="h-3 w-3 text-subtle" />
                         <span>{formatExpiresIn(share.expiresAt)}</span>
                       </span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <Download className="h-3 w-3 text-zinc-500" />
+                        <Download className="h-3 w-3 text-subtle" />
                         <span>
                           {share.downloadCount}
                           {share.maxDownloads ? ` / ${share.maxDownloads}` : ""} downloads
@@ -188,7 +188,7 @@ export default function SharedPage() {
                       onClick={() => handleCopy(share.token)}
                       className="gap-1.5 text-xs h-8"
                     >
-                      {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                      {isCopied ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
                       <span>{isCopied ? "Copied" : "Copy Link"}</span>
                     </Button>
 
@@ -211,7 +211,7 @@ export default function SharedPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 w-8 p-0 text-zinc-400 hover:text-sky-400"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-accent-text"
                         title="View Download Analytics"
                       >
                         <BarChart3 className="h-3.5 w-3.5" />
@@ -225,7 +225,7 @@ export default function SharedPage() {
                         revokeShareLink(share.id);
                         toast.info(share.isActive ? "Link deactivated" : "Link reactivated");
                       }}
-                      className={`h-8 w-8 p-0 ${!share.isActive ? "text-emerald-400" : "text-amber-400"}`}
+                      className={`h-8 w-8 p-0 ${!share.isActive ? "text-success" : "text-warning"}`}
                       title={share.isActive ? "Deactivate Link" : "Activate Link"}
                     >
                       <Ban className="h-3.5 w-3.5" />
@@ -238,7 +238,7 @@ export default function SharedPage() {
                         deleteShareLink(share.id);
                         toast.success("Share link removed");
                       }}
-                      className="text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 h-8 w-8 p-0"
+                      className="text-muted-foreground hover:text-danger hover:bg-danger/10 h-8 w-8 p-0"
                       title="Delete Share"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -259,9 +259,9 @@ export default function SharedPage() {
         description={selectedQrShare?.filename}
       >
         {selectedQrShare && (
-          <div className="flex flex-col items-center justify-center p-6 bg-white text-zinc-950 rounded-2xl mx-auto max-w-xs space-y-4">
+          <div className="flex flex-col items-center justify-center p-6 bg-white text-background rounded-2xl mx-auto max-w-xs space-y-4">
             <QRCodeSVG value={getFullShareUrl(selectedQrShare.token)} size={180} />
-            <p className="text-xs text-center font-medium text-zinc-600">
+            <p className="text-xs text-center font-medium text-subtle/80">
               Point your smartphone camera to open and download.
             </p>
           </div>

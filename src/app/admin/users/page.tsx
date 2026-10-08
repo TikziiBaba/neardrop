@@ -263,13 +263,13 @@ export default function AdminUsersPage() {
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-2.5">
+            <h1 className="page-title flex items-center gap-2.5">
               <span>User & Client Directory</span>
-              <span className="rounded-full bg-[#0071e3]/15 px-2.5 py-0.5 text-xs font-semibold text-[#2997ff] border border-[#0071e3]/30">
+              <span className="rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-semibold text-accent-text border border-accent/30">
                 {users.length} Total Accounts
               </span>
             </h1>
-            <p className="text-xs sm:text-sm text-[#86868b] mt-1">
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Live directory with real-time IP tracking, direct role management, quota controls, and device telemetry.
             </p>
           </div>
@@ -279,9 +279,9 @@ export default function AdminUsersPage() {
               variant="outline"
               size="sm"
               onClick={exportUsersCsv}
-              className="gap-1.5 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-[#a1a1a6] hover:bg-white/[0.08] hover:text-white"
+              className="gap-1.5 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08] hover:text-white"
             >
-              <Download className="h-3.5 w-3.5 text-[#2997ff]" />
+              <Download className="h-3.5 w-3.5 text-accent-text" />
               <span>Export CSV</span>
             </Button>
 
@@ -290,67 +290,67 @@ export default function AdminUsersPage() {
               size="sm"
               onClick={fetchUsers}
               disabled={loading}
-              className="gap-2 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-[#a1a1a6] hover:bg-white/[0.08] hover:text-white"
+              className="gap-2 text-xs rounded-full border-white/[0.1] bg-white/[0.04] text-muted-foreground hover:bg-white/[0.08] hover:text-white"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-[#2997ff]" : ""}`} />
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin text-accent-text" : ""}`} />
               <span>Refresh</span>
             </Button>
           </div>
         </div>
 
         {/* Filter Controls Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-[#16161a] p-3 rounded-2xl border border-white/[0.08]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-surface-secondary p-3 rounded-2xl border border-white/[0.08]">
           {/* Search Bar */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#86868b]" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by name, email, IP address, device, browser, platform..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-xs bg-[#0e0e11] border-white/[0.08] text-white rounded-xl placeholder:text-[#6e6e73]"
+              className="pl-10 text-xs bg-surface border-white/[0.08] text-white rounded-xl placeholder:text-subtle"
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
             {/* Role Filter */}
-            <div className="flex items-center gap-1 bg-[#0e0e11] px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs">
-              <span className="text-[#86868b] text-[11px] font-medium mr-1">Role:</span>
+            <div className="flex items-center gap-1 bg-surface px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs">
+              <span className="text-muted-foreground text-[11px] font-medium mr-1">Role:</span>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="bg-transparent text-xs text-white font-semibold focus:outline-none cursor-pointer"
               >
-                <option value="all" className="bg-[#16161a]">All Roles</option>
-                <option value="admin" className="bg-[#16161a] text-[#2997ff]">Admin Only</option>
-                <option value="moderator" className="bg-[#16161a] text-sky-400">Moderators</option>
-                <option value="premium" className="bg-[#16161a] text-emerald-400">Premium</option>
-                <option value="member" className="bg-[#16161a]">Members</option>
+                <option value="all" className="bg-surface-secondary">All Roles</option>
+                <option value="admin" className="bg-surface-secondary text-accent-text">Admin Only</option>
+                <option value="moderator" className="bg-surface-secondary text-accent-text">Moderators</option>
+                <option value="premium" className="bg-surface-secondary text-success">Premium</option>
+                <option value="member" className="bg-surface-secondary">Members</option>
               </select>
             </div>
 
             {/* Status Filter */}
-            <div className="flex items-center gap-1 bg-[#0e0e11] px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs">
-              <span className="text-[#86868b] text-[11px] font-medium mr-1">Status:</span>
+            <div className="flex items-center gap-1 bg-surface px-2.5 py-1.5 rounded-xl border border-white/[0.08] text-xs">
+              <span className="text-muted-foreground text-[11px] font-medium mr-1">Status:</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="bg-transparent text-xs text-white font-semibold focus:outline-none cursor-pointer"
               >
-                <option value="all" className="bg-[#16161a]">All Statuses</option>
-                <option value="active" className="bg-[#16161a]">Active</option>
-                <option value="banned" className="bg-[#16161a]">Banned</option>
-                <option value="suspended" className="bg-[#16161a]">Suspended</option>
+                <option value="all" className="bg-surface-secondary">All Statuses</option>
+                <option value="active" className="bg-surface-secondary">Active</option>
+                <option value="banned" className="bg-surface-secondary">Banned</option>
+                <option value="suspended" className="bg-surface-secondary">Suspended</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Users Table */}
-        <div className="rounded-3xl border border-white/[0.08] bg-[#16161a] overflow-hidden shadow-xl">
+        <div className="rounded-3xl border border-white/[0.08] bg-surface-secondary overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-white/[0.08] bg-[#0e0e11] text-[11px] font-semibold uppercase tracking-wider text-[#86868b]">
+              <thead className="border-b border-white/[0.08] bg-surface text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="py-3.5 px-4 sm:px-6">User / Identity</th>
                   <th className="py-3.5 px-4">Role & Plan</th>
@@ -361,17 +361,17 @@ export default function AdminUsersPage() {
                   <th className="py-3.5 px-4 sm:px-6 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60">
+              <tbody className="divide-y divide-border/60">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-500">
-                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-[#2997ff] mb-2" />
+                    <td colSpan={7} className="py-12 text-center text-subtle">
+                      <RefreshCw className="h-6 w-6 animate-spin mx-auto text-accent-text mb-2" />
                       Loading user accounts and devices...
                     </td>
                   </tr>
                 ) : filteredUsers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-500">
+                    <td colSpan={7} className="py-12 text-center text-subtle">
                       No users match your search and filter criteria.
                     </td>
                   </tr>
@@ -386,7 +386,7 @@ export default function AdminUsersPage() {
                       <tr
                         key={u.id}
                         onClick={() => (window.location.href = `/admin/users/${u.id}`)}
-                        className="hover:bg-zinc-800/40 transition-colors group cursor-pointer"
+                        className="hover:bg-surface-secondary/40 transition-colors group cursor-pointer"
                       >
                         {/* User Identity with Smart Avatar */}
                         <td className="py-4 px-4 sm:px-6">
@@ -395,14 +395,14 @@ export default function AdminUsersPage() {
                               user={u}
                               size="md"
                               showStatusDot={true}
-                              className="ring-2 ring-[#0071e3]/30"
+                              className="ring-2 ring-accent/30"
                             />
                             <div className="min-w-0">
-                              <p className="font-semibold text-white truncate group-hover:text-[#2997ff] transition-colors flex items-center gap-1.5">
+                              <p className="font-semibold text-white truncate group-hover:text-accent-text transition-colors flex items-center gap-1.5">
                                 <span>{u.displayName}</span>
-                                <ChevronRight className="h-3.5 w-3.5 text-zinc-500 group-hover:text-[#2997ff] group-hover:translate-x-0.5 transition-all" />
+                                <ChevronRight className="h-3.5 w-3.5 text-subtle group-hover:text-accent-text group-hover:translate-x-0.5 transition-all" />
                               </p>
-                              <p className="text-[11px] text-zinc-400 truncate">{u.email}</p>
+                              <p className="text-[11px] text-muted-foreground truncate">{u.email}</p>
                             </div>
                           </div>
                         </td>
@@ -414,24 +414,24 @@ export default function AdminUsersPage() {
                             <select
                               value={u.role}
                               onChange={(e) => handleQuickChangeRole(u, e.target.value as UserRole, e as any)}
-                              className={`text-[10px] font-bold rounded-md px-2 py-0.5 border transition-all cursor-pointer ${
+                              className={`text-[10px] font-bold rounded-xl px-2 py-0.5 border transition-all cursor-pointer ${
                                 isAdmin
-                                  ? "bg-[#0071e3]/15 text-[#2997ff] border-[#0071e3]/30"
+                                  ? "bg-accent/15 text-accent-text border-accent/30"
                                   : isMod
-                                  ? "bg-sky-500/10 text-sky-400 border-sky-500/30"
+                                  ? "bg-accent/10 text-accent-text border-accent/30"
                                   : isPrem
-                                  ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                                  : "bg-zinc-800 text-zinc-300 border-zinc-700"
+                                  ? "bg-success/10 text-success border-success/30"
+                                  : "bg-surface-secondary text-foreground/80 border-border-strong"
                               }`}
                             >
-                              <option value="admin" className="bg-[#16161a] text-[#2997ff] font-bold">Admin</option>
-                              <option value="moderator" className="bg-[#16161a] text-sky-400 font-bold">Moderator</option>
-                              <option value="premium" className="bg-[#16161a] text-emerald-400 font-bold">Premium</option>
-                              <option value="member" className="bg-[#16161a] text-zinc-300">Member</option>
+                              <option value="admin" className="bg-surface-secondary text-accent-text font-bold">Admin</option>
+                              <option value="moderator" className="bg-surface-secondary text-accent-text font-bold">Moderator</option>
+                              <option value="premium" className="bg-surface-secondary text-success font-bold">Premium</option>
+                              <option value="member" className="bg-surface-secondary text-foreground/80">Member</option>
                             </select>
 
-                            <span className="text-[10px] text-[#86868b] uppercase font-mono tracking-wider">
-                              Plan: <strong className="text-zinc-300">{u.subscriptionTier?.toUpperCase() || "FREE"}</strong>
+                            <span className="text-[10px] text-muted-foreground uppercase font-mono tracking-wider">
+                              Plan: <strong className="text-foreground/80">{u.subscriptionTier?.toUpperCase() || "FREE"}</strong>
                             </span>
                           </div>
                         </td>
@@ -441,17 +441,17 @@ export default function AdminUsersPage() {
                           <div className="space-y-1 min-w-[170px]">
                             {/* IP Box with Copy button */}
                             <div className="flex items-center gap-1.5 text-[11px]">
-                              <span className="font-mono text-[#2997ff] bg-[#0071e3]/10 px-2 py-0.5 rounded border border-[#0071e3]/25 font-semibold flex items-center gap-1">
-                                <Wifi className="h-3 w-3 text-[#2997ff]" />
+                              <span className="font-mono text-accent-text bg-accent/10 px-2 py-0.5 rounded border border-accent/25 font-semibold flex items-center gap-1">
+                                <Wifi className="h-3 w-3 text-accent-text" />
                                 {u.lastIpAddress || "127.0.0.1"}
                               </span>
                               <button
                                 onClick={(e) => handleCopyIp(u.lastIpAddress || "127.0.0.1", e)}
                                 title="Copy IP Address"
-                                className="p-1 rounded bg-zinc-800/80 text-zinc-400 hover:text-white transition-colors"
+                                className="p-1 rounded bg-surface-secondary/80 text-muted-foreground hover:text-white transition-colors"
                               >
                                 {copiedIp === (u.lastIpAddress || "127.0.0.1") ? (
-                                  <Check className="h-3 w-3 text-emerald-400" />
+                                  <Check className="h-3 w-3 text-success" />
                                 ) : (
                                   <Copy className="h-3 w-3" />
                                 )}
@@ -459,13 +459,13 @@ export default function AdminUsersPage() {
                             </div>
 
                             {/* Device and Browser */}
-                            <div className="flex items-center gap-2 text-[10px] text-zinc-400 truncate">
-                              <span className="flex items-center gap-1 text-zinc-300">
-                                <Laptop className="h-3 w-3 text-zinc-400" />
+                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground truncate">
+                              <span className="flex items-center gap-1 text-foreground/80">
+                                <Laptop className="h-3 w-3 text-muted-foreground" />
                                 {u.lastDevice || "Desktop"}
                               </span>
                               <span>•</span>
-                              <span className="truncate text-zinc-400 font-medium">{u.lastBrowser || "Web"}</span>
+                              <span className="truncate text-muted-foreground font-medium">{u.lastBrowser || "Web"}</span>
                             </div>
                           </div>
                         </td>
@@ -474,14 +474,14 @@ export default function AdminUsersPage() {
                         <td className="py-4 px-4 min-w-[140px]">
                           <div className="space-y-1">
                             <div className="flex justify-between text-[10px]">
-                              <span className="font-medium text-zinc-300">{formatBytes(u.usedBytes)}</span>
-                              <span className="text-zinc-500">{formatBytes(u.quotaBytes)}</span>
+                              <span className="font-medium text-foreground/80">{formatBytes(u.usedBytes)}</span>
+                              <span className="text-subtle">{formatBytes(u.quotaBytes)}</span>
                             </div>
-                            <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+                            <div className="h-1.5 w-full rounded-full bg-surface-secondary overflow-hidden">
                               <div
                                 style={{ width: `${usagePercent}%` }}
                                 className={`h-full rounded-full transition-all ${
-                                  usagePercent > 85 ? "bg-rose-500" : "bg-gradient-to-r from-sky-400 to-[#0071e3]"
+                                  usagePercent > 85 ? "bg-danger" : "bg-gradient-to-r from-accent-text to-accent"
                                 }`}
                               />
                             </div>
@@ -493,29 +493,29 @@ export default function AdminUsersPage() {
                           <select
                             value={u.status || "active"}
                             onChange={(e) => handleQuickChangeStatus(u, e.target.value as any, e as any)}
-                            className={`text-[10px] font-bold rounded-md px-2 py-0.5 border transition-all cursor-pointer ${
+                            className={`text-[10px] font-bold rounded-xl px-2 py-0.5 border transition-all cursor-pointer ${
                               u.status === "banned"
-                                ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
+                                ? "bg-danger/10 text-danger border-danger/30"
                                 : u.status === "suspended"
-                                ? "bg-amber-500/10 text-amber-400 border-amber-500/30"
-                                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                                ? "bg-warning/10 text-warning border-warning/30"
+                                : "bg-success/10 text-success border-success/30"
                             }`}
                           >
-                            <option value="active" className="bg-zinc-900 text-emerald-400 font-bold">Active</option>
-                            <option value="suspended" className="bg-zinc-900 text-amber-400 font-bold">Suspended</option>
-                            <option value="banned" className="bg-zinc-900 text-rose-400 font-bold">Banned</option>
+                            <option value="active" className="bg-surface text-success font-bold">Active</option>
+                            <option value="suspended" className="bg-surface text-warning font-bold">Suspended</option>
+                            <option value="banned" className="bg-surface text-danger font-bold">Banned</option>
                           </select>
                         </td>
 
                         {/* Files & Shares count */}
-                        <td className="py-4 px-4 text-zinc-300">
+                        <td className="py-4 px-4 text-foreground/80">
                           <div className="flex items-center gap-2.5 text-[11px]">
-                            <span className="flex items-center gap-1 text-zinc-300 font-semibold" title="Files count">
-                              <FolderOpen className="h-3.5 w-3.5 text-sky-400" />
+                            <span className="flex items-center gap-1 text-foreground/80 font-semibold" title="Files count">
+                              <FolderOpen className="h-3.5 w-3.5 text-accent-text" />
                               {u.filesCount}
                             </span>
-                            <span className="flex items-center gap-1 text-zinc-300 font-semibold" title="Shares count">
-                              <Share2 className="h-3.5 w-3.5 text-emerald-400" />
+                            <span className="flex items-center gap-1 text-foreground/80 font-semibold" title="Shares count">
+                              <Share2 className="h-3.5 w-3.5 text-success" />
                               {u.sharesCount}
                             </span>
                           </div>
@@ -531,7 +531,7 @@ export default function AdminUsersPage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-xs h-8 text-[#2997ff] hover:text-[#0071e3] hover:bg-[#0071e3]/10 gap-1 rounded-lg"
+                                className="text-xs h-8 text-accent-text hover:text-accent-text hover:bg-accent/10 gap-1 rounded-2xl"
                                 title="Inspect User Full Details & IP History"
                               >
                                 <Eye className="h-3.5 w-3.5" />
@@ -544,7 +544,7 @@ export default function AdminUsersPage() {
                               size="sm"
                               onClick={(e) => handleOpenEditModal(u, e)}
                               title="Edit User Role, Quota & Status"
-                              className="text-xs h-8 text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 gap-1 rounded-lg"
+                              className="text-xs h-8 text-accent-text hover:text-accent-text hover:bg-accent-hover/10 gap-1 rounded-2xl"
                             >
                               <Edit2 className="h-3.5 w-3.5" />
                               <span>Edit</span>
@@ -558,7 +558,7 @@ export default function AdminUsersPage() {
                                 setSelectedUserForDelete(u);
                               }}
                               title="Delete Account"
-                              className="text-xs h-8 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 gap-1 rounded-lg"
+                              className="text-xs h-8 text-danger hover:text-danger hover:bg-danger/10 gap-1 rounded-2xl"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </Button>
@@ -579,7 +579,7 @@ export default function AdminUsersPage() {
         open={Boolean(selectedUserForEdit)}
         onOpenChange={(open) => !open && setSelectedUserForEdit(null)}
       >
-        <DialogContent className="max-w-lg rounded-3xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl">
+        <DialogContent className="max-w-lg rounded-3xl border border-border bg-background p-6 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-white flex items-center gap-2.5">
               <UserAvatar user={selectedUserForEdit} size="sm" />
@@ -589,21 +589,21 @@ export default function AdminUsersPage() {
 
           <div className="space-y-4 py-2 text-xs">
             {/* User Meta Summary */}
-            <div className="p-3 rounded-2xl bg-zinc-900/60 border border-zinc-800 space-y-1">
-              <p className="text-zinc-300 font-semibold">{selectedUserForEdit?.email}</p>
-              <p className="text-[11px] text-zinc-400 font-mono">
-                IP: <strong className="text-[#2997ff]">{selectedUserForEdit?.lastIpAddress || "127.0.0.1"}</strong> • Client: {selectedUserForEdit?.lastDevice || "Desktop"} ({selectedUserForEdit?.lastBrowser || "Web"})
+            <div className="p-3 rounded-2xl bg-surface/60 border border-border space-y-1">
+              <p className="text-foreground/80 font-semibold">{selectedUserForEdit?.email}</p>
+              <p className="text-[11px] text-muted-foreground font-mono">
+                IP: <strong className="text-accent-text">{selectedUserForEdit?.lastIpAddress || "127.0.0.1"}</strong> • Client: {selectedUserForEdit?.lastDevice || "Desktop"} ({selectedUserForEdit?.lastBrowser || "Web"})
               </p>
             </div>
 
             {/* Role & Status Grid */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">User Role</label>
+                <label className="text-xs font-semibold text-foreground/80">User Role</label>
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as UserRole)}
-                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-[#0071e3]"
+                  className="w-full bg-surface text-white rounded-xl border border-border px-3 py-2 text-xs focus:outline-none focus:border-accent"
                 >
                   <option value="member">Standard Member</option>
                   <option value="premium">Premium Member</option>
@@ -613,11 +613,11 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Account Status</label>
+                <label className="text-xs font-semibold text-foreground/80">Account Status</label>
                 <select
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value as any)}
-                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-[#0071e3]"
+                  className="w-full bg-surface text-white rounded-xl border border-border px-3 py-2 text-xs focus:outline-none focus:border-accent"
                 >
                   <option value="active">Active (Normal Access)</option>
                   <option value="suspended">Suspended (Temporary)</option>
@@ -629,7 +629,7 @@ export default function AdminUsersPage() {
             {/* Subscription Tier & Quota */}
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Subscription Plan</label>
+                <label className="text-xs font-semibold text-foreground/80">Subscription Plan</label>
                 <select
                   value={editTier}
                   onChange={(e) => {
@@ -640,7 +640,7 @@ export default function AdminUsersPage() {
                     else if (newT === "pro") setEditQuotaGb(100);
                     else if (newT === "free") setEditQuotaGb(10);
                   }}
-                  className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 px-3 py-2 text-xs focus:outline-none focus:border-[#0071e3]"
+                  className="w-full bg-surface text-white rounded-xl border border-border px-3 py-2 text-xs focus:outline-none focus:border-accent"
                 >
                   <option value="free">Free Starter (2 GB)</option>
                   <option value="pro">Pro Plan (100 GB)</option>
@@ -650,27 +650,27 @@ export default function AdminUsersPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">Quota Limit (GB)</label>
+                <label className="text-xs font-semibold text-foreground/80">Quota Limit (GB)</label>
                 <Input
                   type="number"
                   min={1}
                   max={10000}
                   value={editQuotaGb}
                   onChange={(e) => setEditQuotaGb(Number(e.target.value))}
-                  className="bg-zinc-900 text-white rounded-xl text-xs"
+                  className="bg-surface text-white rounded-xl text-xs"
                 />
               </div>
             </div>
 
             {/* Admin Notes */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-300">Internal Admin Notes</label>
+              <label className="text-xs font-semibold text-foreground/80">Internal Admin Notes</label>
               <textarea
                 value={editNotes}
                 onChange={(e) => setEditNotes(e.target.value)}
                 placeholder="Write private notes about this user, reasons for bans/upgrades, or special permissions..."
                 rows={3}
-                className="w-full bg-zinc-900 text-white rounded-xl border border-zinc-800 p-3 text-xs focus:outline-none focus:border-[#0071e3]"
+                className="w-full bg-surface text-white rounded-xl border border-border p-3 text-xs focus:outline-none focus:border-accent"
               />
             </div>
           </div>
@@ -684,7 +684,7 @@ export default function AdminUsersPage() {
               size="sm"
               onClick={handleSaveUserEdit}
               disabled={isUpdating}
-              className="bg-[#0071e3] hover:bg-[#0077ed] text-white text-xs rounded-xl font-medium"
+              className="bg-accent hover:bg-accent-hover text-white text-xs rounded-xl font-medium"
             >
               {isUpdating ? "Saving Changes..." : "Save All Changes"}
             </Button>
@@ -697,15 +697,15 @@ export default function AdminUsersPage() {
         open={Boolean(selectedUserForDelete)}
         onOpenChange={(open) => !open && setSelectedUserForDelete(null)}
       >
-        <DialogContent className="max-w-md rounded-3xl border border-rose-500/30 bg-zinc-950 p-6">
+        <DialogContent className="max-w-md rounded-3xl border border-danger/30 bg-background p-6">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-rose-400 flex items-center gap-2">
+            <DialogTitle className="text-base font-bold text-danger flex items-center gap-2">
               <Trash2 className="h-4 w-4" />
               <span>Confirm Delete Account</span>
             </DialogTitle>
           </DialogHeader>
 
-          <p className="text-xs text-zinc-300 py-2">
+          <p className="text-xs text-foreground/80 py-2">
             Are you sure you want to permanently delete user <strong className="text-white">{selectedUserForDelete?.email}</strong>? All their stored files in R2 and active share links will be purged immediately.
           </p>
 

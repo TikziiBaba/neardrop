@@ -25,8 +25,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-zinc-950">
-          <Loader2 className="h-8 w-8 animate-spin text-[#0071e3]" />
+        <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background">
+          <Loader2 className="h-8 w-8 animate-spin text-accent-text" />
         </div>
       }
     >
@@ -140,22 +140,22 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 bg-zinc-950 text-zinc-100 select-none relative">
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[350px] bg-gradient-to-b from-[#0071e3]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 sm:p-8 bg-background text-foreground select-none relative">
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[350px] bg-gradient-to-b from-accent/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md space-y-6">
         {/* Header */}
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2 mb-2 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0071e3] text-white shadow-sm group-hover:scale-105 transition-transform">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-white shadow-sm group-hover:scale-105 transition-transform">
               <Sparkles className="h-5 w-5" />
             </div>
             <span className="text-xl font-semibold text-white tracking-tight">NearDrop</span>
           </Link>
-          <h1 className="text-3xl font-semibold tracking-tight text-white">
+          <h1 className="display-title">
             {isTr ? "Yeni Şifre Belirleyin" : "Set New Password"}
           </h1>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-muted-foreground">
             {isTr
               ? "Hesabınızın güvenliği için güçlü ve yeni bir şifre girin."
               : "Enter a strong new password for your account."}
@@ -163,24 +163,24 @@ function ResetPasswordContent() {
         </div>
 
         {/* Card */}
-        <div className="rounded-[28px] border border-zinc-800 bg-zinc-900/90 p-7 sm:p-9 shadow-2xl backdrop-blur-xl space-y-5">
+        <div className="rounded-3xl border border-border bg-surface/90 p-7 sm:p-9 shadow-2xl backdrop-blur-xl space-y-5">
           {isSuccess ? (
             <div className="text-center space-y-4 py-3">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 mx-auto border border-emerald-500/30">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success/10 text-success mx-auto border border-success/30">
                 <CheckCircle2 className="h-7 w-7" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-lg font-semibold text-white">
                   {isTr ? "Şifreniz Değiştirildi!" : "Password Changed!"}
                 </h3>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   {isTr
                     ? "Yeni şifreniz başarıyla kaydedildi. Artık yeni şifrenizle giriş yapabilirsiniz."
                     : "Your new password has been saved. You can now log in with it."}
                 </p>
               </div>
               <Link href="/login" className="block pt-2">
-                <Button className="w-full gap-2 py-2.5 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/20 font-semibold cursor-pointer">
+                <Button className="w-full gap-2 py-2.5 rounded-full bg-accent hover:bg-accent-hover text-white shadow-md shadow-accent/20 font-semibold cursor-pointer">
                   <span>{isTr ? "Giriş Yap" : "Log In"}</span>
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -189,7 +189,7 @@ function ResetPasswordContent() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {errorMessage && (
-                <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex items-start gap-2.5">
+                <div className="p-3.5 rounded-2xl bg-danger/10 border border-danger/20 text-danger text-xs flex items-start gap-2.5">
                   <AlertCircle className="h-4 w-4 flex-shrink-0 mt-0.5" />
                   <span className="font-medium">{errorMessage}</span>
                 </div>
@@ -197,24 +197,24 @@ function ResetPasswordContent() {
 
               {/* New Password */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label className="text-xs font-semibold text-foreground/80">
                   {isTr ? "Yeni Şifre" : "New Password"}
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder={isTr ? "En az 6 karakter" : "At least 6 characters"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 pr-10 rounded-xl bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3]"
+                    className="pl-10 pr-10 rounded-xl bg-background/70 border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent"
                     required
                     minLength={6}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -223,20 +223,20 @@ function ResetPasswordContent() {
                 {/* Strength Meter */}
                 {password.length > 0 && (
                   <div className="space-y-1 pt-1">
-                    <div className="h-1.5 w-full bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-surface-secondary rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all duration-300 ${
                           strength <= 25
-                            ? "w-1/4 bg-[#ff3b30]"
+                            ? "w-1/4 bg-danger"
                             : strength <= 50
-                            ? "w-2/4 bg-[#ff9500]"
+                            ? "w-2/4 bg-warning"
                             : strength <= 70
-                            ? "w-3/4 bg-[#0071e3]"
-                            : "w-full bg-[#34c759]"
+                            ? "w-3/4 bg-accent"
+                            : "w-full bg-success"
                         }`}
                       />
                     </div>
-                    <p className="text-[10px] text-zinc-400 text-right font-medium">
+                    <p className="text-[10px] text-muted-foreground text-right font-medium">
                       {strength <= 25
                         ? isTr ? "Zayıf" : "Weak"
                         : strength <= 50
@@ -251,24 +251,24 @@ function ResetPasswordContent() {
 
               {/* Confirm Password */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label className="text-xs font-semibold text-foreground/80">
                   {isTr ? "Yeni Şifreyi Onaylayın" : "Confirm New Password"}
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder={isTr ? "Şifreyi tekrar yazın" : "Re-enter password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="pl-10 pr-10 rounded-xl bg-zinc-950/70 border-zinc-800 text-white placeholder:text-zinc-500 focus:bg-zinc-950 focus:border-[#0071e3]"
+                    className="pl-10 pr-10 rounded-xl bg-background/70 border-border text-white placeholder:text-subtle focus:bg-background focus:border-accent"
                     required
                     minLength={6}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-white transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -279,7 +279,7 @@ function ResetPasswordContent() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full gap-2 py-2.5 mt-2 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white shadow-md shadow-blue-500/20 font-semibold cursor-pointer"
+                className="w-full gap-2 py-2.5 mt-2 rounded-full bg-accent hover:bg-accent-hover text-white shadow-md shadow-accent/20 font-semibold cursor-pointer"
               >
                 {isLoading ? (
                   <>
@@ -298,9 +298,9 @@ function ResetPasswordContent() {
         </div>
 
         {/* Back Link */}
-        <p className="text-center text-xs text-zinc-400">
+        <p className="text-center text-xs text-muted-foreground">
           {isTr ? "Vazgeçtiniz mi? " : "Changed your mind? "}
-          <Link href="/login" className="font-semibold text-[#0071e3] hover:underline transition-colors">
+          <Link href="/login" className="font-semibold text-accent-text hover:underline transition-colors">
             {isTr ? "Giriş Yap" : "Log In"}
           </Link>
         </p>

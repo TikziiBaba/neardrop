@@ -46,14 +46,14 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
           <div className="liquid-glass-elevated rounded-2xl px-5 py-3 flex items-center gap-4 shadow-2xl min-w-[420px]">
             {/* Selection info */}
             <div className="flex items-center gap-2.5 pr-4 border-r border-white/[0.08]">
-              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-500/15">
-                <CheckSquare className="h-4 w-4 text-sky-400" />
+              <div className="flex items-center justify-center w-8 h-8 rounded-2xl bg-accent/15">
+                <CheckSquare className="h-4 w-4 text-accent-text" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">
                   {selectedCount} file{selectedCount !== 1 ? "s" : ""}
                 </p>
-                <p className="text-[10px] text-zinc-400">
+                <p className="text-[10px] text-muted-foreground">
                   {formatBytes(totalBytes)}
                 </p>
               </div>
@@ -69,9 +69,9 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
                   onDownloadZip();
                 }}
                 disabled={isProcessing}
-                className="gap-1.5 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.08]"
+                className="gap-1.5 text-xs text-foreground/80 hover:text-white hover:bg-white/[0.08]"
               >
-                <Archive className="h-3.5 w-3.5 text-emerald-400" />
+                <Archive className="h-3.5 w-3.5 text-success" />
                 ZIP & Download
               </Button>
 
@@ -83,9 +83,9 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
                   onShare();
                 }}
                 disabled={isProcessing}
-                className="gap-1.5 text-xs text-zinc-300 hover:text-white hover:bg-white/[0.08]"
+                className="gap-1.5 text-xs text-foreground/80 hover:text-white hover:bg-white/[0.08]"
               >
-                <Share2 className="h-3.5 w-3.5 text-sky-400" />
+                <Share2 className="h-3.5 w-3.5 text-accent-text" />
                 Share
               </Button>
 
@@ -97,7 +97,7 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
                   onDelete();
                 }}
                 disabled={isProcessing}
-                className="gap-1.5 text-xs text-zinc-300 hover:text-red-400 hover:bg-red-500/10"
+                className="gap-1.5 text-xs text-foreground/80 hover:text-danger hover:bg-danger/10"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Delete
@@ -110,9 +110,9 @@ export const BatchActionBar: React.FC<BatchActionBarProps> = ({
                 SoundManager.play("click");
                 onClearSelection();
               }}
-              className="ml-auto flex items-center justify-center w-7 h-7 rounded-lg hover:bg-white/[0.08] transition-colors"
+              className="ml-auto flex items-center justify-center w-7 h-7 rounded-2xl hover:bg-white/[0.08] transition-colors"
             >
-              <X className="h-3.5 w-3.5 text-zinc-400" />
+              <X className="h-3.5 w-3.5 text-muted-foreground" />
             </button>
           </div>
         </motion.div>

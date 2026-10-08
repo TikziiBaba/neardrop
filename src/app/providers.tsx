@@ -9,6 +9,8 @@ import { Toaster } from "sonner";
 import { DeviceTracker } from "@/components/auth/DeviceTracker";
 import { GlobalTransferProgress } from "@/components/upload/GlobalTransferProgress";
 import { CommandPalette } from "@/components/ui/CommandPalette";
+import { MotionLayer } from "@/components/motion/MotionLayer";
+import { AllayGuide } from "@/components/mascot/AllayGuide";
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -17,6 +19,8 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
         <DeviceTracker />
         <StorageProvider>
           {children}
+          <MotionLayer />
+          <AllayGuide />
           <CommandPalette />
           <GlobalTransferProgress />
           <Toaster
@@ -24,9 +28,9 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
             theme="dark"
             toastOptions={{
               style: {
-                background: "rgba(24, 24, 27, 0.95)",
-                border: "1px solid rgba(39, 39, 42, 0.8)",
-                color: "#fafafa",
+                background: "hsl(var(--surface-secondary) / 0.95)",
+                border: "1px solid hsl(var(--border-strong) / 0.8)",
+                color: "hsl(var(--foreground))",
                 backdropFilter: "blur(12px)",
                 borderRadius: "1rem",
                 fontSize: "0.8125rem",

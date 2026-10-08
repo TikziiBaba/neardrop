@@ -81,17 +81,17 @@ export const PeerRadar: React.FC<PeerRadarProps> = ({
             fill="none"
             stroke="currentColor"
             strokeWidth="0.25"
-            className="text-zinc-700/40"
+            className="text-subtle/25"
           />
         ))}
 
         {/* Cross lines */}
-        <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="0.15" className="text-zinc-700/30" />
-        <line x1="5" y1="50" x2="95" y2="50" stroke="currentColor" strokeWidth="0.15" className="text-zinc-700/30" />
+        <line x1="50" y1="5" x2="50" y2="95" stroke="currentColor" strokeWidth="0.15" className="text-subtle/20" />
+        <line x1="5" y1="50" x2="95" y2="50" stroke="currentColor" strokeWidth="0.15" className="text-subtle/20" />
 
         {/* Diagonal lines */}
-        <line x1="14.6" y1="14.6" x2="85.4" y2="85.4" stroke="currentColor" strokeWidth="0.1" className="text-zinc-700/20" />
-        <line x1="85.4" y1="14.6" x2="14.6" y2="85.4" stroke="currentColor" strokeWidth="0.1" className="text-zinc-700/20" />
+        <line x1="14.6" y1="14.6" x2="85.4" y2="85.4" stroke="currentColor" strokeWidth="0.1" className="text-subtle/10" />
+        <line x1="85.4" y1="14.6" x2="14.6" y2="85.4" stroke="currentColor" strokeWidth="0.1" className="text-subtle/10" />
       </svg>
 
       {/* Animated scanning pulse rings */}
@@ -100,7 +100,7 @@ export const PeerRadar: React.FC<PeerRadarProps> = ({
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
-              className="absolute inset-0 rounded-full border border-sky-500/20"
+              className="absolute inset-0 rounded-full border border-accent/20"
               initial={{ scale: 0.2, opacity: 0.6 }}
               animate={{ scale: 1, opacity: 0 }}
               transition={{
@@ -123,14 +123,14 @@ export const PeerRadar: React.FC<PeerRadarProps> = ({
           transition={{ type: "spring", damping: 15, stiffness: 300 }}
           className="flex flex-col items-center gap-1"
         >
-          <div className="w-12 h-12 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center backdrop-blur-md">
-            <Monitor className="h-5 w-5 text-sky-400" />
+          <div className="w-12 h-12 rounded-2xl bg-accent/20 border border-accent/30 flex items-center justify-center backdrop-blur-md">
+            <Monitor className="h-5 w-5 text-accent-text" />
           </div>
-          <span className="text-[10px] font-medium text-zinc-400 bg-zinc-900/80 px-1.5 py-0.5 rounded-full backdrop-blur-sm">
+          <span className="text-[10px] font-medium text-muted-foreground bg-surface/80 px-1.5 py-0.5 rounded-full backdrop-blur-sm">
             {myDeviceName}
           </span>
           {/* Green online halo */}
-          <div className="absolute -inset-1 rounded-2xl bg-emerald-500/10 animate-pulse pointer-events-none" />
+          <div className="absolute -inset-1 rounded-2xl bg-success/10 animate-pulse pointer-events-none" />
         </motion.div>
       </div>
 
@@ -169,24 +169,24 @@ export const PeerRadar: React.FC<PeerRadarProps> = ({
                 <div
                   className={`relative w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 border
                     ${isConnected
-                      ? "bg-zinc-800/80 border-zinc-600/50 group-hover:border-sky-500/50 group-hover:bg-sky-500/10"
-                      : "bg-zinc-800/40 border-zinc-700/30"
+                      ? "bg-surface-secondary/80 border-border-strong/50 group-hover:border-accent/50 group-hover:bg-accent-hover/10"
+                      : "bg-surface-secondary/40 border-border-strong/30"
                     }
                     backdrop-blur-sm group-hover:scale-110 group-active:scale-95
                   `}
                 >
-                  <DeviceIcon className={`h-4.5 w-4.5 ${isConnected ? "text-zinc-300" : "text-zinc-500"}`} />
+                  <DeviceIcon className={`h-4.5 w-4.5 ${isConnected ? "text-foreground/80" : "text-subtle"}`} />
 
                   {/* Connection indicator dot */}
                   <div
-                    className={`absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-zinc-900 ${
-                      isConnected ? "bg-emerald-400" : "bg-zinc-500"
+                    className={`absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-border/60 ${
+                      isConnected ? "bg-success" : "bg-subtle"
                     }`}
                   />
                 </div>
 
                 {/* Device name */}
-                <span className="text-[9px] font-medium text-zinc-500 group-hover:text-zinc-300 transition-colors max-w-[70px] truncate text-center bg-zinc-900/60 px-1 py-0.5 rounded-md backdrop-blur-sm">
+                <span className="text-[9px] font-medium text-subtle group-hover:text-foreground/80 transition-colors max-w-[70px] truncate text-center bg-surface/60 px-1 py-0.5 rounded-full backdrop-blur-sm">
                   {peer.deviceName || peer.platform}
                 </span>
 
@@ -196,7 +196,7 @@ export const PeerRadar: React.FC<PeerRadarProps> = ({
                   whileHover={{ opacity: 1, y: 0 }}
                   className="absolute -bottom-6 left-1/2 -translate-x-1/2 hidden group-hover:block"
                 >
-                  <span className="text-[8px] text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded-full whitespace-nowrap border border-sky-500/20">
+                  <span className="text-[8px] text-accent-text bg-accent/10 px-1.5 py-0.5 rounded-full whitespace-nowrap border border-accent/20">
                     Drop files to send
                   </span>
                 </motion.div>
@@ -209,8 +209,8 @@ export const PeerRadar: React.FC<PeerRadarProps> = ({
       {/* Scanning indicator */}
       {isScanning && peers.length === 0 && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-          <Loader2 className="h-3.5 w-3.5 text-sky-400 animate-spin" />
-          <span className="text-xs text-zinc-500">Scanning for nearby devices...</span>
+          <Loader2 className="h-3.5 w-3.5 text-accent-text animate-spin" />
+          <span className="text-xs text-subtle">Scanning for nearby devices...</span>
         </div>
       )}
     </div>
