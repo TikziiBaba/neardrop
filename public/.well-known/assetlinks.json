@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "dev.bekirr.neardrop",
+      "sha256_cert_fingerprints": [
+        "D9:2B:01:00:16:30:5E:D1:BA:F0:15:05:14:9B:B3:6D:70:30:93:F8:FC:F5:51:29:F7:13:42:23:15:5F:46:5C"
+      ]
+    }
+  }
+]
