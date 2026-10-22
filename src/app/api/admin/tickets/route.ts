@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAllTickets } from "@/lib/tickets/service";
+import { requireStaff } from "@/lib/supabase/auth-helper";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");

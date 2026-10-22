@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { planId, billingCycle = "monthly", userPhone, userAddress } = body;
 
-    const targetUserId = user?.id || body.userId;
-    const targetEmail = user?.email || body.userEmail;
+    // Ödeme yalnızca oturumdaki hesaba açılır; istekteki userId/userEmail yok sayılır
+    const targetUserId = user?.id;
+    const targetEmail = user?.email;
 
     if (!targetUserId || !targetEmail) {
       return NextResponse.json({ success: false, error: "Giriş yapmanız gerekmektedir" }, { status: 401 });

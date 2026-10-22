@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminTicketsPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -38,7 +39,7 @@ export default function AdminTicketsPage() {
       if (departmentFilter !== "all") params.append("department", departmentFilter);
       if (params.toString()) url += `?${params.toString()}`;
 
-      const res = await fetch(url);
+      const res = await sessionFetch(url);
       const data = await res.json();
       if (data.success && data.tickets) {
         setTickets(data.tickets);

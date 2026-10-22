@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminSystemPage() {
   const [health, setHealth] = useState<SystemHealth | null>(null);
@@ -30,7 +31,7 @@ export default function AdminSystemPage() {
   const fetchHealth = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/system");
+      const res = await sessionFetch("/api/admin/system");
       const data = await res.json();
       if (data.success && data.health) {
         setHealth(data.health);
@@ -50,7 +51,7 @@ export default function AdminSystemPage() {
   const handleMaintenance = async (action: string, label: string) => {
     setRunningAction(action);
     try {
-      const res = await fetch("/api/admin/maintenance", {
+      const res = await sessionFetch("/api/admin/maintenance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
@@ -71,7 +72,7 @@ export default function AdminSystemPage() {
 
   const handleExportLogs = async () => {
     try {
-      const res = await fetch("/api/admin/logs");
+      const res = await sessionFetch("/api/admin/logs");
       const data = await res.json();
       const blob = new Blob([JSON.stringify(data.logs || [], null, 2)], {
         type: "application/json",

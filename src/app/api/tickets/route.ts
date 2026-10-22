@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchUserTickets, createTicket } from "@/lib/tickets/service";
+import { getAuthUser, getSessionProfile } from "@/lib/supabase/auth-helper";
+import type { UserRole } from "@/types";
 
 export const dynamic = "force-dynamic";
 
+// Kullanıcı kimliği ve rolü her zaman oturumdan alınır; istekteki userId/userRole yok sayılır.
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get("userId");
-
-    if (!userId) {
-      return NextResponse.json({ success: false, error: "Missing user ID parameter" }, { status: 400 });
+    const user = await getAuthUser(req);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const tickets = await fetchUserTickets(userId);
+    const profile = await getSessionProfile(user);
+    const tickets = await fetchUserTickets(profile.id);
     return NextResponse.json({ success: true, tickets });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message || "Failed to fetch tickets" }, { status: 500 });
@@ -21,18 +23,24 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { userId, userEmail, userName, userRole, title, department, priority, message } = body;
+    const user = await getAuthUser(req);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!userId || !title || !message) {
+    const body = await req.json();
+    const { title, department, priority, message } = body;
+
+    if (!title || !message) {
       return NextResponse.json({ success: false, error: "Missing required ticket fields" }, { status: 400 });
     }
 
+    const profile = await getSessionProfile(user);
     const ticket = await createTicket({
-      userId,
-      userEmail: userEmail || "User",
-      userName: userName || "User",
-      userRole: userRole || "member",
+      userId: profile.id,
+      userEmail: profile.email || "User",
+      userName: profile.displayName,
+      userRole: profile.role as UserRole,
       title,
       department: department || "general",
       priority: priority || "medium",

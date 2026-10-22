@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { PRICING_PLANS } from "@/lib/subscription/plans";
 import { TIER_LIMITS } from "@/lib/subscription/permissions";
 import { useAuth } from "@/lib/auth/context";
+import { createClient } from "@/lib/supabase/client";
 import {
   Sparkles,
   ShieldCheck,
@@ -31,6 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 declare global {
   interface Window {
@@ -41,7 +43,7 @@ declare global {
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, updateProfile } = useAuth();
+  const { user } = useAuth();
 
   const planId = searchParams.get("plan") || "pro";
   const billingCycle = (searchParams.get("billing") || "monthly") as "monthly" | "yearly";
@@ -62,18 +64,13 @@ function CheckoutContent() {
   const [isLoadingToken, setIsLoadingToken] = useState(false);
   const [paytrToken, setPaytrToken] = useState<string | null>(null);
 
-  // Update profile on successful return
+  // Ödeme dönüşünde plan istemciden yazılmaz (bu adres ödemesiz de açılabilir); planı PayTR'ın sunucu
+  // bildirimi (/api/payment/paytr/callback) günceller. Oturum yenilenince AuthProvider profili veritabanından tekrar okur.
   useEffect(() => {
-    if (paymentStatus === "success" && user) {
-      // Update local profile state
-      updateProfile({
-        subscriptionTier: plan.id,
-        subscriptionStatus: "active",
-        quotaBytes: plan.quotaBytes,
-        role: user.role === "admin" || user.role === "moderator" ? user.role : "premium",
-      }).catch(console.error);
+    if (paymentStatus === "success") {
+      createClient()?.auth.refreshSession().catch(console.error);
     }
-  }, [paymentStatus, plan.id, plan.quotaBytes, updateProfile, user]);
+  }, [paymentStatus]);
 
   // Break out of PayTR iframe if payment succeeded
   useEffect(() => {
@@ -342,7 +339,7 @@ function CheckoutContent() {
     setIsLoadingToken(true);
 
     try {
-      const res = await fetch("/api/payment/paytr/token", {
+      const res = await sessionFetch("/api/payment/paytr/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

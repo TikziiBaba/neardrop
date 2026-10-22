@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchTicketById, addTicketReply, updateTicketStatus } from "@/lib/tickets/service";
+import { requireStaff } from "@/lib/supabase/auth-helper";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const ticketId = params.id;
     const { ticket, messages } = await fetchTicketById(ticketId);
@@ -19,6 +23,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const ticketId = params.id;
     const body = await req.json();
@@ -45,6 +52,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const ticketId = params.id;
     const body = await req.json();

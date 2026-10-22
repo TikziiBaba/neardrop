@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminSharesPage() {
   const [shares, setShares] = useState<ShareLink[]>([]);
@@ -35,7 +36,7 @@ export default function AdminSharesPage() {
   const fetchShares = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/shares");
+      const res = await sessionFetch("/api/admin/shares");
       const data = await res.json();
       if (data.success && data.shares) {
         setShares(data.shares);
@@ -57,7 +58,7 @@ export default function AdminSharesPage() {
   const handleToggleActive = async (share: ShareLink) => {
     try {
       const nextActive = !share.isActive;
-      const res = await fetch("/api/admin/shares", {
+      const res = await sessionFetch("/api/admin/shares", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shareId: share.id, isActive: nextActive }),

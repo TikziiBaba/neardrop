@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminFilesPage() {
   const [files, setFiles] = useState<CloudFile[]>([]);
@@ -45,7 +46,7 @@ export default function AdminFilesPage() {
   const fetchFiles = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/files");
+      const res = await sessionFetch("/api/admin/files");
       const data = await res.json();
       if (data.success && data.files) {
         setFiles(data.files);
@@ -85,7 +86,7 @@ export default function AdminFilesPage() {
   const handleGenerateDownload = async (file: CloudFile) => {
     setIsGenerating(true);
     try {
-      const res = await fetch("/api/admin/files", {
+      const res = await sessionFetch("/api/admin/files", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ r2ObjectKey: file.r2ObjectKey, filename: file.filename }),
@@ -107,7 +108,7 @@ export default function AdminFilesPage() {
     if (!selectedFileForDelete) return;
     setIsDeleting(true);
     try {
-      const res = await fetch(`/api/admin/files?fileId=${selectedFileForDelete.id}`, {
+      const res = await sessionFetch(`/api/admin/files?fileId=${selectedFileForDelete.id}`, {
         method: "DELETE",
       });
       const data = await res.json();

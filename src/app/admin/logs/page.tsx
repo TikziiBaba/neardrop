@@ -35,6 +35,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminLogsPage() {
   const [logs, setLogs] = useState<AdminAuditLog[]>([]);
@@ -48,7 +49,7 @@ export default function AdminLogsPage() {
   const fetchLogs = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/logs");
+      const res = await sessionFetch("/api/admin/logs");
       const data = await res.json();
       if (data.success && data.logs) {
         setLogs(data.logs);

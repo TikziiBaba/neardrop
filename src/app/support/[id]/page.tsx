@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function TicketDetailPage() {
   const params = useParams();
@@ -39,7 +40,7 @@ export default function TicketDetailPage() {
     if (!ticketId) return;
     try {
       setLoading(true);
-      const res = await fetch(`/api/tickets/${ticketId}`);
+      const res = await sessionFetch(`/api/tickets/${ticketId}`);
       const data = await res.json();
       if (data.success) {
         setTicket(data.ticket);
@@ -64,7 +65,7 @@ export default function TicketDetailPage() {
 
     setIsSending(true);
     try {
-      const res = await fetch(`/api/tickets/${ticketId}`, {
+      const res = await sessionFetch(`/api/tickets/${ticketId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -94,7 +95,7 @@ export default function TicketDetailPage() {
 
   const handleCloseTicket = async () => {
     try {
-      const res = await fetch(`/api/tickets/${ticketId}`, {
+      const res = await sessionFetch(`/api/tickets/${ticketId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "resolved" }),

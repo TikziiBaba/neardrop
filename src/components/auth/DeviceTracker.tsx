@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { getClientDeviceInfo } from "@/lib/utils/device";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export const DeviceTracker: React.FC = () => {
   const { user } = useAuth();
@@ -17,7 +18,7 @@ export const DeviceTracker: React.FC = () => {
 
     const sync = async () => {
       try {
-        await fetch("/api/auth/device", {
+        await sessionFetch("/api/auth/device", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
