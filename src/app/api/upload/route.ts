@@ -11,6 +11,16 @@ import { scanFileBuffer } from "@/lib/security/malware-scanner";
 
 export const dynamic = "force-dynamic";
 
+// Sunucu üzerinden (multipart) yükleme sınırı. Vercel fonksiyonları 4.5 MB'tan büyük istek gövdesini
+// reddettiği için daha büyük dosyalar yalnızca imzalı URL ile doğrudan depolamaya yüklenebilir.
+// İstemcideki PROXY_UPLOAD_LIMIT ile aynı tutulmalı.
+const PROXY_UPLOAD_LIMIT = 4 * 1024 * 1024;
+
+/** İstemcinin gönderdiği hash yalnızca dosyanın tamamına aitse (64 hex) checksum olarak saklanır. */
+function fullFileChecksum(sha256: unknown): string | null {
+  return typeof sha256 === "string" && /^[a-f0-9]{64}$/i.test(sha256) ? sha256.toLowerCase() : null;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getAuthUser(req);
@@ -50,10 +60,10 @@ export async function POST(req: NextRequest) {
       const size = file.size;
       const mimeType = file.type || "application/octet-stream";
 
-      // Security: Prevent server heap exhaustion on large tunnel uploads
-      if (size > 100 * 1024 * 1024) {
+      // Sunucu üzerinden yükleme küçük dosyalarla sınırlı (bkz. PROXY_UPLOAD_LIMIT)
+      if (size > PROXY_UPLOAD_LIMIT) {
         return NextResponse.json(
-          { error: "Files larger than 100 MB must be uploaded via direct storage." },
+          { error: `${formatBytes(PROXY_UPLOAD_LIMIT)} üzerindeki dosyalar yalnızca doğrudan depolamaya yüklenebilir.` },
           { status: 413 }
         );
       }
@@ -218,11 +228,13 @@ export async function POST(req: NextRequest) {
 
         // Security: Multi-layer malware and header inspection
         const sampleBuf = headerSample ? Buffer.from(headerSample, "base64") : Buffer.alloc(0);
+        const checksum = fullFileChecksum(sha256);
         const scanResult = await scanFileBuffer({
           buffer: sampleBuf,
           filename,
           mimeType,
-          sha256,
+          sha256: checksum ?? undefined,
+          fileSize: size,
         });
 
         if (scanResult.isMalicious) {
@@ -281,18 +293,24 @@ export async function POST(req: NextRequest) {
             size
           );
 
-          await serviceClient.from("cloud_files").insert({
+          const { error: insertError } = await serviceClient.from("cloud_files").insert({
             id: fileId,
             user_id: user.id,
             filename,
             r2_object_key: r2ObjectKey,
             size,
             mime_type: mimeType || "application/octet-stream",
-            checksum: scanResult.sha256,
+            checksum,
             is_deleted: false,
             is_encrypted: Boolean(isEncrypted),
             encryption_iv: encryptionIv || null,
           });
+          // Kayıt açılamadıysa yükleme adresi verilmez; aksi halde dosya depoya gider ama listede görünmez
+          if (insertError) {
+            console.error("Batch DB insert error:", insertError);
+            results.push({ filename, size, error: "Failed to save file record." });
+            continue;
+          }
 
           usedBytes += size; // track cumulative usage in this batch
 
@@ -322,11 +340,13 @@ export async function POST(req: NextRequest) {
 
     // Security: Multi-layer malware, webshell & header inspection
     const sampleBuf = headerSample ? Buffer.from(headerSample, "base64") : Buffer.alloc(0);
+    const checksum = fullFileChecksum(sha256);
     const scanResult = await scanFileBuffer({
       buffer: sampleBuf,
       filename,
       mimeType,
-      sha256,
+      sha256: checksum ?? undefined,
+      fileSize: size,
     });
 
     if (scanResult.isMalicious) {
@@ -403,7 +423,7 @@ export async function POST(req: NextRequest) {
         r2_object_key: r2ObjectKey,
         size,
         mime_type: mimeType || "application/octet-stream",
-        checksum: scanResult.sha256,
+        checksum,
         is_deleted: false,
         is_encrypted: Boolean(isEncrypted),
         encryption_iv: encryptionIv || null,

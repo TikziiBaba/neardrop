@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteR2Object, isR2Configured } from "@/lib/r2/s3-client";
 import { getAuthUser, getServiceClient } from "@/lib/supabase/auth-helper";
 import { extractClientInfo, recordAuditLog } from "@/lib/admin/audit";
 import { formatBytes } from "@/lib/utils";
@@ -59,7 +58,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// DELETE: Delete a file (DB + R2)
+// DELETE: Dosyayı çöp kutusuna taşı (kalıcı silme: /api/files/trash)
 export async function DELETE(req: NextRequest) {
   try {
     const user = await getAuthUser(req);
@@ -86,26 +85,18 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
-    // Delete associated share links
+    // Paylaşım linkleri kaldırılır: dosya çöpten geri yüklense bile eski linkler kendiliğinden açılmamalı
     await serviceClient
       .from("share_links")
       .delete()
       .eq("cloud_file_id", fileId)
       .eq("user_id", user.id);
 
-    // Delete from R2
-    if (isR2Configured() && file.r2_object_key) {
-      try {
-        await deleteR2Object(file.r2_object_key);
-      } catch (r2Err) {
-        console.error("R2 delete error:", r2Err);
-      }
-    }
-
-    // Delete from DB
+    // Kalıcı silme yerine çöp kutusuna taşı (30 gün geri alınabilir; kota tetikleyicisi alanı serbest bırakır).
+    // Depodaki nesne kalıcı silinene kadar durur: /api/files/trash
     const { error: delErr } = await serviceClient
       .from("cloud_files")
-      .delete()
+      .update({ is_deleted: true, deleted_at: new Date().toISOString() })
       .eq("id", fileId)
       .eq("user_id", user.id);
 
@@ -125,7 +116,7 @@ export async function DELETE(req: NextRequest) {
       deviceInfo: client.deviceInfo,
       platform: client.platform,
       browser: client.browser,
-      details: `${user.email || "User"} deleted "${file.filename}" (${formatBytes(file.size)}). [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
+      details: `${user.email || "User"} moved "${file.filename}" (${formatBytes(file.size)}) to trash. [Device: ${client.deviceInfo}, IP: ${client.ipAddress}]`,
       metadata: { fileId, filename: file.filename, size: file.size, r2ObjectKey: file.r2_object_key },
       status: "warning",
     });

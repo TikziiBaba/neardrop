@@ -15,6 +15,7 @@ import {
   LogOut,
   ShieldCheck,
   LifeBuoy,
+  Trash2,
   CreditCard,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth/context";
@@ -43,6 +44,7 @@ export const Sidebar: React.FC = () => {
     { label: t.navbar.sharedLinks, href: "/shared", icon: Share2, badge: stats.sharedCount },
     { label: t.navbar.pricing || "Fiyatlandırma", href: "/pricing", icon: CreditCard },
     { label: t.navbar.support || "Destek", href: "/support", icon: LifeBuoy },
+    { label: locale === "en" ? "Trash" : "Çöp Kutusu", href: "/trash", icon: Trash2 },
   ];
 
   const quotaPercent = Math.round((stats.usedBytes / (stats.quotaBytes || 1)) * 100) || 0;
