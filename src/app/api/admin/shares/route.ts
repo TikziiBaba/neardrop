@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAdminShares, revokeAdminShare } from "@/lib/admin/service";
+import { requireStaff } from "@/lib/supabase/auth-helper";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId") || undefined;
@@ -16,6 +20,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const { shareId, isActive } = body;

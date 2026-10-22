@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServiceClient } from "@/lib/supabase/auth-helper";
+import { getServiceClient, requireStaff } from "@/lib/supabase/auth-helper";
 import { logAdminAction } from "@/lib/admin/service";
 
 export async function POST(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const { action } = body;

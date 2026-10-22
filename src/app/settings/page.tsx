@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { SoundManager } from "@/lib/utils/sound-effects";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function SettingsPage() {
   const { user, updateProfile } = useAuth();
@@ -82,7 +83,7 @@ export default function SettingsPage() {
     formData.append("userId", user.id);
 
     try {
-      const res = await fetch("/api/user/avatar", {
+      const res = await sessionFetch("/api/user/avatar", {
         method: "POST",
         body: formData,
       });

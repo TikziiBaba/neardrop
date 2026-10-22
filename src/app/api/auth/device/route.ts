@@ -1,15 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServiceClient } from "@/lib/supabase/auth-helper";
+import { getAuthUser, getServiceClient, getSessionProfile, isStaffRole } from "@/lib/supabase/auth-helper";
 import { logAdminAction } from "@/lib/admin/service";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { userId, email, deviceId, deviceName, deviceType, platform, browser, userAgent } = body;
+    const user = await getAuthUser(req);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
 
-    if (!userId || !deviceId) {
+    const body = await req.json();
+    const { deviceId, deviceName, deviceType, platform, browser, userAgent } = body;
+    // Cihaz her zaman oturumdaki kullanıcıya yazılır; istekteki userId/email yok sayılır
+    const profile = await getSessionProfile(user);
+    const userId = profile.id;
+    const email = profile.email;
+
+    if (!deviceId) {
       return NextResponse.json({ success: false, error: "Missing required device parameters" }, { status: 400 });
     }
 
@@ -141,6 +150,11 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
+    const user = await getAuthUser(req);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(req.url);
     const deviceRecordId = searchParams.get("id");
 
@@ -149,6 +163,17 @@ export async function DELETE(req: NextRequest) {
     }
 
     const supabase = getServiceClient();
+    // Cihazı yalnızca sahibi ya da destek ekibi kaldırabilir
+    const profile = await getSessionProfile(user);
+    const { data: device } = await supabase.from("devices").select("user_id").eq("id", deviceRecordId).maybeSingle();
+    if (!device) {
+      return NextResponse.json({ success: false, error: "Device not found" }, { status: 404 });
+    }
+    const isOwner = device.user_id === profile.id || device.user_id === user.id;
+    if (!isOwner && !isStaffRole(profile.role)) {
+      return NextResponse.json({ success: false, error: "Forbidden" }, { status: 403 });
+    }
+
     const { error } = await supabase.from("devices").delete().eq("id", deviceRecordId);
     if (error) throw error;
 

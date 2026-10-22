@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -31,7 +32,7 @@ export default function AdminOverviewPage() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch("/api/admin/stats");
+      const res = await sessionFetch("/api/admin/stats");
       const data = await res.json();
       if (data.success && data.stats) {
         setStats(data.stats);

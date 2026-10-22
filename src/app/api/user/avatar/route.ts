@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServiceClient } from "@/lib/supabase/auth-helper";
+import { getAuthUser, getServiceClient, getSessionProfile } from "@/lib/supabase/auth-helper";
 import { uploadR2Buffer, isR2Configured, createPresignedDownloadUrl } from "@/lib/r2/s3-client";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const user = await getAuthUser(req);
+    if (!user) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const file = formData.get("avatar") as File | null;
-    const userId = formData.get("userId") as string | null;
+    // Fotoğraf her zaman oturumdaki kullanıcının profiline yazılır; formdaki userId yok sayılır
+    const userId = (await getSessionProfile(user)).id;
 
-    if (!file || !userId) {
-      return NextResponse.json({ success: false, error: "Missing avatar file or user ID" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ success: false, error: "Missing avatar file" }, { status: 400 });
     }
 
     // Validate mime type

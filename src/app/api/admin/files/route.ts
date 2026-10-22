@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAdminFiles, adminDeleteFileRecord } from "@/lib/admin/service";
 import { createPresignedDownloadUrl } from "@/lib/r2/s3-client";
+import { requireStaff } from "@/lib/supabase/auth-helper";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId") || undefined;
@@ -17,6 +21,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const fileId = searchParams.get("fileId");
@@ -34,6 +41,9 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const { r2ObjectKey, filename } = body;

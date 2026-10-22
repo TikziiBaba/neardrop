@@ -16,6 +16,14 @@ export const metadata: Metadata = {
   keywords: ["file sharing", "secure file transfer", "cloud storage", "expiring links", "airdrop alternative"],
   authors: [{ name: "NearDrop Team" }],
   manifest: "/manifest.json",
+  // Sekme ikonu: piksel damla (16'nın katlarında keskin), iOS ana ekranı: kenarlara taşan karo
+  icons: {
+    icon: [
+      { url: "/icons/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
+    ],
+    apple: { url: "/icons/apple-touch-icon.png", sizes: "180x180" },
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -49,7 +57,6 @@ export default function RootLayout({
   return (
     <html lang="tr" className={`dark scroll-smooth ${display.variable} ${sans.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function SupportPage() {
   const { user } = useAuth();
@@ -38,7 +39,7 @@ export default function SupportPage() {
     if (!user) return;
     try {
       setLoading(true);
-      const res = await fetch(`/api/tickets?userId=${user.id}`);
+      const res = await sessionFetch("/api/tickets");
       const data = await res.json();
       if (data.success && data.tickets) {
         setTickets(data.tickets);

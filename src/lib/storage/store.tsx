@@ -83,9 +83,16 @@ interface StorageContextType {
   clearCompletedTransfers: () => void;
   updateSettings: (newSettings: Partial<UserSettings>) => void;
   refreshFiles: () => Promise<void>;
+  /** Oturum token'ı eklenmiş fetch (çöp kutusu, dosya istekleri, bildirimler gibi sayfalar için) */
+  authFetch: (input: string, init?: RequestInit) => Promise<Response>;
 }
 
 const STORAGE_KEY_SETTINGS = "neardrop_user_settings";
+
+// Sunucu üzerinden yedek yükleme sınırı (Vercel 4.5 MB gövde sınırı). /api/upload ile aynı tutulmalı.
+const PROXY_UPLOAD_LIMIT = 4 * 1024 * 1024;
+// Bu boyuta kadar dosyanın tamamının SHA-256'sı tarayıcıda hesaplanır (daha büyükleri belleği zorlar)
+const FULL_HASH_LIMIT = 50 * 1024 * 1024;
 
 const DEFAULT_SETTINGS: UserSettings = {
   userId: "",
@@ -158,6 +165,14 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [user, getAuthHeaders]);
 
+  const authFetch = useCallback(
+    async (input: string, init: RequestInit = {}) => {
+      const authHeaders = await getAuthHeaders();
+      return fetch(input, { ...init, headers: { ...authHeaders, ...(init.headers as Record<string, string> | undefined) } });
+    },
+    [getAuthHeaders]
+  );
+
   // Refresh all data
   const refreshFiles = useCallback(async () => {
     await Promise.all([fetchFiles(), fetchShares()]);
@@ -194,6 +209,8 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const activeXHRsRef = useRef<Record<string, XMLHttpRequest>>({});
   const activeFileIdsRef = useRef<Record<string, string>>({});
+  // İptal edilen transferler: kuyrukta bekleyen veya adres alma aşamasındaki dosyalar da yüklenmesin
+  const cancelledIdsRef = useRef<Set<string>>(new Set());
   const transfersRef = useRef<TransferItem[]>([]);
 
   useEffect(() => {
@@ -205,6 +222,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     async (transferItem: TransferItem) => {
       const { id: transferId, file, filename: fullFilename } = transferItem;
       if (!file) return;
+      // Kuyrukta beklerken iptal edildiyse hiç başlama
+      if (cancelledIdsRef.current.has(transferId)) return;
+      const isCancelled = () => cancelledIdsRef.current.has(transferId);
 
       const startedAt = Date.now();
 
@@ -217,7 +237,11 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         )
       );
 
+      let lastProgressUpdate = 0;
       const handleProgressEvent = (e: ProgressEvent) => {
+        const now = Date.now();
+        if (e.lengthComputable && e.loaded < e.total && now - lastProgressUpdate < 150) return;
+        lastProgressUpdate = now;
         if (e.lengthComputable && e.total > 0) {
           const progress = Math.min(99, Math.max(1, Math.round((e.loaded / e.total) * 100)));
           const elapsedSec = (Date.now() - startedAt) / 1000;
@@ -263,11 +287,9 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
           }
           headerSample = btoa(binary);
 
-          if (window.crypto?.subtle) {
-            const hashBuf = await window.crypto.subtle.digest(
-              "SHA-256",
-              file.size <= 50 * 1024 * 1024 ? await file.arrayBuffer() : sampleBuf
-            );
+          // Büyük dosyalarda yalnızca başlığın hash'i hesaplanabilir; onu dosyanın checksum'ı diye göndermiyoruz
+          if (window.crypto?.subtle && file.size <= FULL_HASH_LIMIT) {
+            const hashBuf = await window.crypto.subtle.digest("SHA-256", await file.arrayBuffer());
             const hashArray = Array.from(new Uint8Array(hashBuf));
             sha256 = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
           }
@@ -280,6 +302,10 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       // Step 1: Request Presigned URL (with retry on 429 or transient error)
       for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        if (isCancelled()) {
+          lastError = new Error("Upload cancelled");
+          break;
+        }
         try {
           const authHeaders = await getAuthHeaders();
           const apiRes = await fetch("/api/upload", {
@@ -344,8 +370,10 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       }
 
+      if (isCancelled()) lastError = new Error("Upload cancelled");
+
       // Step 2: Direct XHR PUT to presigned R2 URL (with retry if network drops)
-      if (uploadUrl && !uploadSucceeded && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
+      if (uploadUrl && !isCancelled() && !uploadSucceeded && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
         for (let putAttempt = 1; putAttempt <= MAX_RETRIES; putAttempt++) {
           try {
             await new Promise<void>((resolve, reject) => {
@@ -393,8 +421,30 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         }
       }
 
-      // Step 3: Fallback to server proxy upload for files (<= 100 MB) if direct upload failed
-      if (!uploadSucceeded && file.size <= 100 * 1024 * 1024 && lastError?.message !== "Upload cancelled" && !lastError?.message?.includes("quota") && !lastError?.message?.includes("Zararlı")) {
+      const isTerminalError =
+        isCancelled() ||
+        lastError?.message === "Upload cancelled" ||
+        lastError?.message?.includes("quota") ||
+        lastError?.message?.includes("plan") ||
+        lastError?.message?.includes("Zararlı");
+
+      // Step 3: Doğrudan yükleme başarısızsa küçük dosyaları sunucu üzerinden gönder.
+      // Vercel 4.5 MB'tan büyük gövdeleri reddettiği için bu yol yalnızca PROXY_UPLOAD_LIMIT'e kadar çalışır.
+      if (!uploadSucceeded && !isTerminalError && file.size > PROXY_UPLOAD_LIMIT) {
+        lastError = new Error(
+          `Depolama sunucusuna doğrudan yükleme başarısız oldu (${lastError?.message || "bilinmeyen hata"}). ` +
+            "Bağlantınızı kontrol edip tekrar deneyin."
+        );
+      }
+      if (!uploadSucceeded && !isTerminalError && file.size <= PROXY_UPLOAD_LIMIT) {
+        // İlk denemede açılan kayıt silinir; sunucu yedek yolda kendi kaydını açar (aksi halde listede boş bir dosya kalıyordu)
+        if (currentFileId) {
+          const staleId = currentFileId;
+          currentFileId = null;
+          delete activeFileIdsRef.current[transferId];
+          const headers = await getAuthHeaders();
+          await fetch(`/api/upload?fileId=${staleId}`, { method: "DELETE", headers }).catch(() => {});
+        }
         try {
           const authHeaders = await getAuthHeaders();
           const formData = new FormData();
@@ -448,6 +498,12 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       delete activeXHRsRef.current[transferId];
 
+      if (uploadSucceeded && isCancelled()) {
+        // Yükleme tam iptal anında bittiyse kaydı geri al
+        uploadSucceeded = false;
+        lastError = new Error("Upload cancelled");
+      }
+
       if (uploadSucceeded) {
         delete activeFileIdsRef.current[transferId];
         setTransfers((prev) =>
@@ -468,7 +524,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         );
       } else {
         const err = lastError;
-        const isCancelled = err?.message === "Upload cancelled";
+        const wasCancelled = isCancelled() || err?.message === "Upload cancelled";
         console.error(`Upload permanently failed for ${fullFilename}:`, err);
 
         const isMalware = err?.message?.includes("Zararlı") || err?.message?.includes("Malware") || err?.message?.includes("threat");
@@ -494,7 +550,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
             t.id === transferId
               ? {
                   ...t,
-                  status: isCancelled ? "cancelled" : "failed",
+                  status: wasCancelled ? "cancelled" : "failed",
                   speed: 0,
                   eta: undefined,
                   errorMessage: err?.message || "Upload failed",
@@ -915,6 +971,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const cancelTransfer = (transferId: string) => {
+    cancelledIdsRef.current.add(transferId);
     if (activeXHRsRef.current[transferId]) {
       try {
         activeXHRsRef.current[transferId].abort();
@@ -946,6 +1003,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
     async (transferId: string) => {
       const item = transfersRef.current.find((t) => t.id === transferId);
       if (!item || !item.file) return;
+      cancelledIdsRef.current.delete(transferId);
 
       // Refresh files & quota first in case storage quota was upgraded/freed
       fetchFiles().catch(() => {});
@@ -982,6 +1040,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       );
 
       if (failedItems.length === 0) return;
+      failedItems.forEach((f) => cancelledIdsRef.current.delete(f.id));
 
       // Refresh files & quota first in case storage quota was upgraded/freed
       fetchFiles().catch(() => {});
@@ -1097,6 +1156,7 @@ export const StorageProvider: React.FC<{ children: React.ReactNode }> = ({ child
         clearCompletedTransfers,
         updateSettings,
         refreshFiles,
+        authFetch,
       }}
     >
       {children}

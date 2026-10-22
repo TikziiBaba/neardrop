@@ -48,6 +48,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function UserDetailPage() {
   const params = useParams();
@@ -80,7 +81,7 @@ export default function UserDetailPage() {
     if (!userId) return;
     try {
       setLoading(true);
-      const res = await fetch(`/api/admin/users/${userId}`);
+      const res = await sessionFetch(`/api/admin/users/${userId}`);
       const data = await res.json();
       if (data.success && data.user) {
         setUser(data.user);
@@ -114,7 +115,7 @@ export default function UserDetailPage() {
     setIsSavingAccount(true);
     try {
       const quotaBytes = editQuotaGb * 1024 * 1024 * 1024;
-      const res = await fetch(`/api/admin/users/${userId}`, {
+      const res = await sessionFetch(`/api/admin/users/${userId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -150,7 +151,7 @@ export default function UserDetailPage() {
 
   const handleGetDownloadLink = async (file: CloudFile) => {
     try {
-      const res = await fetch("/api/admin/files", {
+      const res = await sessionFetch("/api/admin/files", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ r2ObjectKey: file.r2ObjectKey, filename: file.filename }),
@@ -170,7 +171,7 @@ export default function UserDetailPage() {
     if (!selectedFileForDelete) return;
     setIsDeletingFile(true);
     try {
-      const res = await fetch(`/api/admin/files?fileId=${selectedFileForDelete.id}`, {
+      const res = await sessionFetch(`/api/admin/files?fileId=${selectedFileForDelete.id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -198,7 +199,7 @@ export default function UserDetailPage() {
   const handleToggleShare = async (share: ShareLink) => {
     try {
       const nextActive = !share.isActive;
-      const res = await fetch("/api/admin/shares", {
+      const res = await sessionFetch("/api/admin/shares", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ shareId: share.id, isActive: nextActive }),
@@ -217,7 +218,7 @@ export default function UserDetailPage() {
 
   const handleDisconnectDevice = async (deviceRecordId: string) => {
     try {
-      const res = await fetch(`/api/auth/device?id=${deviceRecordId}`, {
+      const res = await sessionFetch(`/api/auth/device?id=${deviceRecordId}`, {
         method: "DELETE",
       });
       const data = await res.json();

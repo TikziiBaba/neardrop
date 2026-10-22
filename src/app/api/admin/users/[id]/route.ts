@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchUserFullDetail, updateUserStorageQuota } from "@/lib/admin/service";
-import { getServiceClient } from "@/lib/supabase/auth-helper";
+import { getServiceClient, requireStaff } from "@/lib/supabase/auth-helper";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +8,9 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const userId = params.id;
     if (!userId) {
@@ -29,6 +32,9 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const userId = params.id;
     const body = await req.json();

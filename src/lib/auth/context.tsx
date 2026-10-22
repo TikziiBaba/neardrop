@@ -106,16 +106,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         profile?.subscription_tier === "ultra" ||
         profile?.subscription_tier === "enterprise";
 
-      // Auto-downscale free plan accounts with legacy 10 GB or 1 TB down to 2 GB
+      // Auto-downscale free plan accounts with legacy 10 GB or 1 TB down to 2 GB (yalnızca gösterim;
+      // veritabanındaki kota sunucu tarafından düzeltilir — 20260903000002_fix_free_quota_2gb.sql)
       if (!isPaidTier && quotaBytes > 2147483648) {
         quotaBytes = 2147483648;
-        if (profile?.id) {
-          supabase
-            .from("profiles")
-            .update({ quota_bytes: 2147483648, subscription_tier: "free" })
-            .eq("id", profile.id)
-            .then();
-        }
       }
 
       const subscriptionTier = determineTier(quotaBytes, profile?.subscription_tier);
@@ -488,17 +482,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = { ...user, ...updates, updatedAt: new Date().toISOString() };
       setUser(updated);
 
-      const updateData: any = {
+      // İstemci yalnızca kullanıcıya açık alanları yazar; rol, plan ve kota sunucuya aittir
+      // (supabase/migrations/20261022000000_protect_profile_privileges.sql)
+      const updateData = {
         display_name: updated.displayName,
         avatar_url: updated.avatarUrl,
-        quota_bytes: updated.quotaBytes,
         updated_at: updated.updatedAt,
       };
-
-      if (updates.role) updateData.role = updates.role;
-      if (updates.subscriptionTier) updateData.subscription_tier = updates.subscriptionTier;
-      if (updates.subscriptionStatus) updateData.subscription_status = updates.subscriptionStatus;
-      if (updates.subscriptionRenewsAt) updateData.subscription_renews_at = updates.subscriptionRenewsAt;
 
       await supabase
         .from("profiles")

@@ -40,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -63,7 +64,7 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await fetch("/api/admin/users");
+      const res = await sessionFetch("/api/admin/users");
       const data = await res.json();
       if (data.success && data.users) {
         setUsers(data.users);
@@ -95,7 +96,7 @@ export default function AdminUsersPage() {
     setIsUpdating(true);
     try {
       const quotaBytes = editQuotaGb * 1024 * 1024 * 1024;
-      const res = await fetch("/api/admin/users", {
+      const res = await sessionFetch("/api/admin/users", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -141,7 +142,7 @@ export default function AdminUsersPage() {
       // Optimistic update
       setUsers((prev) => prev.map((item) => (item.id === u.id ? { ...item, role: newRole } : item)));
 
-      const res = await fetch(`/api/admin/users/${u.id}`, {
+      const res = await sessionFetch(`/api/admin/users/${u.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role: newRole }),
@@ -164,7 +165,7 @@ export default function AdminUsersPage() {
     try {
       setUsers((prev) => prev.map((item) => (item.id === u.id ? { ...item, status: newStatus } : item)));
 
-      const res = await fetch(`/api/admin/users/${u.id}`, {
+      const res = await sessionFetch(`/api/admin/users/${u.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -186,7 +187,7 @@ export default function AdminUsersPage() {
     if (!selectedUserForDelete) return;
     setIsUpdating(true);
     try {
-      const res = await fetch(`/api/admin/users?userId=${selectedUserForDelete.id}`, {
+      const res = await sessionFetch(`/api/admin/users?userId=${selectedUserForDelete.id}`, {
         method: "DELETE",
       });
       const data = await res.json();

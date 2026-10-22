@@ -8,32 +8,34 @@ interface LogoIconProps {
   className?: string;
 }
 
-export function LogoIcon({ size = "md", className = "" }: LogoIconProps) {
-  const sizeMap = {
-    sm: "h-7 w-7 rounded-[9px]",
-    md: "h-9 w-9 rounded-xl",
-    lg: "h-11 w-11 rounded-[14px]",
-    xl: "h-14 w-14 rounded-2xl",
-  };
+// Piksel damla — brand/neardrop-logo/neardrop-symbol-dark-bg.svg ile aynı 16×16 ızgara (1 birim = 1 hücre)
+const DROP_BODY =
+  "M7 1h2v2h-2zM6 3h4v1h-4zM5 4h6v1h-6zM4 5h8v1h-8zM3 6h1v2h-1zM5 6h8v2h-8zM2 8h1v1h-1zM4 8h10v1h-10z" +
+  "M2 9h4v2h-4zM7 9h2v2h-2zM10 9h4v2h-4zM2 11h12v2h-12zM3 13h10v1h-10zM5 14h6v1h-6z";
+const DROP_GLINT = "M4 6h1v2h-1zM3 8h1v1h-1z";
+const DROP_EYES = "M6 9h1v2h-1zM9 9h1v2h-1z";
 
-  const svgSizeMap = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
-    xl: "h-8 w-8",
+export function LogoIcon({ size = "md", className = "" }: LogoIconProps) {
+  // Pikseller keskin kalsın diye kutu 16'nın katlarında
+  const sizeMap = {
+    sm: "h-8 w-8",
+    md: "h-8 w-8",
+    lg: "h-12 w-12",
+    xl: "h-16 w-16",
   };
 
   return (
-    <div
-      className={`relative flex items-center justify-center bg-gradient-to-br from-accent via-accent-hover to-accent-text text-white shadow-lg shadow-accent/30 ring-1 ring-white/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105 ${sizeMap[size]} ${className}`}
+    <svg
+      viewBox="0 0 16 16"
+      shapeRendering="crispEdges"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+      className={`shrink-0 drop-shadow-[0_4px_14px_rgba(98,220,245,0.35)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-105 ${sizeMap[size]} ${className}`}
     >
-      {/* Damla + altın hale: "Near" + "Drop" ve göksel kimlik */}
-      <svg viewBox="0 0 24 24" className={svgSizeMap[size]} xmlns="http://www.w3.org/2000/svg" aria-hidden>
-        <ellipse cx="12" cy="4.2" rx="5" ry="1.6" fill="none" stroke="hsl(var(--halo))" strokeWidth="1.6" />
-        <path d="M12 7.2C12 7.2 6.5 13 6.5 16.2C6.5 19.3 9 21.5 12 21.5C15 21.5 17.5 19.3 17.5 16.2C17.5 13 12 7.2 12 7.2Z" fill="white" />
-        <path d="M9.6 16.4C9.6 17.9 10.6 19 12 19.2" stroke="hsl(var(--accent))" strokeWidth="1.3" strokeLinecap="round" fill="none" />
-      </svg>
-    </div>
+      <path fill="#62DCF5" d={DROP_BODY} />
+      <path fill="#D4FBFF" d={DROP_GLINT} />
+      <path fill="#0B2D5C" d={DROP_EYES} />
+    </svg>
   );
 }
 
@@ -52,15 +54,17 @@ export function Logo({
   href = "/",
   className = "",
 }: LogoProps) {
+  // Yazının büyük harf yüksekliği sembol kutusunun ~%40'ı (brand/neardrop-logo yatay yerleşimiyle aynı oran)
   const textSizes = {
-    sm: "text-sm",
-    md: "text-base font-semibold",
-    lg: "text-xl font-semibold",
-    xl: "text-2xl font-bold",
+    sm: "text-lg font-semibold",
+    md: "text-lg font-semibold",
+    lg: "text-[28px] font-semibold",
+    xl: "text-4xl font-semibold",
   };
+  const gaps = { sm: "gap-1.5", md: "gap-1.5", lg: "gap-2", xl: "gap-2.5" };
 
   const content = (
-    <div className={`flex items-center gap-2.5 group select-none ${className}`}>
+    <div className={`flex items-center ${gaps[size]} group select-none ${className}`}>
       <LogoIcon size={size} />
 
       {showText && (

@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { sessionFetch } from "@/lib/supabase/session-fetch";
 
 export default function NewTicketPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function NewTicketPage() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch("/api/tickets", {
+      const res = await sessionFetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

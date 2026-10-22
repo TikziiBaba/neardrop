@@ -1,0 +1,41 @@
+{
+  "brand": "NearDrop",
+  "tagline": "Dosyaları paylaş. Sadece.",
+  "brief": "Yakındaki cihazlara buluta uğramadan doğrudan dosya gönderme ve süreli, şifreli paylaşım bağlantıları. Web sitesi ve Android uygulaması aynı kimliği taşır; site ve uygulamanın Allay temalı, piksel maskotlu dünyasıyla bütünleşmeli.",
+  "adjectives": ["hızlı", "gizli", "samimi", "hafif"],
+  "criteria": "Başarı: dosya paylaşımı kategorisindeki damla, ok ve radar dalgası klişelerinden ayrışmak; 16 px'te keskin kalmak; tek renkte ve koyu zeminde çalışmak; Allay dünyasıyla bütünleşmek.",
+  "industry": "consumer-app",
+  "nav": ["Dosyalar", "Aktar", "Fiyatlar"],
+  "brand_color": "#0D93CD",
+  "tile_color": "#0B2D5C",
+  "greyscale": false,
+  "final": true,
+  "deck_title": "son kimlik",
+  "designer": "NearDrop",
+  "concepts": [
+    {
+      "name": "Piksel damla",
+      "symbol": "neardrop-symbol-light-bg.svg",
+      "lockup": "neardrop-horizontal-light-bg.svg",
+      "stacked": "neardrop-stacked-light-bg.svg",
+      "symbol_on_tile": "neardrop-symbol-dark-bg.svg",
+      "stacked_on_tile": "neardrop-stacked-dark-bg.svg",
+      "symbol_on_dark": "neardrop-symbol-dark-bg.svg",
+      "lockup_on_dark": "neardrop-horizontal-dark-bg.svg",
+      "stacked_on_dark": "neardrop-stacked-dark-bg.svg",
+      "idea": "Allay'ın piksel yüzünü taşıyan damla: dosyayı sana getiren küçük yardımcı.",
+      "rationale": [
+        "16×16 ızgarada çizildi: 16, 32 ve 48 px favicon'da her piksel tam oturur",
+        "Kategoride piksel bir işaret yok; rafta hemen ayrışır",
+        "Sitedeki piksel Allay maskotuyla aynı dili konuşur",
+        "Fraunces 'Near Drop' yazısı mevcut tipografik tanınırlığı korur"
+      ]
+    }
+  ],
+  "recommendation": "Piksel damla: en akılda kalıcı ve küçük boyutta en sağlam yön.",
+  "next_steps": [
+    "Site: favicon, PWA ikonları ve başlıktaki logo",
+    "Android: uyarlanabilir ikon, temalı ikon ve açılış ekranı",
+    "Marka adı ve sembol için profesyonel ticari marka taraması"
+  ]
+}

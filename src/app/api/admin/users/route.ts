@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAdminUsers, updateUserStorageQuota, logAdminAction } from "@/lib/admin/service";
-import { getServiceClient } from "@/lib/supabase/auth-helper";
+import { getServiceClient, requireStaff } from "@/lib/supabase/auth-helper";
 
 export async function GET(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const users = await fetchAdminUsers();
     return NextResponse.json({ success: true, users });
@@ -13,6 +16,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const body = await req.json();
     const { userId, role, subscriptionTier, quotaBytes, status, displayName, notes } = body;
@@ -39,6 +45,9 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const denied = await requireStaff(req);
+  if (denied) return denied;
+
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");

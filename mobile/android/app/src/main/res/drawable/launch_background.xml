@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Açılış ekranı: gece mavisi zemin ortasında NearDrop ikonu -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_background" />
+    <item android:width="96dp" android:height="96dp" android:gravity="center">
+        <bitmap android:gravity="fill" android:src="@drawable/splash_logo" />
+    </item>
+</layer-list>
