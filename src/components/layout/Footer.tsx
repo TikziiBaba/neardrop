@@ -79,6 +79,11 @@ export const Footer: React.FC = () => {
                   {t.footer.storageQuotas}
                 </Link>
               </li>
+              <li>
+                <Link href="/download" className="text-muted-foreground hover:text-accent-text font-medium transition-colors">
+                  {locale === "tr" ? "Android Uygulaması" : "Android App"}
+                </Link>
+              </li>
             </ul>
           </div>
 

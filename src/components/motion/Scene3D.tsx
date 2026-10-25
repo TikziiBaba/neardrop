@@ -13,7 +13,7 @@ import * as THREE from "three";
 type Placement = { x: number; y: number; scale: number; opacity: number };
 
 const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/verify-email", "/auth"];
-const MARKETING_ROUTES = ["/pricing", "/contact", "/privacy", "/terms"];
+const MARKETING_ROUTES = ["/pricing", "/contact", "/privacy", "/terms", "/download"];
 
 // x / y: ekranın yarı genişliği / yüksekliği oranında konum
 function placementFor(pathname: string, mobile: boolean, pastHero: boolean): Placement {
