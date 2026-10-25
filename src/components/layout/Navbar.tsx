@@ -78,7 +78,7 @@ export const Navbar: React.FC = () => {
     >
       <motion.div
         style={{ backgroundColor: navBg, borderColor: navBorder }}
-        className="mx-auto flex h-14 max-w-5xl items-center justify-between rounded-full border pl-4 pr-2 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl backdrop-saturate-150"
+        className="mx-auto flex h-14 max-w-5xl xl:max-w-6xl items-center justify-between rounded-full border pl-4 pr-2 shadow-[0_12px_40px_-12px_rgba(0,0,0,0.6)] backdrop-blur-2xl backdrop-saturate-150"
       >
         {/* Logo */}
         <Logo size="sm" badge="" href="/" />
@@ -101,6 +101,10 @@ export const Navbar: React.FC = () => {
               </Link>
               <Link href="/pricing" className={navLinkClass}>
                 {t.navbar.pricing || "Fiyatlandırma"}
+              </Link>
+              {/* Menü dar ekranda sığmıyor; orada bağlantı alt bilgide ve mobil çekmecede */}
+              <Link href="/download" className={`${navLinkClass} hidden xl:block`}>
+                {locale === "tr" ? "Uygulama" : "App"}
               </Link>
               <Link href="/support" className={navLinkClass}>
                 {t.navbar.support || "Destek"}
@@ -137,6 +141,12 @@ export const Navbar: React.FC = () => {
                 className={cleanPath === "/pricing" ? navLinkActiveClass : navLinkClass}
               >
                 {t.navbar.pricing || "Fiyatlandırma"}
+              </Link>
+              <Link
+                href="/download"
+                className={`${cleanPath === "/download" ? navLinkActiveClass : navLinkClass} hidden xl:block`}
+              >
+                {locale === "tr" ? "Uygulama" : "App"}
               </Link>
               <Link
                 href="/support"
@@ -269,6 +279,9 @@ export const Navbar: React.FC = () => {
                 <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-surface transition-colors">
                   {t.navbar.pricing || "Fiyatlandırma"}
                 </Link>
+                <Link href="/download" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-surface transition-colors">
+                  {locale === "tr" ? "Android Uygulaması" : "Android App"}
+                </Link>
                 <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-surface transition-colors">
                   {t.navbar.support || "Destek"}
                 </Link>
@@ -304,6 +317,9 @@ export const Navbar: React.FC = () => {
                 </Link>
                 <Link href="/pricing" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-surface transition-colors">
                   {t.navbar.pricing || "Fiyatlandırma"}
+                </Link>
+                <Link href="/download" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-surface transition-colors">
+                  {locale === "tr" ? "Android Uygulaması" : "Android App"}
                 </Link>
                 <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2.5 rounded-xl hover:bg-surface transition-colors">
                   {t.navbar.support || "Destek"}
