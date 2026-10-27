@@ -24,9 +24,20 @@ class _FileThumbState extends State<FileThumb> {
   @override
   void initState() {
     super.initState();
-    if (widget.file.category == FileCategory.image && fileExtension(widget.file.filename) != 'svg') {
-      _url = context.read<FilesStore>().previewUrl(widget.file);
-    }
+    _load();
+  }
+
+  // Liste değişince Flutter bu durumu başka bir dosya için yeniden kullanabilir
+  @override
+  void didUpdateWidget(FileThumb old) {
+    super.didUpdateWidget(old);
+    if (old.file.id != widget.file.id) _load();
+  }
+
+  void _load() {
+    _url = widget.file.category == FileCategory.image && fileExtension(widget.file.filename) != 'svg'
+        ? context.read<FilesStore>().previewUrl(widget.file)
+        : null;
   }
 
   @override
